@@ -1,0 +1,236 @@
+[
+ {
+  "questionId": "kennedy-w1",
+  "question": "Le vaisseau américain qui devait atteindre Vénus, dont parle Kennedy : comment s'appelait-il, et y est-il parvenu ?",
+  "answers": [
+   {
+    "textId": "79d159e303",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne un nouveau vaisseau spatial américain qui pourrait atteindre Vénus (moment-11, 80000-88000). D'après les archives historiques, il s'agit de la sonde Mariner 2, qui a réussi son survol de la planète le 14 décembre 1962 (Exploration de Vénus — Wikipédia).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Exploration_de_V%C3%A9nus",
+      "title": "Exploration de Vénus — Wikipédia"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f143b40ad7",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000). Selon les archives de la NASA, la mission Mariner 2, lancée par les États-Unis, a réussi son survol de la planète en décembre 1962 (https://en.wikipedia.org/wiki/List_of_missions_to_Venus).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/List_of_missions_to_Venus",
+      "title": "List of missions to Venus - Wikipedia",
+      "evidence": "Mariner 2 (P-38) 27 August 1962 NASA United States Flyby Successful First successful flyby past another planet on 14 December 1962"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m1",
+  "question": "Dans quelle ville Kennedy dit-il se trouver, et dans quel lieu précis et à quelle date a-t-il prononcé ce discours ?",
+  "answers": [
+   {
+    "textId": "332a401869",
+    "kind": "observation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000). Ce discours a été prononcé le mercredi 12 septembre 1962 au Rice Stadium (external).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.anecdotes-spatiales.com/john-f-kennedy-nous-choisissons-daller-sur-la-lune-traduction-integrale-du-discours-universite-rice-1962/",
+      "title": "John F. Kennedy – « Nous choisissons d’aller sur la Lune… » (Traduction intégrale du discours Université Rice 1962)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e0f63aa35e",
+    "kind": "explanation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000). Le discours a été prononcé à l'université Rice le 12 septembre 1962 (webPages: \"We choose to go to the Moon — Wikipédia\", https://fr.wikipedia.org/wiki/We_choose_to_go_to_the_Moon).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/We_choose_to_go_to_the_Moon",
+      "title": "We choose to go to the Moon — Wikipédia",
+      "evidence": "Prononcé le 12 septembre 1962 [...] à l'université Rice, à Houston"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m2",
+  "question": "Sur son échelle, quand Kennedy situe-t-il la pénicilline, et en réalité, qui l'a découverte et en quelle année ?",
+  "answers": [
+   {
+    "textId": "6e0fdfe1b8",
+    "kind": "observation",
+    "answer": "Dans son discours, Kennedy situe le développement de la pénicilline à la semaine dernière (moment-10, 72000-80000). En réalité, la pénicilline a été découverte par Alexander Fleming en 1928 (https://en.wikipedia.org/wiki/Alexander_Fleming).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Alexander_Fleming",
+      "title": "Alexander Fleming - Wikipedia",
+      "evidence": "His discovery in 1928 of what was later named benzylpenicillin (or penicillin G) from the mould Penicillium rubens..."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ce849a1668",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy situe le développement de la pénicilline à seulement une semaine (moment-10, 72000-80000). En réalité, la découverte de la pénicilline est attribuée au scientifique britannique Alexander Fleming en 1928 (Découverte de la pénicilline — Wikipédia).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline",
+      "title": "Découverte de la pénicilline — Wikipédia"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w2",
+  "question": "Qui était ce William Bradford que Kennedy cite ?",
+  "answers": [
+   {
+    "textId": "8b92f3faac",
+    "kind": "explanation",
+    "answer": "William Bradford (1590-1657) était un chef des Pères pèlerins et le deuxième gouverneur de la colonie de Plymouth en Amérique du Nord (external). Il a fait partie du groupe ayant traversé l'Atlantique à bord du Mayflower en 1620 (external). Il est également connu pour avoir écrit l'ouvrage historique Of Plymouth Plantation (external).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/William_Bradford",
+      "title": "William Bradford — Wikipédia"
+     },
+     {
+      "url": "https://www.worldhistory.org/trans/fr/1-19260/william-bradford/",
+      "title": "William Bradford - Encyclopédie de l'Histoire du Monde"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d1808facef",
+    "kind": "explanation",
+    "answer": "William Bradford (1590-1657) était un leader séparatiste et le deuxième gouverneur de la colonie de Plymouth en Amérique du Nord (external). Il faisait partie des pèlerins arrivés à bord du Mayflower en 1620 (external). Il est également connu pour avoir écrit \"Of Plymouth Plantation\", un récit historique majeur sur la fondation de cette colonie (external).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.worldhistory.org/trans/fr/1-19260/william-bradford/",
+      "title": "William Bradford - Encyclopédie de l'Histoire du Monde",
+      "evidence": "William Bradford (1590-1657) était l'un des principaux membres de la congrégation des pèlerins venus en Amérique du Nord à bord du Mayflower [...] le deuxième gouverneur de la colonie de Plymouth [...] Bradford commença à écrire Of Plymouth Plantation, son récit des événements qui avaient amené les pèlerins dans ce qu'on appelle le Nouveau Monde"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w3",
+  "question": "Kennedy dit qu'il n'y a encore aucun conflit dans l'espace. Aujourd'hui, combien de pays ont signé les accords Artemis, le cadre de la NASA pour une exploration pacifique ?",
+  "answers": [
+   {
+    "textId": "1030fdc752",
+    "kind": "external",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflits nationaux dans l'espace (moment-49, 384000-392000). Selon les informations disponibles au 8 août 2025, 56 nations ont rejoint les Accords Artemis pour une exploration pacifique (agences-spatiales.fr).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.agences-spatiales.fr/accords-artemis/",
+      "title": "Les Accords Artemis : présentation, enjeux, et utilité réelle"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "bdb0e0e87c",
+    "kind": "external",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflits nationaux dans l'espace (moment-49, 384000-392000). Selon les informations disponibles au 8 août 2025, 56 nations ont rejoint les Accords Artemis pour une exploration pacifique (external).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.agences-spatiales.fr/accords-artemis/",
+      "title": "Les Accords Artemis : présentation, enjeux, et utilité réelle",
+      "evidence": "Les 56 nations ayant rejoint les Accords Artemis, unies pour une exploration pacifique de l’espace lointain. [...] Les Accords Artemis sont des engagements politiques non contraignants, signés aujourd’hui par 56 pays au 8 août 2025."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

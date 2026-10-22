@@ -1,0 +1,777 @@
+{
+ "371bdf351f58": {
+  "questionId": "kennedy-w1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6739.5,
+  "tokens": 277,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "658097ab8039": {
+  "questionId": "kennedy-m1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6823.8,
+  "tokens": 268,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "708b99a162ee": {
+  "questionId": "kennedy-m2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6214.8,
+  "tokens": 231,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "e8e3580cd310": {
+  "questionId": "kennedy-w2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 8247.9,
+  "tokens": 323,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "318b9765767a": {
+  "questionId": "kennedy-w3",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 7686.8,
+  "tokens": 277,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "5a432f7add33": {
+  "questionId": "spring-w1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6245.2,
+  "tokens": 209,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "86a5ad03fd7e": {
+  "questionId": "spring-w2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6010.7,
+  "tokens": 203,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "c2a5251b45f6": {
+  "questionId": "spring-w3",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6102.3,
+  "tokens": 254,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "e5ed0add2788": {
+  "questionId": "spring-m1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 8742.2,
+  "tokens": 414,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "39388912b39d": {
+  "questionId": "spring-m2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6285.8,
+  "tokens": 253,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "dcf340724fee": {
+  "questionId": "cnrs-w1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6328.8,
+  "tokens": 253,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "da52a2bf44bb": {
+  "questionId": "cnrs-m1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 7979.9,
+  "tokens": 317,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "8132a82d4e4d": {
+  "questionId": "cnrs-w2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 12082.1,
+  "tokens": 449,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "c5cceeaa8242": {
+  "questionId": "cnrs-w3",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 16468.0,
+  "tokens": 697,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "28d518f8fa26": {
+  "questionId": "cuisine-m1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6485.1,
+  "tokens": 277,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "5c6febcd7a61": {
+  "questionId": "cuisine-w1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 11868.3,
+  "tokens": 549,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "f67a412e3aed": {
+  "questionId": "cuisine-w2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 9683.0,
+  "tokens": 408,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "4e91855f09c8": {
+  "questionId": "cuisine-m2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 14128.6,
+  "tokens": 621,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "b7140261c998": {
+  "questionId": "cuisine-w3",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 13189.7,
+  "tokens": 524,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "4b43f089d288": {
+  "questionId": "tears-w1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6475.8,
+  "tokens": 203,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "cf7599eab620": {
+  "questionId": "tears-w2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 5630.1,
+  "tokens": 177,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "dcd654c177c0": {
+  "questionId": "tears-w3",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 6677.4,
+  "tokens": 218,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "0757cb169bdb": {
+  "questionId": "tears-m1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 4183.0,
+  "tokens": 168,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "7aba3894bca3": {
+  "questionId": "tears-m2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 5243.6,
+  "tokens": 185,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "489762d74bdd": {
+  "questionId": "artemis-w1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 10598.9,
+  "tokens": 390,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "ffead01dae3c": {
+  "questionId": "artemis-m1",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 5045.8,
+  "tokens": 93,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "7643708364cb": {
+  "questionId": "artemis-m2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 11327.7,
+  "tokens": 387,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "1591ab714318": {
+  "questionId": "artemis-w3",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 10402.5,
+  "tokens": 336,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "6db6f7eecf7d": {
+  "questionId": "artemis-w2",
+  "source": "H4b",
+  "arm": "PTF1",
+  "pass": 1,
+  "wallMs": 10005.9,
+  "tokens": 326,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "ce948935129b": {
+  "questionId": "artemis-w1",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 24937.89203899994,
+  "retrieval": null
+ },
+ "841aa6b686a3": {
+  "questionId": "artemis-m1",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 23803.03223599994,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 1,
+   "elapsedMs": 1664,
+   "decision": "web",
+   "query": "Airbus contribution mission Artemis I composants vol",
+   "decisionMs": 898
+  }
+ },
+ "086ba3258b18": {
+  "questionId": "artemis-m2",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 24713.657241000095,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1214,
+   "decision": "web",
+   "query": "directrice de lancement Artemis I NASA particularité historique",
+   "decisionMs": 894
+  }
+ },
+ "c8c65dee3ad4": {
+  "questionId": "artemis-w3",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 21205.47763999994,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1509,
+   "decision": "web",
+   "query": "état actuel et prochaines étapes programme Artemis NASA",
+   "decisionMs": 929
+  }
+ },
+ "d60a6953c303": {
+  "questionId": "artemis-w2",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 19567.333856999874,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1975,
+   "decision": "web",
+   "query": "fin mission SLS Orion durée et conclusion",
+   "decisionMs": 886
+  }
+ },
+ "8ed2fe5d955f": {
+  "questionId": "cuisine-m1",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 15074.757203999994,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 2,
+   "elapsedMs": 4125,
+   "decision": "web",
+   "query": "Patrick Dujancourt recettes morceaux de bœuf utilisés",
+   "decisionMs": 843
+  }
+ },
+ "e227ab5789f9": {
+  "questionId": "cuisine-w1",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 19133.008673000004,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1276,
+   "decision": "web",
+   "query": "cépage vin rouge Bourgogne",
+   "decisionMs": 749
+  }
+ },
+ "dcb71a7b6c1f": {
+  "questionId": "cuisine-w2",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 23180.243958999985,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1646,
+   "decision": "web",
+   "query": "ingrédients classiques bouquet garni cuisine",
+   "decisionMs": 803
+  }
+ },
+ "96409d1f41a9": {
+  "questionId": "cuisine-m2",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 17367.226245999977,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 2239,
+   "decision": "web",
+   "query": "réaction chimique formation croûte viande cuisson Maillard",
+   "decisionMs": 861
+  }
+ },
+ "f29fc00b6271": {
+  "questionId": "cuisine-w3",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 20969.725113999913,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1428,
+   "decision": "web",
+   "query": "prévisions récolte vendanges 2026 région Occitanie France",
+   "decisionMs": 1051
+  }
+ },
+ "74f201b55648": {
+  "questionId": "cnrs-w1",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 19069.93026400001,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 5181,
+   "decision": "web",
+   "query": "modèle Gemini le plus récent Google aujourd'hui",
+   "decisionMs": 852
+  }
+ },
+ "49635e315cbf": {
+  "questionId": "cnrs-m1",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 19122.817412999982,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3890,
+   "decision": "web",
+   "query": "nombre de neurones cerveau éléphant vs cerveau humain",
+   "decisionMs": 955
+  }
+ },
+ "60b20e606f14": {
+  "questionId": "cnrs-w2",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 24885.37964399997,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3836,
+   "decision": "web",
+   "query": "origine expression modèle de fondation IA auteur date",
+   "decisionMs": 917
+  }
+ },
+ "b0760734ad29": {
+  "questionId": "cnrs-w3",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 24566.21299000003,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 2,
+   "elapsedMs": 4851,
+   "decision": "web",
+   "query": "état actuel mise en œuvre AI Act règlement européen intelligence artificielle",
+   "decisionMs": 926
+  }
+ },
+ "98c70ec39b66": {
+  "questionId": "kennedy-w1",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 15060.792826999997,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1784,
+   "decision": "web",
+   "query": "nom vaisseau spatial américain mission Vénus Kennedy réussite",
+   "decisionMs": 912
+  }
+ },
+ "cc7984e32d19": {
+  "questionId": "kennedy-m1",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 18087.863459999993,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1412,
+   "decision": "web",
+   "query": "lieu et date discours John F. Kennedy stade drapeau américain",
+   "decisionMs": 850
+  }
+ },
+ "5a670bf3df99": {
+  "questionId": "kennedy-m2",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 17146.360182000004,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1044,
+   "decision": "web",
+   "query": "découverte pénicilline Alexander Fleming date",
+   "decisionMs": 888
+  }
+ },
+ "467c677ae61e": {
+  "questionId": "kennedy-w2",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 24215.288997999975,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 811,
+   "decision": "web",
+   "query": "qui était William Bradford pionnier des pèlerins Mayflower",
+   "decisionMs": 897
+  }
+ },
+ "2037df40e703": {
+  "questionId": "kennedy-w3",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 18377.086894000007,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 2031,
+   "decision": "web",
+   "query": "nombre de pays signataires des accords Artemis NASA",
+   "decisionMs": 872
+  }
+ },
+ "2beca6330bd8": {
+  "questionId": "spring-m1",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 16045.799367,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 4811,
+   "decision": "web",
+   "query": "phénomène météo mer de nuages vallée",
+   "decisionMs": 824
+  }
+ },
+ "9ab73d1e9375": {
+  "questionId": "spring-w3",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 16110.162190000003,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3696,
+   "decision": "web",
+   "query": "Blender Studio films récents et projets en cours",
+   "decisionMs": 863
+  }
+ },
+ "3578a0de7b49": {
+  "questionId": "spring-m2",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 19174.536750999978,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 4708,
+   "decision": "web",
+   "query": "nature créature squelette lumineux film Avatar Way of Water",
+   "decisionMs": 892
+  }
+ },
+ "b0ee71fc8297": {
+  "questionId": "spring-w2",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 22351.308170999982,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 4193,
+   "decision": "web",
+   "query": "inspiration réalisateur film personnage armure vaisseau spatial montagne",
+   "decisionMs": 877
+  }
+ },
+ "8c5dc66f7927": {
+  "questionId": "spring-w1",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 20476.274984000018,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 2,
+   "elapsedMs": 4634,
+   "decision": "web",
+   "query": "date de publication court métrage SPRING",
+   "decisionMs": 841
+  }
+ },
+ "5bc2fc111256": {
+  "questionId": "tears-m1",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 10028.210261,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 795,
+   "decision": "web",
+   "query": "lieu dispute Thom Celia film ville tournage",
+   "decisionMs": 848
+  }
+ },
+ "b458e12c077a": {
+  "questionId": "tears-m2",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 12147.665806999983,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1693,
+   "decision": "web",
+   "query": "lieu descente corde vieil homme cheveux gris bâtiment réel",
+   "decisionMs": 836
+  }
+ },
+ "6b18a263af39": {
+  "questionId": "tears-w2",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 15385.700102999981,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3444,
+   "decision": "web",
+   "query": "caméra utilisée pour le tournage du film Love Your Hand",
+   "decisionMs": 849
+  }
+ },
+ "0c4d905dba18": {
+  "questionId": "tears-w3",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 18634.32566199999,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1508,
+   "decision": "web",
+   "query": "dernière version stable du logiciel Blender",
+   "decisionMs": 805
+  }
+ },
+ "3bc3c2c39f39": {
+  "questionId": "tears-w1",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 17785.347686000052,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3107,
+   "decision": "web",
+   "query": "date de sortie film Mango Open Movie Ian Hubert",
+   "decisionMs": 835
+  }
+ }
+}

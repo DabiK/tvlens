@@ -1,0 +1,229 @@
+[
+ {
+  "questionId": "spring-w1",
+  "question": "Quand ce court métrage a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "7f20dd62cc",
+    "kind": "external",
+    "answer": "Ce court métrage a été publié le 4 avril 2019 [https://en.wikipedia.org/wiki/Spring_(2019_film)].",
+    "citations": [
+     {
+      "id": "en.wikipedia.org/wiki/Spring_(2019_film)",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ea60a88766",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation intitulé Spring est sorti en avril 2019 (plus précisément le 4 avril 2019). Il a été réalisé par Andy Goralczyk pour la Blender Foundation.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia"
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w2",
+  "question": "Qu'est-ce qui a inspiré l'histoire de ce film à son réalisateur ?",
+  "answers": [
+   {
+    "textId": "7dcaacad18",
+    "kind": "external",
+    "answer": "Le film Passengers est adapté d'une nouvelle de Philip K. Dick intitulée Le Voyage gelé (The Frozen Journey ou I Hope I Shall Arrive Soon), publiée en 1980 [https://fr.wikipedia.org/wiki/Passengers_(film)]. Le scénario a été écrit par Jon Spaihts.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Passengers_(film)",
+      "title": "Passengers (film) — Wikipédia"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "85bbd6a31a",
+    "kind": "external",
+    "answer": "L'histoire de ce film a été inspirée par l'enfance du réalisateur, Andy Goralczyk, dans les montagnes d'Allemagne (https://www.blender.org/press/spring-open-movie/).",
+    "citations": [
+     {
+      "id": "blender_press_release",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.blender.org/press/spring-open-movie/",
+      "title": "Spring Open Movie — Blender",
+      "evidence": "This poetic and visually stunning short film was written and directed by Andy Goralленно, inspired by his childhood in the mountains of Germany."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w3",
+  "question": "Le Blender Studio, qui présente ce film, a-t-il sorti un film plus récent ? Lequel, et que prépare-t-il aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "1b0c83ef88",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti le film Charge en 2022 (https://studio.blender.org/vault/). Le studio travaille également sur le projet Storm, comme l'indique la présence de formations sur le rigging facial pour ce projet dans ses ressources (https://studio.blender.org/vault/).",
+    "citations": [
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/vault/",
+      "title": "Blender Studio",
+      "evidence": "a shot from Charge (2022) with sparks FX Source file of a shot from Spright Fright (20 . . . Advanced Facial Rigging This course is an introduction to how to cover every method and workflow used to create the flexible and expressive facial rigging system for Storm"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b86af85654",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti plusieurs films après celui-ci, comme Wing It! en 2023 (https://studio.blender.org/films/). Le studio prépare actuellement les projets Cowboi et Overgrown (https://studio.blender.org/vault/).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio"
+     },
+     {
+      "url": "https://studio.blender.org/vault/",
+      "title": "Blender Studio"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m1",
+  "question": "Depuis la crête, la fille et son chien regardent la vallée : qu'est-ce qui la remplit, et quel phénomène météo produit ce genre de paysage ?",
+  "answers": [
+   {
+    "textId": "7e51fa1319",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages, formant une vaste étendue qui recouvre le paysage montagneux (moment-10). Ce phénomène, appelé mer de nuages, est produit par une inversion de température où l'air froid et humide s'accumule dans les vallées sous une couche de nuages bas, souvent lors de conditions anticycloniques (lescarroz.com ; meteofrance.com).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.lescarroz.com/explication-phenomene-mer-de-nuages/",
+      "title": "Explication du phénomène de la mer de nuages - Les Carroz",
+      "evidence": "Une mer de nuages est une vaste étendue de nuages bas, appelés stratus et observés à une certaine altitude. [...] Une inversion de température est à l’origine de ce phénomène météorologique"
+     },
+     {
+      "url": "https://meteofrance.com/meteo-a-z/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver. [...] Ce processus favorise la condensation de la vapeur d’eau et donc la formation de nuages bas connus sous le nom de stratus."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cf08a786ca",
+    "kind": "explanation",
+    "answer": "La vallée est remplie d'une vaste étendue de brume ou de nuages qui enveloppe les montagnes (moment-10). Ce paysage est caractéristique d'une mer de nuages, un phénomène qui se forme généralement dans les vallées lors de conditions anticycloniques, notamment en hiver (Météo-France).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/meteo-a-z/la-mer-de-nuages",
+      "title": "La mer de nuages | Météо-France"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m2",
+  "question": "Cette immense créature lumineuse qui s'approche d'elle, à quoi ressemble-t-elle, et qu'est-ce que c'est selon les créateurs du film ?",
+  "answers": [
+   {
+    "textId": "494246bb57",
+    "kind": "observation",
+    "answer": "La créature est un organisme géant, lumineux et translucide, dont la structure ressemble à un squelette colossal (moment-24, moment-25). Elle semble être un squelette d'animal, possiblement un reptile ou un serpent, partiellement immergé dans l'eau (moment-26). Les données fournies ne précisent pas ce que les créateurs du film disent spécifiquement de cette entité.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'identité exacte de la créature selon les créateurs n'est pas mentionnée dans les passages analysés."
+    ]
+   },
+   {
+    "textId": "58930c0186",
+    "kind": "explanation",
+    "answer": "La créature est un organisme géant, lumineux et translucide, dont le squelette colossal ressemble à celui d'un serpent ou d'un reptile (moment-26). Selon les créateurs du film, il s'agit d'un esprit ancien (ancient spirit) que la jeune bergère et son chien affrontent pour poursuivre le cycle de la vie (https://www.blender.org/press/spring-open-movie/).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.blender.org/press/spring-open-movie/",
+      "title": "Spring Open Movie — Blender",
+      "evidence": "Spring is the story of a shepherd girl and her dog, who face ancient spirits in order to continue the cycle of life."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

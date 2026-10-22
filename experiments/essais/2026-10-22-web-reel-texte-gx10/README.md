@@ -47,3 +47,27 @@ passages, ou fusionner deux recherches, fait-il mieux ?
 Une seule exécution sur 30 questions : les écarts de 2 à 4 sont dans le bruit, et seul l'ordre général compte. Les
 pages sont celles du 22/10 au soir ; le web change. Les textes des pages ne sont pas versionnés (dépôt public) : seuls
 les URL, titres et tailles le sont.
+
+## H4b : le titre de la source dans la requête
+
+- Question : le diagnostic des 16 échecs de V0 attribue 6 échecs à une requête qui vise la mauvaise œuvre, faute de
+  titre (« Apollo 13 », « Space Chimps », « Avatar »). Le titre de la source change-t-il le résultat ?
+- Méthode : pour les 29 questions W/M où F1 a cherché, on rejoue la requête de réponse de F1 telle quelle : journal,
+  prompt du produit, extrait de page T315. On remplace seulement les pages par celles que SearXNG ouvre pour la
+  requête du modèle écrite avec le titre (H2, bras PT). Il y a eu 30 recherches, une toutes les 8 s
+  ([`scripts/cache_web_pt.cjs`](scripts/cache_web_pt.cjs), [`scripts/rejouer_h4b.py`](scripts/rejouer_h4b.py)).
+  Rejeu le 22/10, 23:01–23:05 UTC. Notation à l'aveugle dans le même paquet que les réponses de F1
+  ([`notation-h4b/`](notation-h4b/), bruts [`bruts-h4b/`](bruts-h4b/)).
+
+| | Avec le titre (H4b) | F1, sans titre |
+| --- | ---: | ---: |
+| W | **14/18** | 8/18 |
+| M | **7/11** | 5/11 |
+| Inventions | **2** | 5 |
+
+- Le titre fait gagner 8 questions et n'en fait perdre aucune (p ≈ 0,008) : `artemis-w2`, `cnrs-w2`, `cnrs-w3`,
+  `cuisine-m1`, `cuisine-w1`, `spring-m2`, `spring-w2`, `tears-w2`.
+- Avec le titre, le local dépasse Codex sur le web (C1 : W 11/18, M 4/12).
+- Réserve : le produit ne connaît pas encore le titre. Ce rejeu montre l'effet d'un ticket « titre de la source »,
+  qui reste à faire. Les titres sont ceux des pages YouTube du corpus de test, et le nom du fichier pour Kennedy.
+

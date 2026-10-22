@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAtUtc": "2026-10-22T22:45:00Z",
+  "updatedAtUtc": "2026-10-22T23:30:00Z",
   "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
   "reference": {
     "configuration": {
@@ -1273,5 +1273,68 @@
       },
       "delaiCodexWMS": 10.8
     }
+  },
+  "f1ProduitCompletWeb": {
+    "source": "experiments/essais/2026-10-22-produit-complet-web-gx10/",
+    "codeSha": "cfa0bf8",
+    "video": {
+      "pertinentes": "44/60",
+      "j6MemePaquet": "39/60",
+      "inventions": 7,
+      "inventionsJ6": 11,
+      "delaiMedianS": 7.6,
+      "rechercheATort": "4/60",
+      "parAge": {
+        "ancien": "10/19",
+        "mixte": "8/8",
+        "recent": "26/33"
+      }
+    },
+    "web": {
+      "W": "8/18",
+      "M": "5/12",
+      "O": "0/12",
+      "inventions": 7
+    },
+    "tempsPropreS": {
+      "W": {
+        "mediane": 12.2,
+        "p90": 15.2,
+        "max": 16.6,
+        "au-dela14": 3
+      },
+      "M": {
+        "mediane": 10.6,
+        "p90": 15.0,
+        "max": 16.3,
+        "au-dela14": 2
+      },
+      "video": {
+        "mediane": 7.0,
+        "p90": 10.4,
+        "max": 11.3
+      }
+    },
+    "decisionMedianeS": 0.8,
+    "rechercheMedianeS": 2.0,
+    "blocsPerdus": 13
+  },
+  "h4bTitreDeLaSource": {
+    "source": "experiments/essais/2026-10-22-web-reel-texte-gx10/",
+    "W": {
+      "avecTitre": "14/18",
+      "f1": "8/18"
+    },
+    "M": {
+      "avecTitre": "7/11",
+      "f1": "5/11"
+    },
+    "inventions": {
+      "avecTitre": 2,
+      "f1": 5
+    },
+    "gagnees": 8,
+    "perdues": 0,
+    "pSignes": 0.008
   }
 }

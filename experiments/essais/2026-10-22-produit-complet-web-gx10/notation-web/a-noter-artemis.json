@@ -1,0 +1,314 @@
+[
+ {
+  "questionId": "artemis-o1",
+  "question": "Dans le petit film du début, quel titre s'est affiché en grand sur une vue de la surface de la Lune ?",
+  "answers": [
+   {
+    "textId": "0c82074abe",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier de titre s'affichant sur une vue de la surface de la Lune dans les passages consultés. Les images disponibles montrent des personnes devant des modules ou le lanceur Artemis, mais ne présentent pas cette vue spécifique.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages vidéo analysés ne contiennent pas de vue de la surface de la Lune avec un titre."
+    ]
+   },
+   {
+    "textId": "4e34e7070a",
+    "kind": "insufficient",
+    "answer": "Les passages fournis commencent à 344 000 ms et ne montrent pas le petit film du début. Je ne peux donc pas identifier le titre affiché ; il me faudrait un passage du début de la vidéo.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le début de la vidéo n’est pas couvert par les passages fournis."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w1",
+  "question": "Pourquoi le décollage a-t-il pris du retard cette nuit-là ?",
+  "answers": [
+   {
+    "textId": "1668c3a471",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu confirmer les sources de cette réponse. Je ne peux pas encore fournir un lien fiable.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La réponse proposée n’a pas passé la validation des preuves."
+    ]
+   },
+   {
+    "textId": "4700108042",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne permettent pas d’établir la cause du retard. Ils montrent le lanceur encore sur la plateforme et évoquent une activité de pressurisation, puis le passage de l’équipe de lancement sur un canal de communication commun ; aucun ne relie explicitement ces éléments au retard. Le segment manquant entre 712 000 et 720 002 ms pourrait apporter du contexte.",
+    "citations": [
+     {
+      "id": "moment-84",
+      "startMs": 664000,
+      "endMs": 672000
+     },
+     {
+      "id": "moment-89",
+      "startMs": 704000,
+      "endMs": 712000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les résumés automatiques peuvent être imprécis ; la cause du retard n’est pas explicitement donnée dans les passages consultés."
+    ]
+   },
+   {
+    "textId": "62a70ddcf2",
+    "kind": "observation",
+    "answer": "Les images montrent le lanceur Orion sur sa plateforme avec des jets de gaz s'échappant de l'étage supérieur, ce qui semble lié à une activité de pressurisation des valves d'oxygène (moment-84, 664000-672000). Cependant, la vidéo ne fournit pas d'explication explicite sur une cause de retard pour le décollage cette nuit-là.",
+    "citations": [
+     {
+      "id": "moment-84",
+      "startMs": 664000,
+      "endMs": 672000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m1",
+  "question": "Les employés d'Airbus qu'on a vus applaudir en Allemagne : qu'ont-ils fourni pour cette mission, et à quoi sert cet élément pendant le vol ?",
+  "answers": [
+   {
+    "textId": "2276fdb428",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier d'employés d'Airbus en Allemagne dans les passages consultés. Les séquences montrent uniquement une équipe de contrôle dans un centre de lancement pour la mission Artemis I.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "59e793cb3d",
+    "kind": "external",
+    "answer": "Les employés d'Airbus Defence and Space ont conclu des contrats avec ArianeGroup pour la fourniture de composants du troisième module de service européen (ESM) destiné à la mission Artemis III (webPages: ArianeGroup to deliver key propulsion system components for the Orion spacecraft for the Artemis III moon mission). ArianeGroup doit livrer des éléments tels que des moteurs de contrôle d'attitude, des régulateurs haute pression, des vannes, des réservoirs de carburant et des réservoirs d'hélium (webPages: ArianeGroup to deliver key propulsion system components for the Orion spacecraft for the Artemis III moon mission). Ces composants servent au système de propulsion du vaisseau spatial Orion (webPages: ArianeGroup to deliver key propulsion system components for the Orion spacecraft for the Artemis III moon mission).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.ariane.group/en/news/arianegroup-va-livrer-des-composants-cles-du-systeme-de-propulsion-du-vaisseau-spatial-orion-pour-la-mission-lunaire-artemis-iii/",
+      "title": "ARIANEGROUP TO DELIVER KEY PROPULSION SYSTEM COMPONENTS FOR THE ORION SPACECRAFT FOR THE ARTEMIS III MOON MISSION - ArianeGroup"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f2cdc90643",
+    "kind": "insufficient",
+    "answer": "Les passages fournis portent sur les autorisations et le compte à rebours d’Artemis I, pas sur les employés d’Airbus qui applaudissent ni sur l’élément qu’ils auraient fourni. Je ne peux donc pas identifier cet élément ni expliquer son rôle en vol à partir des preuves disponibles.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages disponibles ne couvrent pas la scène mentionnée dans la question."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m2",
+  "question": "Comment s'appelle la directrice de lancement qui a donné le feu vert pour reprendre le compte à rebours, et qu'a-t-elle de particulier dans l'histoire de la NASA ?",
+  "answers": [
+   {
+    "textId": "3b0f10d2fb",
+    "kind": "explanation",
+    "answer": "La directrice de lancement s'appelle Charlie Blackwell-Thompson (external). Elle est la première femme à occuper ce poste important au sein de la NASA en 64 ans d'histoire (external).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Charlie_Blackwell-Thompson",
+      "title": "Charlie Blackwell-Thompson - Wikipedia"
+     },
+     {
+      "url": "https://www.atalayar.com/fr/articulo/nouvelles-technologies-innovation/voici-la-femme-de-la-nasa-qui-dirige-le-lancement-de-la-mission-artemis-i-sur-la-lune/20220829130624157957.html",
+      "title": "Voici la femme de la NASA qui dirige le lancement de la mission Artemis I sur la Lune"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "42221ed4d1",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est la première femme à occuper ce poste important au sein de la NASA en 64 ans d'histoire (https://www.atalayar.com/fr/articulo/nouvelles-technologies-innovation/voici-la-femme-de-la-nasa-qui-dirige-le-lancement-de-la-mission-artemis-i-sur-la-lune/20220829130624157957.html).",
+    "citations": [
+     {
+      "id": "atalayar_article",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.atalayar.com/fr/articulo/nouvelles-technologies-innovation/voici-la-femme-de-la-nasa-qui-dirige-le-lancement-de-la-mission-artemis-i-sur-la-lune/20220829130624157957.html",
+      "title": "Voici la femme de la NASA qui dirige le lancement de la mission Artemis I sur la Lune",
+      "evidence": "L'ingénieure en informatique Charlie Blackwell-Thompson est la première femme à occuper le poste important de directrice du lancement de la NASA et celle qui donnera le feu vert au décollage de la mission Artemis I."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "66ddce063f",
+    "kind": "external",
+    "answer": "Elle s’appelle Charlie Blackwell-Thompson. La NASA indique qu’elle a été la première femme à occuper le poste de directrice de lancement ; les passages fournis ne donnent pas son nom, donc cette identification vient de la source web.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/specials/artemis-i-press-kit/?os=qtft_1Fno_journeysDtrue",
+      "title": "NASA Artemis I Press Kit",
+      "evidence": "La page identifie Charlie Blackwell-Thompson comme directrice de lancement d’Artemis I et précise qu’elle est la première femme directrice de lancement de la NASA."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w3",
+  "question": "Depuis ce lancement, où en est aujourd'hui le programme Artemis ?",
+  "answers": [
+   {
+    "textId": "8a9abd8345",
+    "kind": "external",
+    "answer": "Le programme Artemis a déjà réalisé les missions Artemis I, qui était un vol d'essai non habité lancé en novembre 2022, et Artemis II, qui a effectué un voyage autour de la Lune en avril 2026 avec équipage. La mission Artemis III est prévue pour 2027 et visera à envoyer des astronautes sur la Lune.",
+    "citations": [
+     {
+      "id": "NASA Artemis Overview",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "Artemis I NASA successfully launched an uncrewed test flight of the SLS (Space Launch System) rocket and Orion spacecraft in Nov. 2022."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d2070047bf",
+    "kind": "explanation",
+    "answer": "Le programme Artemis a déjà réalisé deux missions avec succès : Artemis I, un vol non habité lancé en novembre 2022 (moment-204), et Artemis II, qui a envoyé quatre astronautes autour de la Lune en avril 2026 (external: NASA's Artemis Program - NASA). La mission Artemis III, qui prévoit un retour d'astronautes sur la surface lunaire, est en cours de développement (external: NASA's Artemis Program - NASA).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "eb9eb470a1",
+    "kind": "external",
+    "answer": "Depuis le lancement d’Artemis I montré dans la vidéo, le programme a franchi une étape majeure : Artemis II a emmené quatre astronautes autour de la Lune en avril 2026, puis est revenue sur Terre. Selon la NASA, la prochaine étape est Artemis III, une mission de démonstration en orbite terrestre prévue en 2027 ; le premier alunissage habité est désormais visé avec Artemis IV en 2028. [NASA : programme Artemis](https://www.nasa.gov/humans-in-space/artemis/?linkId=924227861)",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/?linkId=924227861",
+      "title": "Moon to Mars | NASA’s Artemis Program",
+      "evidence": "La page indique qu’Artemis II a effectué en avril 2026 un voyage d’environ dix jours autour de la Lune et que le premier alunissage habité est visé en 2028 ; Artemis III est prévue en 2027."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w2",
+  "question": "Comment cette mission s'est-elle terminée, et combien de temps a-t-elle duré ?",
+  "answers": [
+   {
+    "textId": "361daddcdc",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles ne montrent que le lancement et la montée d’Artemis I ; ils ne couvrent pas la fin de la mission. Je ne peux donc pas dire comment elle s’est terminée ni combien de temps elle a duré.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les données s’arrêtent environ 8 secondes avant le repère courant et ne contiennent aucun passage sur la fin de la mission."
+    ]
+   },
+   {
+    "textId": "5262166bfe",
+    "kind": "observation",
+    "answer": "La vidéo ne montre pas la fin de la mission, mais elle présente le décollage de la mission Artemis I (moment-204). Concernant la durée, les informations disponibles ne permettent pas de répondre précisément à cette question.",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo s'arrête alors que la mission est en cours de vol (moment-233).",
+     "La durée totale de la mission n'est pas mentionnée dans les passages observés."
+    ]
+   },
+   {
+    "textId": "7d55c451dc",
+    "kind": "external",
+    "answer": "La mission Artemis I s'est terminée par un amerrissage de la capsule Orion dans l'océan Pacifique, au large des côtes de la Basse-Californie, le 11 décembre 2022. La mission a duré 25 jours, 10 heures et 52 minutes.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Artemis_I",
+      "title": "Artemis I — Wikipédia",
+      "evidence": "durée: 25 jours, 10 heures et 52 minutes"
+     },
+     {
+      "url": "https://www.espace-exploration.com/actualite/mission-terminee-pour-artemis-i/",
+      "title": "Mission terminée pour Artemis-I - Espace et Exploration",
+      "evidence": "après 25 jours 10 heures et 55 minutes, la capsule Orion a amerri à 18h40. Lieu d’arrivée : au large des côtes de la Basse-Californie (Mexique) dans l’Océan Pacifique."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-o2",
+  "question": "Juste avant que l'animation de la fusée ne remplace pour la première fois les images réelles, la caméra a montré quelques secondes un ciel noir : qu'y voyait-on ?",
+  "answers": [
+   {
+    "textId": "0cba7b96d7",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles ne couvrent pas les quelques secondes que tu indiques : ils s’arrêtent à 2 088 000 ms, avant le repère de 2 096 001 ms. Je ne peux donc pas déterminer ce que montrait le ciel noir.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le segment précédant le repère demandé n’est pas fourni."
+    ]
+   },
+   {
+    "textId": "13e612501e",
+    "kind": "observation",
+    "answer": "Juste avant que l'animation de la fusée ne remplace les images réelles, la caméra montre un lanceur spatial blanc et gris en position de lancement avec des étincelles bleues à sa base, sur un fond sombre représentant l'espace avec une étoile brillante (moment-235).",
+    "citations": [
+     {
+      "id": "moment-235",
+      "startMs": 1872000,
+      "endMs": 1880000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

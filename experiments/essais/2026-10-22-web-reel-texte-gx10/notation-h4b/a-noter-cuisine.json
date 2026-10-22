@@ -1,0 +1,275 @@
+[
+ {
+  "questionId": "cuisine-m1",
+  "question": "Quels morceaux de bœuf prend-il d'habitude, et de quelle partie de l'animal viennent-ils ?",
+  "answers": [
+   {
+    "textId": "2c1b86cd5e",
+    "kind": "observation",
+    "answer": "Pour préparer son bœuf bourguignon, le chef utilise habituellement la macreuse ou le pâleron (moment-6, 40000-48000). La vidéo ne précise pas de quelle partie de l'animal proviennent ces morceaux.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "71b2a914e5",
+    "kind": "observation",
+    "answer": "Le chef indique qu'il prend habituellement la macreuse ou le pâleron pour son bœuf bourguignon (moment-6, 40000-48000). Ces morceaux proviennent de l'épaule de l'animal (https://dans-nos-pres.com/blogs/blog/quel-morceau-pour-boeuf-bourguignon).",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://dans-nos-pres.com/blogs/blog/quel-morceau-pour-boeuf-bourguignon",
+      "title": "Quel morceau pour bœuf bourguignon ? – DANS NOS PRES",
+      "evidence": "Le paleron est un choix incontentrant pour le bœuf bourguignon. Ce morceau provient de l’épaule du bœuf. [...] La macreuse [...] provient également de l’épaule"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w1",
+  "question": "Il n'utilise pas de vin de Bourgogne : avec quel cépage fait-on les bourgognes rouges ?",
+  "answers": [
+   {
+    "textId": "0edff9eaf8",
+    "kind": "external",
+    "answer": "Le cépage roi utilisé pour l'élaboration des vins rouges de Bourgogne est le Pinot Noir (https://www.vins-bourgogne.fr/vins-et-terroirs/nos-cepages-nos-couleurs/des-cepages-rois-pour-la-bourgogne,2392,9184.html, evidence: \"Le Pinot Noir fait la renommée de tous les grands vins rouges de la région\"). Le Gamay est également présent dans la région, notamment pour les vins du Mâconnais (https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/, evidence: \"Ce cépage est planté principalement dans le Mâconnais\").",
+    "citations": [
+     {
+      "id": "https://www.vins-bourgogne.fr/vins-et-terroirs/nos-cepages-nos-couleurs/des-cepages-rois-pour-la-bourgogne,2392,9184.html",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.vins-bourgogne.fr/vins-et-terroirs/nos-cepages-nos-couleurs/des-cepages-rois-pour-la-bourgogne,2392,9184.html",
+      "title": "Les cépages et couleurs du vignoble de Bourgogne - Vins de Bourgogne",
+      "evidence": "Le Pinot Noir fait la renommée de tous les grands vins rouges de la région."
+     },
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne",
+      "evidence": "Ce cépage est planté principalement dans le Mâconnais sur des sols acides et granitiques."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f8dea76e2b",
+    "kind": "external",
+    "answer": "Le cépage roi utilisé pour l'élaboration des vins rouges de Bourgogne est le Pinot Noir (https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/, le Pinot Noir, cépage roi des vins rouges de Bourgogne). Le Gamay est également présent dans la région, bien qu'il représente une part plus faible des surfaces viticoles (https://www.vins-bourgogne.fr/vins-et-terroirs/nos-cepages-nos-couleurs/des-cepages-rois-pour-la-bourgogne,2392,9184.html, Le Gamay occupe 6 % de l'étendue des vignes).",
+    "citations": [
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne"
+     },
+     {
+      "url": "https://www.vins-bourgogne.fr/vins-et-terroirs/nos-cepages-nos-couleurs/des-cepages-rois-pour-la-bourgogne,2392,9184.html",
+      "title": "Les cépages et couleurs du vignoble de Bourgogne - Vins de Bourgogne"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w2",
+  "question": "Que met-on d'habitude dans un bouquet garni ?",
+  "answers": [
+   {
+    "textId": "018fa47967",
+    "kind": "external",
+    "answer": "Un bouquet garni classique est généralement composé de thym, de laurier sauce et de persil (https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi, 12 June 2025). On peut également y ajouter du romarin, de la sauge, de la sarriette ou encore du vert de poireau pour envelopper les herbes (https://www.jardiner-mal<0xC2>in.fr/fiche/bouquet-garni.html ; https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi).",
+    "citations": [
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.jardiner-malin.fr/fiche/bouquet-garni.html",
+      "title": "Bouquet garni : ingrédients et composition"
+     },
+     {
+      "url": "https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi",
+      "title": "Composition bouquet garni : guide pratique, variantes maison et astuces d’utilisation"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "dafd927afb",
+    "kind": "explanation",
+    "answer": "Un bouquet garni est traditionnellement composé d'un assortiment de plantes aromatiques, comme le thym, le laurier sauce et le persil (https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi, 12 juin 2025). On peut également y ajouter de la sauge, du romarin, de la sarriette, de la coriandre ou de l'origan (https://fr.wikipedia.org/wiki/Bouquet_garni).",
+    "citations": [
+     {
+      "id": "lamuseenbouche.fr",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "fr.wikipedia.org",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi",
+      "title": "Composition bouquet garni : guide pratique, variantes maison et astuces d’utilisation",
+      "evidence": "Composition classique du bouquet garni : thym, laurier, persil"
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Ingrédients Thym et laurier sauce , et éventuellement persil , sarriette , sauge , romarin , coriandre , origan"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-m2",
+  "question": "Pourquoi tient-il à bien saisir la viande, et comment s'appelle la réaction qui forme cette croûte ?",
+  "answers": [
+   {
+    "textId": "064d0cb15c",
+    "kind": "explanation",
+    "answer": "Le chef explique qu'il faut bien saisir la viande pour créer une petite croûte, ce qui permettra de protéger l'intérieur pendant la cuisson (moment-34, 264000-272000). Cette réaction chimique, responsable du brunissement et des arômes, s'appelle la réaction de Maillard (external: https://www.aventureculinaire.fr/la-reaction-de-maillard/).",
+    "citations": [
+     {
+      "id": "moment-34",
+      "startMs": 264000,
+      "endMs": 272000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.aventureculinaire.fr/la-reaction-de-maillard/",
+      "title": "Comprendre la Réaction de Maillard pour une viande parfaite - Aventure culinaire"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "9145cf3173",
+    "kind": "explanation",
+    "answer": "Le chef souhaite que la viande soit bien saisie à feu vif pour créer une petite croûte, ce qui permet de protéger l'intérieur de la pièce pendant la cuisson (moment-29, 224000-232000 ; moment-34, 264000-272000). Cette formation de croûte est due à la réaction de Maillard, un phénomène chimique entre les sucres et les protéines sous l'effet de la chaleur (https://bellequipment.fr/reaction-de-maillard-viande/ ; https://www.aventureculinaire.fr/la-reaction-de-maillard/ ; https://effervesciences.fr/blog/reaction-maillard-chimie-brunissement-cuisson-sante-2026/).",
+    "citations": [
+     {
+      "id": "moment-29",
+      "startMs": 224000,
+      "endMs": 232000
+     },
+     {
+      "id": "moment-34",
+      "startMs": 264000,
+      "endMs": 272000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://bellequipment.fr/reaction-de-maillard-viande/",
+      "title": "Réaction de Maillard viande : comprendre, maîtriser et sublimer chaque cuisson – Bellequipment.fr",
+      "evidence": "La réaction de Maillard viande est un phénomène culinaire et chimique qui transforme la couleur, l’arôme et le goût des aliments cuits. [...] produisant des composés aromatiques complexes et une croûte dorée irrésistible."
+     },
+     {
+      "url": "https://www.aventureculinaire.fr/la-reaction-de-maillard/",
+      "title": "Comprendre la réaction de Maillard pour une viande parfaite - Aventure culinaire",
+      "evidence": "Il s’agit d’une interaction entre les sucres et les protéines d’un aliment sous l’effet de la chaleur."
+     },
+     {
+      "url": "https://effervesciences.fr/blog/reaction-maillard-chimie-brunissement-cuisson-sante-2026/",
+      "title": "Réaction de Maillard : la chimie du brunissement à la cuisson",
+      "evidence": "La réaction de Maillard est un brunissement non enzymatique entre des sucres réducteurs et des composés azotés — acides aminés, peptides ou protéines"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w3",
+  "question": "Il a choisi un vin d'Occitanie : comment s'annonce la récolte de vin 2026 dans cette région ?",
+  "answers": [
+   {
+    "textId": "484018226d",
+    "kind": "external",
+    "answer": "La récolte 2026 en Occitanie s'annonce en hausse par rapport à l'année précédente. Selon les prévisions de la DRAAF Occitanie au 1er octobre 2026, la production du bassin Languedoc-Roussillon est estimée à 10,59 Mhl, soit une augmentation de 19,6 % par rapport à 2025.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "a4b4fe02ae",
+    "kind": "external",
+    "answer": "La récolte de vin 2026 en Occitanie s'annonce en hausse par rapport à l'année précédente. Selon les prévisions de la DRAAF Occitanie au 1er octobre 2026, la production du bassin Languedoc-Roussillon est estimée à 10,59 Mhl, soit une augmentation de 19,6 % par rapport à 2025 (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html). Pour le Sud-Ouest de la région, la production est réévaluée à 1,92 Mhl, soit une progression de 11,1 % par rapport à 2025 (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production totale du bassin Languedoc-Roussillon a été révisée à la hausse par rapport au mois précédent, elle est estimée à 10,59 Mhl en 2026 soit +19,6% par rapport à 2025. La production du Sud-Ouest (partie située en Occitanie) est réévaluée à 1,92 Mhl (+ 11,1% par rapport à 2025)."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

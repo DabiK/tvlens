@@ -1,0 +1,1507 @@
+{
+ "1f08b5dac294": {
+  "questionId": "kennedy-o1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4714,
+  "tokens": 100,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "7df5ac196ba0": {
+  "questionId": "kennedy-m1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5407,
+  "tokens": 118,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "664cbeef6e03": {
+  "questionId": "kennedy-w1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 13902,
+  "tokens": 407,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "5ebdb4be4138": {
+  "questionId": "kennedy-o2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10983,
+  "tokens": 226,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "c094df753ae7": {
+  "questionId": "kennedy-m2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 13216,
+  "tokens": 356,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "e46629557341": {
+  "questionId": "spring-w2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4603,
+  "tokens": 93,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "d7e90bf91ec4": {
+  "questionId": "kennedy-w3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10150,
+  "tokens": 282,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "a63eea2cd6d7": {
+  "questionId": "kennedy-w2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 19167,
+  "tokens": 414,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "026228562589": {
+  "questionId": "spring-w1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10432,
+  "tokens": 219,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "9c72e7ac087a": {
+  "questionId": "spring-o1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4400,
+  "tokens": 81,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "d9c175be621e": {
+  "questionId": "spring-m1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10941,
+  "tokens": 345,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "3f28e4ba5f2e": {
+  "questionId": "spring-o2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5465,
+  "tokens": 94,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "1eb8838e5252": {
+  "questionId": "spring-w3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 18022,
+  "tokens": 569,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "113a31a34ca8": {
+  "questionId": "spring-m2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 14968,
+  "tokens": 422,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "0c157930a089": {
+  "questionId": "cnrs-w1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10325,
+  "tokens": 229,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "f8543422ec2d": {
+  "questionId": "cnrs-o1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5478,
+  "tokens": 81,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "501ae490cacd": {
+  "questionId": "cnrs-o2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5553,
+  "tokens": 74,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "101f477892ea": {
+  "questionId": "cnrs-m2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6286,
+  "tokens": 215,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "2ad49b7996b6": {
+  "questionId": "cnrs-m1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 15189,
+  "tokens": 334,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "39151b83fa2a": {
+  "questionId": "cnrs-w2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 11560,
+  "tokens": 280,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "6f7d86d00eca": {
+  "questionId": "cuisine-w2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6606,
+  "tokens": 60,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "371a3707b38a": {
+  "questionId": "cuisine-w1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 11942,
+  "tokens": 247,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "8ac55cc97d11": {
+  "questionId": "cuisine-o1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6194,
+  "tokens": 96,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "1dfa45d2ce76": {
+  "questionId": "cuisine-m2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 7354,
+  "tokens": 115,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "9a618480216e": {
+  "questionId": "cuisine-o2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5655,
+  "tokens": 85,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "aead63ed22ed": {
+  "questionId": "cuisine-m1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 20020,
+  "tokens": 418,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "0f49aaef7f9d": {
+  "questionId": "cnrs-w3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 25575,
+  "tokens": 656,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "9c965231f2a5": {
+  "questionId": "tears-w2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5899,
+  "tokens": 94,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "cecae85cb588": {
+  "questionId": "tears-w1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 14194,
+  "tokens": 268,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "dc2b40d42dd8": {
+  "questionId": "tears-w3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 9631,
+  "tokens": 250,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "54f8957a4d80": {
+  "questionId": "tears-m1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10663,
+  "tokens": 238,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "4fb1b1afa8c6": {
+  "questionId": "cuisine-w3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 18128,
+  "tokens": 548,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "cbd813e007af": {
+  "questionId": "tears-o1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4648,
+  "tokens": 95,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "d24bc00b0e3d": {
+  "questionId": "artemis-o1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4236,
+  "tokens": 87,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "404c0e4a40e3": {
+  "questionId": "tears-o2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6210,
+  "tokens": 120,
+  "turns": 1,
+  "tools": [
+   "web_search"
+  ],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "e14079d4d824": {
+  "questionId": "artemis-w1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5311,
+  "tokens": 175,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "b7ae4247d5e7": {
+  "questionId": "artemis-m1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5118,
+  "tokens": 107,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "9c7944c39df7": {
+  "questionId": "tears-m2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 18432,
+  "tokens": 634,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search",
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "955838d8a651": {
+  "questionId": "artemis-m2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10525,
+  "tokens": 250,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "17accd516795": {
+  "questionId": "artemis-w2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 7250,
+  "tokens": 105,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "3f4fb8f3e70e": {
+  "questionId": "artemis-w3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 11248,
+  "tokens": 339,
+  "turns": 1,
+  "tools": [
+   "web_search",
+   "web_search"
+  ],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "2062b73606d9": {
+  "questionId": "artemis-o2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5024,
+  "tokens": 97,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "1d60b669dd85": {
+  "questionId": "kennedy-w1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 13116.1,
+  "tokens": 224,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "fa815e0586f8": {
+  "questionId": "kennedy-m1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4420.3,
+  "tokens": 155,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "30f4d9453768": {
+  "questionId": "kennedy-m2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 7828.6,
+  "tokens": 341,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "49044b21710c": {
+  "questionId": "kennedy-w2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 9893.1,
+  "tokens": 454,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "4cf40465f0b8": {
+  "questionId": "kennedy-w3",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 7809.1,
+  "tokens": 348,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "663c597c4524": {
+  "questionId": "spring-w1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 6933.5,
+  "tokens": 307,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "646de78b1a9b": {
+  "questionId": "spring-w2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 3332.4,
+  "tokens": 98,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "2e08ee587eb5": {
+  "questionId": "spring-w3",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4213.9,
+  "tokens": 160,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "1e70a1ca9375": {
+  "questionId": "spring-m1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 3472.5,
+  "tokens": 146,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "a3014f50b68f": {
+  "questionId": "spring-m2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 6933.8,
+  "tokens": 301,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "02f7a9b0230d": {
+  "questionId": "cnrs-w1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 5715.9,
+  "tokens": 233,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "22ee3fe98e91": {
+  "questionId": "cnrs-m1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 6681.1,
+  "tokens": 275,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "460e52f0546d": {
+  "questionId": "cnrs-w2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 7865.7,
+  "tokens": 337,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "05b01592287f": {
+  "questionId": "cnrs-m2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 6432.1,
+  "tokens": 256,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "c7e325753849": {
+  "questionId": "cnrs-w3",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 11826.3,
+  "tokens": 562,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "b59f14c38ff9": {
+  "questionId": "cuisine-m1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4328.0,
+  "tokens": 154,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "8c500e5950c5": {
+  "questionId": "cuisine-w1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 5001.3,
+  "tokens": 200,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "f576e890f145": {
+  "questionId": "cuisine-w2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 6949.2,
+  "tokens": 304,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "751b38b5be78": {
+  "questionId": "cuisine-m2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 8911.5,
+  "tokens": 428,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "111ac19353cd": {
+  "questionId": "cuisine-w3",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 6302.7,
+  "tokens": 268,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "eb16532c7d5c": {
+  "questionId": "tears-w1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4879.9,
+  "tokens": 190,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "db7c9691ba76": {
+  "questionId": "tears-w2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 3430.4,
+  "tokens": 96,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "4d70f350a27b": {
+  "questionId": "tears-w3",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4610.3,
+  "tokens": 156,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "e22419cd0dd2": {
+  "questionId": "tears-m1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4647.8,
+  "tokens": 191,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "c9bcb7d89207": {
+  "questionId": "tears-m2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4305.4,
+  "tokens": 142,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "00b15e3ef531": {
+  "questionId": "artemis-w1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 4886.0,
+  "tokens": 179,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "9d0c6c76a667": {
+  "questionId": "artemis-m1",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 2771.8,
+  "tokens": 82,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "6e0462075f63": {
+  "questionId": "artemis-m2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 8576.2,
+  "tokens": 383,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "731a4dcbfd5e": {
+  "questionId": "artemis-w3",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 6025.9,
+  "tokens": 240,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "f45e45237c96": {
+  "questionId": "artemis-w2",
+  "source": "H4",
+  "arm": "V0",
+  "pass": 1,
+  "wallMs": 7285.5,
+  "tokens": 293,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "37c1da565624": {
+  "questionId": "artemis-o1",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 14334.91611500003,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 871
+  }
+ },
+ "103614c1997c": {
+  "questionId": "artemis-w1",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 24937.89203899994,
+  "retrieval": null
+ },
+ "22067608233c": {
+  "questionId": "artemis-m1",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 23803.03223599994,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 1,
+   "elapsedMs": 1664,
+   "decision": "web",
+   "query": "Airbus contribution mission Artemis I composants vol",
+   "decisionMs": 898
+  }
+ },
+ "a4c2bbe00e88": {
+  "questionId": "artemis-m2",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 24713.657241000095,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1214,
+   "decision": "web",
+   "query": "directrice de lancement Artemis I NASA particularité historique",
+   "decisionMs": 894
+  }
+ },
+ "14f484074a56": {
+  "questionId": "artemis-w3",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 21205.47763999994,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1509,
+   "decision": "web",
+   "query": "état actuel et prochaines étapes programme Artemis NASA",
+   "decisionMs": 929
+  }
+ },
+ "8e75582a124d": {
+  "questionId": "artemis-w2",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 19567.333856999874,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1975,
+   "decision": "web",
+   "query": "fin mission SLS Orion durée et conclusion",
+   "decisionMs": 886
+  }
+ },
+ "40e4f175b299": {
+  "questionId": "artemis-o2",
+  "source": "F1",
+  "arm": "F1-artemis-GPSR102W-1",
+  "wallMs": 15239.075066999765,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 714
+  }
+ },
+ "a0a2ea9f9e1e": {
+  "questionId": "cuisine-m1",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 15074.757203999994,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 2,
+   "elapsedMs": 4125,
+   "decision": "web",
+   "query": "Patrick Dujancourt recettes morceaux de bœuf utilisés",
+   "decisionMs": 843
+  }
+ },
+ "4cdfd265c050": {
+  "questionId": "cuisine-w1",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 19133.008673000004,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1276,
+   "decision": "web",
+   "query": "cépage vin rouge Bourgogne",
+   "decisionMs": 749
+  }
+ },
+ "5dd3132a6fa6": {
+  "questionId": "cuisine-w2",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 23180.243958999985,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1646,
+   "decision": "web",
+   "query": "ingrédients classiques bouquet garni cuisine",
+   "decisionMs": 803
+  }
+ },
+ "363c6cfdfe12": {
+  "questionId": "cuisine-o1",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 11233.55435500003,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 680
+  }
+ },
+ "29099e85e72f": {
+  "questionId": "cuisine-m2",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 17367.226245999977,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 2239,
+   "decision": "web",
+   "query": "réaction chimique formation croûte viande cuisson Maillard",
+   "decisionMs": 861
+  }
+ },
+ "b75ae00d86f2": {
+  "questionId": "cuisine-o2",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 15410.173982999986,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 731
+  }
+ },
+ "80996abfa759": {
+  "questionId": "cuisine-w3",
+  "source": "F1",
+  "arm": "F1-boeuf-bourguignon-GPSR102W-1",
+  "wallMs": 20969.725113999913,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1428,
+   "decision": "web",
+   "query": "prévisions récolte vendanges 2026 région Occitanie France",
+   "decisionMs": 1051
+  }
+ },
+ "829d24247cf9": {
+  "questionId": "cnrs-w1",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 19069.93026400001,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 5181,
+   "decision": "web",
+   "query": "modèle Gemini le plus récent Google aujourd'hui",
+   "decisionMs": 852
+  }
+ },
+ "ef1853a8a3cc": {
+  "questionId": "cnrs-m1",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 19122.817412999982,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3890,
+   "decision": "web",
+   "query": "nombre de neurones cerveau éléphant vs cerveau humain",
+   "decisionMs": 955
+  }
+ },
+ "43fdd0516483": {
+  "questionId": "cnrs-o1",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 13683.061432000017,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 785
+  }
+ },
+ "a0f913b0a4f1": {
+  "questionId": "cnrs-w2",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 24885.37964399997,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3836,
+   "decision": "web",
+   "query": "origine expression modèle de fondation IA auteur date",
+   "decisionMs": 917
+  }
+ },
+ "57259c477399": {
+  "questionId": "cnrs-o2",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 14004.456287999987,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 807
+  }
+ },
+ "0c7543d57623": {
+  "questionId": "cnrs-m2",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 20306.882532999967,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 778
+  }
+ },
+ "feaba268842a": {
+  "questionId": "cnrs-w3",
+  "source": "F1",
+  "arm": "F1-cnrs-apprentissage-GPSR102W-1",
+  "wallMs": 24566.21299000003,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 2,
+   "elapsedMs": 4851,
+   "decision": "web",
+   "query": "état actuel mise en œuvre AI Act règlement européen intelligence artificielle",
+   "decisionMs": 926
+  }
+ },
+ "ebff94e0efd2": {
+  "questionId": "kennedy-w1",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 15060.792826999997,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1784,
+   "decision": "web",
+   "query": "nom vaisseau spatial américain mission Vénus Kennedy réussite",
+   "decisionMs": 912
+  }
+ },
+ "51bc1595e242": {
+  "questionId": "kennedy-o1",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 15075.571994000013,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 704
+  }
+ },
+ "8ce0a09e1074": {
+  "questionId": "kennedy-m1",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 18087.863459999993,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1412,
+   "decision": "web",
+   "query": "lieu et date discours John F. Kennedy stade drapeau américain",
+   "decisionMs": 850
+  }
+ },
+ "d9a2e90c8aec": {
+  "questionId": "kennedy-m2",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 17146.360182000004,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1044,
+   "decision": "web",
+   "query": "découverte pénicilline Alexander Fleming date",
+   "decisionMs": 888
+  }
+ },
+ "e9c1c3ae3431": {
+  "questionId": "kennedy-o2",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 16181.697258999979,
+  "retrieval": null
+ },
+ "5e7d990655eb": {
+  "questionId": "kennedy-w2",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 24215.288997999975,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 811,
+   "decision": "web",
+   "query": "qui était William Bradford pionnier des pèlerins Mayflower",
+   "decisionMs": 897
+  }
+ },
+ "b471f89030f2": {
+  "questionId": "kennedy-w3",
+  "source": "F1",
+  "arm": "F1-kennedy-GPSR102W-1",
+  "wallMs": 18377.086894000007,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 2031,
+   "decision": "web",
+   "query": "nombre de pays signataires des accords Artemis NASA",
+   "decisionMs": 872
+  }
+ },
+ "d47e35235404": {
+  "questionId": "spring-m1",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 16045.799367,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 4811,
+   "decision": "web",
+   "query": "phénomène météo mer de nuages vallée",
+   "decisionMs": 824
+  }
+ },
+ "f549327ca60d": {
+  "questionId": "spring-w3",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 16110.162190000003,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3696,
+   "decision": "web",
+   "query": "Blender Studio films récents et projets en cours",
+   "decisionMs": 863
+  }
+ },
+ "6da7a1e9135b": {
+  "questionId": "spring-o1",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 11136.532474000007,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 684
+  }
+ },
+ "de411f6a6b4c": {
+  "questionId": "spring-m2",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 19174.536750999978,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 4708,
+   "decision": "web",
+   "query": "nature créature squelette lumineux film Avatar Way of Water",
+   "decisionMs": 892
+  }
+ },
+ "e0485f9a10dc": {
+  "questionId": "spring-o2",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 13206.01781400002,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 692
+  }
+ },
+ "ed422f96a81a": {
+  "questionId": "spring-w2",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 22351.308170999982,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 4193,
+   "decision": "web",
+   "query": "inspiration réalisateur film personnage armure vaisseau spatial montagne",
+   "decisionMs": 877
+  }
+ },
+ "d0894172e5e3": {
+  "questionId": "spring-w1",
+  "source": "F1",
+  "arm": "F1-spring-GPSR102W-1",
+  "wallMs": 20476.274984000018,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 2,
+   "elapsedMs": 4634,
+   "decision": "web",
+   "query": "date de publication court métrage SPRING",
+   "decisionMs": 841
+  }
+ },
+ "d96e68a56f0a": {
+  "questionId": "tears-m1",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 10028.210261,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 795,
+   "decision": "web",
+   "query": "lieu dispute Thom Celia film ville tournage",
+   "decisionMs": 848
+  }
+ },
+ "2874971ad12b": {
+  "questionId": "tears-o1",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 9066.889497000011,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 668
+  }
+ },
+ "554813c26c67": {
+  "questionId": "tears-o2",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 7093.776736,
+  "retrieval": {
+   "decision": "no-web",
+   "decisionMs": 636
+  }
+ },
+ "f91132d054f9": {
+  "questionId": "tears-m2",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 12147.665806999983,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1693,
+   "decision": "web",
+   "query": "lieu descente corde vieil homme cheveux gris bâtiment réel",
+   "decisionMs": 836
+  }
+ },
+ "379af8df1285": {
+  "questionId": "tears-w2",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 15385.700102999981,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3444,
+   "decision": "web",
+   "query": "caméra utilisée pour le tournage du film Love Your Hand",
+   "decisionMs": 849
+  }
+ },
+ "b4889b03f4b0": {
+  "questionId": "tears-w3",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 18634.32566199999,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 1508,
+   "decision": "web",
+   "query": "dernière version stable du logiciel Blender",
+   "decisionMs": 805
+  }
+ },
+ "a742c3f8fe2f": {
+  "questionId": "tears-w1",
+  "source": "F1",
+  "arm": "F1-tears-of-steel-GPSR102W-1",
+  "wallMs": 17785.347686000052,
+  "retrieval": {
+   "residence": "hybrid",
+   "status": "used",
+   "documents": 3,
+   "elapsedMs": 3107,
+   "decision": "web",
+   "query": "date de sortie film Mango Open Movie Ian Hubert",
+   "decisionMs": 835
+  }
+ }
+}

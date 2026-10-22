@@ -1,0 +1,227 @@
+{
+  "id": "dde4cbcb77144afdaf2e99f26a4d791e",
+  "startedAtUtc": "2026-10-22T21:21:44.830341+00:00",
+  "deadlineUtc": "2026-10-23T00:21:44.830257+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-GPSR102W-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/kennedy/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/kennedy-GPSR102W-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T21:21:47.856312+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T21:21:48.382555+00:00",
+      "durationSeconds": 0.5015118380033528
+    },
+    {
+      "name": "kennedy-GPSR102W-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/kennedy/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/kennedy-GPSR102W-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T21:21:48.383030+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T21:29:02.981430+00:00",
+      "durationSeconds": 434.59572522000235
+    },
+    {
+      "name": "spring-GPSR102W-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/spring/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/spring-GPSR102W-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T21:29:03.519244+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T21:29:04.022731+00:00",
+      "durationSeconds": 0.5013766520060017
+    },
+    {
+      "name": "spring-GPSR102W-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/spring/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/spring-GPSR102W-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T21:29:04.023783+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T21:37:03.159594+00:00",
+      "durationSeconds": 479.13411403200007
+    },
+    {
+      "name": "cnrs-apprentissage-GPSR102W-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/cnrs-apprentissage/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/cnrs-apprentissage-GPSR102W-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T21:37:03.705092+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T21:37:04.708934+00:00",
+      "durationSeconds": 1.0018919909998658
+    },
+    {
+      "name": "cnrs-apprentissage-GPSR102W-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/cnrs-apprentissage/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/cnrs-apprentissage-GPSR102W-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T21:37:04.709490+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T21:52:01.947018+00:00",
+      "durationSeconds": 897.2350805300011
+    },
+    {
+      "name": "boeuf-bourguignon-GPSR102W-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/boeuf-bourguignon/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/boeuf-bourguignon-GPSR102W-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T21:52:02.510494+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T21:52:03.514884+00:00",
+      "durationSeconds": 1.002607356000226
+    },
+    {
+      "name": "boeuf-bourguignon-GPSR102W-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/boeuf-bourguignon/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/boeuf-bourguignon-GPSR102W-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T21:52:03.515752+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T22:04:41.037536+00:00",
+      "durationSeconds": 757.5203231999985
+    },
+    {
+      "name": "tears-of-steel-GPSR102W-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/tears-of-steel/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/tears-of-steel-GPSR102W-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T22:04:41.603977+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T22:04:42.607720+00:00",
+      "durationSeconds": 1.0015336179931182
+    },
+    {
+      "name": "tears-of-steel-GPSR102W-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/tears-of-steel/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/tears-of-steel-GPSR102W-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T22:04:42.608388+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T22:16:57.081035+00:00",
+      "durationSeconds": 734.4709136050005
+    },
+    {
+      "name": "artemis-GPSR102W-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/artemis/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/artemis-GPSR102W-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T22:16:57.624229+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T22:16:59.129231+00:00",
+      "durationSeconds": 1.5020407430056366
+    },
+    {
+      "name": "artemis-GPSR102W-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/inputs/artemis/scenario-GPSR102W.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/config-GPSR102W.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/f1-produit-journal-web-102q-r2-results/artemis-GPSR102W-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T22:16:59.129815+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T22:52:20.435481+00:00",
+      "durationSeconds": 2121.3047160630013
+    }
+  ],
+  "updatedAtUtc": "2026-10-22T22:52:20.507653+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

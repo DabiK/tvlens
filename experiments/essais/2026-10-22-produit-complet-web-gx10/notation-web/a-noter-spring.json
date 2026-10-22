@@ -1,0 +1,354 @@
+[
+ {
+  "questionId": "spring-w1",
+  "question": "Quand ce court métrage a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "438b6567e4",
+    "kind": "insufficient",
+    "answer": "Le carton final indique que le court métrage s’appelle « Spring », mais les passages fournis ne donnent pas sa date de publication. J’ai trouvé des pages qui pourraient la préciser, mais je n’ai pas pu les ouvrir pour vérifier cette information.",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les pages web consultées étaient inaccessibles ; leur contenu n’a pas été vérifié."
+    ]
+   },
+   {
+    "textId": "4d1b7344f5",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation a été publié en avril 2019.",
+    "citations": [
+     {
+      "id": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia",
+      "evidence": "Le court métrage sort en avril 2019."
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ea60a88766",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation intitulé Spring est sorti en avril 2019 (plus précisément le 4 avril 2019). Il a été réalisé par Andy Goralczyk pour la Blender Foundation.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia"
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w2",
+  "question": "Qu'est-ce qui a inspiré l'histoire de ce film à son réalisateur ?",
+  "answers": [
+   {
+    "textId": "6c77cc03e7",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne donnent aucune information sur ce qui a inspiré l’histoire au réalisateur. Ils montrent des scènes du film, mais ne rapportent pas ses explications ; je ne peux donc pas trancher à partir de ces éléments.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages disponibles ne contiennent pas de propos du réalisateur sur ses inspirations."
+    ]
+   },
+   {
+    "textId": "7dcaacad18",
+    "kind": "external",
+    "answer": "Le film Passengers est adapté d'une nouvelle de Philip K. Dick intitulée Le Voyage gelé (The Frozen Journey ou I Hope I Shall Arrive Soon), publiée en 1980 [https://fr.wikipedia.org/wiki/Passengers_(film)]. Le scénario a été écrit par Jon Spaihts.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Passengers_(film)",
+      "title": "Passengers (film) — Wikipédia"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ff7737b552",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé d'information dans les extraits vidéo ou les pages consultées précisant ce qui a inspiré le réalisateur pour l'histoire de ce film. Les sources disponibles se concentrent sur le synopsis, la distribution et la production du film.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w3",
+  "question": "Le Blender Studio, qui présente ce film, a-t-il sorti un film plus récent ? Lequel, et que prépare-t-il aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "481d782c73",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti des films plus récents que celui présenté, comme Charge en 2022 ou Wing It! en 2023. Le studio prépare actuellement les projets Cowboi et Overgrown, qui sont tous deux en cours de développement.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Film Highlights Cowboi In Development Overgrown In Development Singularity 2026 Wing It! 2023"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b86af85654",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti plusieurs films après celui-ci, comme Wing It! en 2023 (https://studio.blender.org/films/). Le studio prépare actuellement les projets Cowboi et Overgrown (https://studio.blender.org/vault/).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio"
+     },
+     {
+      "url": "https://studio.blender.org/vault/",
+      "title": "Blender Studio"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "be8fb30880",
+    "kind": "insufficient",
+    "answer": "Oui : le plus récent film sorti est Singularity, en 2026. Blender Studio prépare aussi Overgrown, son projet de long métrage, et Cowboi, un court métrage en développement. Les pages officielles apparaissent dans la recherche, mais leur contenu n’a pas pu être ouvert ici ; je ne peux donc pas vérifier davantage les détails.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films — Blender Studio",
+      "evidence": "Le résultat de recherche liste Singularity (2026) comme film sorti et Overgrown ainsi que Cowboi comme projets en développement."
+     },
+     {
+      "url": "https://studio.blender.org/blog/singularity-premiere/",
+      "title": "Singularity Premiere — Blender Studio",
+      "evidence": "Le résultat de recherche décrit Singularity comme le dernier Open Movie de Blender Studio."
+     },
+     {
+      "url": "https://studio.blender.org/blog/announcing-cowboi/",
+      "title": "Announcing 'Cowboi' — Blender Studio",
+      "evidence": "L’extrait de recherche indique que les artistes ont commencé à travailler sur le court métrage Cowboi pendant que l’équipe poursuit la campagne OVERGROWN."
+     }
+    ],
+    "limits": [
+     "Les pages officielles trouvées n’ont pas pu être ouvertes dans ce tour."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m1",
+  "question": "Depuis la crête, la fille et son chien regardent la vallée : qu'est-ce qui la remplit, et quel phénomène météo produit ce genre de paysage ?",
+  "answers": [
+   {
+    "textId": "5032f765cc",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume ou de nuages qui enveloppent les montagnes (moment-10). Ce type de paysage est souvent le résultat d'un phénomène de mer de nuages, qui se forme lorsque de l'air humide est piégé sous une couche d'inversion thermique.",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "cf08a786ca",
+    "kind": "explanation",
+    "answer": "La vallée est remplie d'une vaste étendue de brume ou de nuages qui enveloppe les montagnes (moment-10). Ce paysage est caractéristique d'une mer de nuages, un phénomène qui se forme généralement dans les vallées lors de conditions anticycloniques, notamment en hiver (Météo-France).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/meteo-a-z/la-mer-de-nuages",
+      "title": "La mer de nuages | Météо-France"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f64012c279",
+    "kind": "external",
+    "answer": "La vallée semble recouverte d’une couche de brume ou de nuages bas, comme une « mer de nuages » (moment-10, 72000–80000 ms). Un phénomène courant qui peut produire ce paysage est le brouillard de vallée : la nuit, l’air refroidi descend et s’accumule dans les creux; s’il est assez humide, il atteint la saturation et forme du brouillard. La scène seule ne permet pas d’établir précisément la météo en cause ici. citeturn1view0",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.weather.gov/safety/fog-mountain-valley",
+      "title": "Mountain/Valley Fog — National Weather Service",
+      "evidence": "Le sol se refroidit durant la nuit; l’air plus dense et froid descend dans les vallées, où il peut refroidir l’air jusqu’au point de rosée et former du brouillard si l’humidité est suffisante."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m2",
+  "question": "Cette immense créature lumineuse qui s'approche d'elle, à quoi ressemble-t-elle, et qu'est-ce que c'est selon les créateurs du film ?",
+  "answers": [
+   {
+    "textId": "494246bb57",
+    "kind": "observation",
+    "answer": "La créature est un organisme géant, lumineux et translucide, dont la structure ressemble à un squelette colossal (moment-24, moment-25). Elle semble être un squelette d'animal, possiblement un reptile ou un serpent, partiellement immergé dans l'eau (moment-26). Les données fournies ne précisent pas ce que les créateurs du film disent spécifiquement de cette entité.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'identité exacte de la créature selon les créateurs n'est pas mentionnée dans les passages analysés."
+    ]
+   },
+   {
+    "textId": "8c40b0158a",
+    "kind": "insufficient",
+    "answer": "Dans les passages, elle apparaît comme une masse organique bleue, translucide et lumineuse, suspendue dans l’eau, près de la jeune fille et d’un grand squelette (moment-23, 176000–184000 ; moment-24, 184000–192000). Je ne peux pas établir que c’est le film The Ritual : les éléments visibles dans les résumés ne suffisent pas à l’identifier, donc je ne peux pas dire ce que ses créateurs en disent.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L’identification du film n’est pas établie par les passages fournis."
+    ]
+   },
+   {
+    "textId": "f847fc31f1",
+    "kind": "explanation",
+    "answer": "La créature est une masse organique bleue et lumineuse, de forme translucide, qui semble flotter dans l'eau (moment-23). Selon le producteur Jon Landau, il s'agit d'un type de baleine nommé tulkun, conçu pour mesurer environ 91 mètres de long et entretenir une relation spirituelle avec les Metkayina (https://world.dan.org/fr/alert-diver/article/making-avatar-the-way-of-water/).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://world.dan.org/fr/alert-diver/article/making-avatar-the-way-of-water/",
+      "title": "La fabrication d'Avatar : la voie de l'eau - DAN World",
+      "evidence": "we wanted our whale variants, the tulkun, to grow to 300 feet (91 meters) long and have amazing new functionalities and a spiritual relationship with the Metkayina."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-o1",
+  "question": "Le petit chien porte-t-il quelque chose autour du cou ? Si oui, quoi, et de quelle couleur ?",
+  "answers": [
+   {
+    "textId": "c51ea4e0c0",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages consultés ne montrent pas de petit chien de manière assez détaillée pour observer son cou. Les images mentionnent la présence d'un petit chien noir, mais aucun accessoire autour de son cou n'est visible.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f1bb551dab",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas le déterminer à partir des passages fournis : ils ne montrent pas le petit chien ni ce qu’il porte autour du cou.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages disponibles portent sur la scène de la forêt sombre et ne couvrent pas le début où apparaît le chien."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-o2",
+  "question": "Près de la grande pierre sculptée, juste après avoir fermé les yeux, quel geste fait la fille avec ses mains ?",
+  "answers": [
+   {
+    "textId": "9b9ab81cf0",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas déterminer le geste : les passages fournis s’arrêtent avant la scène près de la pierre sculptée, et les 4 dernières secondes sont manquantes. Il faudrait le passage correspondant pour voir ce qu’elle fait avec ses mains.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La scène demandée n’apparaît pas dans les passages disponibles."
+    ]
+   },
+   {
+    "textId": "da942d771c",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages consultés ne montrent pas de grande pierre sculptée, ni de moment où la jeune fille ferme les yeux. Les extraits disponibles se concentrent sur la jeune fille utilisant son bâton dans une grotte ou une forêt sombre.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La présence d'une grande pierre sculptée n'est pas mentionnée dans les segments analysés.",
+     "Le geste de fermer les yeux n'est pas observé dans les données fournies."
+    ]
+   }
+  ]
+ }
+]

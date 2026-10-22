@@ -1,0 +1,211 @@
+[
+ {
+  "questionId": "artemis-w1",
+  "question": "Pourquoi le décollage a-t-il pris du retard cette nuit-là ?",
+  "answers": [
+   {
+    "textId": "1668c3a471",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu confirmer les sources de cette réponse. Je ne peux pas encore fournir un lien fiable.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La réponse proposée n’a pas passé la validation des preuves."
+    ]
+   },
+   {
+    "textId": "2517f14b98",
+    "kind": "explanation",
+    "answer": "La vidéo mentionne que l'équipe a fait face à plusieurs retards, notamment pour effectuer des travaux sur l'étage supérieur du lanceur, comme le cycle des soupapes d'hydrogène (moment-78, moment-79). Des informations externes indiquent également que la tempête tropicale Nicole avait poussé le lancement à une date ultérieure (external: https://www.space.com/artemis-1-moon-launch-delay-november-16-tropical-storm-nicole, evidence: \"NASA has pushed the planned liftoff back two days, to Nov. 16.\").",
+    "citations": [
+     {
+      "id": "moment-78",
+      "startMs": 616000,
+      "endMs": 624000
+     },
+     {
+      "id": "moment-79",
+      "startMs": 624000,
+      "endMs": 632000
+     },
+     {
+      "id": "external-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.space.com/artemis-1-moon-launch-delay-november-16-tropical-storm-nicole",
+      "title": "Tropical Storm Nicole pushes Artemis 1 moon launch to Nov. 16 | Space",
+      "evidence": "NASA has pushed the planned liftoff back two days, to Nov. 16."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m1",
+  "question": "Les employés d'Airbus qu'on a vus applaudir en Allemagne : qu'ont-ils fourni pour cette mission, et à quoi sert cet élément pendant le vol ?",
+  "answers": [
+   {
+    "textId": "59e793cb3d",
+    "kind": "external",
+    "answer": "Les employés d'Airbus Defence and Space ont conclu des contrats avec ArianeGroup pour la fourniture de composants du troisième module de service européen (ESM) destiné à la mission Artemis III (webPages: ArianeGroup to deliver key propulsion system components for the Orion spacecraft for the Artemis III moon mission). ArianeGroup doit livrer des éléments tels que des moteurs de contrôle d'attitude, des régulateurs haute pression, des vannes, des réservoirs de carburant et des réservoirs d'hélium (webPages: ArianeGroup to deliver key propulsion system components for the Orion spacecraft for the Artemis III moon mission). Ces composants servent au système de propulsion du vaisseau spatial Orion (webPages: ArianeGroup to deliver key propulsion system components for the Orion spacecraft for the Artemis III moon mission).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.ariane.group/en/news/arianegroup-va-livrer-des-composants-cles-du-systeme-de-propulsion-du-vaisseau-spatial-orion-pour-la-mission-lunaire-artemis-iii/",
+      "title": "ARIANEGROUP TO DELIVER KEY PROPULSION SYSTEM COMPONENTS FOR THE ORION SPACECRAFT FOR THE ARTEMIS III MOON MISSION - ArianeGroup"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "aa4ac29a96",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé d'information dans la vidéo concernant des employés d'Airbus en Allemagne ou la fourniture d'un élément spécifique pour cette mission. Les passages consultés mentionnent uniquement des équipes de la NASA et des partenaires liés au programme Artemis.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m2",
+  "question": "Comment s'appelle la directrice de lancement qui a donné le feu vert pour reprendre le compte à rebours, et qu'a-t-elle de particulier dans l'histoire de la NASA ?",
+  "answers": [
+   {
+    "textId": "3b0f10d2fb",
+    "kind": "explanation",
+    "answer": "La directrice de lancement s'appelle Charlie Blackwell-Thompson (external). Elle est la première femme à occuper ce poste important au sein de la NASA en 64 ans d'histoire (external).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Charlie_Blackwell-Thompson",
+      "title": "Charlie Blackwell-Thompson - Wikipedia"
+     },
+     {
+      "url": "https://www.atalayar.com/fr/articulo/nouvelles-technologies-innovation/voici-la-femme-de-la-nasa-qui-dirige-le-lancement-de-la-mission-artemis-i-sur-la-lune/20220829130624157957.html",
+      "title": "Voici la femme de la NASA qui dirige le lancement de la mission Artemis I sur la Lune"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f6ae92a389",
+    "kind": "explanation",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson (moment-119). Elle est la première femme à occuper ce poste important au sein de la NASA en 64 ans d'histoire (external: https://www.atalayar.com/fr/articulo/nouvelles-technologies-innovation/voici-la-femme-de-la-nasa-qui-dirige-le-lancement-de-la-mission-artemis-i-sur-la-lune/20220829130624157957.html).",
+    "citations": [
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.atalayar.com/fr/articulo/nouvelles-technologies-innovation/voici-la-femme-de-la-nasa-qui-dirige-le-lancement-de-la-mission-artemis-i-sur-la-lune/20220829130624157957.html",
+      "title": "Voici la femme de la NASA qui dirige le lancement de la mission Artemis I sur la Lune",
+      "evidence": "C'est la première femme à occuper le poste important de directrice du Lancement de la National Aeronautics and Space Administration (NASA) en 64 ans d'histoire."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w3",
+  "question": "Depuis ce lancement, où en est aujourd'hui le programme Artemis ?",
+  "answers": [
+   {
+    "textId": "18f84a3b97",
+    "kind": "explanation",
+    "answer": "Le programme Artemis, dont l'objectif est d'établir une présence permanente sur la Lune et de préparer des missions vers Mars, a déjà réalisé deux lancements réussis (webPages: Programme Artemis — Wikipédia). La mission Artemis I a eu lieu le 16 novembre 2022 (webPages: Programme Artemis — Wikipédia). Plus récemment, la mission Artemis II, qui prévoit un vol habité, a effectué son splashdown le 10 avril 2026 (webPages: Artemis News and Articles - NASA).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Programme_Artemis",
+      "title": "Programme Artemis — Wikipédia",
+      "evidence": "1 er lancement 16 novembre 2022 ( Artemis I )"
+     },
+     {
+      "url": "https://www.nasa.gov/artemis-news-and-articles/",
+      "title": "Artemis News and Articles - NASA",
+      "evidence": "Shortly after NASA’s Artemis II mission splashed down on April 10, 2026"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d2070047bf",
+    "kind": "explanation",
+    "answer": "Le programme Artemis a déjà réalisé deux missions avec succès : Artemis I, un vol non habité lancé en novembre 2022 (moment-204), et Artemis II, qui a envoyé quatre astronautes autour de la Lune en avril 2026 (external: NASA's Artemis Program - NASA). La mission Artemis III, qui prévoit un retour d'astronautes sur la surface lunaire, est en cours de développement (external: NASA's Artemis Program - NASA).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w2",
+  "question": "Comment cette mission s'est-elle terminée, et combien de temps a-t-elle duré ?",
+  "answers": [
+   {
+    "textId": "20ef0b6f53",
+    "kind": "external",
+    "answer": "La mission Artemis I s'est terminée par une amerrissage dans l'océan Pacifique, au large des côtes de la Basse-Californie, le 11 décembre 2022 (external: Mission terminée pour Artemis-I - Espace et Exploration). La mission a duré 25 jours, 10 heures et 55 minutes (external: Mission terminée pour Artemis-I - Espace et Exploration).",
+    "citations": [
+     {
+      "id": "external: Mission terminée pour Artemis-I - Espace et Exploration",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.espace-exploration.com/actualite/mission-terminee-pour-artemis-i/",
+      "title": "Mission terminée pour Artemis-I - Espace et Exploration",
+      "evidence": "Enfin, ce dimanche 11 décembre a marqué la fin de la mission NASA Artemis-I. En effet, après 25 jours 10 heures et 55 minutes, la capsule Orion a amerri à 18h40. Lieu d’arrivée : au large des côtes de la Basse-Californie (Mexique) dans l’Océan Pacifique."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "5262166bfe",
+    "kind": "observation",
+    "answer": "La vidéo ne montre pas la fin de la mission, mais elle présente le décollage de la mission Artemis I (moment-204). Concernant la durée, les informations disponibles ne permettent pas de répondre précisément à cette question.",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo s'arrête alors que la mission est en cours de vol (moment-233).",
+     "La durée totale de la mission n'est pas mentionnée dans les passages observés."
+    ]
+   }
+  ]
+ }
+]

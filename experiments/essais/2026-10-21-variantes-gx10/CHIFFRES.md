@@ -42,6 +42,8 @@ l'exploration ; confirmé). H1 (hors ligne) mesuré ; flux réel F1 à venir.
 | Texte des pages, vraies pages (H4) | début de page **14/30** (W 12/18, M 2/12, 3 inventions) = fenêtre 14/30 (6 inv.) > fusion 12 > BM25 10 > plongements 8 | [H4](../2026-10-22-web-reel-texte-gx10/) |
 | Recherche SearXNG + ouverture des pages | médiane 1,7 s, 90e centile 3,7 s, maximum 5,3 s (59 recherches) | H4 |
 | **Local contre Codex, mêmes contextes (C1)** | vidéo Codex 42/60, local 38/60 ; W 11/18 contre 12/18 ; M 4/12 contre 2/12 ; inventions 7 contre 12 (vidéo), 2 contre 6 (W+M) ; Codex 5,5 s et 10,8 s | [C1](../2026-10-23-comparatif-codex-local/) |
+| **Produit complet avec le web, flux réel (F1)** | vidéo **44/60** (J6 39 dans le même paquet), 7 inventions (11), 7,6 s ; W 8/18, M 5/12, O 0/12 ; question W 12,2 s médiane (temps propre), 5 W/M sur 30 au-delà de 14 s | [F1](../2026-10-22-produit-complet-web-gx10/) |
+| **Titre de la source dans la requête (H4b)** | W **14/18** contre 8/18, M 7/11 contre 5/11, 2 inventions contre 5 ; +8/−0 (p ≈ 0,008) | [H4b](../2026-10-22-web-reel-texte-gx10/) |
 
 ## Matériel et configuration de référence
 

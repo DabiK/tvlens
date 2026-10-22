@@ -1,0 +1,198 @@
+[
+ {
+  "questionId": "tears-w1",
+  "question": "Quand ce film a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "33e49bd2ef",
+    "kind": "external",
+    "answer": "Ce film, intitulé Tears of Steel (également connu sous le nom de Project Mango), a été publié le 26 septembre 2012 (https://en.wikipedia.org/wiki/Tears_of_Steel).",
+    "citations": [
+     {
+      "id": "wikipedia_tears_of_steel",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "released: {{Film date|2012|09|26}}"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8ffa4b7cf7",
+    "kind": "external",
+    "answer": "Le film présenté dans la vidéo, intitulé Tears of Steel (connu sous le nom de projet Mango), a été publié le 26 septembre 2012 (external).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-w2",
+  "question": "Avec quelle caméra les scènes en prises de vues réelles de ce film ont-elles été tournées ?",
+  "answers": [
+   {
+    "textId": "5d61ea74e8",
+    "kind": "external",
+    "answer": "Les scènes en prises de vues réelles de ce film ont été tournées avec la caméra Sony F65, qui possède un capteur natif 4K.",
+    "citations": [
+     {
+      "id": "web-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://mango.blender.org/category/filming/",
+      "title": "Filming | Tears of Steel",
+      "evidence": "Pictures have been shot using the (4k native sensor) fantastic Sony F65 camera."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ce10e01bc8",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne mentionnent pas de caméra spécifique pour les prises de vues réelles de ce film. Les extraits vidéo montrent des animations liées au projet Mango de la Blender Foundation (moment-1, 0-8000ms), mais ne fournissent aucune information technique sur le matériel de tournage utilisé.",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-w3",
+  "question": "Ce film a été fait avec Blender : quelle est la dernière version de ce logiciel aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "553ced397f",
+    "kind": "external",
+    "answer": "La dernière version stable de Blender est la 5.2.3 LTS, sortie le 22 octobre 2026 (blender.org/download). Une version 5.3 est également prévue pour le 10 novembre 2026 (blender.org/download).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.blender.org/download/",
+      "title": "Download — Blender"
+     },
+     {
+      "url": "https://www.blender.org/download/releases/",
+      "title": "Release Notes — Blender"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e969fb47c8",
+    "kind": "external",
+    "answer": "La dernière version stable de Blender est la version 5.2.3 LTS, sortie le 22 octobre 2026 (https://www.blender.org/download/). Une version 5.3 est également prévue pour le 10 novembre 2026 (https://www.blender.org/download/).",
+    "citations": [
+     {
+      "id": "blender_download_page",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.blender.org/download/",
+      "title": "Download — Blender",
+      "evidence": "LATEST RELEASE Blender 5.2.3 LTS [...] Released October 22, 2026"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-m1",
+  "question": "Où Thom et Celia se disputent-ils au début, et dans quelle ville le film a-t-il été tourné ?",
+  "answers": [
+   {
+    "textId": "3598075996",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain (moment-4, 24000-32000). Je ne peux pas déterminer la ville où le film a été tourné car les données fournies ne le précisent pas.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La ville de tournage n'est pas mentionnée dans les passages vidéo ou les pages web consultées."
+    ]
+   },
+   {
+    "textId": "3eec65fa4f",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain (moment-4, 24000-32000ms). Je ne peux pas déterminer dans quelle ville le film a été tourné avec les informations disponibles.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La ville de tournage n'est pas mentionnée dans les passages vidéo ni sur les pages web consultées."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-m2",
+  "question": "Où le vieil homme aux cheveux gris est-il descendu au bout d'une corde, et à quel bâtiment réel ce lieu correspond-il ?",
+  "answers": [
+   {
+    "textId": "6dfb3114d6",
+    "kind": "observation",
+    "answer": "L'homme âgé descend au bout d'une corde dans un décor sombre et industriel (moment-21, 160000-168000). Je ne peux pas identifier de bâtiment réel correspondant à ce lieu car les données vidéo ne fournissent pas d'indication géographique précise et les recherches web ne mentionnent pas de lieu de tournage pour cette scène.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'identification du bâtiment réel est impossible avec les informations disponibles."
+    ]
+   },
+   {
+    "textId": "c1d5910f96",
+    "kind": "observation",
+    "answer": "Un homme âgé est vu tenant une corde et regardant vers le bas dans un décor sombre et industriel (moment-21, 160000-168000). Les images ne permettent pas d'identifier un bâtiment réel correspondant à ce lieu.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

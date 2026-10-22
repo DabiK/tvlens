@@ -1,0 +1,391 @@
+[
+ {
+  "questionId": "cnrs-w1",
+  "question": "Il cite Gemini : quel est aujourd'hui le modèle Gemini le plus récent de Google ?",
+  "answers": [
+   {
+    "textId": "27ffee9437",
+    "kind": "external",
+    "answer": "Aujourd’hui, le modèle Gemini le plus récent annoncé par Google est Gemini 4 Argon, présenté comme son dernier modèle de pointe. Les passages fournis indiquent que l’intervenant cite Gemini, sans préciser de version.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/",
+      "title": "Gemini Models — Google",
+      "evidence": "La page officielle de Google présente Gemini 4 Argon comme « our latest frontier model »."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4878aefae8",
+    "kind": "external",
+    "answer": "Le modèle Gemini le plus récent de Google est Gemini 4 Argon (kind=external). Selon la documentation de Google AI for Developers, il s'agit de leur modèle le plus récent et le plus performant (https://ai.google.dev/gemini-api/docs/latest-model?hl=fr).",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/latest-model?hl=fr",
+      "title": "Nouveautés de Gemini 4 Argon | Gemini API | Google AI for Developers"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ad1f1a1a97",
+    "kind": "explanation",
+    "answer": "Selon les informations de la vidéo, l'intervenant mentionne Gemini comme l'un des modèles de grande taille, aux côtés de ChatGPT (moment-6, 40000-48000). D'après les pages web consultées, le modèle le plus récent de Google est Gemini 4 Argon (https://ai.google.dev/gemini-api/docs/latest-model?hl=fr, \"Gemini 4 Argon est notre modèle le plus récent et le plus performant.\").",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/latest-model?hl=fr",
+      "title": "Nouveautés de Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon est notre modèle le plus récent et le plus performant."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m1",
+  "question": "Combien de neurones a-t-il donnés pour l'éléphant, et combien en compte un cerveau humain ?",
+  "answers": [
+   {
+    "textId": "749cd0a1fb",
+    "kind": "external",
+    "answer": "L'intervenant dans la vidéo mentionne que l'on compte environ 250 milliards de neurones pour un éléphant (moment-12, 88000-96000). Selon Wikipédia, le nombre de neurones pour un humain est estimé à 21 milliards (https://fr.wikipedia.org/wiki/Liste_d%27animaux_par_le_nombre_de_neurones, \"Éléphant d'Afrique 11 000 000 000... Humain 21 000 000 000\").",
+    "citations": [
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Liste_d%27animaux_par_le_nombre_de_neurones",
+      "title": "Liste d'animaux par le nombre de neurones — Wikipédia"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "75d740565a",
+    "kind": "external",
+    "answer": "Le cerveau d'un éléphant contient 257 milliards de neurones. Pour le cerveau humain, la vidéo ne fournit pas cette information, mais les sources externes indiquent que le cerveau d'un humain pèse environ 1,4 kg.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Cognition_des_%C3%A9l%C3%A9phants",
+      "title": "Cognition des éléphants — Wikipédia",
+      "evidence": "Le cerveau d'un éléphant contient 257 milliards de neurones"
+     },
+     {
+      "url": "https://fr.wikibooks.org/wiki/Neurosciences/Le_cerveau_dans_le_r%C3%A8gne_animal",
+      "title": "Neurosciences/Le cerveau dans le règne animal — Wikilivres",
+      "evidence": "celui d'un humain pèse 1,4kg"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d8ebb330a6",
+    "kind": "external",
+    "answer": "Les passages fournis ne contiennent pas la séquence sur l’éléphant, donc je ne peux pas confirmer le chiffre donné dans la vidéo. Une étude sur un éléphant d’Afrique adulte estime son cerveau à 257 milliards de neurones, contre une moyenne de 86 milliards pour le cerveau humain.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.frontiersin.org/journals/neuroanatomy/articles/10.3389/fnana.2014.00046/full",
+      "title": "The elephant brain in numbers",
+      "evidence": "L’étude rapporte 257,0 milliards de neurones chez l’éléphant d’Afrique étudié et une moyenne de 86 milliards chez l’humain."
+     }
+    ],
+    "limits": [
+     "La séquence vidéo visée n’est pas présente dans les passages consultés ; le chiffre attribué à l’intervenant reste à vérifier."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-o1",
+  "question": "Sur la première diapositive « L'éducation d'une grande IA », celle des deux têtes (robot et humain), quelle petite annotation figurait à côté du titre ?",
+  "answers": [
+   {
+    "textId": "9ad008ccbb",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier cette annotation précise. Les passages analysés montrent le schéma des étapes de l'éducation de l'IA, mais la diapositive spécifique avec les deux têtes n'est pas visible dans les extraits fournis.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La diapositive mentionnée n'est pas présente dans les segments vidéo consultés."
+    ]
+   },
+   {
+    "textId": "b2860e33fc",
+    "kind": "insufficient",
+    "answer": "Les passages fournis décrivent la dernière diapositive, pas la première avec les deux têtes. Je ne peux donc pas déterminer quelle annotation figurait à côté du titre.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages sur le début de la vidéo sont omis des données fournies."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w2",
+  "question": "Qui a inventé l'expression « modèle de fondation » dont il parle, et quand ?",
+  "answers": [
+   {
+    "textId": "44196b5b9c",
+    "kind": "external",
+    "answer": "Le terme a été choisi collectivement par les chercheurs du Center for Research on Foundation Models de Stanford, après plusieurs semaines de discussion. Stanford en explique l’origine dans un article publié le 18 octobre 2021 ; il ne s’agit donc pas, selon leur récit, de l’invention d’une seule personne. [Stanford HAI](https://hai.stanford.edu/news/reflections-foundation-models)",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://hai.stanford.edu/news/reflections-foundation-models",
+      "title": "Reflections on Foundation Models | Stanford HAI",
+      "evidence": "L’article, daté du 18 octobre 2021, explique que l’équipe a envisagé plusieurs noms puis choisi « foundation model » après plusieurs semaines de débat."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "761bebb929",
+    "kind": "explanation",
+    "answer": "Le terme « modèle de fondation » a été inventé par des chercheurs du Stanford Institute for Human-Centered Artificial Intelligence (HAI), plus précisément au sein de leur centre de recherche CRFM (kind=external). Selon les sources consultées, ce terme a été proposé en 2021 (kind=external).",
+    "citations": [
+     {
+      "id": "webPage-1",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "webPage-2",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Mod%C3%A8le_de_fondation",
+      "title": "Modèle de fondation — Wikipédia",
+      "evidence": "Ce terme a été popularisé par le centre de recherche sur les modèles de fondation (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI)."
+     },
+     {
+      "url": "https://blent.ai/lexique/modele-de-fondation",
+      "title": "Modèle de fondation : définition, exemples et enjeux | Blent.ai",
+      "evidence": "Origine du terme Stanford (CRFM), 2021"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8edb5ce316",
+    "kind": "observation",
+    "answer": "L'intervenant utilise l'expression « modèle de fondation » pour désigner un modèle qui apprend à maîtriser le langage en alignant des mots (moment-68, 536000-544000 ; moment-69, 544000-552000). La vidéo ne précise pas qui a inventé cette expression ni à quelle date.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-69",
+      "startMs": 544000,
+      "endMs": 552000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'origine et la date de création de l'expression ne sont pas mentionnées dans les passages visionnés."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-o2",
+  "question": "Sur le graphique du suivi de l'apprentissage, de quelles couleurs étaient la courbe d'apprentissage et la courbe de validation ?",
+  "answers": [
+   {
+    "textId": "54a12b8a73",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car le graphique du suivi de l'apprentissage n'est pas visible dans les passages analysés.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le graphique mentionné n'apparaît pas dans les extraits vidéo fournis."
+    ]
+   },
+   {
+    "textId": "8df2b32ee9",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles ne montrent pas le graphique ni ses couleurs : ils couvrent une partie ultérieure de la vidéo. Je ne peux donc pas identifier les deux courbes.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le segment attendu se situe hors des passages fournis."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m2",
+  "question": "Selon lui, quelle a été la force d'OpenAI avec ChatGPT, et par quelle méthode OpenAI a-t-il réalisé cet alignement ?",
+  "answers": [
+   {
+    "textId": "0c7cc8d85d",
+    "kind": "observation",
+    "answer": "L'orateur affirme que la force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Pour y parvenir, il explique qu'il faut apprendre au modèle un savoir-être et des règles éthiques, comme lui apprendre à répondre avec bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "6c34aa7534",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit solide et qui ne puisse pas être facilement contourné par les utilisateurs (moment-96, 760000-768000 ; moment-97, 768000-776000). Pour réaliser cet alignement, l'intervenant explique qu'il faut donner au modèle des règles éthiques et un savoir-être, comme lui apprendre à répondre avec bienveillance (moment-95, 752000-760000).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "9910ddb749",
+    "kind": "observation",
+    "answer": "Selon lui, la force d’OpenAI avec ChatGPT a été de réussir un alignement solide, capable de résister aux nombreuses questions et tentatives de pousser l’IA à la faute. Il décrit cet alignement comme l’apprentissage d’un savoir-être et de règles éthiques, par exemple répondre avec bienveillance ; les passages fournis ne précisent pas la méthode technique utilisée pour l’obtenir.",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-98",
+      "startMs": 776000,
+      "endMs": 784000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les passages consultés s’arrêtent à 784000 ms, avant le repère de 792001 ms ; la suite peut apporter des précisions."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w3",
+  "question": "Il parle des règles éthiques imposées aux IA : où en est aujourd'hui l'AI Act, la loi européenne sur l'IA ?",
+  "answers": [
+   {
+    "textId": "845c8d5105",
+    "kind": "external",
+    "answer": "L'AI Act, ou règlement européen sur l'intelligence artificielle, est entré en vigueur le 1er août 2024 (https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes). Ce cadre législatif adopte une approche basée sur les risques pour encadrer le développement et l'utilisation des systèmes d'IA au sein de l'Union européenne (https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes",
+      "title": "Le Règlement européen sur l'intelligence artificielle : publics concernés, dates clés, conséquences pour les entreprises | Direction générale des Entreprises"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8bb9cbc7db",
+    "kind": "external",
+    "answer": "L'AI Act est entré en vigueur le 1er août 2024 et s'applique progressivement (kind=external, source=https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil). Ce règlement européen établit un cadre pour encadrer le développement et l'utilisation de l'IA selon une approche basée sur les risques (kind=external, source=https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes).",
+    "citations": [
+     {
+      "id": "cnil_source",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "dge_source",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil",
+      "title": "Entrée en vigueur du règlement européen sur l’IA : les premières questions-réponses de la CNIL | CNIL",
+      "evidence": "Le règlement européen sur l’IA (ou AI Act) a été publié au Journal officiel de l’Union européenne (JOUE) le 12 juillet 2024 et est progressivement en application depuis le 1er août 2024."
+     },
+     {
+      "url": "https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes",
+      "title": "Le Règlement européen sur l'intelligence artificielle : publics concernés, dates clés, conséquences pour les entreprises | Direction générale des Entreprises",
+      "evidence": "Ce règlement vise à garantir que le développement et l'utilisation des produits et productions de l'IA respectent les droits fondamentaux et les valeurs européennes."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "9ef977a249",
+    "kind": "external",
+    "answer": "Au 23 octobre 2026, l’AI Act est en vigueur et s’applique par étapes : les interdictions et l’obligation de développer les compétences en IA s’appliquent depuis février 2025, et les règles sur les modèles d’IA à usage général depuis août 2025. Les obligations de transparence — par exemple signaler qu’on interagit avec une IA et marquer certains contenus générés — s’appliquent depuis le 2 août 2026. Les règles pour les systèmes à haut risque ont été repoussées au 2 décembre 2027, et celles intégrées à certains produits réglementés au 2 août 2028 ; l’application complète n’est donc pas encore achevée. Ces dates sont celles des pages officielles de la Commission européenne consultées pour cette réponse.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act",
+      "title": "Navigating the AI Act",
+      "evidence": "La Commission indique que les interdictions et règles de compétences en IA s’appliquent depuis le 2 février 2025, les obligations GPAI depuis le 2 août 2025, et les règles à haut risque à partir du 2 décembre 2027 ou du 2 août 2028 selon les systèmes."
+     },
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/faqs/transparency-obligations-under-article-50-ai-act",
+      "title": "Transparency obligations under Article 50 of the AI Act",
+      "evidence": "La Commission indique que l’article 50 s’applique depuis le 2 août 2026 et détaille la transparence pour les interactions avec l’IA, certains contenus générés, les deepfakes et certains textes d’intérêt public."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]
