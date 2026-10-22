@@ -177,4 +177,6 @@ Aucune décision n'est attendue.
 - Pendant le traitement, consigner les versions installées, les échecs initiaux des tests d’acceptation,
   les résultats observés et les éventuels écarts.
 - 22/10, orchestrateur : brouillon déposé ; seules la forme (consigne de dépôt retirée, version du code, numéro
-  d'ADR) a changé. `installe: oui` attend l'accord du propriétaire avant le lancement de la boucle.
+  d'ADR) a changé.
+- 22/10, orchestrateur : accord du propriétaire pour installer `@mozilla/readability` et `linkedom` (« Oui », relayé
+  par la session GX10) ; boucle lancée.
