@@ -48,8 +48,23 @@ Les suites Codex des sources, inchangées, et le test de `sourceKey` de T308.
 
 ## Hypothèses bloquantes
 
-Aucune décision n'est attendue.
+Décision attendue du propriétaire : les règles de recevabilité diffèrent (voir le journal). Faut-il (a) ne partager que
+la normalisation et nommer deux politiques, stricte (voie locale) et lâche (Codex, cœur), ce qui recoupe T126 ; (b) aligner
+Codex et le cœur sur la règle stricte, changement de comportement décidé à part ; ou (c) abandonner ce ticket facultatif ?
+Recommandation de l'orchestrateur : (c) pendant le hackathon, puis (b).
 
 ## Journal
 
 - 22/10, orchestrateur : ticket facultatif ouvert depuis l'exploration de la recherche web locale.
+- 22/10, orchestrateur : exploration faite (`.harness-state/tickets/T312/exploration.md`). Les règles ne sont pas identiques :
+  les trois copies Codex et cœur (`adapters/codex-session-events.cjs`, `core/verification.cjs`, `core/surveillance.cjs`) sont lâches
+  (https sans identifiants, fragment retiré) ; celle de `adapters/external-links.cjs` est stricte (en plus : port 443 seul, pas d'IP,
+  pas d'hôte sans point, pas de `localhost` ni `.local`/`.internal`/`.lan`/`.home`/`.test`/`.invalid`). Observé avec `node -e` :
+  `https://localhost/x`, `https://127.0.0.1/a`, `https://[::1]/a`, `https://example.org:8443/p`, `https://intranet/p` et
+  `https://nas.local/p#x` donnent une clé côté Codex et `null` côté local ; les https publics donnent la même clé.
+- 22/10, orchestrateur : verdict BLOQUÉ, aucun code modifié. Unifier la clé change ce que Codex compte comme page ouverte, et aucun
+  test Codex ne couvre un https privé : les suites resteraient vertes. Le ticket demande de signaler cette différence, pas de la
+  corriger. Décision attendue du propriétaire : (a) réduire le ticket à la normalisation commune (fragment retiré), avec la
+  recevabilité stricte et lâche nommées comme deux politiques voulues, ce qui recoupe T126 (`core/source-provenance.cjs`, non fait) ;
+  ou (b) aligner Codex sur la stricte, comme changement de comportement décidé à part ; ou (c) abandonner ce ticket facultatif.
+- 22/10, orchestrateur : remis à faire avec une décision attendue, pour que la file reste ouverte à T314.
