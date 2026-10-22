@@ -1,1124 +1,1124 @@
 {
- "version": 1,
- "updatedAtUtc": "2026-10-22T17:20:00Z",
- "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
- "reference": {
-  "configuration": {
-   "whisper": "base",
-   "vision": "gemma3:4b",
-   "questions": "qwen3.8:27b",
-   "blocSecondes": 8,
-   "imagesParBloc": 5
+  "version": 1,
+  "updatedAtUtc": "2026-10-22T17:20:00Z",
+  "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
+  "reference": {
+    "configuration": {
+      "whisper": "base",
+      "vision": "gemma3:4b",
+      "questions": "qwen3.8:27b",
+      "blocSecondes": 8,
+      "imagesParBloc": 5
+    },
+    "mtpDejaActif": {
+      "valeur": true,
+      "draftNumPredict": 4,
+      "source": "ollama show qwen3.8:27b, 2026-10-21T12:07Z"
+    },
+    "surcoutProxyMs": {
+      "direct": 7.5,
+      "proxy": 8.5,
+      "source": "2026-10-21-reference-instrumentee-gx10/bruts/proxy-overhead.json"
+    }
   },
-  "mtpDejaActif": {
-   "valeur": true,
-   "draftNumPredict": 4,
-   "source": "ollama show qwen3.8:27b, 2026-10-21T12:07Z"
+  "e1FluxReel": {
+    "source": "2026-10-21-reference-instrumentee-gx10/analyse-e1.json",
+    "reponsesAcquises": "30/30",
+    "delaiHttpMedianS": {
+      "kennedy": 19.2,
+      "spring": 15.2,
+      "cnrs": 24.2,
+      "cuisine": 17.6,
+      "tears": 13.2,
+      "artemis": 21.3
+    },
+    "generationMedianeS": {
+      "kennedy": 12.5,
+      "spring": 11.5,
+      "cnrs": 18.3,
+      "cuisine": 13.1,
+      "tears": 9.9,
+      "artemis": 13.0
+    },
+    "jetonsParSecondeEnFlux": [
+      10,
+      14
+    ],
+    "prefillMedianS": {
+      "kennedy": 5.3,
+      "spring": 3.7,
+      "cnrs": 4.7,
+      "cuisine": 3.5,
+      "tears": 2.8,
+      "artemis": 5.7
+    },
+    "chargementAFroidS": 13.4,
+    "visionAppelsAuDelaDe8s": {
+      "au_dela": 129,
+      "total": 612
+    },
+    "partTopicSummaryDansSortieVision": {
+      "kennedy": 0.34,
+      "spring": 0.38,
+      "cnrs": 0.32,
+      "cuisine": 0.42,
+      "tears": 0.44,
+      "artemis": 0.36
+    },
+    "blocsVisionPerdus": {
+      "kennedy": 1,
+      "spring": 14,
+      "cnrs": 14,
+      "cuisine": 1,
+      "tears": 13,
+      "artemis": 12
+    },
+    "appelsOutils": 0,
+    "rejetsValidationKennedy": "3/5"
   },
-  "surcoutProxyMs": {
-   "direct": 7.5,
-   "proxy": 8.5,
-   "source": "2026-10-21-reference-instrumentee-gx10/bruts/proxy-overhead.json"
-  }
- },
- "e1FluxReel": {
-  "source": "2026-10-21-reference-instrumentee-gx10/analyse-e1.json",
-  "reponsesAcquises": "30/30",
-  "delaiHttpMedianS": {
-   "kennedy": 19.2,
-   "spring": 15.2,
-   "cnrs": 24.2,
-   "cuisine": 17.6,
-   "tears": 13.2,
-   "artemis": 21.3
+  "contexteQuestions": {
+    "passagesVus": 6,
+    "secondesVues": 48,
+    "questionsPreuveAncienne": "11/30",
+    "source": "core/video-tools.cjs ; oracle v2"
   },
-  "generationMedianeS": {
-   "kennedy": 12.5,
-   "spring": 11.5,
-   "cnrs": 18.3,
-   "cuisine": 13.1,
-   "tears": 9.9,
-   "artemis": 13.0
+  "e2ModeleQuestionsHorsLigne": {
+    "source": "2026-10-21-questions-hors-ligne-gx10/notation/bilan.md",
+    "bras": [
+      {
+        "modele": "qwen3.8:27b",
+        "role": "reference",
+        "delaiMedianS": 9.2,
+        "jetonsParS": 24,
+        "gardees": 17,
+        "pertinentes": 21,
+        "inventions": 5,
+        "abstentionsInjustifiees": 6,
+        "citationsRemplies": 21
+      },
+      {
+        "modele": "qwen3.8:27b-mtp-q4_K_M",
+        "delaiMedianS": 9.3,
+        "jetonsParS": 24,
+        "gardees": 17,
+        "inventions": 5,
+        "citationsRemplies": 21
+      },
+      {
+        "modele": "gemma4:26b-a4b-it-q4_K_M",
+        "delaiMedianS": 4.6,
+        "jetonsParS": 54,
+        "gardees": 20,
+        "pertinentes": 20,
+        "inventions": 4,
+        "abstentionsInjustifiees": 3,
+        "citationsRemplies": 28
+      },
+      {
+        "modele": "qwen3.6:35b-a3b-mtp-q4_K_M",
+        "delaiMedianS": 3.1,
+        "jetonsParS": 80,
+        "gardees": 18,
+        "inventions": 7,
+        "abstentionsInjustifiees": 2,
+        "citationsRemplies": 28
+      },
+      {
+        "modele": "qwen3.6:35b-a3b-q4_K_M",
+        "delaiMedianS": 3.5,
+        "jetonsParS": 64,
+        "gardees": 18,
+        "inventions": 8,
+        "abstentionsInjustifiees": 2,
+        "citationsRemplies": 28
+      },
+      {
+        "modele": "qwen3.6:35b-a3b-mtp-q4_K_M",
+        "raisonnement": true,
+        "delaiMedianS": 17.7,
+        "jetonsParS": 83,
+        "gardees": 8,
+        "inventions": 2,
+        "abstentionsInjustifiees": 9,
+        "jsonInvalide": 8
+      },
+      {
+        "modele": "qwen3.8:27b-nvfp4",
+        "statut": "abandonné : exige MLX, indisponible sous Linux"
+      }
+    ],
+    "e1FluxMemeNotation": {
+      "delaiMedianS": 17.5,
+      "gardees": 18,
+      "inventions": 4,
+      "abstentionsInjustifiees": 10
+    }
   },
-  "jetonsParSecondeEnFlux": [
-   10,
-   14
-  ],
-  "prefillMedianS": {
-   "kennedy": 5.3,
-   "spring": 3.7,
-   "cnrs": 4.7,
-   "cuisine": 3.5,
-   "tears": 2.8,
-   "artemis": 5.7
+  "essaisAnterieursNotes": {
+    "source": "2026-10-21-oracle-notation-recherche-gx10/notation-v0",
+    "pauseVision": {
+      "cnrs": {
+        "medianeS": [
+          21.2,
+          12.8
+        ],
+        "pertinentesSous20s": [
+          2,
+          9
+        ],
+        "sur": 10
+      },
+      "kennedy": {
+        "medianeS": [
+          18.8,
+          11.2
+        ],
+        "pertinentesSous20s": [
+          5,
+          7
+        ],
+        "sur": 10,
+        "biais": "démarrage à froid du bras A (audit)"
+      }
+    },
+    "whisperSmallSpring": {
+      "pertinentes": [
+        2,
+        4
+      ],
+      "sur": 5
+    },
+    "abstentionsInjustifiees": "21/150",
+    "inventionsCuisine": "3-4/5",
+    "accordJuges": "138/138"
   },
-  "chargementAFroidS": 13.4,
-  "visionAppelsAuDelaDe8s": {
-   "au_dela": 129,
-   "total": 612
+  "composantVision5vs3Images": {
+    "gainMedianFroidS": 1.5,
+    "pairesPlusRapides": "48/48",
+    "source": "2026-10-21-confirmation-images-gx10"
   },
-  "partTopicSummaryDansSortieVision": {
-   "kennedy": 0.34,
-   "spring": 0.38,
-   "cnrs": 0.32,
-   "cuisine": 0.42,
-   "tears": 0.44,
-   "artemis": 0.36
+  "audit": {
+    "confirmes": 221,
+    "ecarts": 17,
+    "inverifiables": 21,
+    "sceauxDistantsIntacts": "30/30",
+    "source": "2026-10-21-audit-nuit-gx10"
   },
-  "blocsVisionPerdus": {
-   "kennedy": 1,
-   "spring": 14,
-   "cnrs": 14,
-   "cuisine": 1,
-   "tears": 13,
-   "artemis": 12
+  "oracleV2": {
+    "confirmes": 21,
+    "corriges": 8,
+    "malPoses": 1,
+    "questions": 30
   },
-  "appelsOutils": 0,
-  "rejetsValidationKennedy": "3/5"
- },
- "contexteQuestions": {
-  "passagesVus": 6,
-  "secondesVues": 48,
-  "questionsPreuveAncienne": "11/30",
-  "source": "core/video-tools.cjs ; oracle v2"
- },
- "e2ModeleQuestionsHorsLigne": {
-  "source": "2026-10-21-questions-hors-ligne-gx10/notation/bilan.md",
-  "bras": [
-   {
+  "e3ModeleVisionHorsLigne": {
+    "source": "2026-10-21-vision-hors-ligne-gx10",
+    "blocs": 36,
+    "bras": [
+      {
+        "modele": "gemma3:4b",
+        "role": "reference",
+        "delaiMedianS": 6.65,
+        "blocsAuDelaDe8s": 3,
+        "jetonsMedians": 218.5,
+        "jsonInvalide": 0
+      },
+      {
+        "modele": "qwen3-vl:2b-instruct-q4_K_M",
+        "delaiMedianS": 8.19,
+        "blocsAuDelaDe8s": 19,
+        "jetonsMedians": 559.5,
+        "jsonInvalide": 16
+      },
+      {
+        "modele": "qwen3-vl:4b-instruct-bf16",
+        "delaiMedianS": 17.01,
+        "blocsAuDelaDe8s": 35,
+        "jetonsMedians": 315.5,
+        "jsonInvalide": 8
+      },
+      {
+        "modele": "qwen3-vl:8b-instruct-q4_K_M",
+        "delaiMedianS": 15.87,
+        "blocsAuDelaDe8s": 36,
+        "jetonsMedians": 333,
+        "jsonInvalide": 3
+      },
+      {
+        "modele": "gemma4:e4b-it-q4_K_M",
+        "raisonnement": "défaut (actif)",
+        "delaiMedianS": 13.68,
+        "prefillMedianS": 1.7,
+        "blocsAuDelaDe8s": 36,
+        "jetonsMedians": 1223,
+        "jsonInvalide": 0
+      },
+      {
+        "modele": "qwen3-vl:30b-a3b-instruct-q4_K_M",
+        "delaiMedianS": 11.33,
+        "blocsAuDelaDe8s": 33,
+        "jetonsMedians": 326.5,
+        "jsonInvalide": 0
+      }
+    ],
+    "blocsProduitA3Images": "8/36"
+  },
+  "e4FluxReel": {
+    "source": "2026-10-21-flux-gemma4-gx10",
+    "videos": [
+      "kennedy",
+      "spring",
+      "cnrs"
+    ],
+    "questions": 15,
+    "configurations": [
+      {
+        "nom": "E1 actuelle",
+        "delaiMedianS": {
+          "kennedy": 19.2,
+          "spring": 15.2,
+          "cnrs": 24.2
+        },
+        "sous15s": 3,
+        "pertinentes": 8,
+        "pertinentesSous15s": 0,
+        "inventions": 3,
+        "abstentionsInjustifiees": 7
+      },
+      {
+        "nom": "G (gemma4:26b-a4b)",
+        "delaiMedianS": {
+          "kennedy": 12.2,
+          "spring": 9.1,
+          "cnrs": 12.2
+        },
+        "sous15s": 12,
+        "pertinentes": 9,
+        "pertinentesSous15s": 7,
+        "inventions": 2,
+        "abstentionsInjustifiees": 2
+      },
+      {
+        "nom": "GP (+ pause vision)",
+        "delaiMedianS": {
+          "kennedy": 7.2,
+          "spring": 5.2,
+          "cnrs": 7.2
+        },
+        "sous15s": 15,
+        "pertinentes": 8,
+        "pertinentesSous15s": 8,
+        "inventions": 2,
+        "abstentionsInjustifiees": 4
+      },
+      {
+        "nom": "GPS (+ Whisper small)",
+        "delaiMedianS": {
+          "kennedy": 9.4,
+          "spring": 5.2,
+          "cnrs": 7.9
+        },
+        "sous15s": 15,
+        "pertinentes": 10,
+        "pertinentesSous15s": 10,
+        "inventions": 2,
+        "abstentionsInjustifiees": 2,
+        "parVideoPertinentesSous15s": {
+          "kennedy": "5/5",
+          "spring": "1/5",
+          "cnrs": "4/5"
+        }
+      }
+    ],
+    "limites": "un passage par bras, bras cumulatifs, juges automatiques"
+  },
+  "e3bVisionComplement": {
+    "source": "2026-10-21-vision-hors-ligne-gx10/complement",
+    "blocs": 36,
+    "bras": [
+      {
+        "modele": "gemma3:4b",
+        "images": 5,
+        "delaiMedianS": 6.68,
+        "blocsAuDelaDe8s": 3,
+        "justesse": 1.57,
+        "couverture": 1.65,
+        "blocsAvecInvention": 27
+      },
+      {
+        "modele": "gemma3:4b",
+        "images": 3,
+        "delaiMedianS": 5.58,
+        "blocsAuDelaDe8s": 0,
+        "justesse": 1.6,
+        "couverture": 1.67,
+        "blocsAvecInvention": 21
+      },
+      {
+        "modele": "gemma4:e4b-it-q4_K_M",
+        "raisonnement": false,
+        "delaiMedianS": 4.23,
+        "blocsAuDelaDe8s": 0,
+        "jsonInvalide": 0,
+        "justesse": 2.58,
+        "couverture": 2.11,
+        "blocsAvecInvention": 4
+      }
+    ],
+    "accordJugesJustesse": {
+      "ecart0": 78,
+      "ecart1": 22
+    }
+  },
+  "g1FormatOutils": {
     "modele": "qwen3.8:27b",
-    "role": "reference",
-    "delaiMedianS": 9.2,
-    "jetonsParS": 24,
-    "gardees": 17,
-    "pertinentes": 21,
-    "inventions": 5,
-    "abstentionsInjustifiees": 6,
-    "citationsRemplies": 21
-   },
-   {
-    "modele": "qwen3.8:27b-mtp-q4_K_M",
-    "delaiMedianS": 9.3,
-    "jetonsParS": 24,
-    "gardees": 17,
-    "inventions": 5,
-    "citationsRemplies": 21
-   },
-   {
-    "modele": "gemma4:26b-a4b-it-q4_K_M",
-    "delaiMedianS": 4.6,
-    "jetonsParS": 54,
-    "gardees": 20,
-    "pertinentes": 20,
-    "inventions": 4,
-    "abstentionsInjustifiees": 3,
-    "citationsRemplies": 28
-   },
-   {
-    "modele": "qwen3.6:35b-a3b-mtp-q4_K_M",
-    "delaiMedianS": 3.1,
-    "jetonsParS": 80,
-    "gardees": 18,
-    "inventions": 7,
-    "abstentionsInjustifiees": 2,
-    "citationsRemplies": 28
-   },
-   {
-    "modele": "qwen3.6:35b-a3b-q4_K_M",
-    "delaiMedianS": 3.5,
-    "jetonsParS": 64,
-    "gardees": 18,
-    "inventions": 8,
-    "abstentionsInjustifiees": 2,
-    "citationsRemplies": 28
-   },
-   {
-    "modele": "qwen3.6:35b-a3b-mtp-q4_K_M",
-    "raisonnement": true,
-    "delaiMedianS": 17.7,
-    "jetonsParS": 83,
-    "gardees": 8,
-    "inventions": 2,
-    "abstentionsInjustifiees": 9,
-    "jsonInvalide": 8
-   },
-   {
-    "modele": "qwen3.8:27b-nvfp4",
-    "statut": "abandonné : exige MLX, indisponible sous Linux"
-   }
-  ],
-  "e1FluxMemeNotation": {
-   "delaiMedianS": 17.5,
-   "gardees": 18,
-   "inventions": 4,
-   "abstentionsInjustifiees": 10
-  }
- },
- "essaisAnterieursNotes": {
-  "source": "2026-10-21-oracle-notation-recherche-gx10/notation-v0",
-  "pauseVision": {
-   "cnrs": {
-    "medianeS": [
-     21.2,
-     12.8
-    ],
-    "pertinentesSous20s": [
-     2,
-     9
-    ],
-    "sur": 10
-   },
-   "kennedy": {
-    "medianeS": [
-     18.8,
-     11.2
-    ],
-    "pertinentesSous20s": [
-     5,
-     7
-    ],
-    "sur": 10,
-    "biais": "démarrage à froid du bras A (audit)"
-   }
+    "questions": 10,
+    "passages": 2,
+    "avecSchema": {
+      "appelsAvecOutil": "0/20",
+      "jsonValide": "20/20",
+      "delaiMedianS": 11.6
+    },
+    "sansSchema": {
+      "appelsAvecOutil": "20/20",
+      "dontPreuveAncienne": "12/12",
+      "outils": {
+        "search_moments": 10,
+        "get_transcript": 12,
+        "inspect_clip": 2
+      },
+      "delaiMedianPremierTourS": 5.1
+    },
+    "sansOutils": {
+      "appelsAvecOutil": "0/20",
+      "jsonValide": "20/20",
+      "delaiMedianS": 11.3
+    }
   },
-  "whisperSmallSpring": {
-   "pertinentes": [
-    2,
-    4
-   ],
-   "sur": 5
+  "g3Mtp": {
+    "modele": "qwen3.8:27b",
+    "requetes": 15,
+    "passages": 2,
+    "avecMtp": {
+      "jetonsParS": 23.6,
+      "totalMedianS": 10.4
+    },
+    "sansMtp": {
+      "jetonsParS": 11.1,
+      "totalMedianS": 18.4
+    },
+    "jetonsMedians": 163
   },
-  "abstentionsInjustifiees": "21/150",
-  "inventionsCuisine": "3-4/5",
-  "accordJuges": "138/138"
- },
- "composantVision5vs3Images": {
-  "gainMedianFroidS": 1.5,
-  "pairesPlusRapides": "48/48",
-  "source": "2026-10-21-confirmation-images-gx10"
- },
- "audit": {
-  "confirmes": 221,
-  "ecarts": 17,
-  "inverifiables": 21,
-  "sceauxDistantsIntacts": "30/30",
-  "source": "2026-10-21-audit-nuit-gx10"
- },
- "oracleV2": {
-  "confirmes": 21,
-  "corriges": 8,
-  "malPoses": 1,
-  "questions": 30
- },
- "e3ModeleVisionHorsLigne": {
-  "source": "2026-10-21-vision-hors-ligne-gx10",
-  "blocs": 36,
-  "bras": [
-   {
+  "g4SortieVision": {
     "modele": "gemma3:4b",
-    "role": "reference",
-    "delaiMedianS": 6.65,
-    "blocsAuDelaDe8s": 3,
-    "jetonsMedians": 218.5,
-    "jsonInvalide": 0
-   },
-   {
-    "modele": "qwen3-vl:2b-instruct-q4_K_M",
-    "delaiMedianS": 8.19,
-    "blocsAuDelaDe8s": 19,
-    "jetonsMedians": 559.5,
-    "jsonInvalide": 16
-   },
-   {
-    "modele": "qwen3-vl:4b-instruct-bf16",
-    "delaiMedianS": 17.01,
-    "blocsAuDelaDe8s": 35,
-    "jetonsMedians": 315.5,
-    "jsonInvalide": 8
-   },
-   {
-    "modele": "qwen3-vl:8b-instruct-q4_K_M",
-    "delaiMedianS": 15.87,
-    "blocsAuDelaDe8s": 36,
-    "jetonsMedians": 333,
-    "jsonInvalide": 3
-   },
-   {
-    "modele": "gemma4:e4b-it-q4_K_M",
-    "raisonnement": "défaut (actif)",
-    "delaiMedianS": 13.68,
-    "prefillMedianS": 1.7,
-    "blocsAuDelaDe8s": 36,
-    "jetonsMedians": 1223,
-    "jsonInvalide": 0
-   },
-   {
-    "modele": "qwen3-vl:30b-a3b-instruct-q4_K_M",
-    "delaiMedianS": 11.33,
-    "blocsAuDelaDe8s": 33,
-    "jetonsMedians": 326.5,
-    "jsonInvalide": 0
-   }
-  ],
-  "blocsProduitA3Images": "8/36"
- },
- "e4FluxReel": {
-  "source": "2026-10-21-flux-gemma4-gx10",
-  "videos": [
-   "kennedy",
-   "spring",
-   "cnrs"
-  ],
-  "questions": 15,
-  "configurations": [
-   {
-    "nom": "E1 actuelle",
-    "delaiMedianS": {
-     "kennedy": 19.2,
-     "spring": 15.2,
-     "cnrs": 24.2
-    },
-    "sous15s": 3,
-    "pertinentes": 8,
-    "pertinentesSous15s": 0,
-    "inventions": 3,
-    "abstentionsInjustifiees": 7
-   },
-   {
-    "nom": "G (gemma4:26b-a4b)",
-    "delaiMedianS": {
-     "kennedy": 12.2,
-     "spring": 9.1,
-     "cnrs": 12.2
-    },
-    "sous15s": 12,
-    "pertinentes": 9,
-    "pertinentesSous15s": 7,
-    "inventions": 2,
-    "abstentionsInjustifiees": 2
-   },
-   {
-    "nom": "GP (+ pause vision)",
-    "delaiMedianS": {
-     "kennedy": 7.2,
-     "spring": 5.2,
-     "cnrs": 7.2
-    },
-    "sous15s": 15,
-    "pertinentes": 8,
-    "pertinentesSous15s": 8,
-    "inventions": 2,
-    "abstentionsInjustifiees": 4
-   },
-   {
-    "nom": "GPS (+ Whisper small)",
-    "delaiMedianS": {
-     "kennedy": 9.4,
-     "spring": 5.2,
-     "cnrs": 7.9
-    },
-    "sous15s": 15,
-    "pertinentes": 10,
-    "pertinentesSous15s": 10,
-    "inventions": 2,
-    "abstentionsInjustifiees": 2,
-    "parVideoPertinentesSous15s": {
-     "kennedy": "5/5",
-     "spring": "1/5",
-     "cnrs": "4/5"
+    "blocs": 48,
+    "passages": 2,
+    "bras": [
+      {
+        "nom": "référence",
+        "jetonsMedians": 213,
+        "totalMedianS": 6.71,
+        "blocsAuDelaDe8s": 11,
+        "topicSummaryMedianCar": 287,
+        "summaryVisualMedianCar": 354
+      },
+      {
+        "nom": "sans topicSummary",
+        "jetonsMedians": 125,
+        "totalMedianS": 5.21,
+        "blocsAuDelaDe8s": 0,
+        "summaryVisualMedianCar": 333
+      },
+      {
+        "nom": "topicSummary plafonné 300",
+        "jetonsMedians": 200,
+        "totalMedianS": 6.49,
+        "blocsAuDelaDe8s": 0,
+        "summaryVisualMedianCar": 354
+      }
+    ]
+  },
+  "g2Memoire": {
+    "modele": "qwen3.8:27b",
+    "questions": 30,
+    "passages": 2,
+    "bras": [
+      {
+        "nom": "A capturé",
+        "pertinentes": 38,
+        "gardees": 34,
+        "inventions": 14,
+        "abstentionsInjustifiees": 14,
+        "faitsAnciensPertinents": "12/22",
+        "delaiMedianS": 10.5,
+        "jetonsContexte": 2662
+      },
+      {
+        "nom": "B journal compact",
+        "pertinentes": 47,
+        "gardees": 42,
+        "inventions": 6,
+        "abstentionsInjustifiees": 9,
+        "faitsAnciensPertinents": "16/22",
+        "delaiMedianS": 13.4,
+        "jetonsContexte": 4906
+      },
+      {
+        "nom": "C 6 passages retrouvés",
+        "pertinentes": 41,
+        "gardees": 36,
+        "inventions": 11,
+        "abstentionsInjustifiees": 10,
+        "faitsAnciensPertinents": "13/22",
+        "delaiMedianS": 11.0,
+        "jetonsContexte": 3557
+      }
+    ],
+    "parVideoPertinentesSur10": {
+      "artemis": [
+        9,
+        10,
+        10
+      ],
+      "cnrs": [
+        8,
+        10,
+        9
+      ],
+      "cuisine": [
+        4,
+        6,
+        4
+      ],
+      "kennedy": [
+        9,
+        10,
+        10
+      ],
+      "spring": [
+        2,
+        3,
+        2
+      ],
+      "tears": [
+        6,
+        8,
+        6
+      ]
     }
-   }
-  ],
-  "limites": "un passage par bras, bras cumulatifs, juges automatiques"
- },
- "e3bVisionComplement": {
-  "source": "2026-10-21-vision-hors-ligne-gx10/complement",
-  "blocs": 36,
-  "bras": [
-   {
-    "modele": "gemma3:4b",
-    "images": 5,
-    "delaiMedianS": 6.68,
-    "blocsAuDelaDe8s": 3,
-    "justesse": 1.57,
-    "couverture": 1.65,
-    "blocsAvecInvention": 27
-   },
-   {
-    "modele": "gemma3:4b",
-    "images": 3,
-    "delaiMedianS": 5.58,
-    "blocsAuDelaDe8s": 0,
-    "justesse": 1.6,
-    "couverture": 1.67,
-    "blocsAvecInvention": 21
-   },
-   {
-    "modele": "gemma4:e4b-it-q4_K_M",
-    "raisonnement": false,
-    "delaiMedianS": 4.23,
-    "blocsAuDelaDe8s": 0,
-    "jsonInvalide": 0,
-    "justesse": 2.58,
-    "couverture": 2.11,
-    "blocsAvecInvention": 4
-   }
-  ],
-  "accordJugesJustesse": {
-   "ecart0": 78,
-   "ecart1": 22
-  }
- },
- "g1FormatOutils": {
-  "modele": "qwen3.8:27b",
-  "questions": 10,
-  "passages": 2,
-  "avecSchema": {
-   "appelsAvecOutil": "0/20",
-   "jsonValide": "20/20",
-   "delaiMedianS": 11.6
   },
-  "sansSchema": {
-   "appelsAvecOutil": "20/20",
-   "dontPreuveAncienne": "12/12",
-   "outils": {
-    "search_moments": 10,
-    "get_transcript": 12,
-    "inspect_clip": 2
-   },
-   "delaiMedianPremierTourS": 5.1
+  "e5FluxSixVideos": {
+    "source": "2026-10-21-flux-6-videos-gx10",
+    "questions": 30,
+    "configurations": [
+      {
+        "nom": "E1 actuelle",
+        "pertinentes": 16,
+        "pertinentesSous15s": 3,
+        "pertinentesSous20s": 8,
+        "inventions": 7,
+        "abstentionsInjustifiees": 10,
+        "delaiMedianS": 17.5,
+        "parVideoPertinentesSous15s": {
+          "kennedy": 0,
+          "spring": 0,
+          "cnrs": 0,
+          "cuisine": 0,
+          "tears": 3,
+          "artemis": 0
+        }
+      },
+      {
+        "nom": "GPS (gemma4:26b-a4b + pause + whisper small)",
+        "pertinentes": 21,
+        "pertinentesSous15s": 20,
+        "pertinentesSous20s": 21,
+        "inventions": 5,
+        "abstentionsInjustifiees": 3,
+        "delaiMedianS": 7.1,
+        "reponsesSous15s": "28/30",
+        "parVideoPertinentesSous15s": {
+          "kennedy": 5,
+          "spring": 1,
+          "cnrs": 4,
+          "cuisine": 2,
+          "tears": 4,
+          "artemis": 4
+        }
+      },
+      {
+        "nom": "GPSV (GPS + vision gemma4:e4b sans raisonnement)",
+        "pertinentes": 20,
+        "pertinentesSous15s": 20,
+        "pertinentesSous20s": 20,
+        "inventions": 5,
+        "abstentionsInjustifiees": 6,
+        "delaiMedianS": 6.8,
+        "reponsesSous15s": "30/30",
+        "blocsVisionPerdus": 0,
+        "parVideoPertinentesSous15s": {
+          "kennedy": 4,
+          "spring": 2,
+          "cnrs": 2,
+          "cuisine": 3,
+          "tears": 4,
+          "artemis": 5
+        }
+      }
+    ]
   },
-  "sansOutils": {
-   "appelsAvecOutil": "0/20",
-   "jsonValide": "20/20",
-   "delaiMedianS": 11.3
-  }
- },
- "g3Mtp": {
-  "modele": "qwen3.8:27b",
-  "requetes": 15,
-  "passages": 2,
-  "avecMtp": {
-   "jetonsParS": 23.6,
-   "totalMedianS": 10.4
-  },
-  "sansMtp": {
-   "jetonsParS": 11.1,
-   "totalMedianS": 18.4
-  },
-  "jetonsMedians": 163
- },
- "g4SortieVision": {
-  "modele": "gemma3:4b",
-  "blocs": 48,
-  "passages": 2,
-  "bras": [
-   {
-    "nom": "référence",
-    "jetonsMedians": 213,
-    "totalMedianS": 6.71,
-    "blocsAuDelaDe8s": 11,
-    "topicSummaryMedianCar": 287,
-    "summaryVisualMedianCar": 354
-   },
-   {
-    "nom": "sans topicSummary",
-    "jetonsMedians": 125,
-    "totalMedianS": 5.21,
-    "blocsAuDelaDe8s": 0,
-    "summaryVisualMedianCar": 333
-   },
-   {
-    "nom": "topicSummary plafonné 300",
-    "jetonsMedians": 200,
-    "totalMedianS": 6.49,
-    "blocsAuDelaDe8s": 0,
-    "summaryVisualMedianCar": 354
-   }
-  ]
- },
- "g2Memoire": {
-  "modele": "qwen3.8:27b",
-  "questions": 30,
-  "passages": 2,
-  "bras": [
-   {
-    "nom": "A capturé",
-    "pertinentes": 38,
-    "gardees": 34,
-    "inventions": 14,
-    "abstentionsInjustifiees": 14,
-    "faitsAnciensPertinents": "12/22",
-    "delaiMedianS": 10.5,
-    "jetonsContexte": 2662
-   },
-   {
-    "nom": "B journal compact",
-    "pertinentes": 47,
-    "gardees": 42,
-    "inventions": 6,
-    "abstentionsInjustifiees": 9,
-    "faitsAnciensPertinents": "16/22",
-    "delaiMedianS": 13.4,
-    "jetonsContexte": 4906
-   },
-   {
-    "nom": "C 6 passages retrouvés",
-    "pertinentes": 41,
-    "gardees": 36,
-    "inventions": 11,
-    "abstentionsInjustifiees": 10,
-    "faitsAnciensPertinents": "13/22",
-    "delaiMedianS": 11.0,
-    "jetonsContexte": 3557
-   }
-  ],
-  "parVideoPertinentesSur10": {
-   "artemis": [
-    9,
-    10,
-    10
-   ],
-   "cnrs": [
-    8,
-    10,
-    9
-   ],
-   "cuisine": [
-    4,
-    6,
-    4
-   ],
-   "kennedy": [
-    9,
-    10,
-    10
-   ],
-   "spring": [
-    2,
-    3,
-    2
-   ],
-   "tears": [
-    6,
-    8,
-    6
-   ]
-  }
- },
- "e5FluxSixVideos": {
-  "source": "2026-10-21-flux-6-videos-gx10",
-  "questions": 30,
-  "configurations": [
-   {
-    "nom": "E1 actuelle",
-    "pertinentes": 16,
-    "pertinentesSous15s": 3,
-    "pertinentesSous20s": 8,
-    "inventions": 7,
-    "abstentionsInjustifiees": 10,
-    "delaiMedianS": 17.5,
-    "parVideoPertinentesSous15s": {
-     "kennedy": 0,
-     "spring": 0,
-     "cnrs": 0,
-     "cuisine": 0,
-     "tears": 3,
-     "artemis": 0
-    }
-   },
-   {
-    "nom": "GPS (gemma4:26b-a4b + pause + whisper small)",
-    "pertinentes": 21,
-    "pertinentesSous15s": 20,
-    "pertinentesSous20s": 21,
-    "inventions": 5,
-    "abstentionsInjustifiees": 3,
-    "delaiMedianS": 7.1,
-    "reponsesSous15s": "28/30",
-    "parVideoPertinentesSous15s": {
-     "kennedy": 5,
-     "spring": 1,
-     "cnrs": 4,
-     "cuisine": 2,
-     "tears": 4,
-     "artemis": 4
-    }
-   },
-   {
-    "nom": "GPSV (GPS + vision gemma4:e4b sans raisonnement)",
-    "pertinentes": 20,
-    "pertinentesSous15s": 20,
-    "pertinentesSous20s": 20,
-    "inventions": 5,
-    "abstentionsInjustifiees": 6,
-    "delaiMedianS": 6.8,
-    "reponsesSous15s": "30/30",
-    "blocsVisionPerdus": 0,
-    "parVideoPertinentesSous15s": {
-     "kennedy": 4,
-     "spring": 2,
-     "cnrs": 2,
-     "cuisine": 3,
-     "tears": 4,
-     "artemis": 5
-    }
-   }
-  ]
- },
- "e6DeuxPhases": {
-  "source": "2026-10-21-flux-deux-phases-gx10",
-  "base": "GPSV",
-  "pertinentes": 18,
-  "pertinentesSous15s": 17,
-  "inventions": 6,
-  "abstentionsInjustifiees": 6,
-  "delaiMedianS": 9.3,
-  "springDelaiMedianS": 156.3,
-  "springDelaiMaxS": 273.3,
-  "appelsOutils": {
-   "total": 8,
-   "get_transcript": 4,
-   "search_moments": 3,
-   "inspect_clip": 1
-  },
-  "referenceGpsvRenoteeMemeScore": "20/30",
-  "parVideoPertinentesSous15s": {
-   "kennedy": 3,
-   "spring": 0,
-   "cnrs": 2,
-   "cuisine": 3,
-   "tears": 4,
-   "artemis": 5
-  }
- },
- "e7JournalDeuxPhases": {
-  "source": "2026-10-21-flux-journal-deux-phases-gx10",
-  "base": "GPSV",
-  "pertinentes": 17,
-  "pertinentesSous15s": 17,
-  "inventions": 6,
-  "abstentionsInjustifiees": 7,
-  "noteMoyenne": 1.8,
-  "delaiMedianS": 11.8,
-  "reponsesSous15s": 22,
-  "springDelaiMedianS": 145.5,
-  "springDelaiMaxS": 282.5,
-  "tearsDelaiMedianS": 41.2,
-  "tearsDelaiMaxS": 261.6,
-  "erreurs": {
-   "total": 3,
-   "repetitionOllamaHttp500": 1,
-   "reponseInvalide": 2
-  },
-  "contexteQuestionJetonsMedian": {
-   "e7": 4323,
-   "gpsvE5": 2507
-  },
-  "journalPassagesMax": {
-   "artemis": 73,
-   "cnrs": 57,
-   "cuisine": 53,
-   "kennedy": 38,
-   "spring": 27,
-   "tears": 27
-  },
-  "appelsOutils": {
-   "inspect_clip": 5,
-   "search_moments": 1,
-   "get_transcript": 1
-  },
-  "gpsvRenoteeMemePaquet": {
-   "pertinentes": 19,
-   "inventions": 5,
-   "abstentionsInjustifiees": 6,
-   "noteMoyenne": 2.02
-  },
-  "questionsGagnees": [
-   "cnrs-05",
-   "cnrs-06",
-   "cuisine-05",
-   "spring-01"
-  ],
-  "questionsPerdues": [
-   "artemis-07",
-   "kennedy-01",
-   "spring-03",
-   "tears-01",
-   "tears-04",
-   "tears-06"
-  ],
-  "lectureGains": "3 des 4 gains portent sur des faits sortis de la fenêtre de 48 s ; les 6 pertes sur des faits encore dans la fenêtre",
-  "parVideoPertinentes": {
-   "kennedy": 3,
-   "spring": 2,
-   "cnrs": 3,
-   "cuisine": 4,
-   "tears": 1,
-   "artemis": 4
-  },
-  "parVideoPertinentesGpsv": {
-   "kennedy": 4,
-   "spring": 2,
-   "cnrs": 1,
-   "cuisine": 3,
-   "tears": 4,
-   "artemis": 5
-  },
-  "pertinentesFaitHorsFenetreSur6": {
-   "e7": 5,
-   "gpsv": 2
-  },
-  "pertinentesDansFenetreSur24": {
-   "e7": 12,
-   "gpsv": 17
-  }
- },
- "nuitVariantesGps": {
-  "source": "2026-10-22-variantes-nuit-gx10",
-  "paquetUnique": true,
-  "reponsesNotees": 150,
-  "arbitrages": 8,
-  "variantes": {
-   "GPS": {
-    "pertinentes": 21,
-    "pertinentesSous15s": 20,
-    "inventions": 5,
-    "abstentionsInjustifiees": 3,
-    "noteMoyenne": 2.2,
-    "delaiMedianS": 7.1,
-    "reponsesSous15s": 28,
-    "blocsPerdusParVideo": [
-     1,
-     14
-    ],
-    "pertinentesFaitHorsFenetreSur6": 1,
-    "pertinentesDansFenetreSur24": 20
-   },
-   "N1": {
-    "change": "GPS rejoué à l'identique",
-    "pertinentes": 17,
-    "pertinentesSous15s": 17,
-    "inventions": 9,
-    "abstentionsInjustifiees": 2,
-    "noteMoyenne": 1.9,
-    "delaiMedianS": 8.5,
-    "reponsesSous15s": 29,
-    "blocsPerdusParVideo": [
-     0,
-     37
-    ],
-    "questionsBasculees": {
-     "gagnees": 2,
-     "perdues": 6
-    },
-    "pertinentesFaitHorsFenetreSur6": 2,
-    "pertinentesDansFenetreSur24": 15
-   },
-   "N2": {
-    "change": "vision sans topicSummary (proxy)",
-    "pertinentes": 21,
-    "pertinentesSous15s": 21,
-    "inventions": 4,
-    "abstentionsInjustifiees": 3,
-    "noteMoyenne": 2.13,
-    "delaiMedianS": 5.7,
-    "reponsesSous15s": 30,
-    "blocsPerdusParVideo": [
-     0,
-     0
-    ],
-    "visionParBlocS": [
-     4.9,
-     5.4
-    ],
-    "blocsVisionPlus8s": "1/667",
-    "questionsBasculees": {
-     "gagnees": 3,
-     "perdues": 3
-    },
-    "plusRapideQueGpsQuestionParQuestion": {
-     "questions": 25,
-     "sur": 30,
-     "testDesSignesP": 0.0003
-    },
-    "plusRapideQueN1QuestionParQuestion": {
-     "questions": 26,
-     "sur": 30
-    },
-    "conditionProduit": "topicSummary alimente le résumé cumulatif des cartes de la frise TV et le contexte de la vision suivante : le calculer hors du chemin critique plutôt que le supprimer",
-    "pertinentesFaitHorsFenetreSur6": 2,
-    "pertinentesDansFenetreSur24": 19
-   },
-   "N3": {
-    "change": "journal mémoire seul (proxy)",
-    "pertinentes": 21,
-    "pertinentesSous15s": 18,
-    "inventions": 4,
-    "abstentionsInjustifiees": 3,
-    "noteMoyenne": 2.13,
-    "delaiMedianS": 9.1,
-    "reponsesSous15s": 25,
-    "contexteJetonsMedian": 4762,
-    "blocsPerdusParVideo": [
-     0,
-     25
-    ],
-    "questionsBasculees": {
-     "gagnees": 5,
-     "perdues": 5
-    },
-    "pertinentesFaitHorsFenetreSur6": 4,
-    "pertinentesDansFenetreSur24": 17
-   },
-   "N4": {
-    "change": "questions qwen3.6:35b-a3b-mtp-q4_K_M",
+  "e6DeuxPhases": {
+    "source": "2026-10-21-flux-deux-phases-gx10",
+    "base": "GPSV",
     "pertinentes": 18,
     "pertinentesSous15s": 17,
-    "inventions": 7,
-    "abstentionsInjustifiees": 3,
-    "noteMoyenne": 2.03,
-    "delaiMedianS": 6.1,
-    "reponsesSous15s": 29,
-    "jetonsParSeconde": 44.4,
-    "blocsPerdusParVideo": [
-     0,
-     16
-    ],
-    "questionsBasculees": {
-     "gagnees": 2,
-     "perdues": 5
+    "inventions": 6,
+    "abstentionsInjustifiees": 6,
+    "delaiMedianS": 9.3,
+    "springDelaiMedianS": 156.3,
+    "springDelaiMaxS": 273.3,
+    "appelsOutils": {
+      "total": 8,
+      "get_transcript": 4,
+      "search_moments": 3,
+      "inspect_clip": 1
     },
-    "pertinentesFaitHorsFenetreSur6": 1,
-    "pertinentesDansFenetreSur24": 17
-   },
-   "N5": {
-    "change": "N2 + journal mémoire (proxy)",
-    "pertinentes": 22,
-    "pertinentesSous15s": 22,
-    "inventions": 4,
-    "abstentionsInjustifiees": 3,
-    "noteMoyenne": 2.23,
-    "delaiMedianS": 6.8,
-    "reponsesSous15s": 30,
-    "blocsPerdusParVideo": [
-     0,
-     0
-    ],
-    "pertinentesFaitHorsFenetreSur6": 4,
-    "pertinentesDansFenetreSur24": 18,
-    "paquet": "notation-n5-n6",
-    "incident": "GX10 redémarrée à la main à 06:04 UTC ; Bœuf, Tears et Artemis repris à 07:59 UTC"
-   },
-   "N6": {
-    "change": "N2 rejoué à l'identique",
-    "pertinentes": 22,
-    "pertinentesSous15s": 22,
-    "inventions": 5,
-    "abstentionsInjustifiees": 1,
-    "noteMoyenne": 2.23,
-    "delaiMedianS": 5.2,
-    "reponsesSous15s": 30,
-    "blocsPerdusParVideo": [
-     0,
-     0
-    ],
-    "pertinentesFaitHorsFenetreSur6": 3,
-    "pertinentesDansFenetreSur24": 19,
-    "paquet": "notation-n5-n6",
-    "questionsBasculeesFaceAN2": {
-     "gagnees": 4,
-     "perdues": 3
+    "referenceGpsvRenoteeMemeScore": "20/30",
+    "parVideoPertinentesSous15s": {
+      "kennedy": 3,
+      "spring": 0,
+      "cnrs": 2,
+      "cuisine": 3,
+      "tears": 4,
+      "artemis": 5
     }
-   }
   },
-  "parVideoPertinentes": {
-   "ordre": [
-    "kennedy",
-    "spring",
-    "cnrs",
-    "cuisine",
-    "tears",
-    "artemis"
-   ],
-   "GPS": [
-    5,
-    1,
-    4,
-    2,
-    4,
-    5
-   ],
-   "N1": [
-    4,
-    1,
-    4,
-    2,
-    1,
-    5
-   ],
-   "N2": [
-    5,
-    2,
-    2,
-    3,
-    4,
-    5
-   ],
-   "N3": [
-    3,
-    3,
-    4,
-    3,
-    4,
-    4
-   ],
-   "N4": [
-    4,
-    2,
-    2,
-    2,
-    3,
-    5
-   ]
+  "e7JournalDeuxPhases": {
+    "source": "2026-10-21-flux-journal-deux-phases-gx10",
+    "base": "GPSV",
+    "pertinentes": 17,
+    "pertinentesSous15s": 17,
+    "inventions": 6,
+    "abstentionsInjustifiees": 7,
+    "noteMoyenne": 1.8,
+    "delaiMedianS": 11.8,
+    "reponsesSous15s": 22,
+    "springDelaiMedianS": 145.5,
+    "springDelaiMaxS": 282.5,
+    "tearsDelaiMedianS": 41.2,
+    "tearsDelaiMaxS": 261.6,
+    "erreurs": {
+      "total": 3,
+      "repetitionOllamaHttp500": 1,
+      "reponseInvalide": 2
+    },
+    "contexteQuestionJetonsMedian": {
+      "e7": 4323,
+      "gpsvE5": 2507
+    },
+    "journalPassagesMax": {
+      "artemis": 73,
+      "cnrs": 57,
+      "cuisine": 53,
+      "kennedy": 38,
+      "spring": 27,
+      "tears": 27
+    },
+    "appelsOutils": {
+      "inspect_clip": 5,
+      "search_moments": 1,
+      "get_transcript": 1
+    },
+    "gpsvRenoteeMemePaquet": {
+      "pertinentes": 19,
+      "inventions": 5,
+      "abstentionsInjustifiees": 6,
+      "noteMoyenne": 2.02
+    },
+    "questionsGagnees": [
+      "cnrs-05",
+      "cnrs-06",
+      "cuisine-05",
+      "spring-01"
+    ],
+    "questionsPerdues": [
+      "artemis-07",
+      "kennedy-01",
+      "spring-03",
+      "tears-01",
+      "tears-04",
+      "tears-06"
+    ],
+    "lectureGains": "3 des 4 gains portent sur des faits sortis de la fenêtre de 48 s ; les 6 pertes sur des faits encore dans la fenêtre",
+    "parVideoPertinentes": {
+      "kennedy": 3,
+      "spring": 2,
+      "cnrs": 3,
+      "cuisine": 4,
+      "tears": 1,
+      "artemis": 4
+    },
+    "parVideoPertinentesGpsv": {
+      "kennedy": 4,
+      "spring": 2,
+      "cnrs": 1,
+      "cuisine": 3,
+      "tears": 4,
+      "artemis": 5
+    },
+    "pertinentesFaitHorsFenetreSur6": {
+      "e7": 5,
+      "gpsv": 2
+    },
+    "pertinentesDansFenetreSur24": {
+      "e7": 12,
+      "gpsv": 17
+    }
   },
-  "variabilitePassage": "GPS rejoué : 8 questions sur 30 basculent (21 puis 17) ; N2 rejoué : 7 (21 puis 22)",
-  "suite": [
-   "N5 : N2 + journal mémoire",
-   "N6 : N2 rejoué à l'identique"
-  ],
-  "questionsFaitHorsFenetre": {
-   "regle": "blocs de l'oracle (6 derniers blocs clos)",
-   "partiellement": 6,
-   "entierement": 0,
-   "dansLaFenetre": 24
+  "nuitVariantesGps": {
+    "source": "2026-10-22-variantes-nuit-gx10",
+    "paquetUnique": true,
+    "reponsesNotees": 150,
+    "arbitrages": 8,
+    "variantes": {
+      "GPS": {
+        "pertinentes": 21,
+        "pertinentesSous15s": 20,
+        "inventions": 5,
+        "abstentionsInjustifiees": 3,
+        "noteMoyenne": 2.2,
+        "delaiMedianS": 7.1,
+        "reponsesSous15s": 28,
+        "blocsPerdusParVideo": [
+          1,
+          14
+        ],
+        "pertinentesFaitHorsFenetreSur6": 1,
+        "pertinentesDansFenetreSur24": 20
+      },
+      "N1": {
+        "change": "GPS rejoué à l'identique",
+        "pertinentes": 17,
+        "pertinentesSous15s": 17,
+        "inventions": 9,
+        "abstentionsInjustifiees": 2,
+        "noteMoyenne": 1.9,
+        "delaiMedianS": 8.5,
+        "reponsesSous15s": 29,
+        "blocsPerdusParVideo": [
+          0,
+          37
+        ],
+        "questionsBasculees": {
+          "gagnees": 2,
+          "perdues": 6
+        },
+        "pertinentesFaitHorsFenetreSur6": 2,
+        "pertinentesDansFenetreSur24": 15
+      },
+      "N2": {
+        "change": "vision sans topicSummary (proxy)",
+        "pertinentes": 21,
+        "pertinentesSous15s": 21,
+        "inventions": 4,
+        "abstentionsInjustifiees": 3,
+        "noteMoyenne": 2.13,
+        "delaiMedianS": 5.7,
+        "reponsesSous15s": 30,
+        "blocsPerdusParVideo": [
+          0,
+          0
+        ],
+        "visionParBlocS": [
+          4.9,
+          5.4
+        ],
+        "blocsVisionPlus8s": "1/667",
+        "questionsBasculees": {
+          "gagnees": 3,
+          "perdues": 3
+        },
+        "plusRapideQueGpsQuestionParQuestion": {
+          "questions": 25,
+          "sur": 30,
+          "testDesSignesP": 0.0003
+        },
+        "plusRapideQueN1QuestionParQuestion": {
+          "questions": 26,
+          "sur": 30
+        },
+        "conditionProduit": "topicSummary alimente le résumé cumulatif des cartes de la frise TV et le contexte de la vision suivante : le calculer hors du chemin critique plutôt que le supprimer",
+        "pertinentesFaitHorsFenetreSur6": 2,
+        "pertinentesDansFenetreSur24": 19
+      },
+      "N3": {
+        "change": "journal mémoire seul (proxy)",
+        "pertinentes": 21,
+        "pertinentesSous15s": 18,
+        "inventions": 4,
+        "abstentionsInjustifiees": 3,
+        "noteMoyenne": 2.13,
+        "delaiMedianS": 9.1,
+        "reponsesSous15s": 25,
+        "contexteJetonsMedian": 4762,
+        "blocsPerdusParVideo": [
+          0,
+          25
+        ],
+        "questionsBasculees": {
+          "gagnees": 5,
+          "perdues": 5
+        },
+        "pertinentesFaitHorsFenetreSur6": 4,
+        "pertinentesDansFenetreSur24": 17
+      },
+      "N4": {
+        "change": "questions qwen3.6:35b-a3b-mtp-q4_K_M",
+        "pertinentes": 18,
+        "pertinentesSous15s": 17,
+        "inventions": 7,
+        "abstentionsInjustifiees": 3,
+        "noteMoyenne": 2.03,
+        "delaiMedianS": 6.1,
+        "reponsesSous15s": 29,
+        "jetonsParSeconde": 44.4,
+        "blocsPerdusParVideo": [
+          0,
+          16
+        ],
+        "questionsBasculees": {
+          "gagnees": 2,
+          "perdues": 5
+        },
+        "pertinentesFaitHorsFenetreSur6": 1,
+        "pertinentesDansFenetreSur24": 17
+      },
+      "N5": {
+        "change": "N2 + journal mémoire (proxy)",
+        "pertinentes": 22,
+        "pertinentesSous15s": 22,
+        "inventions": 4,
+        "abstentionsInjustifiees": 3,
+        "noteMoyenne": 2.23,
+        "delaiMedianS": 6.8,
+        "reponsesSous15s": 30,
+        "blocsPerdusParVideo": [
+          0,
+          0
+        ],
+        "pertinentesFaitHorsFenetreSur6": 4,
+        "pertinentesDansFenetreSur24": 18,
+        "paquet": "notation-n5-n6",
+        "incident": "GX10 redémarrée à la main à 06:04 UTC ; Bœuf, Tears et Artemis repris à 07:59 UTC"
+      },
+      "N6": {
+        "change": "N2 rejoué à l'identique",
+        "pertinentes": 22,
+        "pertinentesSous15s": 22,
+        "inventions": 5,
+        "abstentionsInjustifiees": 1,
+        "noteMoyenne": 2.23,
+        "delaiMedianS": 5.2,
+        "reponsesSous15s": 30,
+        "blocsPerdusParVideo": [
+          0,
+          0
+        ],
+        "pertinentesFaitHorsFenetreSur6": 3,
+        "pertinentesDansFenetreSur24": 19,
+        "paquet": "notation-n5-n6",
+        "questionsBasculeesFaceAN2": {
+          "gagnees": 4,
+          "perdues": 3
+        }
+      }
+    },
+    "parVideoPertinentes": {
+      "ordre": [
+        "kennedy",
+        "spring",
+        "cnrs",
+        "cuisine",
+        "tears",
+        "artemis"
+      ],
+      "GPS": [
+        5,
+        1,
+        4,
+        2,
+        4,
+        5
+      ],
+      "N1": [
+        4,
+        1,
+        4,
+        2,
+        1,
+        5
+      ],
+      "N2": [
+        5,
+        2,
+        2,
+        3,
+        4,
+        5
+      ],
+      "N3": [
+        3,
+        3,
+        4,
+        3,
+        4,
+        4
+      ],
+      "N4": [
+        4,
+        2,
+        2,
+        2,
+        3,
+        5
+      ]
+    },
+    "variabilitePassage": "GPS rejoué : 8 questions sur 30 basculent (21 puis 17) ; N2 rejoué : 7 (21 puis 22)",
+    "suite": [
+      "N5 : N2 + journal mémoire",
+      "N6 : N2 rejoué à l'identique"
+    ],
+    "questionsFaitHorsFenetre": {
+      "regle": "blocs de l'oracle (6 derniers blocs clos)",
+      "partiellement": 6,
+      "entierement": 0,
+      "dansLaFenetre": 24
+    },
+    "correction20261022": "règle simple (pose − début du premier fait > 48 s, 12 questions) remplacée par la règle des blocs, après remarque de Codex Astra",
+    "paquetN5N6": {
+      "reponsesNotees": 120,
+      "arbitrages": 5,
+      "gpsRenotee": 21,
+      "n2Renotee": 21
+    }
   },
-  "correction20261022": "règle simple (pose − début du premier fait > 48 s, 12 questions) remplacée par la règle des blocs, après remarque de Codex Astra",
-  "paquetN5N6": {
-   "reponsesNotees": 120,
-   "arbitrages": 5,
-   "gpsRenotee": 21,
-   "n2Renotee": 21
+  "auditJugesAstra": {
+    "source": "2026-10-21-variantes-gx10/revues/audit-juges-2026-10-22",
+    "questions": 13,
+    "textes": 51,
+    "reponses": 52,
+    "memeStatutPertinent": 46,
+    "memeNote": 47,
+    "ecartAuPlus1": 51,
+    "memeInvention": 45,
+    "pertinentesClaude": 38,
+    "pertinentesAstra": 37,
+    "parConfigClaudeAstra": {
+      "GPS": [
+        10,
+        10
+      ],
+      "N2": [
+        10,
+        9
+      ],
+      "N5": [
+        10,
+        11
+      ],
+      "N6": [
+        9,
+        8
+      ]
+    },
+    "verifiable": {
+      "transcription": 43,
+      "oracleSeulement": 8
+    }
+  },
+  "bruitNotation": {
+    "renotationMemesReponses": "2 statuts sur 30 changent pour N2 et pour GPS entre les paquets N1–N4 et N5–N6"
+  },
+  "g5JournalHorsLigne": {
+    "source": "2026-10-22-journal-hors-ligne-gx10",
+    "base": "requêtes capturées de N2",
+    "passages": 2,
+    "bras": {
+      "A_sansJournal": {
+        "pertinentes": 45,
+        "inventions": 13,
+        "memoireSur12": 4,
+        "recentesSur48": 41,
+        "delaiMedianS": 4.22,
+        "contexteJetons": 2486
+      },
+      "B_journalComplet": {
+        "pertinentes": 49,
+        "inventions": 7,
+        "memoireSur12": 10,
+        "recentesSur48": 39,
+        "delaiMedianS": 5.5,
+        "contexteJetons": 4825
+      },
+      "D_plafond3000": {
+        "pertinentes": 46,
+        "inventions": 12,
+        "memoireSur12": 8,
+        "recentesSur48": 38,
+        "delaiMedianS": 4.69,
+        "contexteJetons": 3884
+      },
+      "E_apresRecents": {
+        "pertinentes": 45,
+        "inventions": 12,
+        "memoireSur12": 8,
+        "recentesSur48": 37,
+        "delaiMedianS": 5.47,
+        "contexteJetons": 4825
+      },
+      "F_AsinonB": {
+        "pertinentes": 45,
+        "inventions": 14,
+        "memoireSur12": 4,
+        "recentesSur48": 41,
+        "delaiMedianS": 4.27
+      }
+    },
+    "choix": "B pour J3",
+    "abstentionsSansJournal": "1/60"
+  },
+  "meilleureConfiguration": {
+    "nom": "N2 + journal mémoire (J3)",
+    "questions": "gemma4:26b-a4b-it-q4_K_M",
+    "pauseVision": true,
+    "whisper": "small",
+    "vision": "gemma3:4b sans topicSummary",
+    "journalMemoire": "complet, 10 000 caractères, injecté par le proxy",
+    "sur60Questions": {
+      "pertinentes": 38,
+      "inventions": 9,
+      "delaiMedianS": 6.3,
+      "sous15s": 60
+    },
+    "sansJournal60Questions": {
+      "pertinentes": 28,
+      "inventions": 16,
+      "delaiMedianS": 5.0,
+      "sous15s": 60
+    },
+    "reservesProduit": [
+      "topicSummary : le calculer hors du chemin critique (J4)",
+      "journal : à intégrer dans TVLens (aujourd'hui dans le proxy)"
+    ]
+  },
+  "j2Gps60Questions": {
+    "source": "2026-10-22-flux-60-questions-gx10",
+    "configuration": "N2 sur les 60 questions de l'oracle v3, sans journal",
+    "questions": 60,
+    "delaiMedianS": 5.0,
+    "sous15s": 60,
+    "blocsPerdus": 0,
+    "pertinence": "28/60",
+    "incident": "premier départ bloqué à 10:50 UTC (OTHER_GPU_PROCESS_ACTIVE), relancé à 10:51 UTC",
+    "inventions": 16,
+    "anciennesSur19": 0,
+    "mixtesSur8": 3,
+    "recentesSur33": 25
+  },
+  "j3Journal60Questions": {
+    "source": "2026-10-22-flux-60-questions-gx10",
+    "pertinentes": 38,
+    "inventions": 9,
+    "abstentionsInjustifiees": 14,
+    "noteMoyenne": 1.91,
+    "delaiMedianS": 6.3,
+    "sous15s": 60,
+    "blocsPerdus": {
+      "cnrs": 7
+    },
+    "anciennesSur19": 6,
+    "mixtesSur8": 7,
+    "recentesSur33": 25,
+    "gainsPertesFaceJ2": [
+      15,
+      5
+    ],
+    "testDesSignesBilateral": 0.041,
+    "trentePremieres": 24,
+    "trenteNouvelles": 14
+  },
+  "h1WebOutilsHorsLigne": {
+    "source": "experiments/essais/2026-10-22-web-outils-hors-ligne-gx10/",
+    "questionsWM": 30,
+    "passages": 2,
+    "bras": {
+      "A": {
+        "pertinentes": 0,
+        "sur": 60,
+        "inventions": 2,
+        "delaiMedianS": 3.4
+      },
+      "A2": {
+        "pertinentes": 3,
+        "sur": 60,
+        "inventions": 1,
+        "delaiMedianS": 3.0
+      },
+      "B": {
+        "pertinentes": 26,
+        "sur": 60,
+        "W": "16/36",
+        "M": "10/24",
+        "inventions": 8,
+        "delaiMedianS": 4.9,
+        "gagneesFaceA": 26,
+        "perduesFaceA": 0
+      },
+      "C": {
+        "note": false,
+        "erreurs": 3,
+        "reponsesPlusDe60s": 12,
+        "jsonInvalides": 12,
+        "reponsesSourcees": 4,
+        "appelsSansRecherche": 13
+      },
+      "O0": {
+        "pertinentes": 0,
+        "sur": 24,
+        "inventions": 0,
+        "delaiMedianS": 3.1
+      },
+      "OJ": {
+        "pertinentes": 0,
+        "sur": 24,
+        "inventions": 4,
+        "delaiMedianS": 4.3
+      },
+      "OI": {
+        "pertinentes": 4,
+        "sur": 24,
+        "inventions": 10,
+        "delaiMedianS": 8.7
+      }
+    },
+    "recuperationB": {
+      "questionsAvecSourceOracleTop3": 21,
+      "sur": 30,
+      "rateesSujetNonNomme": 7,
+      "rateesHorsCorpus": 1,
+      "rateesVoisines": 1
+    },
+    "declencheurProduit": {
+      "W": "7/18",
+      "M": "1/12",
+      "O": "0/12",
+      "v3ATort": "2/60"
+    },
+    "critere": {
+      "gainMin": 5,
+      "gain": 26,
+      "surcoutMaxS": 3,
+      "surcoutS": 1.5,
+      "inventionsNonAccrues": false
+    }
   }
- },
- "auditJugesAstra": {
-  "source": "2026-10-21-variantes-gx10/revues/audit-juges-2026-10-22",
-  "questions": 13,
-  "textes": 51,
-  "reponses": 52,
-  "memeStatutPertinent": 46,
-  "memeNote": 47,
-  "ecartAuPlus1": 51,
-  "memeInvention": 45,
-  "pertinentesClaude": 38,
-  "pertinentesAstra": 37,
-  "parConfigClaudeAstra": {
-   "GPS": [
-    10,
-    10
-   ],
-   "N2": [
-    10,
-    9
-   ],
-   "N5": [
-    10,
-    11
-   ],
-   "N6": [
-    9,
-    8
-   ]
-  },
-  "verifiable": {
-   "transcription": 43,
-   "oracleSeulement": 8
-  }
- },
- "bruitNotation": {
-  "renotationMemesReponses": "2 statuts sur 30 changent pour N2 et pour GPS entre les paquets N1–N4 et N5–N6"
- },
- "g5JournalHorsLigne": {
-  "source": "2026-10-22-journal-hors-ligne-gx10",
-  "base": "requêtes capturées de N2",
-  "passages": 2,
-  "bras": {
-   "A_sansJournal": {
-    "pertinentes": 45,
-    "inventions": 13,
-    "memoireSur12": 4,
-    "recentesSur48": 41,
-    "delaiMedianS": 4.22,
-    "contexteJetons": 2486
-   },
-   "B_journalComplet": {
-    "pertinentes": 49,
-    "inventions": 7,
-    "memoireSur12": 10,
-    "recentesSur48": 39,
-    "delaiMedianS": 5.5,
-    "contexteJetons": 4825
-   },
-   "D_plafond3000": {
-    "pertinentes": 46,
-    "inventions": 12,
-    "memoireSur12": 8,
-    "recentesSur48": 38,
-    "delaiMedianS": 4.69,
-    "contexteJetons": 3884
-   },
-   "E_apresRecents": {
-    "pertinentes": 45,
-    "inventions": 12,
-    "memoireSur12": 8,
-    "recentesSur48": 37,
-    "delaiMedianS": 5.47,
-    "contexteJetons": 4825
-   },
-   "F_AsinonB": {
-    "pertinentes": 45,
-    "inventions": 14,
-    "memoireSur12": 4,
-    "recentesSur48": 41,
-    "delaiMedianS": 4.27
-   }
-  },
-  "choix": "B pour J3",
-  "abstentionsSansJournal": "1/60"
- },
- "meilleureConfiguration": {
-  "nom": "N2 + journal mémoire (J3)",
-  "questions": "gemma4:26b-a4b-it-q4_K_M",
-  "pauseVision": true,
-  "whisper": "small",
-  "vision": "gemma3:4b sans topicSummary",
-  "journalMemoire": "complet, 10 000 caractères, injecté par le proxy",
-  "sur60Questions": {
-   "pertinentes": 38,
-   "inventions": 9,
-   "delaiMedianS": 6.3,
-   "sous15s": 60
-  },
-  "sansJournal60Questions": {
-   "pertinentes": 28,
-   "inventions": 16,
-   "delaiMedianS": 5.0,
-   "sous15s": 60
-  },
-  "reservesProduit": [
-   "topicSummary : le calculer hors du chemin critique (J4)",
-   "journal : à intégrer dans TVLens (aujourd'hui dans le proxy)"
-  ]
- },
- "j2Gps60Questions": {
-  "source": "2026-10-22-flux-60-questions-gx10",
-  "configuration": "N2 sur les 60 questions de l'oracle v3, sans journal",
-  "questions": 60,
-  "delaiMedianS": 5.0,
-  "sous15s": 60,
-  "blocsPerdus": 0,
-  "pertinence": "28/60",
-  "incident": "premier départ bloqué à 10:50 UTC (OTHER_GPU_PROCESS_ACTIVE), relancé à 10:51 UTC",
-  "inventions": 16,
-  "anciennesSur19": 0,
-  "mixtesSur8": 3,
-  "recentesSur33": 25
- },
- "j3Journal60Questions": {
-  "source": "2026-10-22-flux-60-questions-gx10",
-  "pertinentes": 38,
-  "inventions": 9,
-  "abstentionsInjustifiees": 14,
-  "noteMoyenne": 1.91,
-  "delaiMedianS": 6.3,
-  "sous15s": 60,
-  "blocsPerdus": {
-   "cnrs": 7
-  },
-  "anciennesSur19": 6,
-  "mixtesSur8": 7,
-  "recentesSur33": 25,
-  "gainsPertesFaceJ2": [
-   15,
-   5
-  ],
-  "testDesSignesBilateral": 0.041,
-  "trentePremieres": 24,
-  "trenteNouvelles": 14
- },
- "h1WebOutilsHorsLigne": {
-  "source": "experiments/essais/2026-10-22-web-outils-hors-ligne-gx10/",
-  "questionsWM": 30,
-  "passages": 2,
-  "bras": {
-   "A": {
-    "pertinentes": 0,
-    "sur": 60,
-    "inventions": 2,
-    "delaiMedianS": 3.4
-   },
-   "A2": {
-    "pertinentes": 3,
-    "sur": 60,
-    "inventions": 1,
-    "delaiMedianS": 3.0
-   },
-   "B": {
-    "pertinentes": 26,
-    "sur": 60,
-    "W": "16/36",
-    "M": "10/24",
-    "inventions": 8,
-    "delaiMedianS": 4.9,
-    "gagneesFaceA": 26,
-    "perduesFaceA": 0
-   },
-   "C": {
-    "note": false,
-    "erreurs": 3,
-    "reponsesPlusDe60s": 12,
-    "jsonInvalides": 12,
-    "reponsesSourcees": 4,
-    "appelsSansRecherche": 13
-   },
-   "O0": {
-    "pertinentes": 0,
-    "sur": 24,
-    "inventions": 0,
-    "delaiMedianS": 3.1
-   },
-   "OJ": {
-    "pertinentes": 0,
-    "sur": 24,
-    "inventions": 4,
-    "delaiMedianS": 4.3
-   },
-   "OI": {
-    "pertinentes": 4,
-    "sur": 24,
-    "inventions": 10,
-    "delaiMedianS": 8.7
-   }
-  },
-  "recuperationB": {
-   "questionsAvecSourceOracleTop3": 21,
-   "sur": 30,
-   "rateesSujetNonNomme": 7,
-   "rateesHorsCorpus": 1,
-   "rateesVoisines": 1
-  },
-  "declencheurProduit": {
-   "W": "7/18",
-   "M": "1/12",
-   "O": "0/12",
-   "v3ATort": "2/60"
-  },
-  "critere": {
-   "gainMin": 5,
-   "gain": 26,
-   "surcoutMaxS": 3,
-   "surcoutS": 1.5,
-   "inventionsNonAccrues": false
-  }
- }
 }
