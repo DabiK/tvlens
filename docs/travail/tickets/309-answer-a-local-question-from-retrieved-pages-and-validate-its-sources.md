@@ -1,7 +1,7 @@
 ---
 id: T309
 titre: Answer a local question from retrieved pages and validate its sources against them
-statut: a-faire
+statut: termine
 bloque_par: T308
 adr: oui
 installe: non
@@ -115,3 +115,31 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 22/10, orchestrateur : ticket ouvert depuis l'exploration de la recherche web locale, après T308.
+- 22/10, orchestrateur, exploration (explorateur, rapport dans `.harness-state/tickets/T309/exploration.md`) : T308 livre
+  le port dans `core/ports.cjs`, `callsForWeb` et les bornes dans `core/web-retrieval.cjs`, `sourceKey` strict (https,
+  vrai domaine). L'agent Ollama passe ses options au client HTTP et compte les requêtes dans son `fetchImpl` ; DeepAsk ne
+  revalide pas les URL, l'agent est le seul garde. `buildLocalPrompt` est à ≈10 de complexité (le gel du fichier porte
+  sur `buildPrompt`). Le marqueur aléatoire du bloc non fiable impose de comparer les prompts à marqueur normalisé
+  (écart déclaré dans `ecarts.md`). Prochain ADR : 0063 ; `docs/architecture.md` décrit les questions locales sans web.
+- 22/10, orchestrateur, implémentation (implementeur) : `buildLocalPrompt` reçoit `webPages` (lignes web extraites dans
+  `localWebLines`), `readAnswer(content, pages)` valide les sources par clé d'URL, l'agent récupère avant le prompt avec
+  un délai de 15 s et publie `retrieval`. 12 tests ajoutés ; rouge vu : le test d'acceptation échouait sur `actual: []`
+  (port jamais appelé). Rapporté par l'implémenteur : `node scripts/check.mjs` complet vert (3090 tests JS, 71 Python).
+- 22/10, orchestrateur, ADR : `docs/adr/0063-…` écrit, statut de l'ADR 0057 « amendée par l'ADR 0063 »,
+  `docs/architecture.md` (questions locales et entrée Décisions) mis à jour.
+- 22/10, orchestrateur, relecture 1 (`relecture-1.md`) : à corriger, 0 bloquant, 1 mineur (aucun test ne protège la
+  consigne web du prompt avec pages), 1 hors périmètre (titre et éditeur non bornés en longueur). Écart du critère 4
+  accepté. Correction renvoyée à l'implémenteur.
+- 22/10, orchestrateur, correction 1 (implementeur) : le test d'acceptation vérifie la consigne web du prompt avec
+  pages ; rouge vu en cassant `localWebLines`. `node scripts/check.mjs` lancé par l'orchestrateur : vert, 3090 tests
+  JS, 71 Python, `cas_de_test_produit` 1668 → 1680.
+- 22/10, orchestrateur, relecture 2 (`relecture-2.md`, relecture de correction) : accepté, 0 bloquant, 0 mineur,
+  1 hors périmètre (titre, éditeur et date d'une page non bornés en longueur), NON CORRIGÉS : 0. Verdict TERMINÉ.
+
+### Réserves à la clôture
+
+- Hors périmètre (relecture 1 et 2) : titre, éditeur et date d'une page ne sont pas bornés en longueur dans boundedPages (adapters/ollama/question-agent.cjs) ; une borne partagée dans core/web-retrieval.cjs est à prévoir en T310 ou T311.
+- Écart accepté, critère 4 : le prompt est comparé à celui d'un agent sans port après normalisation du marqueur aléatoire TVLENS-<12 hex> du bloc non fiable, seule différence possible.
+- Non vérifié : aucun essai réel avec un modèle Ollama ni avec SearXNG ; l'extrait (evidence) d'une source n'est pas comparé au texte de la page.
+- Question pour le propriétaire : la sonde experiments/gx10/research/2026-10-20-vllm-client/sonder.cjs hache adapters/ollama/question-response.cjs et refusera avec RESPONSE_PARSER_CHANGED tant que son empreinte n'est pas mise à jour.
+- Une résidence de port autre que local ou hybrid est publiée 'unknown' dans retrieval.residence, valeur que le ticket ne prévoit pas.
