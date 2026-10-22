@@ -628,8 +628,6 @@ pour le flux réel ; une source ne compte que si sa page a été lue.
   — Retrieve and open web pages through a self-hosted SearXNG
 - [T311](311-configure-local-web-retrieval-and-let-replays-declare-and-report-it.md)
   — Configure local web retrieval and let replays declare and report it
-- [T312](312-share-one-source-url-key-between-the-codex-and-local-adapters.md)
-  — Share one source URL key between the Codex and local adapters _(facultatif)_
 - [T314](314-let-the-local-model-decide-the-web-search-and-write-its-query.md)
   — Let the local model decide the web search and write its query _(demande un ADR ; décision attendue : chiffres de H2)_
 
