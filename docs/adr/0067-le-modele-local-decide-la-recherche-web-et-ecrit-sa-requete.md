@@ -28,7 +28,9 @@ sans intention, `OllamaQuestionAgent` fait d'abord un appel de décision, puis s
 - `web: false` : aucune récupération. `web: true` avec une requête non vide : la récupération reçoit cette requête,
   bornée par `retrievalQuery`. Sortie illisible, requête vide, erreur ou délai propre dépassé
   (`WEB_DECISION_TIMEOUT_MS`, 5 s, ramené à 1,5 s par l'ADR 0068, dans l'échéance de la question) : la règle `callsForWeb` décide sur la question brute,
-  comme le déclencheur `auto`. L'annulation ou l'échéance de la question interrompt la décision, et rien ne part ensuite.
+  comme le déclencheur `auto`. L'annulation, la fermeture ou le plafond général de la question interrompent la
+  décision, et rien ne part ensuite ; l'échéance de 14 s ne s'applique qu'une fois la question classée « cherche »
+  (ADR 0068, T317).
 - La réponse reçoit toujours la question du spectateur : la requête du modèle ne sert qu'à la récupération.
 - La décision est une requête au fournisseur comptée comme les autres ; son raisonnement entre dans l'usage de la
   question. Le résultat porte `retrieval.decision` (`web`, `no-web` ou `failed`), la requête envoyée au port et la durée
