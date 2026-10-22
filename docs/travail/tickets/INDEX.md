@@ -636,6 +636,8 @@ pour le flux réel ; une source ne compte que si sa page a été lue.
   — Give the model the part of each page that matches the question
 - [T316](316-extract-readable-pages-and-bound-local-web-latency.md)
   — Extract readable web pages and bound local web answer latency _(demande un ADR ; installe une dépendance)_
+- [T317](317-bound-only-the-local-questions-that-really-search-the-web.md)
+  — Bound only the local questions that really search the web
 
 ### structure — Filets, contrats et Mémoire
 
