@@ -123,6 +123,9 @@ TVLENS_LOCAL_QUESTIONS_MODEL=MODELE_QUESTIONS_VALIDE
 TVLENS_LOCAL_QUESTIONS_NUM_CTX=8192
 TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE=10m
 TVLENS_LOCAL_QUESTIONS_THINK=default
+TVLENS_LOCAL_WEB_BACKEND=searxng
+TVLENS_LOCAL_WEB_URL=http://127.0.0.1:8888
+TVLENS_LOCAL_WEB_TRIGGER=auto
 TVLENS_EMBEDDINGS_BACKEND=local
 TVLENS_LOCAL_EMBEDDINGS_URL=http://127.0.0.1:11434
 TVLENS_LOCAL_EMBEDDINGS_MODEL=MODELE_EMBEDDINGS_VALIDE
@@ -143,6 +146,7 @@ TVLENS_BACKGROUND_INDEX=1
 | Raisonnement perception | `TVLENS_LOCAL_VLM_THINK=default`, `on` ou `off` | Utilisé aussi par le réexamen sans modèle dédié ; autre valeur refusée, réglage nommé. |
 | Raisonnement réexamen dédié | `TVLENS_LOCAL_INSPECTION_THINK=default`, `on` ou `off` | Indépendant de la perception ; valeur invalide refusée avec le nom du réglage. |
 | Raisonnement questions | `TVLENS_LOCAL_QUESTIONS_THINK=default`, `on` ou `off` | Indépendant du réglage VLM. |
+| Web des questions locales | `TVLENS_LOCAL_WEB_BACKEND=corpus` (avec `TVLENS_LOCAL_WEB_CORPUS`) ou `searxng` (avec `TVLENS_LOCAL_WEB_URL`) ; `TVLENS_LOCAL_WEB_TRIGGER=auto` (défaut) ou `always` | Absent ou vide : aucune récupération. Backend inconnu, dossier ou URL manquant, URL non http(s) ou avec identifiants, déclencheur inconnu : refus `TVLENS_LOCAL_WEB_CONFIG_INVALID` au démarrage, sans la valeur. Sans effet avec les questions Codex. |
 
 Pour ces réglages de raisonnement, `default` ou l’absence omet le champ `think` de `/api/chat` ; le modèle
 garde son défaut. `on` transmet `think:true`, `off` transmet `think:false`, à chaque tour, y compris
@@ -173,8 +177,12 @@ est distinct de l’attente bornée de la recherche. Les embeddings n’ont pas 
 L’environnement prime sur le fichier importé ; les sélections de fichier persistent dans le cache
 Electron chiffré. Sans choix embeddings, le comportement historique dépend de la présence d’une clé
 OpenRouter : l’expérience doit donc toujours fixer ce choix. Le choix des questions ne choisit ni
-recherche ni inspection. Les questions locales n’ont que les trois outils vidéo existants, sans web ;
-une demande de source externe reçoit une limite explicite. Le web de surveillance reste distant,
+recherche ni inspection. Sans `TVLENS_LOCAL_WEB_BACKEND`, les questions locales n’ont que les trois outils
+vidéo existants, sans web, et une demande de source externe reçoit une limite explicite. Avec lui, une question
+qui appelle le web (ou toutes, avec `TVLENS_LOCAL_WEB_TRIGGER=always`) reçoit d’abord les pages récupérées, et
+seules les sources tirées de ces pages sont acceptées. SearXNG (`searxng`) sort de la machine pour chercher et
+ouvrir les pages : une campagne qui l’exerce est **hybride** ; le corpus figé (`corpus`) reste local. Le web de
+surveillance reste distant,
 avec détection Codex actuelle distincte. Relever ces deux rôles même s’ils sont non exercés.
 Un rôle distant, dont un chat Codex, rend la campagne **hybride** ; ne pas l’annoncer « tout local ».
 
@@ -260,6 +268,20 @@ contrôle l’ensemble manifeste/attendus/rapport/revue. Les fixtures permettent
 Les essais reproductibles de la voie locale n’interrogent pas le web : ils lisent un corpus de pages déjà extraites
 en texte, sur le disque local (`adapters/web/frozen-corpus.cjs`, port `WebRetrievalPort` de `core/ports.cjs`).
 Une même question rend toujours les mêmes pages. Le flux réel, lui, passe par SearXNG sur la GX10.
+
+Pour l’activer sur les questions locales :
+
+```dotenv
+TVLENS_LOCAL_WEB_BACKEND=corpus
+TVLENS_LOCAL_WEB_CORPUS=/chemin/vers/corpus-web
+TVLENS_LOCAL_WEB_TRIGGER=always
+```
+
+Dans un scénario de rejeu, la même récupération se déclare dans `config.localWeb`, par exemple
+`{"backend": "corpus", "corpus": "web/corpus"}` ; le chemin du corpus y est relatif au dossier du scénario,
+descendant, sans `..`. Dans le rapport, `webRetrieval` ne porte ni chemin ni URL ; la copie du scénario
+dans `parameters` garde le chemin relatif du corpus et l'URL déclarée, jamais un chemin complet ni une URL
+avec identifiants (voir `scripts/local-stream-replay.md`).
 
 Le dossier du corpus contient `corpus.json` et les fichiers de texte :
 

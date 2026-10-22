@@ -1243,6 +1243,153 @@ test('backend omissions, unknown CLI flags, missing languages and undeclared loo
   }
 });
 
+const WEB_PAGE = { url: 'https://www.example.org/volcans/etna', title: 'Hauteur de l’Etna' };
+const PAGE_MARKER = 'TEXTE_PRIVE_DE_PAGE';
+async function webCorpus(f) {
+  const directory = path.join(f.root, 'web', 'corpus');
+  await fs.mkdir(path.join(directory, 'pages'), { recursive: true });
+  await fs.writeFile(path.join(directory, 'corpus.json'), JSON.stringify({ version: 1, documents: [{ ...WEB_PAGE, file: 'pages/etna.txt' }] }));
+  await fs.writeFile(path.join(directory, 'pages', 'etna.txt'), `La hauteur de l’Etna dépasse trois mille mètres. ${PAGE_MARKER}`);
+  return directory;
+}
+// The fake model answers from the web and cites the corpus page, with a quotation of that page as evidence.
+const webOllama = t => fakeOllama(t, (body, res) => {
+  if (body.model !== 'questions-fixture') return false;
+  res.end(JSON.stringify({ model: body.model, done: true, message: { role: 'assistant', content: JSON.stringify({
+    answer: 'L’Etna dépasse trois mille mètres.', kind: 'external', citations: [], limits: [],
+    sources: [{ url: WEB_PAGE.url, title: WEB_PAGE.title, evidence: PAGE_MARKER }] }) } }));
+  return true;
+});
+async function webCampaign(t, f, extra) {
+  const stage = await accelerated(t, f, { questionsBackend: 'local', ...extra, runtimeOptions: { agent: undefined, ...extra?.runtimeOptions } });
+  await stage.clock.advance(1000);
+  await until(() => stage.host.report.uploads[0].status === 'accepted', 'first capture before the web question');
+  await stage.clock.advance(500);
+  await until(() => ['done', 'error'].includes(stage.host.report.questions[0].status), 'web question outcome');
+  await stage.clock.advance(500);
+  await until(() => stage.host.report.uploads[1].status === 'accepted', 'second capture after the web question');
+  await stage.clock.advance(1000);
+  await until(() => stage.host.report.uploads[2].status === 'accepted', 'last capture after the web question');
+  return stage.pending;
+}
+async function writtenOutputs(directory) {
+  const entries = await fs.readdir(directory, { recursive: true, withFileTypes: true });
+  // data/ is the product's own session storage, not a campaign output.
+  const files = entries.filter(entry => entry.isFile() && !path.relative(directory, entry.parentPath).split(path.sep).includes('data'));
+  return Promise.all(files.map(entry => fs.readFile(path.join(entry.parentPath, entry.name), 'utf8')));
+}
+
+test('a replay declaring a frozen corpus answers a web question with a validated source and reports it without page text', async t => {
+  const f = await fixture(t), ollama = await webOllama(t);
+  const directory = await webCorpus(f);
+  f.scenario.config.localQuestions.url = ollama.url;
+  f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus' };
+  f.scenario.questions[0].question = 'Cherche sur le web la hauteur de l’Etna.';
+  const report = await webCampaign(t, f);
+  const [question] = report.questions;
+  assert.equal(question.status, 'done', JSON.stringify(question.error));
+  assert.equal(question.result.kind, 'external');
+  const { elapsedMs, ...retrieval } = question.web.retrieval;
+  assert.deepEqual(retrieval, { residence: 'local', status: 'used', documents: 1 });
+  assert.ok(Number.isFinite(elapsedMs));
+  assert.deepEqual(question.web.acceptedSources, [WEB_PAGE.url]);
+  assert.deepEqual(question.web.sourceValidation, { proposed: 1, accepted: 1, rejected: [] });
+  assert.deepEqual(report.webRetrieval, { backend: 'corpus', trigger: 'auto', residence: 'local' });
+  assert.equal(report.webResidence, 'local');
+  assert.doesNotMatch(report.roles.questions.web, /indisponible/);
+  const prompt = JSON.stringify(ollama.calls.find(call => call.body.model === 'questions-fixture').body);
+  assert.match(prompt, new RegExp(PAGE_MARKER), 'the page reached the model');
+  const outputs = await writtenOutputs(f.options.outputDir);
+  assert.ok(outputs.length > 1);
+  for (const raw of [JSON.stringify(report), ...outputs]) {
+    assert.doesNotMatch(raw, new RegExp(PAGE_MARKER));
+    assert.equal(raw.includes(directory), false, 'no full corpus path in the campaign outputs');
+  }
+});
+
+test('a refused web answer still reports its retrieval and the rejected source', async t => {
+  const f = await fixture(t), invented = 'https://www.example.org/page-jamais-ouverte';
+  const ollama = await fakeOllama(t, (body, res) => {
+    if (body.model !== 'questions-fixture') return false;
+    res.end(JSON.stringify({ model: body.model, done: true, message: { role: 'assistant', content: JSON.stringify({
+      answer: 'Une hauteur inventée.', kind: 'external', citations: [], limits: [],
+      sources: [{ url: invented, title: 'Inventée', evidence: PAGE_MARKER }] }) } }));
+    return true;
+  });
+  await webCorpus(f);
+  f.scenario.config.localQuestions.url = ollama.url;
+  f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus' };
+  f.scenario.questions[0].question = 'Cherche sur le web la hauteur de l’Etna.';
+  const report = await webCampaign(t, f);
+  const [question] = report.questions;
+  assert.equal(question.result.kind, 'insufficient');
+  assert.equal(question.web.retrieval.status, 'used');
+  assert.deepEqual(question.web.acceptedSources, []);
+  assert.equal(question.web.sourceValidation.proposed, 1);
+  assert.equal(question.web.sourceValidation.accepted, 0);
+  assert.deepEqual(question.web.sourceValidation.rejected.map(item => item.url), [invented]);
+  assert.doesNotMatch(JSON.stringify(report), new RegExp(PAGE_MARKER));
+});
+
+test('imported web retrieval settings merge with the scenario and a hybrid retrieval marks the whole campaign', async t => {
+  const f = await fixture(t), ollama = await webOllama(t);
+  await webCorpus(f);
+  f.scenario.config.localQuestions.url = ollama.url;
+  f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus' };
+  // No web cue in this question: only the imported trigger makes it retrieve.
+  f.scenario.questions[0].question = 'Quelle hauteur pour l’Etna ?';
+  const imported = { localWeb: { backend: 'searxng', url: 'http://127.0.0.1:1/private-search', trigger: 'always' } };
+  const merged = await webCampaign(t, f, { dependencies: { config: imported } });
+  assert.equal(merged.questions[0].web?.retrieval.status, 'used', 'the imported trigger reaches a question that names no web');
+  assert.deepEqual(merged.webRetrieval, { backend: 'corpus', trigger: 'always', residence: 'local' });
+  assert.equal(JSON.stringify(merged).includes('private-search'), false);
+
+  const received = [];
+  const createWebRetrieval = localWeb => {
+    received.push(localWeb);
+    return { residence: 'hybrid', retrieve: async () => ({ documents: [{ ...WEB_PAGE, text: PAGE_MARKER }], limits: [] }) };
+  };
+  const other = await fixture(t);
+  other.scenario.config.localQuestions.url = ollama.url;
+  const hybrid = await webCampaign(t, other, { dependencies: { config: imported }, runtimeOptions: { createWebRetrieval } });
+  assert.deepEqual(received, [imported.localWeb]);
+  assert.equal(hybrid.questions[0].web.retrieval.residence, 'hybrid');
+  assert.deepEqual(hybrid.webRetrieval, { backend: 'searxng', trigger: 'always', residence: 'hybrid' });
+  assert.equal(hybrid.webResidence, 'hybrid');
+
+  const none = await fixture(t);
+  none.scenario.config.localQuestions.url = ollama.url;
+  const plain = await webCampaign(t, none, { runtimeOptions: { createWebRetrieval } });
+  assert.equal(received.length, 1, 'no retrieval is composed without a web setting');
+  assert.equal(plain.webRetrieval, null);
+  assert.equal(plain.webResidence, null);
+  assert.equal(Object.hasOwn(plain.questions[0], 'web'), false);
+  assert.match(plain.roles.questions.web, /indisponible/);
+});
+
+test('a scenario declaring an invalid local web retrieval is refused with its exact code before any host', async t => {
+  const cases = [['corpus', 'TVLENS_REPLAY_CONFIG_INVALID'], [null, 'TVLENS_REPLAY_CONFIG_INVALID'],
+    [{ backend: 'corpus', corpus: '/absolute/corpus' }, 'TVLENS_REPLAY_CONFIG_INVALID'],
+    [{ backend: 'corpus', corpus: 'pages/../../outside' }, 'TVLENS_REPLAY_CONFIG_INVALID'],
+    [{ backend: 'other', corpus: 'corpus' }, 'TVLENS_LOCAL_WEB_CONFIG_INVALID'], [{ backend: 'corpus' }, 'TVLENS_LOCAL_WEB_CONFIG_INVALID'],
+    [{ backend: 'searxng', url: 'http://user:pass@127.0.0.1:8888' }, 'TVLENS_LOCAL_WEB_CONFIG_INVALID'],
+    [{ backend: 'corpus', corpus: 'web/corpus', url: 'http://user:pass@127.0.0.1:8888' }, 'TVLENS_LOCAL_WEB_CONFIG_INVALID'],
+    [{ backend: 'corpus', corpus: 'corpus', trigger: 'never' }, 'TVLENS_LOCAL_WEB_CONFIG_INVALID']];
+  for (const [localWeb, code] of cases) {
+    const f = await fixture(t);
+    f.scenario.config.localWeb = localWeb;
+    await f.save();
+    await assert.rejects(runReplay({ ...f.options, execute: true }, {
+      createHost: () => assert.fail('invalid web retrieval constructs no host'),
+    }), error => error.code === code && !/pass@|absolute|outside|never/.test(error.message));
+  }
+  const f = await fixture(t);
+  f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus', trigger: 'always' };
+  await f.save();
+  const report = await runReplay(f.options, { createHost: () => assert.fail('validation constructs no host') });
+  assert.equal(report.complete, true);
+});
+
 test('local selections preserve imported authentication without copying credentials into campaign outputs', async t => {
   const f = await fixture(t), ollama = await fakeOllama(t);
   f.scenario.config.localVlm.url = ollama.url;

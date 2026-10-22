@@ -14,6 +14,7 @@ const TVLENS_OLLAMA_QUESTION_CLOSED = 'TVLENS_OLLAMA_QUESTION_CLOSED';
 const TVLENS_OLLAMA_QUESTION_TIMEOUT = 'TVLENS_OLLAMA_QUESTION_TIMEOUT';
 const TVLENS_OLLAMA_WEB_TRIGGER_INVALID = 'TVLENS_OLLAMA_WEB_TRIGGER_INVALID';
 const WEB_TRIGGERS = ['auto', 'always'];
+const DEFAULT_WEB_TRIGGER = 'auto';
 // Well inside the question deadline (QUESTION_TIMEOUT_MS): a slow retrieval leaves time to answer without pages.
 const WEB_RETRIEVAL_TIMEOUT_MS = 15_000;
 const WEB_RETRIEVAL_FAILED_LIMIT = 'La recherche web locale n’a pas abouti.';
@@ -57,7 +58,7 @@ class OllamaQuestionAgent {
   #transport;
   #retrieval;
   #webTrigger;
-  constructor({ now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout, retrieval, webTrigger = 'auto', ...options } = {}) {
+  constructor({ now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout, retrieval, webTrigger = DEFAULT_WEB_TRIGGER, ...options } = {}) {
     if (!WEB_TRIGGERS.includes(webTrigger)) throw Object.assign(Error('Déclencheur web local invalide (auto ou always).'), {
       code: TVLENS_OLLAMA_WEB_TRIGGER_INVALID,
     });
@@ -204,4 +205,4 @@ class OllamaQuestionAgent {
 
 module.exports = { OllamaQuestionAgent, TVLENS_OLLAMA_TOOL_REFUSED, TVLENS_OLLAMA_TOOL_BUDGET,
   TVLENS_OLLAMA_QUESTION_CLOSED, TVLENS_OLLAMA_QUESTION_TIMEOUT, TVLENS_OLLAMA_WEB_TRIGGER_INVALID,
-  WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT };
+  WEB_TRIGGERS, DEFAULT_WEB_TRIGGER, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT };

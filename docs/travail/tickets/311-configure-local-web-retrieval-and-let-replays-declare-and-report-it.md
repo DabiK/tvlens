@@ -1,7 +1,7 @@
 ---
 id: T311
 titre: Configure local web retrieval and let replays declare and report it
-statut: a-faire
+statut: termine
 bloque_par: T309, T310
 adr: non
 installe: non
@@ -87,3 +87,35 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 22/10, orchestrateur : ticket ouvert depuis l'exploration de la recherche web locale, après T309 et T310.
+- 22/10, orchestrateur, exploration (`.harness-state/tickets/T311/exploration.md`) : `SWITCHES` suffit pour lire et
+  persister les quatre réglages, `localWeb` rendu seulement s'il est réglé ; `createQuestionAgent` valide avant le
+  retour d'un agent injecté et passe aujourd'hui `config.localQuestions` tel quel ; `SearxngRetrieval` ne valide pas
+  son URL, la configuration doit le faire. Le rejeu lit l'état complet ; le résultat brut de l'agent se capte dans
+  l'enveloppe `answer` de l'observateur, ce qui garde `retrieval` même quand DeepAsk refuse la réponse. Décisions dans
+  `ecarts.md` : code exact du critère 4, corpus relatif au scénario, aucune citation de page dans le rapport.
+- 22/10, implémenteur : quatre réglages dans `SWITCHES`, `localWeb` rendu seulement s'il est réglé ;
+  `runtime/local-web-retrieval.cjs` (validation `TVLENS_LOCAL_WEB_CONFIG_INVALID`, fabrique par défaut injectable) ;
+  scénario, fusion dans l'hôte, relevé web par question capté sur le résultat brut de l'agent, `webRetrieval` et
+  `webResidence` dans le rapport, citations retirées ; documentation. `node scripts/check.mjs --changed` : vert
+  (113 tests), `node scripts/check.mjs` : vert (3113 tests JS, 71 Python), selon son compte rendu.
+- 22/10, orchestrateur : `node scripts/loop/reviewed-state.mjs record --ticket T311` → `revue-1`.
+- 22/10, relecteur (revue-1, `relecture-1.md`) : à corriger, 0 bloquant, 3 mineurs (URL avec identifiants admise
+  dans un scénario corpus, phrase fausse sur le rapport dans `docs/gx10-experiment.md`, déclencheurs définis deux
+  fois), 1 hors périmètre (empreintes de code du rapport). Les trois écarts déclarés sont acceptés.
+- 22/10, implémenteur (correction 1) : toute `url` présente doit être http(s) sans identifiants quel que soit le
+  backend, phrase du rapport rectifiée dans `docs/gx10-experiment.md` et `scripts/local-stream-replay.md`,
+  déclencheurs et défaut exportés par `adapters/ollama/question-agent.cjs` seulement. `check --changed` : vert.
+- 22/10, orchestrateur : `node scripts/loop/reviewed-state.mjs record --ticket T311` → `revue-2`.
+- 22/10, relecteur (revue-2, `relecture-2.md`) : accepté, 0 bloquant, 0 mineur, 1 hors périmètre (empreintes de code
+  du rapport), `NON CORRIGÉS : 0`.
+- 22/10, orchestrateur : `node scripts/check.mjs` : vert, sortie 0 (3113 tests JS, 71 Python ;
+  `cas_de_test_produit` 1696 → 1703). Un `record` de vérification après le contrôle a donné un interdiff vide :
+  l'état final est celui de `revue-2`, sur lequel l'état relu est laissé.
+
+### Réserves à la clôture
+
+- Hors périmètre : identity() de scripts/local-stream-report.cjs ne prend pas l'empreinte de runtime/local-web-retrieval.cjs ni de adapters/web/*.cjs ; deux rejeux avec des adaptateurs web différents ont la même identité de code.
+- Écart accepté, critère 4 : une forme localWeb invalide d'un scénario est refusée avec TVLENS_LOCAL_WEB_CONFIG_INVALID (validateur partagé), un localWeb non objet ou un corpus hors du dossier du scénario avec TVLENS_REPLAY_CONFIG_INVALID ; le test fige le code exact de chaque cas.
+- Écart accepté : dans un scénario, localWeb.corpus est un chemin relatif descendant résolu contre le dossier du scénario.
+- Écart accepté, critère 3 : le rapport retire evidence des sources copiées (citation de page).
+- Non vérifié : aucun essai réel avec SearXNG ni un vrai corpus, seulement des doublures et un faux Ollama en boucle locale ; une erreur de l'agent après récupération ne laisse aucun relevé web pour la question.
