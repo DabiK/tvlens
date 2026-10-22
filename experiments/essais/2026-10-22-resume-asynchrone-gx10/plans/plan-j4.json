@@ -1,0 +1,425 @@
+{
+  "experiment": "j4-gps-resume-asynchrone-60q",
+  "hypothesis": "J2 avec le topicSummary calculé hors du chemin critique (proxy : vision sans le champ, puis un appel texte quand ni question ni vision n'occupent le GPU, qui replie les blocs en attente du sujet). Critères : surcoût médian des questions ≤ 1 s face à J2, 0 bloc vision perdu, ≥ 18/20 résumés fidèles sans invention.",
+  "codeShas": [
+    "2035a2faad499659bcdf940c6104e50e311a9cd6"
+  ],
+  "runnerSha256": "532329d2f84707d0380c52fce59d7e025965ea0106c53c93eac1bd244ce9ef77",
+  "configEnv": "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env",
+  "configEnvSha256": "1c0072714e8501bc4a295c571cae664996feaabcbf146fff1c0c224a9e32fcc7",
+  "envOverrides": {
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11501",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11502",
+    "TVLENS_LOCAL_INSPECTION_URL": "http://127.0.0.1:11503",
+    "TVLENS_LOCAL_EMBEDDINGS_URL": "http://127.0.0.1:11504"
+  },
+  "videos": {
+    "kennedy": {
+      "preparation": "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-kennedy",
+      "questions": [
+        {
+          "id": "kennedy-01",
+          "atMs": 32000,
+          "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?"
+        },
+        {
+          "id": "kennedy-n1",
+          "atMs": 104000,
+          "question": "Dans sa chronologie ramenée à 50 ans, qu'a fait l'homme il y a dix ans, puis il y a cinq ans ?"
+        },
+        {
+          "id": "kennedy-03",
+          "atMs": 128000,
+          "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?"
+        },
+        {
+          "id": "kennedy-n2",
+          "atMs": 160000,
+          "question": "Sur son échelle, qu'aurait-on réussi « avant minuit ce soir », et à quelle condition ?"
+        },
+        {
+          "id": "kennedy-05",
+          "atMs": 216000,
+          "question": "Que dit-il de l'exploration et du rôle des États-Unis ?"
+        },
+        {
+          "id": "kennedy-n3",
+          "atMs": 248000,
+          "question": "Quel personnage historique Kennedy a-t-il cité à propos des grandes actions, et que disait-il ?"
+        },
+        {
+          "id": "kennedy-06",
+          "atMs": 272000,
+          "question": "What does Kennedy want space to represent, and what does he reject?"
+        },
+        {
+          "id": "kennedy-n4",
+          "atMs": 296000,
+          "question": "Selon Kennedy, quelles « premières vagues » ceux qui l'ont précédé ont-ils fait prendre au pays ?"
+        },
+        {
+          "id": "kennedy-08",
+          "atMs": 360000,
+          "question": "Who determines whether technology serves good or war?"
+        },
+        {
+          "id": "kennedy-n5",
+          "atMs": 408000,
+          "question": "Selon Kennedy, qu'est-ce qui n'existe pas encore dans l'espace ?"
+        }
+      ]
+    },
+    "spring": {
+      "preparation": "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-spring",
+      "questions": [
+        {
+          "id": "spring-01",
+          "atMs": 72000,
+          "question": "Qui accompagne la jeune fille au début ?"
+        },
+        {
+          "id": "spring-n1",
+          "atMs": 96000,
+          "question": "D'après le texte affiché au début, quel studio présente ce film ?"
+        },
+        {
+          "id": "spring-n2",
+          "atMs": 160000,
+          "question": "Au début de la scène de la forêt sombre, qu'y avait-il posé sur une grosse branche ?"
+        },
+        {
+          "id": "spring-02",
+          "atMs": 192000,
+          "question": "Quel objet tient-elle dans la forêt ?"
+        },
+        {
+          "id": "spring-03",
+          "atMs": 222000,
+          "question": "Quelle couleur domine la lumière de la grande forme près d'elle ?"
+        },
+        {
+          "id": "spring-04",
+          "atMs": 268000,
+          "question": "Comment apparaît maintenant le haut du bâton ?"
+        },
+        {
+          "id": "spring-n3",
+          "atMs": 304000,
+          "question": "Avant l'arrivée de la grande créature lumineuse, qu'est-ce que le chien et la fille ont trouvé au bout du sentier, dans la forêt ?"
+        },
+        {
+          "id": "spring-n4",
+          "atMs": 344000,
+          "question": "Qu'est-ce que le chien poursuivait quand il s'est éloigné de la fille dans la forêt ?"
+        },
+        {
+          "id": "spring-06",
+          "atMs": 372000,
+          "question": "Qu'est-ce qui a changé dans l'aspect du paysage depuis le début ?"
+        },
+        {
+          "id": "spring-n5",
+          "atMs": 432000,
+          "question": "Au pied de la falaise couverte de grandes plantes, que fait la fille avec son chien ?"
+        }
+      ]
+    },
+    "cnrs-apprentissage": {
+      "preparation": "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage",
+      "questions": [
+        {
+          "id": "cnrs-01",
+          "atMs": 96000,
+          "question": "Selon cette vidéo, qu'est-ce qui distingue une petite IA d'une grande ?"
+        },
+        {
+          "id": "cnrs-n1",
+          "atMs": 176000,
+          "question": "Quels points communs entre le chat et le lapin a-t-il relevés ?"
+        },
+        {
+          "id": "cnrs-02",
+          "atMs": 232000,
+          "question": "Pourquoi séparer les données d'apprentissage et d'évaluation ?"
+        },
+        {
+          "id": "cnrs-n2",
+          "atMs": 424000,
+          "question": "Dans la boucle d'apprentissage, que fait-on une fois que l'IA a donné sa prédiction ?"
+        },
+        {
+          "id": "cnrs-04",
+          "atMs": 472000,
+          "question": "Comment le cours explique-t-il le surapprentissage ?"
+        },
+        {
+          "id": "cnrs-n3",
+          "atMs": 576000,
+          "question": "Comment s'appelle la formation dans laquelle il nous souhaite la bienvenue ?"
+        },
+        {
+          "id": "cnrs-05",
+          "atMs": 648000,
+          "question": "Qu'apprend le modèle pendant le pré-entraînement décrit ici ?"
+        },
+        {
+          "id": "cnrs-n4",
+          "atMs": 696000,
+          "question": "Comment propose-t-il de traduire « instruct model » ?"
+        },
+        {
+          "id": "cnrs-06",
+          "atMs": 792000,
+          "question": "Quelle différence le cours fait-il entre fine-tuning et alignement ?"
+        },
+        {
+          "id": "cnrs-n5",
+          "atMs": 864000,
+          "question": "Dans son exemple du nouveau collaborateur, quelles règles lui donne-t-on ?"
+        }
+      ]
+    },
+    "boeuf-bourguignon": {
+      "preparation": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon",
+      "questions": [
+        {
+          "id": "cuisine-n1",
+          "atMs": 144000,
+          "question": "Quelle sorte de lardons a-t-il prévue dans les ingrédients ?"
+        },
+        {
+          "id": "cuisine-02",
+          "atMs": 200000,
+          "question": "Comment prépare-t-il la marinade et combien de temps la laisse-t-il reposer ?"
+        },
+        {
+          "id": "cuisine-03",
+          "atMs": 248000,
+          "question": "Quelles sont les trois parties séparées après la marinade ?"
+        },
+        {
+          "id": "cuisine-n2",
+          "atMs": 304000,
+          "question": "Combien de temps a-t-il laissé saisir la viande ?"
+        },
+        {
+          "id": "cuisine-n3",
+          "atMs": 424000,
+          "question": "Quelle quantité de vin rouge indiquait la liste des ingrédients ?"
+        },
+        {
+          "id": "cuisine-05",
+          "atMs": 456000,
+          "question": "Que fait-il pour épaissir puis mouiller la préparation ?"
+        },
+        {
+          "id": "cuisine-n4",
+          "atMs": 520000,
+          "question": "Comment a-t-il remis la viande dans la cocotte ?"
+        },
+        {
+          "id": "cuisine-06",
+          "atMs": 548000,
+          "question": "Quel mode de cuisson vient-il de recommander ?"
+        },
+        {
+          "id": "cuisine-07",
+          "atMs": 656000,
+          "question": "Dans quel ordre finit-il le plat avec les garnitures ?"
+        },
+        {
+          "id": "cuisine-n5",
+          "atMs": 728000,
+          "question": "Quels accompagnements cite-t-il pour le bœuf bourguignon ?"
+        }
+      ]
+    },
+    "tears-of-steel": {
+      "preparation": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel",
+      "questions": [
+        {
+          "id": "tears-01",
+          "atMs": 48000,
+          "question": "What passions do Thom and Celia have, according to their conversation?"
+        },
+        {
+          "id": "tears-n1",
+          "atMs": 104000,
+          "question": "Au début, de quoi Thom a-t-il avoué faire des cauchemars ?"
+        },
+        {
+          "id": "tears-n2",
+          "atMs": 144000,
+          "question": "Au début, qu'est-ce que l'homme à l'œil mécanique observait de près ?"
+        },
+        {
+          "id": "tears-03",
+          "atMs": 216000,
+          "question": "How much time does Barley say they should have?"
+        },
+        {
+          "id": "tears-04",
+          "atMs": 264000,
+          "question": "What advice is Thom given about how to speak to her?"
+        },
+        {
+          "id": "tears-06",
+          "atMs": 408000,
+          "question": "What does Celia reproach Thom for?"
+        },
+        {
+          "id": "tears-n3",
+          "atMs": 432000,
+          "question": "Pour se justifier auprès de Celia, comment Thom a-t-il décrit celui qu'il était autrefois ?"
+        },
+        {
+          "id": "tears-07",
+          "atMs": 552000,
+          "question": "What is the latest announced state of the memory overwrite?"
+        },
+        {
+          "id": "tears-n4",
+          "atMs": 576000,
+          "question": "Juste après l'annonce de la fin de la réécriture de mémoire, que fait le vieux Thom, l'homme aux cheveux gris ?"
+        },
+        {
+          "id": "tears-n5",
+          "atMs": 624000,
+          "question": "Qu'a dit Thom à Celia juste avant l'annonce de la fin de la réécriture de mémoire ?"
+        }
+      ]
+    },
+    "artemis": {
+      "preparation": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis",
+      "questions": [
+        {
+          "id": "artemis-n1",
+          "atMs": 400000,
+          "question": "Quel premier lancement Scott, l'invité interviewé au centre des visiteurs, a-t-il vu, et à quel âge ?"
+        },
+        {
+          "id": "artemis-n2",
+          "atMs": 720000,
+          "question": "Combien de « cutouts » compte la fenêtre de tir, et jusqu'à quelle heure court-elle ?"
+        },
+        {
+          "id": "artemis-01",
+          "atMs": 968000,
+          "question": "What decision has the launch team just announced?"
+        },
+        {
+          "id": "artemis-n3",
+          "atMs": 1176000,
+          "question": "À quel rythme le séquenceur GLS exécute-t-il ses commandes en ce moment, et que configure-t-il notamment ?"
+        },
+        {
+          "id": "artemis-02",
+          "atMs": 1248000,
+          "question": "Why will water flood the mobile launcher?"
+        },
+        {
+          "id": "artemis-04",
+          "atMs": 1664000,
+          "question": "Has liftoff happened, and which engines are propelling the vehicle?"
+        },
+        {
+          "id": "artemis-n4",
+          "atMs": 1744000,
+          "question": "Quel premier jalon le commentateur avait-il annoncé après le décollage, et pour quel moment du vol ?"
+        },
+        {
+          "id": "artemis-05",
+          "atMs": 1792000,
+          "question": "Which propulsion elements have just separated, and what continues to power the flight?"
+        },
+        {
+          "id": "artemis-n5",
+          "atMs": 1872000,
+          "question": "Que signifie l'appel « three engine press » qu'on vient d'entendre ?"
+        },
+        {
+          "id": "artemis-07",
+          "atMs": 2096000,
+          "question": "What major engine event are the commentators preparing for now?"
+        }
+      ]
+    }
+  },
+  "arms": {
+    "GPSA60": {
+      "scenario": {
+        "config": {
+          "localVlm": {
+            "url": "http://127.0.0.1:11501"
+          },
+          "localQuestions": {
+            "url": "http://127.0.0.1:11502",
+            "model": "gemma4:26b-a4b-it-q4_K_M"
+          },
+          "localEmbeddings": {
+            "url": "http://127.0.0.1:11504"
+          },
+          "visionDuringAsk": false
+        },
+        "selectedModels": {
+          "codexModel": "gemma4:26b-a4b-it-q4_K_M"
+        }
+      },
+      "env": {
+        "TVLENS_LOCAL_QUESTIONS_MODEL": "gemma4:26b-a4b-it-q4_K_M",
+        "TVLENS_VISION_DURING_ASK": "0",
+        "TVLENS_WHISPER_MODEL": "/srv/tvlens-gx10/poids/ggml-small.bin"
+      }
+    }
+  },
+  "order": [
+    [
+      "kennedy",
+      "GPSA60"
+    ],
+    [
+      "spring",
+      "GPSA60"
+    ],
+    [
+      "cnrs-apprentissage",
+      "GPSA60"
+    ],
+    [
+      "boeuf-bourguignon",
+      "GPSA60"
+    ],
+    [
+      "tears-of-steel",
+      "GPSA60"
+    ],
+    [
+      "artemis",
+      "GPSA60"
+    ]
+  ],
+  "proxy": {
+    "roles": {
+      "vlm": 11501,
+      "questions": 11502,
+      "inspection": 11503,
+      "embeddings": 11504
+    },
+    "bodyRoles": [
+      "vlm",
+      "inspection"
+    ],
+    "rewrite": {
+      "vlm": "async-topic-summary"
+    }
+  },
+  "overheadModel": "qwen3-embedding:0.6b",
+  "requiredModels": [
+    "gemma3:4b",
+    "gemma4:26b-a4b-it-q4_K_M",
+    "qwen3-embedding:0.6b"
+  ],
+  "budgetSeconds": 8400,
+  "stopConditions": "Premier passage incomplet, verrou occupé, autre charge GPU, plafond de 3 h ou échéance absolue : arrêt sans relance, sorties partielles conservées.",
+  "knownConcurrentLoad": "Aucune : J3 terminé avant le départ."
+}

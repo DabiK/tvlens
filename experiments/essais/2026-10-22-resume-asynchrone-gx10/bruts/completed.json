@@ -1,0 +1,56 @@
+[
+  {
+    "video": "kennedy",
+    "arm": "GPSA60",
+    "label": "kennedy-GPSA60-1",
+    "proxyStopped": true,
+    "campaignSha256": "3b65829731589e3e29651dd993b09f2d02f9cb79caf963ac39ea9353724c3f4b",
+    "runId": "17b2842a-02f1-4aaa-a2b3-ea33b734409e",
+    "acquired": 10
+  },
+  {
+    "video": "spring",
+    "arm": "GPSA60",
+    "label": "spring-GPSA60-1",
+    "proxyStopped": true,
+    "campaignSha256": "9e4d70fdb5d2fb49344369d880c1ffd008f0d0de9c40a5a6e2212d4a4c38af23",
+    "runId": "f6b036f0-f6b8-488f-a4c1-3df19fcb7e93",
+    "acquired": 10
+  },
+  {
+    "video": "cnrs-apprentissage",
+    "arm": "GPSA60",
+    "label": "cnrs-apprentissage-GPSA60-1",
+    "proxyStopped": true,
+    "campaignSha256": "57e1b1458d5836f51afa92206ec5af2107da3cc07d2ed87d295a85853e4bf806",
+    "runId": "e2b47427-9a5b-4f89-9eee-e84b08e223cc",
+    "acquired": 10
+  },
+  {
+    "video": "boeuf-bourguignon",
+    "arm": "GPSA60",
+    "label": "boeuf-bourguignon-GPSA60-1",
+    "proxyStopped": true,
+    "campaignSha256": "59a13fca1f02d5ff76aed80b43f4650bec09a8047313ef74f455466515cf0dbe",
+    "runId": "043389fe-e7dd-44e6-8300-1388285df472",
+    "acquired": 10
+  },
+  {
+    "video": "tears-of-steel",
+    "arm": "GPSA60",
+    "label": "tears-of-steel-GPSA60-1",
+    "proxyStopped": true,
+    "campaignSha256": "7339ee4b077a38960c18b8249972a0831ab1e8bab98a8dd36fde2e0d65f9d3dc",
+    "runId": "72a1e984-51ed-4c63-a923-14556d3f67bb",
+    "acquired": 10
+  },
+  {
+    "video": "artemis",
+    "arm": "GPSA60",
+    "label": "artemis-GPSA60-1",
+    "proxyStopped": true,
+    "campaignSha256": "5d514eaa4de30f37a67771bdd0e1b9572cab595b9b366d1668cfb1747bdfa6aa",
+    "runId": "c83d4e44-6b3b-48ec-b6a0-3a90d8791e01",
+    "acquired": 10
+  }
+]
