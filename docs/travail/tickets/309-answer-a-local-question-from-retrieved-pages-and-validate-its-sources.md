@@ -135,6 +135,8 @@ Aucune décision n'est attendue.
   JS, 71 Python, `cas_de_test_produit` 1668 → 1680.
 - 22/10, orchestrateur, relecture 2 (`relecture-2.md`, relecture de correction) : accepté, 0 bloquant, 0 mineur,
   1 hors périmètre (titre, éditeur et date d'une page non bornés en longueur), NON CORRIGÉS : 0. Verdict TERMINÉ.
+- 22/10, orchestrateur, après intégration : le propriétaire confirme la règle de la page ouverte pour la voie locale
+  (un résultat de recherche seul ne compte pas) ; mention ajoutée à l'ADR 0063.
 
 ### Réserves à la clôture
 
