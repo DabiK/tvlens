@@ -8,7 +8,7 @@ const { inspect } = require('node:util');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
-const { OllamaQuestionAgent, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT, WEB_DECISION_TIMEOUT_MS }
+const { OllamaQuestionAgent, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT, WEB_DECISION_TIMEOUT_MS, WEB_QUESTION_TIMEOUT_MS }
   = require('../adapters/ollama/question-agent.cjs');
 const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS, WEB_EXCERPT_HEAD_CHARS, searchTerms, wordsOf } = require('../core/web-retrieval.cjs');
 const { OllamaHttpClient } = require('../adapters/ollama/http-client.cjs');
@@ -1268,4 +1268,301 @@ test('the decision counts as a provider request and its thinking enters the ques
   assert.equal(job.metrics.calls.providerRequests, 2);
   assert.equal(job.metrics.thinkingChars, 5);
   assert.equal(job.result.thinkingChars, 5);
+});
+
+// An Ollama transport on the virtual clock that ignores its signal, as a stalled server would: each call answers after its
+// delay, or only when the test releases it if the delay is infinite.
+function stalledTransport(clock, replyFor) {
+  const calls = [];
+  const fetchImpl = (url, init) => {
+    const call = { body: JSON.parse(init.body), signal: init.signal };
+    calls.push(call);
+    const { delayMs, content, thinking, toolCalls } = replyFor(call.body, calls.length);
+    return new Promise(resolve => {
+      call.release = () => resolve({ ok: true, status: 200, text: async () => JSON.stringify({ done: true, message: { role: 'assistant',
+        content: JSON.stringify(content), ...(thinking && { thinking }), ...(toolCalls && { tool_calls: toolCalls }) } }) });
+      if (Number.isFinite(delayMs)) clock.io.setTimer(call.release, delayMs);
+    });
+  };
+  return { calls, fetchImpl };
+}
+const decides = body => body.messages[0].role === 'system';
+const delayedPort = (clock, delayMs, value) => fakeRetrieval(() => new Promise(resolve => clock.io.setTimer(() => resolve(value), delayMs)));
+// The local agent asked directly, on the virtual clock, with its transport and its retrieval port under the test's control.
+function timedAgent(t, { clock, transport, retrieval, webTrigger = 'model' }) {
+  const s = stage(t, 'http://127.0.0.1:1');
+  s.replace(structuredClone(filmState));
+  const agent = new OllamaQuestionAgent({ ...localConfig().localQuestions, ...clock.io, fetchImpl: transport.fetchImpl, webTrigger,
+    ...(retrieval && { retrieval: retrieval.port }) });
+  t.after(() => agent.close());
+  const inputFor = (question, { signal, ...extra } = {}) => ({ ...inputOf(s, question, signal), ...extra });
+  return { agent, inputFor, ask: (question, options) => agent.answer(inputFor(question, options)) };
+}
+// Records when the answer settled on the virtual clock, with its value or its error; settled stays undefined until then.
+function watch(clock, pending) {
+  const watched = {};
+  watched.promise = pending.then(value => { watched.settled = { at: clock.io.now(), value }; return watched.settled; },
+    error => { watched.settled = { at: clock.io.now(), error }; return watched.settled; });
+  return watched;
+}
+
+test('a decision of 960 ms, a retrieval of 2 500 ms and an answer of 5 700 ms give a sourced answer at 9 160 ms after one search', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, body => (decides(body) ? { delayMs: 960, content: decision(true) }
+    : { delayMs: 5700, content: filmAnswer }));
+  const retrieval = delayedPort(clock, 2500, { documents: [structuredClone(FILM_PAGE)], limits: [] });
+  const outcome = watch(clock, timedAgent(t, { clock, transport, retrieval }).ask(FILM_QUESTION));
+  await clock.advance(9159);
+  assert.equal(outcome.settled, undefined);
+  await clock.advance(1);
+  const { at, value, error } = await bounded(outcome.promise);
+  assert.equal(error, undefined);
+  assert.equal(at, 9160);
+  assert.deepEqual(value.sources, [filmSource]);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [FILM_QUERY]);
+  assert.deepEqual([value.retrieval.decisionMs, value.retrieval.elapsedMs, value.elapsedMs], [960, 2500, 9160]);
+  assert.equal(transport.calls.length, 2);
+  assert.equal(clock.armed, 0);
+});
+
+test('a stalled decision ends at 1 500 ms, a stalled retrieval at 6 500 ms, and the answer without pages comes before 14 s', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, body => (decides(body) ? { delayMs: Infinity } : { delayMs: 5000, content: insufficientAnswer }));
+  const retrieval = fakeRetrieval(() => new Promise(() => {}));
+  const outcome = watch(clock, timedAgent(t, { clock, transport, retrieval }).ask(WEB_QUESTION));
+  await clock.advance(1499);
+  assert.deepEqual([transport.calls[0].signal.aborted, retrieval.requests.length], [false, 0]);
+  await clock.advance(1);
+  assert.equal(transport.calls[0].signal.aborted, true);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [WEB_QUESTION], 'the rule decides on the raw question');
+  await clock.advance(4999);
+  assert.deepEqual([retrieval.requests[0].signal.aborted, transport.calls.length], [false, 1]);
+  await clock.advance(1);
+  assert.deepEqual([retrieval.requests[0].signal.aborted, transport.calls.length], [true, 2], 'the answer starts at 6 500 ms');
+  await clock.advance(5000);
+  const { at, value } = await bounded(outcome.promise);
+  assert.ok(at === 11500 && at < 14000, `answered at ${at}`);
+  assert.equal(value.kind, 'insufficient');
+  assert.ok(value.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT));
+  assert.deepEqual(value.retrieval, { residence: 'local', status: 'failed', documents: 0, elapsedMs: 5000, decision: 'failed',
+    query: WEB_QUESTION, decisionMs: 1500 });
+  assert.equal(clock.armed, 0);
+});
+
+test('a decision reply arriving after its 1 500 ms changes neither the search, the usage, the requests nor the answer', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, body => (decides(body)
+    ? { delayMs: Infinity, content: decision(true, 'LATE_DECISION_QUERY'), thinking: 'LATE_DECISION_THINKING' }
+    : { delayMs: 1000, content: insufficientAnswer, thinking: 'ab' }));
+  const retrieval = delayedPort(clock, 1000, { documents: structuredClone(PAGES), limits: [] });
+  const reported = [];
+  const outcome = watch(clock, timedAgent(t, { clock, transport, retrieval }).ask(WEB_QUESTION, {
+    onProviderRequest: count => reported.push(['requests', count]), onProviderMetrics: usage => reported.push(['usage', usage]) }));
+  await clock.advance(1500);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [WEB_QUESTION]);
+  transport.calls[0].release();
+  await turns(3);
+  await clock.advance(1000);
+  assert.equal(transport.calls.length, 2, 'the answer starts once the retrieval is over');
+  await clock.advance(1000);
+  const { at, value } = await bounded(outcome.promise);
+  assert.equal(at, 3500);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [WEB_QUESTION], 'one search, on the raw question');
+  assert.deepEqual(value.retrieval, { residence: 'local', status: 'used', documents: 2, elapsedMs: 1000, decision: 'failed',
+    query: WEB_QUESTION, decisionMs: 1500 });
+  assert.equal(value.kind, 'insufficient');
+  assert.equal(value.thinkingChars, 2, 'the late reasoning is not counted');
+  assert.deepEqual(reported, [['requests', 0], ['requests', 1], ['requests', 2], ['usage', { thinkingChars: 2 }]]);
+  assert.equal(transport.calls.length, 2);
+  assert.equal(clock.armed, 0);
+});
+
+test('a stalled decision on a question the rule keeps off the web ends at 1 500 ms and the answer starts without a search', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, body => (decides(body) ? { delayMs: Infinity } : { delayMs: 0, content: insufficientAnswer }));
+  const retrieval = fakeRetrieval();
+  const outcome = watch(clock, timedAgent(t, { clock, transport, retrieval }).ask(FILM_QUESTION));
+  await clock.advance(1499);
+  assert.equal(transport.calls.length, 1);
+  await clock.advance(1);
+  const { at, value } = await bounded(outcome.promise);
+  assert.equal(at, 1500);
+  assert.deepEqual(value.retrieval, { decision: 'failed', decisionMs: 1500 });
+  assert.deepEqual(retrieval.requests, []);
+  assert.equal(transport.calls.length, 2);
+  assert.equal(clock.armed, 0);
+});
+
+const TIMEOUT_CODE = 'TVLENS_OLLAMA_QUESTION_TIMEOUT';
+
+for (const webTrigger of ['auto', 'always', 'model']) {
+  test(`with the ${webTrigger} trigger, an answer that never ends, deaf to its signal, fails at 14 s with the question timeout`, async t => {
+    const clock = manualClock();
+    const transport = stalledTransport(clock, body => (decides(body) ? { delayMs: 0, content: decision(true) }
+      : { delayMs: Infinity, content: insufficientAnswer, thinking: 'LATE_THINKING' }));
+    const retrieval = fakeRetrieval();
+    const metrics = [];
+    const outcome = watch(clock, timedAgent(t, { clock, transport, retrieval, webTrigger })
+      .ask(WEB_QUESTION, { onProviderMetrics: usage => metrics.push(usage) }));
+    await clock.advance(WEB_QUESTION_TIMEOUT_MS - 1);
+    assert.equal(outcome.settled, undefined);
+    const answering = transport.calls.at(-1);
+    assert.equal(answering.signal.aborted, false);
+    await clock.advance(1);
+    const { at, error } = await bounded(outcome.promise);
+    assert.deepEqual([at, error?.code], [WEB_QUESTION_TIMEOUT_MS, TIMEOUT_CODE]);
+    assert.equal(answering.signal.aborted, true);
+    const reported = structuredClone(metrics);
+    answering.release();
+    await turns(3);
+    assert.deepEqual(metrics, reported, 'the late reply counts nothing');
+    assert.equal(transport.calls.length, webTrigger === 'model' ? 2 : 1);
+    assert.equal(retrieval.requests.length, 1);
+    assert.equal(clock.armed, 0);
+  });
+}
+
+test('the wait in the internal queue spends the same 14 s budget as the steps of the question', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, (body, n) => (n === 1 ? { delayMs: 10_000, content: insufficientAnswer } : { delayMs: Infinity }));
+  const { ask } = timedAgent(t, { clock, transport, retrieval: fakeRetrieval(), webTrigger: 'auto' });
+  const first = watch(clock, ask('Que dit-elle ?'));
+  const second = watch(clock, ask(WEB_QUESTION));
+  await clock.advance(10_000);
+  assert.equal(first.settled?.at, 10_000);
+  assert.equal(transport.calls.length, 2, 'the second question starts once the first is over');
+  await clock.advance(WEB_QUESTION_TIMEOUT_MS - 10_000 - 1);
+  assert.equal(second.settled, undefined);
+  await clock.advance(1);
+  const { at, error } = await bounded(second.promise);
+  assert.deepEqual([at, error?.code], [WEB_QUESTION_TIMEOUT_MS, TIMEOUT_CODE]);
+  transport.calls[1].release();
+  await turns(3);
+  assert.equal(clock.armed, 0);
+});
+
+test('a question expired in the queue never starts and a late reply changes nothing for the next question', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, (body, n) => (n === 1
+    ? { delayMs: Infinity, content: externalAnswer([pageSource()]), thinking: 'LATE_THINKING' }
+    : { delayMs: 0, content: insufficientAnswer, thinking: 'ab' }));
+  const retrieval = fakeRetrieval();
+  const { ask } = timedAgent(t, { clock, transport, retrieval, webTrigger: 'auto' });
+  const seen = { first: [], queued: [], next: [] };
+  const observe = name => ({ onProviderRequest: count => seen[name].push(['requests', count]),
+    onProviderMetrics: usage => seen[name].push(['usage', usage]) });
+  const first = watch(clock, ask(WEB_QUESTION, observe('first')));
+  const queued = watch(clock, ask(WEB_QUESTION, observe('queued')));
+  await clock.advance(WEB_QUESTION_TIMEOUT_MS);
+  for (const outcome of [first, queued]) assert.equal((await bounded(outcome.promise)).error?.code, TIMEOUT_CODE);
+  const reported = structuredClone(seen);
+  transport.calls[0].release();
+  await turns(3);
+  assert.deepEqual(seen, reported, 'the late reply reports nothing');
+  assert.deepEqual(seen.queued, [['requests', 0]], 'the expired question never sent a request');
+  assert.deepEqual([transport.calls.length, retrieval.requests.length], [1, 1]);
+  const next = watch(clock, ask(WEB_QUESTION, observe('next')));
+  await clock.advance(0);
+  const { value } = await bounded(next.promise);
+  assert.equal(value.kind, 'insufficient');
+  assert.equal(value.thinkingChars, 2);
+  assert.deepEqual(seen.next, [['requests', 0], ['requests', 1], ['usage', { thinkingChars: 2 }]]);
+  assert.deepEqual([transport.calls.length, retrieval.requests.length], [2, 2]);
+  assert.equal(clock.armed, 0);
+});
+
+// What has started when the question is stopped during each step.
+const STARTED_AT = { decision: { calls: 1, retrievals: 0 }, retrieval: { calls: 0, retrievals: 1 }, answer: { calls: 1, retrievals: 1 } };
+for (const step of Object.keys(STARTED_AT)) {
+  for (const stop of ['cancellation', 'closing']) {
+    test(`a ${stop} during the ${step} ends the question at once and no later step starts, even after late replies`, async t => {
+      const clock = manualClock(), lateRetrieval = deferred();
+      const transport = stalledTransport(clock, body => (decides(body)
+        ? { delayMs: step === 'decision' ? Infinity : 0, content: decision(true) }
+        : { delayMs: step === 'answer' ? Infinity : 0, content: {}, toolCalls: [call('get_transcript', { startMs: 0, endMs: 8000 })] }));
+      const retrieval = fakeRetrieval(async () => (step === 'retrieval' ? lateRetrieval.promise : { documents: structuredClone(PAGES), limits: [] }));
+      const { agent, inputFor } = timedAgent(t, { clock, transport, retrieval, webTrigger: step === 'decision' ? 'model' : 'auto' });
+      const controller = new AbortController();
+      const input = inputFor(WEB_QUESTION, { signal: controller.signal });
+      const outcome = watch(clock, agent.answer(input));
+      await clock.advance(0);
+      const started = { calls: transport.calls.length, retrievals: retrieval.requests.length };
+      assert.deepEqual(started, STARTED_AT[step]);
+      if (stop === 'cancellation') controller.abort(Object.assign(Error('Question annulée.'), { code: 'VIEWER_CANCELLED' }));
+      else await agent.close();
+      const { error } = await bounded(outcome.promise);
+      assert.equal(error?.code, stop === 'cancellation' ? 'VIEWER_CANCELLED' : 'TVLENS_OLLAMA_QUESTION_CLOSED');
+      transport.calls.forEach(item => item.release());
+      lateRetrieval.resolve({ documents: structuredClone(PAGES), limits: [] });
+      await clock.advance(0);
+      await turns(3);
+      assert.deepEqual({ calls: transport.calls.length, retrievals: retrieval.requests.length }, started);
+      assert.equal(input.tools.calls, 0, 'a late tool proposal is never dispatched');
+      assert.equal(clock.armed, 0);
+    });
+  }
+}
+
+// A transport that keeps its request open until its signal aborts, as a live server does.
+function openTransport() {
+  const calls = [];
+  return { calls, fetchImpl: (url, init) => {
+    calls.push(init);
+    return new Promise((resolve, reject) => init.signal.addEventListener('abort', () => reject(init.signal.reason), { once: true }));
+  } };
+}
+const OUTSIDE_WEB = {
+  'without a retrieval port': { port: false, extra: () => ({}) },
+  'outside chat': { port: true, extra: () => ({ mode: 'inspect' }) },
+  'with an intent': { port: true, extra: input => ({ context: { ...input.context, intent: 'recap' } }) },
+};
+for (const [label, { port, extra }] of Object.entries(OUTSIDE_WEB)) {
+  test(`a question ${label} arms no web deadline and keeps the general ceiling`, async t => {
+    const clock = manualClock(), transport = openTransport(), retrieval = fakeRetrieval();
+    const { agent, inputFor } = timedAgent(t, { clock, transport, retrieval: port ? retrieval : undefined, webTrigger: 'always' });
+    const input = inputFor(WEB_QUESTION);
+    const outcome = watch(clock, agent.answer({ ...input, ...extra(input) }));
+    await clock.advance(WEB_QUESTION_TIMEOUT_MS);
+    assert.equal(outcome.settled, undefined);
+    assert.equal(clock.armed, 1, 'only the general ceiling is armed');
+    await clock.advance(QUESTION_TIMEOUT_MS - WEB_QUESTION_TIMEOUT_MS - 1);
+    assert.equal(outcome.settled, undefined);
+    await clock.advance(1);
+    const { at, error } = await bounded(outcome.promise);
+    assert.deepEqual([at, error?.code], [QUESTION_TIMEOUT_MS, TIMEOUT_CODE]);
+    assert.deepEqual(retrieval.requests, []);
+    assert.equal(transport.calls.length, 1);
+    assert.equal(clock.armed, 0);
+  });
+}
+
+test('a failed decision, a failed retrieval and a question past its deadline stay three distinct diagnostics', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, (body, n) => {
+    if (decides(body)) return { delayMs: 0, content: n === 1 ? 'pas une décision' : decision(true) };
+    return n === 6 ? { delayMs: Infinity } : { delayMs: 0, content: insufficientAnswer };
+  });
+  const retrieval = fakeRetrieval(async () => {
+    if (retrieval.requests.length === 2) throw Error('PAGE_TEXT_FAILURE');
+    return { documents: structuredClone(PAGES), limits: [] };
+  });
+  const { ask } = timedAgent(t, { clock, transport, retrieval });
+  const results = [];
+  for (const question of [WEB_QUESTION, FILM_QUESTION]) {
+    const outcome = watch(clock, ask(question));
+    await clock.advance(0);
+    results.push((await bounded(outcome.promise)).value);
+  }
+  const [decisionFailed, retrievalFailed] = results;
+  assert.deepEqual([decisionFailed.retrieval.decision, decisionFailed.retrieval.status], ['failed', 'used']);
+  assert.equal(decisionFailed.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT), false);
+  assert.deepEqual([retrievalFailed.retrieval.decision, retrievalFailed.retrieval.status], ['web', 'failed']);
+  assert.ok(retrievalFailed.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT));
+  const late = watch(clock, ask(FILM_QUESTION));
+  await clock.advance(WEB_QUESTION_TIMEOUT_MS);
+  const { value, error } = await bounded(late.promise);
+  assert.deepEqual([value, error?.code], [undefined, TIMEOUT_CODE]);
+  transport.calls[5].release();
+  await turns(3);
+  assert.equal(clock.armed, 0);
 });

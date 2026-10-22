@@ -16,14 +16,24 @@ const TVLENS_OLLAMA_QUESTION_TIMEOUT = 'TVLENS_OLLAMA_QUESTION_TIMEOUT';
 const TVLENS_OLLAMA_WEB_TRIGGER_INVALID = 'TVLENS_OLLAMA_WEB_TRIGGER_INVALID';
 const WEB_TRIGGERS = ['auto', 'always', 'model'];
 const DEFAULT_WEB_TRIGGER = 'auto';
-// Well inside the question deadline (QUESTION_TIMEOUT_MS): a slow retrieval leaves time to answer without pages.
-const WEB_RETRIEVAL_TIMEOUT_MS = 15_000;
-// The model's decision is a short call (under a second when measured): past this delay the rule decides instead.
-const WEB_DECISION_TIMEOUT_MS = 5_000;
+// The search and every page together. 59 real searches took 1.7 s at the median, 3.7 s at the 90th percentile and 5.3 s at
+// most; 3.5 s would cut about one in eight. Past it the question goes on without pages.
+const WEB_RETRIEVAL_TIMEOUT_MS = 5_000;
+// The model's decision took 0.65 s at the median and 0.96 s at most over 408 calls: 540 ms of margin over that maximum.
+// Past it the rule decides instead.
+const WEB_DECISION_TIMEOUT_MS = 1_500;
+// One deadline for a whole local question that may read the web, from its entry in the agent: at worst the decision and
+// the retrieval above leave 7.5 s to answer, against 4.3 to 5.7 s at the median with pages; the last second up to the
+// 15 s aim of the product is for rendering and scheduling, a margin that was not measured.
+const WEB_QUESTION_TIMEOUT_MS = 14_000;
 // A boolean and a query of a few keywords: the decision never needs a long generation.
 const WEB_DECISION_MAX_TOKENS = 80;
 const WEB_RETRIEVAL_FAILED_LIMIT = 'La recherche web locale n’a pas abouti.';
 const RESIDENCES = ['local', 'hybrid'];
+
+const questionTimeout = () => Object.assign(Error('Délai maximal de la question locale atteint.'), {
+  code: TVLENS_OLLAMA_QUESTION_TIMEOUT,
+});
 
 function reportUsage(input, usage) {
   try { input.onProviderMetrics?.({ ...usage }); } catch {
@@ -104,18 +114,29 @@ class OllamaQuestionAgent {
     };
     report();
     const signal = AbortSignal.any([this.#generation.signal, ...(input.signal ? [input.signal] : [])]);
-    const pending = this.tail.catch(() => {}).then(() => this.run({ ...input, signal,
-      reportRequest: () => { requests++; report(); } }));
-    this.tail = pending;
-    return pending;
+    // this.tail is the work itself, never the caller's wait: the next question starts only once this one has really ended.
+    const queued = runSignal => {
+      const pending = this.tail.catch(() => {}).then(() => this.run({ ...input, signal: runSignal,
+        reportRequest: () => { requests++; report(); } }));
+      this.tail = pending;
+      return pending;
+    };
+    return this.#webEligible(input) ? this.#withinWebDeadline(queued, signal) : queued(signal);
+  }
+
+  // A question that may read the web has one deadline from its entry here, internal queue included, never reset between
+  // its steps. Past it, or once cancelled or closed, the caller stops waiting even if a step ignores its signal; a question
+  // expired in the queue never starts. The deadline cannot preempt synchronous work such as a page extraction.
+  async #withinWebDeadline(queued, signal) {
+    const outcome = await this.#abandonable(queued, signal, WEB_QUESTION_TIMEOUT_MS, questionTimeout);
+    if ('value' in outcome) return outcome.value;
+    throw 'error' in outcome ? outcome.error : outcome.abandoned;
   }
 
   async run(input) {
     input.signal.throwIfAborted();
     const deadline = new AbortController();
-    const timer = this.#setTimer(() => deadline.abort(Object.assign(Error('Délai maximal de la question locale atteint.'), {
-      code: TVLENS_OLLAMA_QUESTION_TIMEOUT,
-    })), QUESTION_TIMEOUT_MS);
+    const timer = this.#setTimer(() => deadline.abort(questionTimeout()), QUESTION_TIMEOUT_MS);
     const signal = AbortSignal.any([input.signal, deadline.signal]);
     this.#onRequest = input.reportRequest;
     try { return await this.infer({ ...input, signal }); }
@@ -179,51 +200,54 @@ class OllamaQuestionAgent {
   }
 
   // A short call without tools under its own delay. Its error or delay only costs the decision; a cancelled question stops.
+  // A late reply, once the wait is over, counts nothing.
   async #decide(input, usage) {
-    const expired = new AbortController();
-    const timer = this.#setTimer(() => expired.abort(), WEB_DECISION_TIMEOUT_MS);
-    const signal = AbortSignal.any([input.signal, expired.signal]);
+    const outcome = await this.#abandonable(signal => this.#client.chat({ format: DECISION_FORMAT, think: false, signal,
+      messages: decisionMessages({ question: input.question, passages: input.context?.passages }),
+      options: { num_predict: WEB_DECISION_MAX_TOKENS } }), input.signal, WEB_DECISION_TIMEOUT_MS);
+    input.signal.throwIfAborted();
+    // The provider's error is not published: anything but a reply is no decision.
+    if (!('value' in outcome)) return null;
     try {
-      const data = await this.#client.chat({ messages: decisionMessages({ question: input.question, passages: input.context?.passages }),
-        format: DECISION_FORMAT, options: { num_predict: WEB_DECISION_MAX_TOKENS }, think: false, signal });
-      countThinking(data, usage);
+      countThinking(outcome.value, usage);
       reportUsage(input, usage);
-      return readDecision(readMessage(data).content);
+      return readDecision(readMessage(outcome.value).content);
     } catch {
-      // The provider's error is not published: only the question's own cancellation goes on, everything else is no decision.
-      input.signal.throwIfAborted();
+      // A malformed reply is no decision either; its content is not published.
       return null;
-    } finally { this.#clearTimer(timer); }
+    }
   }
 
   // Pages are read before the answer. A failed or slow retrieval only costs the pages; a cancelled question stops here.
   // The passage kept from each page matches the viewer's question and the query sent to the port.
   async #retrieve(input, query, decided = {}) {
     const started = this.#now();
-    const outcome = await this.#raceRetrieval(query, input.signal);
+    // The port's error may quote page text: it is neither rethrown nor logged, only counted as a failure.
+    const settled = await this.#abandonable(signal => this.#retrieval.retrieve({ query, signal }), input.signal, WEB_RETRIEVAL_TIMEOUT_MS);
     input.signal.throwIfAborted();
+    const outcome = { ok: 'value' in settled, documents: settled.value?.documents };
     const pages = outcome.ok ? boundedPages(outcome.documents, searchTerms(input.question, query)) : [];
     const residence = RESIDENCES.includes(this.#retrieval.residence) ? this.#retrieval.residence : 'unknown';
     return { pages, retrieval: { residence, status: retrievalStatus(outcome, pages), documents: pages.length,
       elapsedMs: this.#now() - started, ...decided } };
   }
 
-  // The port may ignore its signal: the agent stops waiting on abandonment and leaves the late promise settled aside.
-  async #raceRetrieval(query, signal) {
+  // Runs work with a signal that aborts on stop or past delayMs, and stops waiting at that abort even when the work
+  // ignores its signal: its late value or error is absorbed and changes nothing. Gives { value }, { error } or
+  // { abandoned } with the abort reason; the timer and the listener go in every case.
+  async #abandonable(work, stop, delayMs, expiry) {
     const expired = new AbortController();
-    const timer = this.#setTimer(() => expired.abort(), WEB_RETRIEVAL_TIMEOUT_MS);
-    const stop = AbortSignal.any([signal, expired.signal]);
+    const timer = this.#setTimer(() => expired.abort(expiry?.()), delayMs);
+    const signal = AbortSignal.any([stop, expired.signal]);
     let onAbort;
     const abandoned = new Promise(resolve => {
-      onAbort = () => resolve({ ok: false });
-      if (stop.aborted) onAbort();
-      else stop.addEventListener('abort', onAbort, { once: true });
+      onAbort = () => resolve({ abandoned: signal.reason });
+      if (signal.aborted) onAbort();
+      else signal.addEventListener('abort', onAbort, { once: true });
     });
-    // The port's error may quote page text: it is neither rethrown nor logged, only counted as a failure.
-    const settled = (async () => this.#retrieval.retrieve({ query, signal: stop }))()
-      .then(value => ({ ok: true, documents: value?.documents }), () => ({ ok: false }));
+    const settled = (async () => work(signal))().then(value => ({ value }), error => ({ error }));
     try { return await Promise.race([settled, abandoned]); }
-    finally { this.#clearTimer(timer); stop.removeEventListener('abort', onAbort); }
+    finally { this.#clearTimer(timer); signal.removeEventListener('abort', onAbort); }
   }
 
   async dispatch(call, tools, signal, audit) {
@@ -249,5 +273,5 @@ class OllamaQuestionAgent {
 
 module.exports = { OllamaQuestionAgent, TVLENS_OLLAMA_TOOL_REFUSED, TVLENS_OLLAMA_TOOL_BUDGET,
   TVLENS_OLLAMA_QUESTION_CLOSED, TVLENS_OLLAMA_QUESTION_TIMEOUT, TVLENS_OLLAMA_WEB_TRIGGER_INVALID,
-  WEB_TRIGGERS, DEFAULT_WEB_TRIGGER, WEB_RETRIEVAL_TIMEOUT_MS, WEB_DECISION_TIMEOUT_MS, WEB_DECISION_MAX_TOKENS,
+  WEB_TRIGGERS, DEFAULT_WEB_TRIGGER, WEB_RETRIEVAL_TIMEOUT_MS, WEB_DECISION_TIMEOUT_MS, WEB_QUESTION_TIMEOUT_MS, WEB_DECISION_MAX_TOKENS,
   WEB_RETRIEVAL_FAILED_LIMIT };

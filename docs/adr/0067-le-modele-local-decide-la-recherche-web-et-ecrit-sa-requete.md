@@ -27,7 +27,7 @@ sans intention, `OllamaQuestionAgent` fait d'abord un appel de décision, puis s
   n'est encore transmis : le produit ne le connaît pas dans le contexte de la question.
 - `web: false` : aucune récupération. `web: true` avec une requête non vide : la récupération reçoit cette requête,
   bornée par `retrievalQuery`. Sortie illisible, requête vide, erreur ou délai propre dépassé
-  (`WEB_DECISION_TIMEOUT_MS`, 5 s, dans l'échéance de la question) : la règle `callsForWeb` décide sur la question brute,
+  (`WEB_DECISION_TIMEOUT_MS`, 5 s, ramené à 1,5 s par l'ADR 0068, dans l'échéance de la question) : la règle `callsForWeb` décide sur la question brute,
   comme le déclencheur `auto`. L'annulation ou l'échéance de la question interrompt la décision, et rien ne part ensuite.
 - La réponse reçoit toujours la question du spectateur : la requête du modèle ne sert qu'à la récupération.
 - La décision est une requête au fournisseur comptée comme les autres ; son raisonnement entre dans l'usage de la
