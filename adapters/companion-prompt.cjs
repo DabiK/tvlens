@@ -163,6 +163,8 @@ function localWebLines(webPages) {
       + 'qui mêle un fait vidéo et un fait extérieur garde aussi ses citations vidéo. Chaque source reprend exactement '
       + 'l’URL et le titre d’une page de webPages, avec dans evidence le passage de la page qui l’établit. '
       + 'Si ces pages ne suffisent pas, réponds kind=insufficient.',
+    'Date chaque fait daté tiré des pages. Pour « dernier », « actuel » ou « en ce moment », prends la date la plus récente '
+      + 'donnée par les pages et dis-la.',
   ];
 }
 

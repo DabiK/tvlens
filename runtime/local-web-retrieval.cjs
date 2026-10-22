@@ -10,7 +10,7 @@ const WEB_BACKENDS = ['corpus', 'searxng'];
 const invalid = () => domainError(TVLENS_LOCAL_WEB_CONFIG_INVALID,
   'Récupération web locale : TVLENS_LOCAL_WEB_BACKEND corpus (avec TVLENS_LOCAL_WEB_CORPUS) ou searxng '
   + '(avec TVLENS_LOCAL_WEB_URL), toute TVLENS_LOCAL_WEB_URL en http(s) sans identifiants, '
-  + 'TVLENS_LOCAL_WEB_TRIGGER auto ou always.');
+  + 'TVLENS_LOCAL_WEB_TRIGGER auto, always ou model.');
 
 function isSearchUrl(value) {
   let endpoint;

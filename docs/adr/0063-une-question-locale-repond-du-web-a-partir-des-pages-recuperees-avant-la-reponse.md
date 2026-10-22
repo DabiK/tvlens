@@ -49,8 +49,9 @@ vaut `always`. La requête est la question brute bornée (`retrievalQuery`).
 
 La voie locale peut répondre aux questions web et mixtes avec des sources vérifiables, sans changer DeepAsk ni les
 outils vidéo. Un port de résidence `hybrid` (par exemple un moteur de recherche distant) fait sortir la requête de la
-machine : une telle question est hybride et doit être relevée comme telle dans les essais. Limites connues : la
-requête est la question brute, sans reformulation ; l'extrait d'une source n'est pas comparé au texte de la page ; une
+machine : une telle question est hybride et doit être relevée comme telle dans les essais. Limites connues : avec
+`auto` et `always`, la requête est la question brute, sans reformulation (le déclencheur `model` de l'ADR 0064 la fait
+écrire par le modèle) ; l'extrait d'une source n'est pas comparé au texte de la page ; une
 récupération abandonnée sur délai peut encore tourner dans un port qui ignore son signal.
 
 ## Protégée par

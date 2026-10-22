@@ -46,8 +46,11 @@ class OllamaHttpClient {
     return this.#parameters.options.temperature;
   }
 
-  async chat({ messages, tools, format, signal }) {
-    return this.request('chat', { ...this.#parameters, stream: false, messages, tools, format }, signal);
+  // Per-call settings apply to this request only: the fixed parameters stay those of the next call.
+  async chat({ messages, tools, format, signal, options, think }) {
+    const parameters = { ...this.#parameters, options: { ...this.#parameters.options, ...options },
+      ...(typeof think === 'boolean' && { think }) };
+    return this.request('chat', { ...parameters, stream: false, messages, tools, format }, signal);
   }
 
   async embed({ input, signal }) {

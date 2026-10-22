@@ -1383,11 +1383,47 @@ test('a scenario declaring an invalid local web retrieval is refused with its ex
       createHost: () => assert.fail('invalid web retrieval constructs no host'),
     }), error => error.code === code && !/pass@|absolute|outside|never/.test(error.message));
   }
-  const f = await fixture(t);
-  f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus', trigger: 'always' };
-  await f.save();
-  const report = await runReplay(f.options, { createHost: () => assert.fail('validation constructs no host') });
-  assert.equal(report.complete, true);
+  for (const trigger of ['always', 'model']) {
+    const f = await fixture(t);
+    f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus', trigger };
+    await f.save();
+    const report = await runReplay(f.options, { createHost: () => assert.fail('validation constructs no host') });
+    assert.equal(report.complete, true);
+  }
+});
+
+// The fake question model decides first (a call with a system message), then answers from the retrieved page.
+const decidingOllama = (t, decision) => fakeOllama(t, (body, res) => {
+  if (body.model !== 'questions-fixture' || body.messages[0].role !== 'system') return false;
+  res.end(JSON.stringify({ model: body.model, done: true, message: { role: 'assistant', content: JSON.stringify(decision) } }));
+  return true;
+});
+
+test('a replay with the model trigger reports the decision and its query, and a decision against the web no residence', async t => {
+  const queries = [];
+  const createWebRetrieval = () => ({ residence: 'hybrid', retrieve: async ({ query }) => {
+    queries.push(query);
+    return { documents: [{ ...WEB_PAGE, text: 'La hauteur de l’Etna dépasse trois mille mètres.' }], limits: [] };
+  } });
+  const campaign = async decision => {
+    const f = await fixture(t), ollama = await decidingOllama(t, decision);
+    f.scenario.config.localQuestions.url = ollama.url;
+    f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus', trigger: 'model' };
+    f.scenario.questions[0].question = 'Quelle hauteur pour ce volcan ?';
+    return webCampaign(t, f, { runtimeOptions: { createWebRetrieval } });
+  };
+  const searched = await campaign({ web: true, query: 'hauteur Etna' });
+  const { elapsedMs, decisionMs, ...retrieval } = searched.questions[0].web.retrieval;
+  assert.deepEqual(retrieval, { residence: 'hybrid', status: 'used', documents: 1, decision: 'web', query: 'hauteur Etna' });
+  assert.ok(Number.isFinite(elapsedMs) && Number.isFinite(decisionMs));
+  assert.deepEqual(queries, ['hauteur Etna']);
+  assert.deepEqual(searched.webRetrieval, { backend: 'corpus', trigger: 'model', residence: 'hybrid' });
+  assert.equal(searched.webResidence, 'hybrid');
+  const declined = await campaign({ web: false, query: '' });
+  assert.deepEqual(Object.keys(declined.questions[0].web.retrieval).sort(), ['decision', 'decisionMs']);
+  assert.equal(declined.questions[0].web.retrieval.decision, 'no-web');
+  assert.equal(queries.length, 1);
+  assert.equal(declined.webResidence, null);
 });
 
 test('local selections preserve imported authentication without copying credentials into campaign outputs', async t => {

@@ -371,6 +371,9 @@ test('local web retrieval is absent unless its backend is set, and imports persi
   const fromEnvironment = await loadConfig({ userData: root, safeStorage: bareStorage,
     environment: { TVLENS_LOCAL_WEB_BACKEND: 'searxng', TVLENS_LOCAL_WEB_URL: 'http://127.0.0.1:8888' } });
   assert.deepEqual(fromEnvironment.localWeb, { backend: 'searxng', url: 'http://127.0.0.1:8888' });
+  const decidedByModel = await loadConfig({ userData: root, safeStorage: bareStorage,
+    environment: { TVLENS_LOCAL_WEB_BACKEND: 'corpus', TVLENS_LOCAL_WEB_CORPUS: '/corpus', TVLENS_LOCAL_WEB_TRIGGER: 'model' } });
+  assert.deepEqual(decidedByModel.localWeb, { backend: 'corpus', corpus: '/corpus', trigger: 'model' });
   const configPath = path.join(root, 'web.env');
   await fs.writeFile(configPath, 'TVLENS_LOCAL_WEB_BACKEND=corpus\nTVLENS_LOCAL_WEB_CORPUS=/file/corpus\nTVLENS_LOCAL_WEB_TRIGGER=auto\n');
   const imported = await load({ configPath, environment: { TVLENS_LOCAL_WEB_TRIGGER: 'always' } });

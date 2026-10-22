@@ -21,11 +21,15 @@ function sourceValidationOf(validation) {
     rejected: (validation.rejected || []).map(({ url, reason }) => ({ url, reason })) };
 }
 
+// Only these scalar facts are kept; a decision against the web or a failed one without the rule has no retrieval fields.
+const RETRIEVAL_FIELDS = ['residence', 'status', 'documents', 'elapsedMs', 'decision', 'query', 'decisionMs'];
+
 // Read from the agent's own result: DeepAsk may refuse the answer and publish a result without them.
 function webRecordOf(result) {
   if (!result?.retrieval) return null;
-  const { residence, status, documents, elapsedMs } = result.retrieval;
-  return { retrieval: { residence, status, documents, elapsedMs },
+  const retrieval = Object.fromEntries(RETRIEVAL_FIELDS.filter(field => result.retrieval[field] !== undefined)
+    .map(field => [field, result.retrieval[field]]));
+  return { retrieval,
     acceptedSources: (result.sources || []).map(source => source.url),
     sourceValidation: sourceValidationOf(result.sourceValidation) };
 }
