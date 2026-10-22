@@ -1,10 +1,29 @@
 /**
- * Plain text out of a fetched web page, without a dependency: enough to quote a page, not an HTML parser.
- * Every pattern is lazy and ends at its delimiter or at the end of the page, so a large or malformed page costs linear time.
+ * Plain text out of a fetched web page. Its main content comes from Mozilla Readability over a LinkeDOM document built by
+ * parsing only: LinkeDOM runs no script, loads no resource and adds no global. Only the text of the article is kept,
+ * never its markup, with a space at every block boundary.
+ *
+ * When the parse or Readability throws, finds no article, keeps too short a text or meets too many elements, the original
+ * string is read again by the patterns below: enough to quote a page, not an HTML parser. Every pattern is lazy and ends at
+ * its delimiter or at the end of the page, so a large or malformed page costs linear time.
+ *
+ * Both paths are synchronous: no deadline interrupts them once started; the page byte cap of the caller bounds their work.
  */
+const { DOMParser } = require('linkedom');
+const { Readability } = require('@mozilla/readability');
 const { WEB_PAGE_READ_MAX_CHARS, clipText } = require('../../core/web-retrieval.cjs');
 
+// Under this length an extracted page is a fragment (a notice, a cookie banner), not a source.
+const MIN_PAGE_TEXT_CHARS = 200;
 const TITLE_MAX_CHARS = 300;
+// Bounds the work of Readability, not the parse itself. Readability's own check counts getElementsByTagName('*'), which
+// LinkeDOM answers with no element, so the count is made here before Readability starts.
+const READABLE_ELEMENT_LIMIT = 20_000;
+const ELEMENT_NODE = 1;
+const TEXT_NODE = 3;
+// These elements carry words inside a line; any other element (paragraph, heading, list item, cell, line break) ends a block.
+const INLINE_ELEMENTS = new Set(['a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'del', 'dfn', 'em', 'font', 'i',
+  'ins', 'kbd', 'mark', 'q', 's', 'samp', 'small', 'span', 'strike', 'strong', 'sub', 'sup', 'time', 'tt', 'u', 'var', 'wbr']);
 const MAX_CODE_POINT = 0x10ffff;
 const REPLACEMENT_CHARACTER = '�';
 // head goes too: once the title is taken, it only holds metadata, styles and scripts. The title itself goes as well,
@@ -70,12 +89,56 @@ function bodyText(html) {
   return textOf(html);
 }
 
-function htmlPage(html) {
-  const title = titleText(textOf(TITLE.exec(html)?.[1] ?? ''));
+// The text of the article node with a space at each block boundary: minified paragraphs keep their words apart. The walk
+// keeps its own stack, so a deeply nested page cannot overflow the call stack.
+function blockText(root) {
+  const parts = [];
+  const pending = [root];
+  while (pending.length) {
+    const node = pending.pop();
+    if (typeof node === 'string') parts.push(node);
+    else if (node.nodeType === TEXT_NODE) parts.push(node.data);
+    else if (node.nodeType === ELEMENT_NODE) {
+      const boundary = INLINE_ELEMENTS.has(node.localName.toLowerCase()) ? '' : ' ';
+      pending.push(boundary);
+      for (let child = node.lastChild; child; child = child.previousSibling) pending.push(child);
+      pending.push(boundary);
+    }
+  }
+  return parts.join('');
+}
+
+// Readability's article as text, or null when it finds none. Too many elements throws, as Readability's own check does.
+function readableText(html) {
+  const document = new DOMParser().parseFromString(html, 'text/html');
+  const elements = document.querySelectorAll('*').length;
+  if (elements > READABLE_ELEMENT_LIMIT) throw new RangeError(`${elements} elements`);
+  const article = new Readability(document, { maxElemsToParse: READABLE_ELEMENT_LIMIT, serializer: node => node }).parse();
+  return article && blockText(article.content);
+}
+
+function articleText(html, extract) {
+  let text;
+  try { text = collapse(extract(html) ?? ''); } catch {
+    // A failed parse or Readability, too many elements included, only costs this path: the patterns read the page again.
+    return null;
+  }
+  return text.length >= MIN_PAGE_TEXT_CHARS ? text : null;
+}
+
+function patternText(html) {
   const kept = DROPPED.reduce((markup, pattern) => markup.replace(pattern, ' '), html.replace(COMMENT, ' '));
-  return { title, text: clipText(bodyText(kept), WEB_PAGE_READ_MAX_CHARS).trim() };
+  return bodyText(kept);
+}
+
+// extract stands for Readability over LinkeDOM; it is replaced only to reach outcomes a real page hardly gives. The title
+// comes from the original string in both paths, and the patterns read that string too, never the document Readability changed.
+function htmlPage(html, { extract = readableText } = {}) {
+  const title = titleText(textOf(TITLE.exec(html)?.[1] ?? ''));
+  const text = articleText(html, extract) ?? patternText(html);
+  return { title, text: clipText(text, WEB_PAGE_READ_MAX_CHARS).trim() };
 }
 
 const plainText = text => clipText(collapse(text), WEB_PAGE_READ_MAX_CHARS).trim();
 
-module.exports = { htmlPage, plainText, titleText };
+module.exports = { MIN_PAGE_TEXT_CHARS, READABLE_ELEMENT_LIMIT, htmlPage, plainText, titleText };

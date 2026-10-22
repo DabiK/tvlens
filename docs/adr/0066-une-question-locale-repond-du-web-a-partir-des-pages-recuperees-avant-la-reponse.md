@@ -27,7 +27,7 @@ vaut `always`. La requête est la question brute bornée (`retrievalQuery`).
 - Une source locale est valide si sa clé d'URL est celle d'une page rendue par la récupération de ce tour, avec un
   titre et un extrait non vides ; au plus six, une par page, publiée sous l'URL de la page. Le bilan
   `sourceValidation` a la forme de celui de Codex et accompagne toute réponse construite sur des pages.
-- La récupération a son propre délai (`WEB_RETRIEVAL_TIMEOUT_MS`), dans l'échéance de la question. Un échec ou un
+- La récupération a son propre délai (`WEB_RETRIEVAL_TIMEOUT_MS`, 5 s depuis l'ADR 0068), dans l'échéance de la question. Un échec ou un
   délai dépassé ne fait pas échouer la question : aucune page, refus actuel d'une source externe et limite « La
   recherche web locale n'a pas abouti. ». L'annulation ou l'échéance de la question interrompt la récupération et
   aucune inférence ne part ensuite.

@@ -196,6 +196,70 @@ test('a search reads the first three readable pages in result order with their e
   assert.doesNotMatch(limits[0], /example|pdf|https?:|127\.0\.0\.1/);
 });
 
+// A page laid out with divisions only: neither article nor main marks its content, which sits among navigation, side
+// links and a footer. Facts, names and addresses are invented.
+const CENTRAL_FACT = 'Le funiculaire de Valbrume gravit 412 mètres en sept minutes depuis son ouverture en 1931.';
+const LAYOUT_PAGE = `<!doctype html><html><head><title>Funiculaire de Valbrume</title></head><body>
+<header><nav><ul>${['Accueil', 'Horaires', 'Tarifs', 'Contact'].map(name => `<li><a href="/${name}">NAV_LINK ${name}</a></li>`).join('')}</ul></nav></header>
+<div class="layout"><div class="sidebar"><ul>${['Lignes', 'Plans', 'Archives', 'Presse', 'Boutique']
+    .map(name => `<li><a href="/side/${name}">SIDE_LINK ${name} et toutes les actualités du réseau</a></li>`).join('')}</ul></div>
+<div class="content"><h1>Le funiculaire de Valbrume</h1><p>${CENTRAL_FACT} Ses deux voitures se croisent à mi-pente sur une voie
+unique dédoublée, ce qui permet un départ toutes les dix minutes en été comme en hiver.</p>
+<p>La station basse se trouve près du lac, la station haute au pied du belvédère, et les voyageurs y montent avec leurs vélos
+sans supplément, comme le prévoit le règlement du syndicat des transports de la vallée depuis plusieurs années.</p>
+<p>Les cabines ont été remplacées une première fois après la guerre, puis rénovées au début des années deux mille, sans changer
+leur capacité de soixante places ni le câble de traction, inspecté chaque printemps par les techniciens du réseau.</p></div></div>
+<footer><p>FOOTER_NOTE Mentions légales, plan du site et conditions d'utilisation du réseau de Valbrume.</p></footer></body></html>`;
+
+test('a page without article or main gives its central paragraphs without navigation, side links or footer', async t => {
+  const web = await fakeWeb(t, { search: searchFor([['https://valbrume.example.org/funiculaire']]), pages: {
+    'valbrume.example.org/funiculaire': (request, res) => page(res, LAYOUT_PAGE),
+  } });
+  const { documents } = await bounded(retrievalFor(web).retrieve({ query: 'funiculaire de Valbrume' }));
+  assert.equal(documents.length, 1);
+  assert.equal(documents[0].title, 'Funiculaire de Valbrume');
+  assert.ok(documents[0].text.includes(CENTRAL_FACT), documents[0].text.slice(0, 200));
+  assert.doesNotMatch(documents[0].text, /NAV_LINK|SIDE_LINK|FOOTER_NOTE/);
+});
+
+// Every active part a browser would run or load. Each one, if run, sets a global marker; each address, if requested,
+// shows in the requests of the fake web or, through the global fetch, in the outside requests.
+const ACTIVE_PAGE = `<!doctype html><html><head><title>Page active</title>
+<link rel="stylesheet" href="https://assets.example.org/style.css"><link rel="preload" href="https://cdn.elsewhere.invalid/font.woff2">
+<script>globalThis.TVLENS_INLINE_SCRIPT = true;</script><script src="https://assets.example.org/app.js"></script>
+<script type="module" src="https://cdn.elsewhere.invalid/module.js"></script><style>@import url("https://assets.example.org/more.css");</style>
+</head><body onload="globalThis.TVLENS_ONLOAD = true"><div class="content">
+<p onclick="globalThis.TVLENS_ONCLICK = true">${CENTRAL_FACT} Les voitures partent de la gare basse toutes les dix minutes.</p>
+<img src="https://images.example.org/photo.jpg" srcset="https://images.example.org/photo-2x.jpg 2x" onerror="globalThis.TVLENS_ONERROR = true">
+<iframe src="https://frame.example.org/embed" onload="globalThis.TVLENS_FRAME = true"></iframe>
+<object data="https://assets.example.org/plugin.swf"></object><video src="https://media.example.org/clip.mp4" poster="https://media.example.org/p.jpg"></video>
+<p>${PROSE}</p><p>${PROSE.repeat(2)}</p></div><script>document.body.innerHTML = 'TVLENS_REWRITTEN';</script></body></html>`;
+
+test('an active page runs no script and loads no resource: only SearXNG and the page itself are requested', async t => {
+  const outside = [];
+  const globalFetch = globalThis.fetch;
+  globalThis.fetch = (input, init) => {
+    if (!String(input).startsWith('http://127.0.0.1:')) outside.push(String(input));
+    return globalFetch(input, init);
+  };
+  t.after(() => { globalThis.fetch = globalFetch; });
+  // The first fetch of the process installs undici's dispatcher under a global symbol: that is the transport of the fake web.
+  const ownGlobals = () => Reflect.ownKeys(globalThis).filter(key => !String(key).startsWith('Symbol(undici.'));
+  const globals = ownGlobals();
+  const web = await fakeWeb(t, { search: searchFor([['https://active.example.org/page']]), pages: {
+    'active.example.org/page': (request, res) => page(res, ACTIVE_PAGE),
+  } });
+  const { documents } = await bounded(retrievalFor(web).retrieve({ query: 'funiculaire' }));
+  assert.deepEqual(ownGlobals(), globals, 'no global was added');
+  assert.deepEqual(web.requests.map(request => `${request.host}${request.path}`.replace(/\?.*$/, '')),
+    ['searxng/search', 'active.example.org/page']);
+  assert.deepEqual(web.escaped, []);
+  assert.deepEqual(outside, []);
+  assert.equal(documents.length, 1);
+  assert.ok(documents[0].text.includes(CENTRAL_FACT), documents[0].text.slice(0, 200));
+  assert.doesNotMatch(documents[0].text, /<|>|TVLENS_|globalThis|https?:|onerror|stylesheet|@import/);
+});
+
 test('a long plain text page is cut to the read length without splitting a surrogate pair', () => {
   assert.equal(plainText('a'.repeat(WEB_PAGE_READ_MAX_CHARS - 1) + '😀' + 'b'.repeat(500)), 'a'.repeat(WEB_PAGE_READ_MAX_CHARS - 1));
   assert.equal(plainText('a'.repeat(WEB_PAGE_READ_MAX_CHARS + 500)), 'a'.repeat(WEB_PAGE_READ_MAX_CHARS));

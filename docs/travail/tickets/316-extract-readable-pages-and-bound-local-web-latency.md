@@ -1,7 +1,7 @@
 ---
 id: T316
 titre: Extract readable web pages and bound local web answer latency
-statut: a-faire
+statut: termine
 bloque_par: T315
 adr: oui
 installe: oui
@@ -180,3 +180,30 @@ Aucune décision n'est attendue.
   d'ADR) a changé.
 - 22/10, orchestrateur : accord du propriétaire pour installer `@mozilla/readability` et `linkedom` (« Oui », relayé
   par la session GX10) ; boucle lancée.
+- 22/10, orchestrateur (Claude) : exploration (`explorateur`, rapport dans `.harness-state/tickets/T316/exploration.md`).
+  Aucun écart de périmètre. Seuil de 200 caractères à déplacer dans `html-text.cjs` ; dépendances absentes du verrou ;
+  l'échéance actuelle de 300 s démarre à la sortie de file et la décision attend un transport qui ignore son signal ;
+  `#raceRetrieval` à généraliser à la décision et à l'échéance de 14 s armée dans `answer`. Écart déclaré (critère 2) :
+  cas nul et vide provoqués par un extracteur injecté dans `htmlPage`.
+- 22/10, orchestrateur : implémentation (`implementeur`). Versions installées : `@mozilla/readability` 0.6.0
+  (Apache-2.0), `linkedom` 0.18.14 (ISC). Rouges observés : critère 1 (texte commençant par `NAV_LINK…`), critère 6
+  (décision non abandonnée à 1 500 ms), critères 7-8 (huit cas sans issue à 14 s) ; critère 2 prouvé par mutations
+  (repli retiré : 7 échecs), critère 5 vert dès le départ (non-régression). Écart déclaré : `maxElemsToParse` inopérant
+  sous LinkeDOM, comptage préalable par `querySelectorAll('*')`. `node scripts/check.mjs` (implémenteur) : vert,
+  3 176 tests JS, 71 Python. ADR 0068 écrit, lien dans `docs/architecture.md`, délais mis à jour dans 0066 et 0067.
+- 22/10, orchestrateur : relecture 1 (`relecteur`) « à corriger », 0 bloquant, 1 mineur (décision tardive après 1,5 s non
+  testée), 1 hors périmètre (plafond de cinq minutes annoncé par DeepAsk) ; les deux écarts déclarés sont acceptés.
+  Correction confiée à l'implémenteur.
+- 23/10, orchestrateur : correction (test de la décision tardive ajouté, rouge observé par mutation qui laisse passer
+  la réponse tardive). `node scripts/check.mjs` (implémenteur) : vert, 3 177 tests JS, 71 Python.
+- 23/10, orchestrateur : relecture 2 (correction) « accepté », 0 bloquant, 0 mineur, 1 hors périmètre, 0 non corrigé.
+  `node scripts/check.mjs` lancé par l'orchestrateur : `check : vert`, 3 177 tests JS réussis sur 3 177, 71 tests
+  Python OK, cliquet `cas_de_test_produit` 1737 → 1756.
+
+### Réserves à la clôture
+
+- Écart accepté, critère 2 : les cas nul et vide de Readability sont provoqués par un extracteur injecté dans htmlPage.
+- Écart accepté, critère 2 : maxElemsToParse est inopérant sous LinkeDOM (getElementsByTagName('*') renvoie 0) ; la limite de 20 000 éléments est appliquée par un comptage préalable querySelectorAll('*').
+- Hors périmètre : DeepAsk annonce toujours un plafond de 300 s (core/deep-ask.cjs:11-13) ; une question coupée à 14 s y apparaît comme une erreur TVLENS_OLLAMA_QUESTION_TIMEOUT.
+- Question pour le propriétaire : avec le déclencheur auto, une question de chat purement vidéo reçoit aussi l'échéance de 14 s dès qu'un port de récupération est configuré (voulu par le ticket, à confirmer en usage réel).
+- Non vérifié : aucune latence réelle mesurée ; un hôte déployé doit relancer npm ci pour les deux nouvelles dépendances.

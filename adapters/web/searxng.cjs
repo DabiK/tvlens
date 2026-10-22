@@ -15,7 +15,7 @@
  */
 const { WEB_DOCUMENT_LIMIT } = require('../../core/web-retrieval.cjs');
 const { safeExternalUrl, sourceKey } = require('../external-links.cjs');
-const { htmlPage, plainText, titleText } = require('./html-text.cjs');
+const { MIN_PAGE_TEXT_CHARS, htmlPage, plainText, titleText } = require('./html-text.cjs');
 
 const TVLENS_WEB_SEARCH_UNAVAILABLE = 'TVLENS_WEB_SEARCH_UNAVAILABLE';
 const SEARCH_TIMEOUT_MS = 5000;
@@ -26,7 +26,6 @@ const PAGE_HEADERS = { 'User-Agent': USER_AGENT, Accept: 'text/html, text/plain;
 const OPENED_RESULT_LIMIT = 5;
 const PAGE_TIMEOUT_MS = 4000;
 const PAGE_BYTE_LIMIT = 1.5 * 1024 * 1024;
-const MIN_PAGE_TEXT_CHARS = 200;
 const READABLE_TYPES = new Set(['text/html', 'text/plain']);
 const CHARSET = /;\s*charset\s*=\s*"?([^";\s]+)/i;
 const REDIRECT_LIMIT = 3;
