@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAtUtc": "2026-10-22T17:20:00Z",
+  "updatedAtUtc": "2026-10-22T18:45:00Z",
   "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
   "reference": {
     "configuration": {
@@ -987,28 +987,10 @@
     "abstentionsSansJournal": "1/60"
   },
   "meilleureConfiguration": {
-    "nom": "N2 + journal mémoire (J3)",
-    "questions": "gemma4:26b-a4b-it-q4_K_M",
-    "pauseVision": true,
-    "whisper": "small",
-    "vision": "gemma3:4b sans topicSummary",
-    "journalMemoire": "complet, 10 000 caractères, injecté par le proxy",
-    "sur60Questions": {
-      "pertinentes": 38,
-      "inventions": 9,
-      "delaiMedianS": 6.3,
-      "sous15s": 60
-    },
-    "sansJournal60Questions": {
-      "pertinentes": 28,
-      "inventions": 16,
-      "delaiMedianS": 5.0,
-      "sous15s": 60
-    },
-    "reservesProduit": [
-      "topicSummary : le calculer hors du chemin critique (J4)",
-      "journal : à intégrer dans TVLens (aujourd'hui dans le proxy)"
-    ]
+    "nom": "N2 + journal mémoire du produit (J6)",
+    "source": "experiments/essais/2026-10-22-journal-produit-gx10/",
+    "pertinentes": "40/60",
+    "delaiMedianS": 6.2
   },
   "j2Gps60Questions": {
     "source": "2026-10-22-flux-60-questions-gx10",
@@ -1120,5 +1102,40 @@
       "surcoutS": 1.5,
       "inventionsNonAccrues": false
     }
+  },
+  "j6JournalProduit60Questions": {
+    "source": "experiments/essais/2026-10-22-journal-produit-gx10/",
+    "codeSha": "83cddd5",
+    "pertinentes": 40,
+    "sur": 60,
+    "inventions": 10,
+    "abstentionsInjustifiees": 8,
+    "rejetsCitations": 0,
+    "delaiMedianS": 6.2,
+    "sous15s": 60,
+    "blocsPerdus": 0,
+    "parAge": {
+      "ancien": "9/19",
+      "mixte": "7/8",
+      "recent": "24/33"
+    },
+    "j3RenoteMemePaquet": {
+      "pertinentes": 38,
+      "inventions": 9,
+      "abstentionsInjustifiees": 14,
+      "rejetsCitations": 8,
+      "blocsPerdus": 7,
+      "parAge": {
+        "ancien": "6/19",
+        "mixte": "7/8",
+        "recent": "25/33"
+      }
+    },
+    "faceAJ3": {
+      "gagnees": 9,
+      "perdues": 7,
+      "pSignes": 0.8
+    },
+    "rejetsJ3DevenusPertinents": 6
   }
 }

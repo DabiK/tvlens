@@ -1,0 +1,416 @@
+[
+ {
+  "questionId": "artemis-n1",
+  "question": "Quel premier lancement Scott, l'invité interviewé au centre des visiteurs, a-t-il vu, et à quel âge ?",
+  "answers": [
+   {
+    "textId": "4b1f416779",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La réponse proposée n’a pas passé la validation des preuves."
+    ]
+   },
+   {
+    "textId": "8350d7c4b3",
+    "kind": "observation",
+    "answer": "Scott a vu le lancement d'Apollo 11 lors de son premier lancement. Il avait alors cinq ans.",
+    "citations": [
+     {
+      "id": "moment-36",
+      "startMs": 280000,
+      "endMs": 288000
+     },
+     {
+      "id": "moment-37",
+      "startMs": 288000,
+      "endMs": 296000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-n2",
+  "question": "Combien de « cutouts » compte la fenêtre de tir, et jusqu'à quelle heure court-elle ?",
+  "answers": [
+   {
+    "textId": "33595e8ea1",
+    "kind": "observation",
+    "answer": "La fenêtre de tir comporte 40 « cutouts », dont la durée varie d'une seconde à environ une minute. Elle court jusqu'à 3h04 du matin, heure de l'Est.",
+    "citations": [
+     {
+      "id": "moment-74",
+      "startMs": 584000,
+      "endMs": 592000
+     },
+     {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "fe9f2cc3fb",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La réponse proposée n’a pas passé la validation des preuves."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-01",
+  "question": "What decision has the launch team just announced?",
+  "answers": [
+   {
+    "textId": "b50be8523a",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a donné l'autorisation de reprendre le compte à rebours et de procéder au lancement de la mission Artemis I (moment-119). Le directeur de lancement a confirmé que l'équipe de gestion de la mission était prête à poursuivre le compte terminal (moment-116).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     },
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f5b64c0c85",
+    "kind": "observation",
+    "answer": "The launch team has announced a go to resume the terminal count and launch Artemis I (moment-116, moment-119). This decision follows a final poll where all key parties, including the EGS Program Chief Engineer, EGS Chief Safety Officer, and weather, verified they had no constraints (moment-108, moment-110, moment-112).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     },
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-n3",
+  "question": "À quel rythme le séquenceur GLS exécute-t-il ses commandes en ce moment, et que configure-t-il notamment ?",
+  "answers": [
+   {
+    "textId": "02265c65d2",
+    "kind": "observation",
+    "answer": "Le séquenceur GLS peut exécuter jusqu'à 100 commandes par seconde (moment-145). Il configure notamment les systèmes au sol pour le transfert de puissance vers la fusée (moment-146).",
+    "citations": [
+     {
+      "id": "moment-145",
+      "startMs": 1152000,
+      "endMs": 1160000
+     },
+     {
+      "id": "moment-146",
+      "startMs": 1160000,
+      "endMs": 1168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "1161fe9b4d",
+    "kind": "observation",
+    "answer": "Le séquenceur GLS exécute jusqu'à 100 commandes par seconde (moment-145). Il configure notamment les systèmes au sol pour le transfert de puissance vers la fusée (moment-146).",
+    "citations": [
+     {
+      "id": "moment-145",
+      "startMs": 1152000,
+      "endMs": 1160000
+     },
+     {
+      "id": "moment-146",
+      "startMs": 1160000,
+      "endMs": 1168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-02",
+  "question": "Why will water flood the mobile launcher?",
+  "answers": [
+   {
+    "textId": "13e2316bec",
+    "kind": "observation",
+    "answer": "Le système d'allumage et de suppression du son va inonder le lanceur mobile avec de l'eau (moment-154). Cette procédure est nécessaire pour réduire la pression et le bruit causés par l'allumage de la fusée, ce qui pourrait autrement endommager le lanceur (moment-154).",
+    "citations": [
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c4a9bae480",
+    "kind": "observation",
+    "answer": "Le système de suppression du son et de la surpression lors de l'allumage va inonder le lanceur mobile d'eau (moment-154). Cette procédure est nécessaire pour réduire la puissance de la pression et du bruit assourdissants causés par l'allumage de la fusée, afin d'éviter d'endommager le lanceur (moment-153, moment-154).",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-04",
+  "question": "Has liftoff happened, and which engines are propelling the vehicle?",
+  "answers": [
+   {
+    "textId": "d3e1a104ca",
+    "kind": "observation",
+    "answer": "Le décollage d'Artemis I a eu lieu, comme l'indiquent les flammes et la fumée lors de l'ascension (moment-204, moment-205). Le véhicule est propulsé par les quatre moteurs RS-25 de l'étage central et par deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-205",
+      "startMs": 1632000,
+      "endMs": 1640000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d454df8c74",
+    "kind": "observation",
+    "answer": "Le décollage d'Artemis I a bien eu lieu, comme l'indiquent les images de l'ascension du lanceur (moment-204, moment-205). Le véhicule est propulsé par les quatre moteurs RS-25 de l'étage central ainsi que par deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-205",
+      "startMs": 1632000,
+      "endMs": 1640000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-n4",
+  "question": "Quel premier jalon le commentateur avait-il annoncé après le décollage, et pour quel moment du vol ?",
+  "answers": [
+   {
+    "textId": "05ef15b363",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La réponse proposée n’a pas passé la validation des preuves."
+    ]
+   },
+   {
+    "textId": "0728a28c8c",
+    "kind": "observation",
+    "answer": "Le commentateur a annoncé que le premier jalon serait le passage du véhicule à travers le Max Q. Ce moment est prévu environ une minute et neuf secondes après le lancement (moment-208, moment-209).",
+    "citations": [
+     {
+      "id": "moment-208",
+      "startMs": 1656000,
+      "endMs": 1664000
+     },
+     {
+      "id": "moment-209",
+      "startMs": 1664000,
+      "endMs": 1672000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-05",
+  "question": "Which propulsion elements have just separated, and what continues to power the flight?",
+  "answers": [
+   {
+    "textId": "763f0d4801",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide viennent de se séparer (moment-221). Le vol d'Orion est désormais assuré par les quatre moteurs RS-25 de l'étage central (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c0035224fd",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide viennent de se séparer (moment-221). Le vol de la capsule Orion est désormais assuré par les quatre moteurs RS-25 de l'étage central (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-n5",
+  "question": "Que signifie l'appel « three engine press » qu'on vient d'entendre ?",
+  "answers": [
+   {
+    "textId": "86aa15ce62",
+    "kind": "observation",
+    "answer": "Cet appel signifie qu'en cas d'accident avec un moteur, la mission pourrait toujours être nominale (moment-232). Cela impliquerait simplement une coupure prolongée des moteurs principaux (moment-233).",
+    "citations": [
+     {
+      "id": "moment-232",
+      "startMs": 1848000,
+      "endMs": 1856000
+     },
+     {
+      "id": "moment-233",
+      "startMs": 1856000,
+      "endMs": 1864000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d60dc8a92e",
+    "kind": "explanation",
+    "answer": "Cet appel signifie qu'en cas d'accident entraînant la perte d'un moteur, la mission pourrait toujours être accomplie avec succès (moment-232). Cela impliquerait simplement une prolongation de la durée de fonctionnement de l'extinction des moteurs principaux (moment-233).",
+    "citations": [
+     {
+      "id": "moment-232",
+      "startMs": 1848000,
+      "endMs": 1856000
+     },
+     {
+      "id": "moment-233",
+      "startMs": 1856000,
+      "endMs": 1864000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-07",
+  "question": "What major engine event are the commentators preparing for now?",
+  "answers": [
+   {
+    "textId": "c555215770",
+    "kind": "observation",
+    "answer": "Les commentateurs se préparent pour la coupure des moteurs principaux de l'étage central (core stage main engine cutoff). Cet événement est prévu pour environ huit minutes et trois secondes après le lancement (moment-243, moment-249).",
+    "citations": [
+     {
+      "id": "moment-243",
+      "startMs": 1936000,
+      "endMs": 1944000
+     },
+     {
+      "id": "moment-249",
+      "startMs": 1984000,
+      "endMs": 1992000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "db813f8936",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La réponse proposée n’a pas passé la validation des preuves."
+    ]
+   }
+  ]
+ }
+]

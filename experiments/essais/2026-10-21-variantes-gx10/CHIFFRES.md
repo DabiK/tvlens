@@ -4,16 +4,18 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 [`chiffres.json`](chiffres.json). Pertinence : oracle v2 et juges automatiques (modèles), sans relecture humaine.
 « Gardée » : réponse pertinente (≥ 2/3, sans invention) que TVLens accepte aussi (citations remplies).
 
-> **Meilleure configuration à ce jour : N2 + journal mémoire (J3)**
+> **Meilleure configuration à ce jour : N2 + journal mémoire du produit (J6)**
 >
 > - Questions `gemma4:26b-a4b`, pause de la vision pendant les questions, Whisper `small`, vision `gemma3:4b` sans
->   `topicSummary`, et journal mémoire des passages anciens injecté dans chaque question.
-> - Sur les 60 questions de l'oracle v3 ([J3](../2026-10-22-flux-60-questions-gx10/)) : **38/60 réponses pertinentes contre
->   28 sans journal**, 9 inventions contre 16, médiane 6,3 s contre 5,0 s, 60/60 sous 15 s.
+>   `topicSummary`, et journal mémoire des passages anciens construit par TVLens (T313, `83cddd5`, branche
+>   `feat/journal-memoire-local`), avec des entrées citables.
+> - Sur les 60 questions de l'oracle v3 ([J6](../2026-10-22-journal-produit-gx10/)) : **40/60 réponses pertinentes**
+>   (journal du proxy, J3 renoté dans le même paquet : 38 ; sans journal, J2 : 28), 10 inventions (J3 9, J2 16),
+>   **0 réponse rejetée par la validation des citations** (J3 8), médiane 6,2 s, 60/60 sous 15 s, aucun bloc perdu.
 > - Sans journal (N2), deux passages identiques sur 30 questions : 21/30 puis 22/30, médiane 5,7 puis 5,2 s, 30/30 sous
 >   15 s, aucun bloc perdu ([nuit](../2026-10-22-variantes-nuit-gx10/)).
 > - Réserves produit : `topicSummary` alimente le résumé cumulatif des cartes de la frise TV, il faut le calculer hors du
->   chemin critique (J4) ; le journal est injecté par le proxy, il reste à l'intégrer dans TVLens.
+>   chemin critique (J4 négatif, J5b en cours) ; le journal n'est pas encore sur `main`.
 
 ## Connaissance extérieure et outils
 
