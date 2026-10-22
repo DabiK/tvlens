@@ -1,0 +1,227 @@
+{
+  "id": "d9746d3cb50a4a2686c985fa7981c7d6",
+  "startedAtUtc": "2026-10-22T18:30:33.855909+00:00",
+  "deadlineUtc": "2026-10-22T20:50:33.855825+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-GPSAP60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/kennedy/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/kennedy-GPSAP60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T18:30:36.920610+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T18:30:37.446044+00:00",
+      "durationSeconds": 0.5014477380027529
+    },
+    {
+      "name": "kennedy-GPSAP60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/kennedy/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/kennedy-GPSAP60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T18:30:37.446716+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T18:37:54.024733+00:00",
+      "durationSeconds": 436.57603813899914
+    },
+    {
+      "name": "spring-GPSAP60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/spring/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/spring-GPSAP60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T18:37:54.569405+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T18:37:55.072377+00:00",
+      "durationSeconds": 0.5008573730010539
+    },
+    {
+      "name": "spring-GPSAP60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/spring/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/spring-GPSAP60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T18:37:55.072890+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T18:45:58.709994+00:00",
+      "durationSeconds": 483.6350792890007
+    },
+    {
+      "name": "cnrs-apprentissage-GPSAP60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/cnrs-apprentissage/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/cnrs-apprentissage-GPSAP60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T18:45:59.245919+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T18:46:00.249581+00:00",
+      "durationSeconds": 1.0013602129984065
+    },
+    {
+      "name": "cnrs-apprentissage-GPSAP60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/cnrs-apprentissage/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/cnrs-apprentissage-GPSAP60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T18:46:00.250266+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T19:00:51.974784+00:00",
+      "durationSeconds": 891.7226049240053
+    },
+    {
+      "name": "boeuf-bourguignon-GPSAP60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/boeuf-bourguignon/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/boeuf-bourguignon-GPSAP60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T19:00:52.524604+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T19:00:53.528351+00:00",
+      "durationSeconds": 1.001571659995534
+    },
+    {
+      "name": "boeuf-bourguignon-GPSAP60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/boeuf-bourguignon/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/boeuf-bourguignon-GPSAP60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T19:00:53.529224+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T19:13:27.019125+00:00",
+      "durationSeconds": 753.4883427000022
+    },
+    {
+      "name": "tears-of-steel-GPSAP60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/tears-of-steel/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/tears-of-steel-GPSAP60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T19:13:27.562303+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T19:13:28.566173+00:00",
+      "durationSeconds": 1.0017466809949838
+    },
+    {
+      "name": "tears-of-steel-GPSAP60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/tears-of-steel/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/tears-of-steel-GPSAP60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T19:13:28.567071+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T19:25:46.023169+00:00",
+      "durationSeconds": 737.4542383099979
+    },
+    {
+      "name": "artemis-GPSAP60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/artemis/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/artemis-GPSAP60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T19:25:46.575929+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T19:25:48.079981+00:00",
+      "durationSeconds": 1.5017037190045812
+    },
+    {
+      "name": "artemis-GPSAP60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/inputs/artemis/scenario-GPSAP60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/config-GPSAP60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j5b-gps-journal-produit-resume-asynchrone-60q-r2-results/artemis-GPSAP60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T19:25:48.080656+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T20:01:11.891548+00:00",
+      "durationSeconds": 2123.8087924229985
+    }
+  ],
+  "updatedAtUtc": "2026-10-22T20:01:11.961305+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

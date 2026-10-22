@@ -45,3 +45,24 @@ sujet. La fidélité des résumés sera jugée sur J5 ; J4 n'est pas noté, puis
 - Le Mac s'est mis en veille pendant le rapatriement ; il a été refait à la reprise, sceau vérifié.
 - Les campagnes et les journaux du proxy sont compressés avec `gzip -n` ; leurs empreintes renvoient aux fichiers non
   compressés sur la GX10.
+
+## J5b : repli tous les 4 blocs, sur la base de J6
+
+- Configuration : J6 (journal mémoire du produit, `83cddd5`), avec en plus le `topicSummary` calculé hors du chemin
+  critique par le proxy ([`ollama_proxy-j5.py`](ollama_proxy-j5.py)), replié tous les 4 blocs ou au changement de
+  sujet. C'est la seule différence avec J6 (revue de Codex Astra, 16:47).
+- 22 octobre, 18:30–20:01 UTC (deux départs interrompus avant : J5 à 16:41, J5b à 18:13). Sceau complet, 13 fichiers
+  vérifiés. Bruts : [`bruts-j5b/`](bruts-j5b/), plan : [`plans/`](plans/).
+- Critères fixés avant le départ : 0 bloc perdu, surcoût médian ≤ 1 s face à J6, ≥ 18/20 résumés fidèles,
+  pertinence ≥ J6 − 3.
+
+| | Délai médian | Sous 15 s | Blocs vision perdus | Rejets de citations |
+| --- | ---: | ---: | ---: | ---: |
+| J6 | 6,2 s | 60/60 | 0 | 0 |
+| **J5b** | **8,1 s** | 60/60 | **14** (CNRS 13, Kennedy 1) | 0 |
+
+**Négatif** : +1,9 s par question et 14 blocs perdus, deux critères manqués. La pertinence et la fidélité des résumés
+ne sont pas notées : le verdict est acquis, et Dabi a fait de la recherche web la seule priorité à 20:15 UTC. Replier
+moins souvent ne suffit pas : les résumés gardent la priorité sur la vision dans la file d'Ollama. Pour le produit,
+`topicSummary` reste dans la vision, ou passe à un modèle bien plus petit (non mesuré).
+
