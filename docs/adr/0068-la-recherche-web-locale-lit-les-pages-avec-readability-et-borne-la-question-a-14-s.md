@@ -1,4 +1,4 @@
-# 0068 — La recherche web locale lit les pages avec Readability et borne la question éligible au web à 14 s
+# 0068 — La recherche web locale lit les pages avec Readability et borne à 14 s la question qui cherche sur le web
 
 - Date : 2026-10-22
 - Ticket : `docs/travail/tickets/316-extract-readable-pages-and-bound-local-web-latency.md`
@@ -33,18 +33,32 @@ l'analyse.
 | --- | --- | --- |
 | Décision | `WEB_DECISION_TIMEOUT_MS = 1500` | 540 ms de marge sur le maximum observé de 960 ms |
 | Récupération complète | `WEB_RETRIEVAL_TIMEOUT_MS = 5000` | 90e centile 3,7 s, maximum 5,3 s ; 3,5 s en couperait environ une sur huit |
-| Question éligible au web | `WEB_QUESTION_TIMEOUT_MS = 14000` | Au pire des deux budgets, 7,5 s restent pour répondre (médiane 4,3 à 5,7 s) |
+| Question qui cherche sur le web | `WEB_QUESTION_TIMEOUT_MS = 14000` | Au pire des deux budgets, 7,5 s restent pour répondre (médiane 4,3 à 5,7 s) |
 | Marge jusqu'à 15 s | 1 s | Restitution et ordonnancement ; prévue, non mesurée |
 
-- L'échéance de 14 s vaut pour toute question de chat sans intention avec un port de récupération, quel que soit le
-  déclencheur (`auto`, `always`, `model`) et même si la règle ou la décision écarte le web. Elle commence à l'entrée
-  dans `answer`, compte la file interne de l'agent et toutes les étapes (décision, récupération, extraction, réponse,
-  outils vidéo), et n'est jamais réarmée. À son terme, l'appelant reçoit `TVLENS_OLLAMA_QUESTION_TIMEOUT` ; une
-  question expirée en file ne démarre pas. Les autres parcours gardent le plafond général (`QUESTION_TIMEOUT_MS`).
-- Décision, récupération et question passent par une même attente abandonnable (`#abandonable`) : à l'échéance, à
-  l'annulation ou à la fermeture, l'attente s'arrête même si la promesse ignore son signal ; ses issues tardives sont
-  absorbées sans résultat, usage ni appel de plus, et minuterie et écouteur sont retirés. Décision abandonnée : la
-  règle `callsForWeb` décide sur la question brute. Récupération abandonnée : réponse sans pages, comme l'ADR 0066.
+- L'échéance de 14 s ne vaut que pour une question de chat sans intention, avec un port de récupération, qui cherche
+  vraiment sur le web, c'est-à-dire dont une récupération va partir : avec `always` ; avec `auto` quand la règle
+  `callsForWeb` est vraie ; avec `model` quand la décision est `web` avec une requête, ou en échec et la règle vraie.
+  Elle commence à l'entrée dans `answer`, compte la file interne de l'agent et toutes les étapes (décision,
+  récupération, extraction, réponse, outils vidéo), et n'est jamais réarmée. À son terme, l'appelant reçoit
+  `TVLENS_OLLAMA_QUESTION_TIMEOUT` ; une question qui cherche et expire en file ne démarre pas.
+- Une question qui ne cherche pas (`auto` et règle fausse ; `model` et décision `no-web`, ou décision en échec et règle
+  fausse) garde le seul plafond général (`QUESTION_TIMEOUT_MS`), comme sans port ; avec `model`, sa décision garde
+  son délai de 1,5 s. Avec `auto` et `always`, le classement est connu dès l'entrée et aucune minuterie de 14 s n'est
+  armée pour une question qui ne cherche pas. Avec `model`, il n'est connu qu'au départ de la récupération : les 14 s
+  courent depuis l'entrée, mais n'arrêtent la question qu'une fois classée « cherche » ; classée ainsi après ses 14 s,
+  elle s'arrête aussitôt avec `TVLENS_OLLAMA_QUESTION_TIMEOUT`, sans appel au port ni appel de réponse ; classée « ne
+  cherche pas », elle n'est jamais coupée à 14 s, même si sa décision a commencé tard. Les parcours non éligibles
+  gardent aussi le plafond général.
+- 23/10 : l'échéance visait d'abord toute question éligible, même écartée du web par la règle ou la décision ; une
+  question purement vidéo, mesurée jusqu'à 12,6 s en flux réel, pouvait échouer en délai à la moindre contention du
+  GPU. Elle ne vise plus que les questions qui cherchent
+  (`docs/travail/tickets/317-bound-only-the-local-questions-that-really-search-the-web.md`).
+- Décision, récupération et question passent par une même attente abandonnable (`#abandonable`), y compris une
+  question éligible qui ne cherche pas, sans minuterie propre : à l'échéance, à l'annulation ou à la fermeture,
+  l'attente s'arrête même si la promesse ignore son signal ; ses issues tardives sont absorbées sans résultat, usage
+  ni appel de plus, et minuterie et écouteur sont retirés. Décision abandonnée : la règle `callsForWeb` décide sur la
+  question brute. Récupération abandonnée : réponse sans pages, comme l'ADR 0066.
 - Les délais internes de SearXNG (5 s pour la recherche, 4 s par page) restent des protections secondaires sous le
   budget de 5 s de la récupération entière. L'attente dans la file de DeepAsk reste hors de ce budget.
 
@@ -61,13 +75,17 @@ l'analyse.
 ## Conséquences
 
 Les pages sans `article` ni `main` donnent leur contenu principal au modèle ; deux dépendances de production entrent
-dans le verrou (`npm ci` à refaire sur un hôte déployé). Une question éligible au web finit, réussie ou non, au plus
-14 s après son entrée dans l'agent. Limites : ce n'est pas une garantie depuis le clic (file de DeepAsk exclue), ni
-une garantie de réponse pertinente ; les échéances JavaScript ne préemptent pas une extraction synchrone, qui peut
-retarder les minuteries ; un travail abandonné qui ne finit jamais garde la file interne, si bien que les questions
-éligibles suivantes expirent à 14 s et les autres attendent leur plafond ; avec `auto`, une question purement vidéo
-reçoit aussi les 14 s dès qu'un port est configuré ; DeepAsk annonce toujours son plafond de cinq minutes, et une
-coupure à 14 s y apparaît comme une erreur de délai de l'agent. Les tests simulés ne prouvent aucune latence réelle.
+dans le verrou (`npm ci` à refaire sur un hôte déployé). Avec `auto` et `always`, une question qui cherche sur le web
+finit, réussie ou non, au plus 14 s après son entrée dans l'agent ; une question qui ne cherche pas garde le plafond
+général. Avec `model`, la borne de 14 s n'est pas garantie : l'échéance ne coupe qu'au classement « cherche », si bien
+qu'une question encore non classée à 14 s (en file ou pendant sa décision) s'arrête au plus tôt à la fin de sa file,
+plus jusqu'à 1,5 s de décision. Limites : ce n'est pas une garantie depuis le clic (file de DeepAsk exclue), ni une
+garantie de réponse pertinente ; les échéances JavaScript ne préemptent pas une extraction synchrone, qui peut retarder
+les minuteries ; un travail abandonné qui ne finit jamais garde la file interne, si bien que les questions suivantes
+qui cherchent avec `auto` ou `always` expirent à 14 s, tandis que les questions `model`, jamais classées, et celles qui
+ne cherchent pas attendent le plafond général ; avec `model`, une question qui ne cherche pas consomme quand même
+l'appel de décision (au plus 1,5 s) ; DeepAsk annonce toujours son plafond de cinq minutes, et une coupure à 14 s y
+apparaît comme une erreur de délai de l'agent. Les tests simulés ne prouvent aucune latence réelle.
 
 ## Protégée par
 
@@ -77,4 +95,5 @@ son bruit, page active sans script exécuté ni ressource chargée, et les tests
 `tests/ollama-question-agent.test.cjs` : réponse sourcée à 9 160 ms, décision et récupération bloquées (1 500 ms puis
 6 500 ms), repli de décision sans recherche, réponse sourde abandonnée à 14 s pour les trois déclencheurs, file
 comptée, question expirée en file, annulation et fermeture à chaque étape, parcours non éligibles, diagnostics
-distincts.
+distincts ; question purement vidéo avec `auto` rendue par DeepAsk après 20 s, réponse après 20 s avec `model` sur une
+décision `no-web`, bloquée ou illisible, question classée après 14 s en file, arrêtée si elle cherche et rendue sinon.

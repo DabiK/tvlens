@@ -22,7 +22,7 @@ const WEB_RETRIEVAL_TIMEOUT_MS = 5_000;
 // The model's decision took 0.65 s at the median and 0.96 s at most over 408 calls: 540 ms of margin over that maximum.
 // Past it the rule decides instead.
 const WEB_DECISION_TIMEOUT_MS = 1_500;
-// One deadline for a whole local question that may read the web, from its entry in the agent: at worst the decision and
+// One deadline for a whole local question that searches the web, from its entry in the agent: at worst the decision and
 // the retrieval above leave 7.5 s to answer, against 4.3 to 5.7 s at the median with pages; the last second up to the
 // 15 s aim of the product is for rendering and scheduling, a margin that was not measured.
 const WEB_QUESTION_TIMEOUT_MS = 14_000;
@@ -115,22 +115,48 @@ class OllamaQuestionAgent {
     report();
     const signal = AbortSignal.any([this.#generation.signal, ...(input.signal ? [input.signal] : [])]);
     // this.tail is the work itself, never the caller's wait: the next question starts only once this one has really ended.
-    const queued = runSignal => {
-      const pending = this.tail.catch(() => {}).then(() => this.run({ ...input, signal: runSignal,
+    const queued = (runSignal, markSearching) => {
+      const pending = this.tail.catch(() => {}).then(() => this.run({ ...input, signal: runSignal, markSearching,
         reportRequest: () => { requests++; report(); } }));
       this.tail = pending;
       return pending;
     };
-    return this.#webEligible(input) ? this.#withinWebDeadline(queued, signal) : queued(signal);
+    if (!this.#webEligible(input)) return queued(signal);
+    return this.#withinWebDeadline(queued, signal, this.#searchesAtEntry(input.question));
   }
 
-  // A question that may read the web has one deadline from its entry here, internal queue included, never reset between
-  // its steps. Past it, or once cancelled or closed, the caller stops waiting even if a step ignores its signal; a question
-  // expired in the queue never starts. The deadline cannot preempt synchronous work such as a page extraction.
-  async #withinWebDeadline(queued, signal) {
-    const outcome = await this.#abandonable(queued, signal, WEB_QUESTION_TIMEOUT_MS, questionTimeout);
-    if ('value' in outcome) return outcome.value;
-    throw 'error' in outcome ? outcome.error : outcome.abandoned;
+  // Only a question that really searches the web owes the 14 s: a video-only one keeps the general ceiling, as without
+  // a port, since a busy GPU alone brings it close to 14 s. With the model trigger this is known only once decided.
+  #searchesAtEntry(question) {
+    if (this.#webTrigger === 'model') return undefined;
+    return this.#webTrigger === 'always' || callsForWeb(question);
+  }
+
+  // A question that may read the web is abandoned at once when cancelled or closed, even if a step ignores its signal.
+  // Searching, it also has one deadline from its entry here, internal queue included, never reset between its steps;
+  // a searching question expired in the queue never starts. The deadline cannot preempt synchronous work such as a page
+  // extraction.
+  async #withinWebDeadline(queued, signal, searching) {
+    const deadline = this.#webDeadline(searching);
+    try {
+      const outcome = await this.#abandonable(stop => queued(stop, deadline.search), AbortSignal.any([signal, deadline.signal]));
+      if ('value' in outcome) return outcome.value;
+      throw 'error' in outcome ? outcome.error : outcome.abandoned;
+    } finally { deadline.clear(); }
+  }
+
+  // The 14 s count from the entry whether or not the question is classified yet; they stop it only once it searches.
+  // A question still unclassified at 14 s is stopped when it turns to search, before the port or the answer is called.
+  #webDeadline(searching) {
+    const controller = new AbortController();
+    let expired = false;
+    const stopIfSearching = () => { if (expired && searching) controller.abort(questionTimeout()); };
+    const timer = searching === false ? undefined : this.#setTimer(() => { expired = true; stopIfSearching(); }, WEB_QUESTION_TIMEOUT_MS);
+    return {
+      signal: controller.signal,
+      search: () => { searching = true; stopIfSearching(); },
+      clear: () => { if (timer !== undefined) this.#clearTimer(timer); },
+    };
   }
 
   async run(input) {
@@ -181,7 +207,7 @@ class OllamaQuestionAgent {
   async #webPages(input, usage) {
     if (!this.#webEligible(input)) return { pages: [] };
     if (this.#webTrigger === 'model') return this.#decideAndRetrieve(input, usage);
-    if (this.#webTrigger === 'always' || callsForWeb(input.question)) return this.#retrieve(input, retrievalQuery(input.question));
+    if (this.#searchesAtEntry(input.question)) return this.#retrieve(input, retrievalQuery(input.question));
     return { pages: [] };
   }
 
@@ -221,6 +247,9 @@ class OllamaQuestionAgent {
   // Pages are read before the answer. A failed or slow retrieval only costs the pages; a cancelled question stops here.
   // The passage kept from each page matches the viewer's question and the query sent to the port.
   async #retrieve(input, query, decided = {}) {
+    // The question searches from here: past its web deadline it stops before the port is called.
+    input.markSearching?.();
+    input.signal.throwIfAborted();
     const started = this.#now();
     // The port's error may quote page text: it is neither rethrown nor logged, only counted as a failure.
     const settled = await this.#abandonable(signal => this.#retrieval.retrieve({ query, signal }), input.signal, WEB_RETRIEVAL_TIMEOUT_MS);
@@ -232,12 +261,13 @@ class OllamaQuestionAgent {
       elapsedMs: this.#now() - started, ...decided } };
   }
 
-  // Runs work with a signal that aborts on stop or past delayMs, and stops waiting at that abort even when the work
-  // ignores its signal: its late value or error is absorbed and changes nothing. Gives { value }, { error } or
-  // { abandoned } with the abort reason; the timer and the listener go in every case.
+  // Runs work with a signal that aborts on stop or past delayMs, if given, and stops waiting at that abort even when the
+  // work ignores its signal: its late value or error is absorbed and changes nothing. Gives { value }, { error } or
+  // { abandoned } with the abort reason; the timer and the listener go in every case. Without delayMs no timer is armed:
+  // an infinite delay is not an option, since setTimeout brings any delay past 2^31 - 1 ms down to 1 ms.
   async #abandonable(work, stop, delayMs, expiry) {
     const expired = new AbortController();
-    const timer = this.#setTimer(() => expired.abort(expiry?.()), delayMs);
+    const timer = delayMs === undefined ? undefined : this.#setTimer(() => expired.abort(expiry?.()), delayMs);
     const signal = AbortSignal.any([stop, expired.signal]);
     let onAbort;
     const abandoned = new Promise(resolve => {
@@ -247,7 +277,10 @@ class OllamaQuestionAgent {
     });
     const settled = (async () => work(signal))().then(value => ({ value }), error => ({ error }));
     try { return await Promise.race([settled, abandoned]); }
-    finally { this.#clearTimer(timer); signal.removeEventListener('abort', onAbort); }
+    finally {
+      if (timer !== undefined) this.#clearTimer(timer);
+      signal.removeEventListener('abort', onAbort);
+    }
   }
 
   async dispatch(call, tools, signal, audit) {
