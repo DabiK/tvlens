@@ -493,5 +493,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
   Les pages web sont lues par Readability, repli par motifs ; décision 1,5 s, récupération 5 s, question qui cherche sur le web 14 s.
 - [ADR 0069](adr/0069-la-decision-web-recoit-le-titre-de-la-source-quand-l-hote-le-connait.md) :
   La décision web reçoit le titre de la source quand l’hôte le connaît (fenêtre capturée sur le Mac, titre déclaré au serveur).
+- [ADR 0072](adr/0072-les-questions-locales-recoivent-un-condense-citable-des-passages-anciens.md) :
+  Une question de chat locale reçoit, avant ses passages récents, un condensé citable et plafonné des passages plus anciens.
 
 L’assistant de premier lancement est composé dans `app/mac-setup.cjs` : sondes locales et préférences non secrètes dans `adapters/desktop-setup.cjs`, téléchargement explicite vérifié dans `adapters/speech-model-download.cjs`, présentation dans `app/ui/setup.mjs`. La configuration des agents reste fixée au lancement ; voir [ADR 0071](adr/0071-le-premier-lancement-mac-verifie-et-guide.md).

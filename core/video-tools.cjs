@@ -1,5 +1,7 @@
 const { passageText, hasUsableObservation } = require('./shared/passage-text.cjs');
 const { domainError } = require('./shared/domain-error.cjs');
+const { mediaEvidenceFields } = require('./shared/media-evidence.cjs');
+const { digestOlderPassages } = require('./older-passage-digest.cjs');
 const { VIDEO_TOOL_CALL_LIMIT } = require('./video-tool-contracts.cjs');
 // Why a passage cannot be re-examined, in the viewer's words. Without a reason the media went through the
 // rolling window: that wording is the historical one and stays as it is.
@@ -7,12 +9,9 @@ const MEDIA_GONE = {
   'not-kept': 'Média non conservé : cette session date d’avant la conservation des vidéos, seul son résumé peut être consulté.',
   missing: 'Média introuvable sur le disque : seul son résumé peut être consulté.',
 };
-// Why a passage has no video to replay, said to the agent only where it changes what it can do: an unreadable video
-// is still re-examined, on the images kept at capture. An expired or missing one is not, and looks as it always did.
-const mediaEvidenceFields = s => {
-  if (s.hasImages === false) return { hasImages: false, mediaReason: 'images-absent' };
-  return s.mediaReason === 'unreadable' ? { mediaReason: 'unreadable' } : {};
-};
+// Usable passages a chat context hands in full; a recap reads a much wider window.
+const RECENT_PASSAGES = 6;
+const RECAP_PASSAGES = 120;
 const unfinished = status => status === 'queued' || status === 'analyzing';
 // A consultation asked of a context its question has given back: nothing is read, leased or recorded for it.
 const RELEASED = 'Question terminée : ses passages ne sont plus consultables.';
@@ -57,10 +56,11 @@ function frozenConsultation(consultation) {
 }
 // A capability scoped to one question and one immutable observed prefix: session, scope start, anchor, passage ids
 // and bounds never change. An optional `reread` port only lets refresh() read newer versions of those same passages
-// at consultation boundaries; `media` leases what an inspection re-examines.
+// at consultation boundaries; `media` leases what an inspection re-examines. `olderPassageDigest` puts a compact
+// digest of the passages older than the recent window ahead of them, for an agent that keeps no thread of its own.
 class VideoTools {
-  constructor({ consultation, reread, search, inspector, media, signal, onProgress = () => {}, now = Date.now }) {
-    Object.assign(this, { search, inspector, media, signal, reread, onProgress, now });
+  constructor({ consultation, reread, search, inspector, media, signal, onProgress = () => {}, now = Date.now, olderPassageDigest = false }) {
+    Object.assign(this, { search, inspector, media, signal, reread, onProgress, now, olderPassageDigest });
     const frozen = frozenConsultation(consultation);
     this.sessionId = frozen.sessionId;
     this.anchorMs = frozen.anchorMs;
@@ -171,10 +171,21 @@ class VideoTools {
     if(!this.keepPassages){this.reach=this.availability();this.passages=[];}
     this.search=this.inspector=this.media=this.reread=undefined;this.onProgress=()=>{};
   }
+  // Digest entries are evidence a chat answer may cite, not reads of the audit: the journal keeps what was handed in
+  // full. A passage already consulted keeps its evidence, and a later full read replaces the entry.
+  rememberDigest(entries) {
+    for(const entry of entries)if(!this.memoryEvidence.some(e=>e.id===entry.id))this.memoryEvidence.push(entry);
+    return entries;
+  }
+  // The usable passages a context hands over, and how many it leaves out. A question with an intent keeps its window.
+  contextWindow(usable,intent) {
+    const limit=intent==='recap'?RECAP_PASSAGES:RECENT_PASSAGES;
+    const digest=this.olderPassageDigest&&!intent?this.rememberDigest(digestOlderPassages(usable.slice(0,-limit))):[];
+    return {passages:[...digest,...this.remember(usable.slice(-limit),'context')],omittedCount:Math.max(0,usable.length-limit-digest.length)};
+  }
   context({intent}={}) {
     this.refresh();
-    const segments=this.toolPassages(),usable=segments.filter(hasUsableObservation);
-    const limit=intent==='recap'?120:6;
+    const segments=this.toolPassages(),usable=segments.filter(hasUsableObservation),{passages,omittedCount}=this.contextWindow(usable,intent);
     // A checkpoint or an excluded boundary segment can leave an unobserved interval.
     // Ignore recorder timestamp jitter, but never imply continuous coverage across a real hole.
     const coverageGaps=[];let coveredThrough=this.startMs;
@@ -188,7 +199,7 @@ class VideoTools {
       coverageGaps,uncoveredMs:coverageGaps.reduce((sum,gap)=>sum+gap.endMs-gap.startMs,0),
       capturedThroughMs:segments.at(-1)?.endMs||0,analyzedThroughMs:analyzed.at(-1)?.endMs||0,contextThroughMs:usable.at(-1)?.endMs||0,
       unanalyzedTailMs:Math.max(0,this.anchorMs-(analyzed.at(-1)?.endMs??this.startMs)),
-      passages:this.remember(usable.slice(-limit),'context'),omittedCount:Math.max(0,usable.length-limit),
+      passages,omittedCount,
       pendingCount:segments.filter(s=>unfinished(s.status)||unfinished(s.visionStatus)).length,partialCount:segments.filter(s=>s.status==='partial').length,
       failedCount:segments.filter(s=>['error','skipped','expired'].includes(s.status)).length,
       precision:'Résumés automatiques potentiellement imprécis, pas des faits vérifiés ni des citations exactes.'};
