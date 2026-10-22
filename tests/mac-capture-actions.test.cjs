@@ -356,3 +356,18 @@ test("the floating bar says how to give screen access when the sources cannot be
   assert.match(f.get("float-source-error").textContent, /Enregistrement de l’écran/);
   assert.equal(f.get("float-refresh").disabled, false);
 });
+
+test("the audio warning opens the screen and system audio permissions, and a refusal reaches the notice", async () => {
+  const opened = [];
+  const f = await fixture({
+    openPermissions: async () => {
+      opened.push("permissions");
+      if (opened.length > 1) throw new Error("Réglages indisponibles");
+    },
+  });
+  await f.get("audio-warning-settings").onclick();
+  assert.deepEqual(opened, ["permissions"]);
+  assert.equal(f.get("notice").textContent, "");
+  await f.get("audio-warning-settings").onclick();
+  assert.equal(f.get("notice").textContent, "Réglages indisponibles");
+});

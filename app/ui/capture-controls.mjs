@@ -54,7 +54,7 @@ export function renderCaptureControls({
   get("observe").textContent = OBSERVE_LABEL[controls.observeLabel];
   get("ask-status").textContent = ASK_STATUS[controls.askStatus];
   get("audio-warning").hidden = !capture.audioWarning;
-  get("audio-warning").textContent = capture.audioWarning ? AUDIO_WARNING : "";
+  get("audio-warning-text").textContent = capture.audioWarning ? AUDIO_WARNING : "";
   get("float-audio-warning").hidden = !capture.audioWarning;
   get("float-audio-warning").title = AUDIO_WARNING;
   get("float-bar").classList.toggle("audio-missing", Boolean(capture.audioWarning));

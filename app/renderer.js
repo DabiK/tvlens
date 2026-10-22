@@ -132,6 +132,7 @@ const capture = createBrowserCaptureController({
 const captureActions = bindCaptureActions({
   get: $, capture, bridge, window,
   sources: () => window.capture.sources(),
+  openPermissions: () => window.capture.settings(),
   session: () => wiring.session,
   configuration: () => configuration,
   mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),

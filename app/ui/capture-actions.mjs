@@ -30,6 +30,8 @@ class CaptureActions {
       this.get("source").focus();
     };
     this.get("float-refresh").onclick = () => this.refreshFloatingSources();
+    this.get("audio-warning-settings").onclick = () =>
+      this.openPermissions().catch((error) => this.notice(cleanError(error)));
     this.get("close-float-source").onclick = () =>
       this.get("float-source-dialog").close();
     this.get("float-source-dialog").onclose = () => {

@@ -358,7 +358,7 @@ test("missing live audio keeps a visible warning through recording and repeated 
   const f = await audioWarningFixture({ audio: false });
   await f.controller.startPreview();
   assert.equal(f.get("audio-warning").hidden, false);
-  assert.equal(f.get("audio-warning").textContent, AUDIO_WARNING);
+  assert.equal(f.get("audio-warning-text").textContent, AUDIO_WARNING);
   await f.controller.observe();
   assert.equal(f.statuses.at(-1), "Capture + mémoire actives");
   await f.audioClock.advance(30_000);
@@ -387,7 +387,7 @@ test("ten seconds of digital silence during recording warns durably and receivin
   assert.equal(f.get("audio-warning").hidden, true);
   await f.audioClock.advance(1);
   assert.equal(f.get("audio-warning").hidden, false);
-  assert.equal(f.get("audio-warning").textContent, AUDIO_WARNING);
+  assert.equal(f.get("audio-warning-text").textContent, AUDIO_WARNING);
   await f.audioClock.advance(20_000);
   samples(0);
   f.draw();
