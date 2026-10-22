@@ -461,3 +461,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0062](adr/0062-les-passages-declares-son-seul-conservent-leur-absence-d-images.md) :
   Les passages déclarés son seul terminent après transcription et conservent leur absence d’images et sa perte à la réouverture.
+
+- [ADR 0064](adr/0064-les-questions-locales-recoivent-un-condense-citable-des-passages-anciens.md) :
+  Une question de chat locale reçoit, avant ses passages récents, un condensé citable et plafonné des passages plus anciens.

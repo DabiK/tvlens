@@ -1,7 +1,7 @@
 ---
 id: T313
 titre: Give local questions a compact digest of the older passages before the recent ones
-statut: a-faire
+statut: termine
 bloque_par:
 adr: oui
 installe: non
@@ -142,3 +142,33 @@ mesuré : un essai dans le flux réel sur la GX10, sans réécriture du proxy, s
 
 Rempli pendant le traitement : un jalon par étape, avec la commande lancée et son résultat réel.
 Rien au-dessus de cette ligne ne se modifie pendant le traitement.
+
+- 22/10, orchestrateur, cadrage : première tentative, aucun jalon antérieur ; `docs/standards.md` lu.
+- 22/10, exploration (`explorateur`, rapport dans `.harness-state/tickets/T313/exploration.md`) : aucune contradiction
+  de périmètre ; lignes citées exactes (sauf `mediaEvidenceFields` en `:12-15`). `context()` est à une complexité de 14
+  sur 15, non gelée : la fenêtre sort dans une méthode. `mediaEvidenceFields` est privée à `video-tools` : elle part dans
+  `core/shared/media-evidence.cjs` (écart déclaré dans `ecarts.md`). Une preuve sans `revision` ni `consultedAt` est
+  remplacée par toute lecture ultérieure, ce que veut le ticket. Le test local doit fournir `localQuestions` car
+  `createQuestionAgent` valide la config même avec un agent injecté. Ne rien écrire d'autre que l'unique `Date.now`
+  dans `video-tools` (garde temps textuelle).
+- 22/10, implémentation (`implementeur`) : `core/older-passage-digest.cjs`, `core/shared/media-evidence.cjs`,
+  `core/video-tools.cjs` (constantes de fenêtre, `contextWindow`, `rememberDigest`, option `olderPassageDigest`),
+  `runtime/conversation-runtime.cjs` (option si `backend === 'local'`), tests dans `tests/older-passage-digest.test.cjs`
+  et `tests/conversation-runtime.test.cjs`. Rouge vu à chaque incrément (mutations temporaires pour DeepAsk) ;
+  `node scripts/check.mjs` rapporté vert par l'implémenteur (3050 tests JS, 71 Python).
+- 22/10, ADR : `docs/adr/0064-les-questions-locales-recoivent-un-condense-citable-des-passages-anciens.md`, lié depuis
+  `docs/architecture.md` ; `node --test tests/documentation-index.test.cjs` vert.
+- 22/10, relecture 1 (`relecture-1.md`) : à corriger, 0 bloquant, 3 mineurs. Écarts `media-evidence.cjs` et sujet
+  normalisé acceptés. Corrections : cas `recap` rendu discriminant (130 passages, rouge vu sur une garde mutée) ;
+  visuel repris brut comme dans le ticket et le prototype (rouge vu) ; causalité retirée de l'ADR.
+  `node scripts/check.mjs --changed` : vert (26 tests).
+- 22/10, relecture 2 (correction, `relecture-2.md`) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre, 0 non corrigé.
+- 22/10, contrôle : `node scripts/check.mjs` sur l'état relu : vert, 3050 tests JS sur 155 fichiers, 71 tests Python ;
+  cliquet `cas_de_test_produit` 1633 → 1655.
+
+### Réserves à la clôture
+
+- Écart accepté, critère 1 : mediaEvidenceFields déplacée à l'identique dans core/shared/media-evidence.cjs (fichier hors liste du périmètre), pour éviter une dépendance circulaire et une duplication.
+- Écart accepté, critère 1 : le sujet absent est comparé comme un sujet vide (topic ?? ''), comme le prototype qui lisait get('topic', '').
+- Non vérifié : aucun essai réel avec le vrai agent Ollama ni sur la GX10 ; l'effet de la citabilité et le poids du condensé (environ 2 500 à 3 000 jetons au plafond) face à numCtx restent à mesurer hors boucle, proxy sans réécriture.
+- Question pour le propriétaire : un visuel fait uniquement de blancs reçoit une ligne « Image » vide, comme dans le prototype et le texte du ticket ; à rogner si l'essai réel le montre gênant.

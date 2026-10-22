@@ -78,6 +78,8 @@ function createConversationRuntime({
       media: session.memoryMedia,
       signal,
       onProgress,
+      // The local agent rebuilds every question without a thread: it alone needs the older passages handed again.
+      olderPassageDigest: backend === 'local',
       // Rereads stay bound to the question's session: nothing is read once the host moved on. Only the identifier
       // is kept here, never the view or the session the question started from.
       reread: (ids) => {
