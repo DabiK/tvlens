@@ -1,0 +1,1 @@
+72486     1 /Users/Dabi/Documents/ISN/tvlens-main-app/dist/TVLens-darwin-arm64/TVLens.app/Contents/MacOS/TVLens --config=/Users/Dabi/Documents/ISN/tvlens/.env.local --remote-debugging-port=9333

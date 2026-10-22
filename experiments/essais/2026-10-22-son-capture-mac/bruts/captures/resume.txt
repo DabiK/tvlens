@@ -1,0 +1,13 @@
+== dev-macos-ecran
+{"source":"Écran 1","audioWarningSeen":false,"final":{"mode":"EN PAUSE","state":"Capture en pause · Contexte et chat conservés","notice":"","audioWarning":false,"placeholder":"Choisir une fenêtre ou un écran…"}}
+{"session":"6f2fa858-6c25-4c35-b48f-0a27ce304634","passages":5,"withAudio":5,"transcribed":5,"clips":5,"clipsWithOpus":5,"meanVolumeDb":[-21.8,-25.2,-24.5],"transcripts":["The 50,000.","and years of man's recorded history in a time span of about a half a century, stated"]}
+== dev-macos-fenetre
+{"source":"Kennedy essai TVLens","audioWarningSeen":false,"final":{"mode":"EN PAUSE","state":"Capture en pause · Contexte et chat conservés","notice":"","audioWarning":false,"placeholder":"Choisir une fenêtre ou un écran…"}}
+{"session":"4e67b488-10a7-4771-9544-198918be7781","passages":5,"withAudio":5,"transcribed":5,"clips":5,"clipsWithOpus":5,"meanVolumeDb":[-18.8,-24.8,-26.2],"transcripts":["Only last week!","did we develop penicillin and television and nuclear power and now if America's new spacecraft"]}
+== paquet-macos-ecran
+{"source":"Écran 1","audioWarningSeen":false,"final":{"mode":"EN PAUSE","state":"Capture en pause · Contexte et chat conservés","notice":"","audioWarning":false,"placeholder":"Choisir une fenêtre ou un écran…"}}
+{"session":"ceeb1411-476e-444f-ade0-005f622fdde0","passages":4,"withAudio":4,"transcribed":4,"clips":4,"clipsWithOpus":4,"meanVolumeDb":[-21,-25.7,-24.9],"transcripts":["of man's recorded history.","in a time span of about a half a century stated in these terms we know very little about the first four"]}
+== paquet-terminal-ecran
+{"source":"Écran 1","audioWarningSeen":false,"final":{"mode":"EN PAUSE","state":"Capture en pause · Contexte et chat conservés","notice":"","audioWarning":false,"placeholder":"Choisir une fenêtre ou un écran…"}}
+{"session":"1bf50c71-5893-420a-94a1-267359434eab","passages":5,"withAudio":5,"transcribed":5,"clips":5,"clipsWithOpus":5,"meanVolumeDb":[-18.8,-24.9,-26.1],"transcripts":["Only last week.","did we develop penicillin and television and nuclear power and now if America's new spacecraft"]}
+== fin 16:49:58

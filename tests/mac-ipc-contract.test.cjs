@@ -337,19 +337,19 @@ async function capture(host, sessionId, { after = 0, frames = 1, audio = null } 
 const analysed = (host, count) => async () => { const state = await host.state(); return state?.segments.length === count && state.segments.every(s => s.status === 'ready' && s.thumbnailAvailable !== undefined) && state; };
 const text = async response => Buffer.from(await response.arrayBuffer()).toString();
 
-test('Mac system audio fallback is set before readiness and preserves existing disabled features on each platform', async t => {
+test('the Mac host keeps CoreAudio Tap on and the disabled features it is given as they are on each platform', async t => {
   const { launch } = await stage(t);
-  const feature = 'MacCatapLoopbackAudioForScreenShare';
-  for (const [platform, disabledFeatures, expected] of [
-    ['darwin', '', feature],
-    ['darwin', 'OtherFeature,AnotherFeature', `OtherFeature,AnotherFeature,${feature}`],
-    ['darwin', `OtherFeature,${feature}`, `OtherFeature,${feature}`],
-    ['linux', '', undefined],
-    ['win32', 'OtherFeature', 'OtherFeature'],
+  for (const [platform, disabledFeatures] of [
+    ['darwin', ''],
+    ['darwin', 'OtherFeature,AnotherFeature'],
+    // An explicit choice of ScreenCaptureKit on the command line stays the start's own.
+    ['darwin', 'OtherFeature,MacCatapLoopbackAudioForScreenShare'],
+    ['linux', ''],
+    ['win32', 'OtherFeature'],
   ]) {
     const host = await launch({ platform, disabledFeatures });
     assert.equal(host.started, true, host.failures.join(' '));
-    assert.deepEqual(host.startupSwitches, expected ? { 'disable-features': expected } : {}, platform);
+    assert.deepEqual(host.startupSwitches, disabledFeatures ? { 'disable-features': disabledFeatures } : {}, platform);
     await host.quit();
   }
 });

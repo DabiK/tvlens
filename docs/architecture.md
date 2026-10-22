@@ -416,7 +416,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
   sans réactiver de fenêtre. L’ADR 0055 achève le retrait de l’élagage interne.
 
 - [ADR 0049](adr/0049-la-capture-mac-utilise-le-repli-screen-capture-kit-et-signale-le-silence.md) :
-  La capture Mac utilise le repli ScreenCaptureKit d'Electron 39–44 et avertit durablement quand le son manque.
+  La capture Mac avertit durablement quand le son manque ; sa voie ScreenCaptureKit est remplacée par l’ADR 0065.
 
 - [ADR 0050](adr/0050-les-versions-consultables-et-les-pertes-de-voie-publient-leur-revision.md) :
   Les versions consultables et les pertes de voie publient leur révision, après transition et sans snapshot.
@@ -461,3 +461,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0062](adr/0062-les-passages-declares-son-seul-conservent-leur-absence-d-images.md) :
   Les passages déclarés son seul terminent après transcription et conservent leur absence d’images et sa perte à la réouverture.
+
+- [ADR 0065](adr/0065-la-capture-mac-passe-par-coreaudio-tap-et-s-ouvre-par-macos.md) :
+  La capture Mac passe par CoreAudio Tap, et un lancement depuis un terminal se rouvre par macOS pour en avoir le son.

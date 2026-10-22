@@ -1,0 +1,26 @@
+<!doctype html><meta charset="utf-8"><body>sonde audio<script>
+const { ipcRenderer } = require('electron');
+(async () => {
+  const report = {};
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    report.audioTracks = stream.getAudioTracks().map(t => ({ readyState: t.readyState, muted: t.muted, enabled: t.enabled }));
+    if (stream.getAudioTracks().length) {
+      const context = new AudioContext();
+      const analyser = context.createAnalyser();
+      context.createMediaStreamSource(stream).connect(analyser);
+      const buffer = new Float32Array(analyser.fftSize);
+      const levels = [];
+      for (let i = 0; i < 50; i++) {
+        await new Promise(r => setTimeout(r, 100));
+        analyser.getFloatTimeDomainData(buffer);
+        levels.push(Math.sqrt(buffer.reduce((sum, x) => sum + x * x, 0) / buffer.length));
+      }
+      report.maxRms = Math.max(...levels);
+      report.framesAboveSilence = levels.filter(x => x > 1e-7).length;
+    }
+    stream.getTracks().forEach(t => t.stop());
+  } catch (error) { report.error = String(error); }
+  ipcRenderer.send('report', report);
+})();
+</script>

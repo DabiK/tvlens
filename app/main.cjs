@@ -43,15 +43,10 @@ const { createWindowMode } = require('./window-mode.cjs');
 const { createCaptureSources } = require('./capture-sources.cjs');
 const { createMomentActions } = require('./moment-actions.cjs');
 const { sessionRows: buildSessionRows } = require('./session-rows.cjs');
+const { launchServicesReopening } = require('./launch-services.cjs');
 const fs = require('node:fs/promises');
 const os = require('node:os');
-if (process.platform === 'darwin') {
-  // CoreAudio Tap peut livrer un flux muet sans erreur sous macOS 14.2+ ; ce repli ne vaut qu'en Electron 39–44.
-  // Avant Electron 45, il faudra accorder et vérifier la permission Tap, ou choisir une autre voie de capture.
-  const feature = 'MacCatapLoopbackAudioForScreenShare';
-  const disabled = app.commandLine.getSwitchValue('disable-features').split(',').filter(Boolean);
-  app.commandLine.appendSwitch('disable-features', [...new Set([...disabled, feature])].join(','));
-}
+const { spawnSync } = require('node:child_process');
 // Mirrors the bound DeepAsk enforces on waiting questions; published so that the renderer carries no literal.
 const QUESTION_QUEUE_LIMIT = 5;
 let verifierAdapter, verification;
@@ -65,6 +60,18 @@ const smoke = !app.isPackaged && process.argv.includes('--smoke-test');
 const liveInspection = smoke && process.argv.includes('--live-inspection');
 const localInspection = smoke && process.argv.includes('--local-inspection');
 app.setName('TVLens');
+// CoreAudio Tap captures the system sound only for the app macOS holds responsible: a terminal start reopens
+// through LaunchServices before it takes the single-instance lock (ADR 0065). A simulated run stays where it is.
+const logFile = path.join(app.getPath('logs'), 'main.log');
+const reopening = !smoke && launchServicesReopening({
+  platform: process.platform, parentPid: process.ppid, argv: process.argv, execPath: process.execPath,
+  appPath: app.isPackaged ? null : app.getAppPath(), cwd: process.cwd(), logFile,
+});
+if (reopening) {
+  require('node:fs').mkdirSync(path.dirname(logFile), { recursive: true });
+  console.log(reopening.notice);
+  process.exit(spawnSync(reopening.command, reopening.args, { stdio: 'inherit' }).status ?? 1);
+}
 if (smoke) app.setPath('userData', path.join(require('node:os').tmpdir(), `tvlens-smoke-${process.pid}`));
 protocol.registerSchemesAsPrivileged([{ scheme: 'tvlens-media', privileges: { standard: true, secure: true, stream: true } },{scheme:'tvlens-saved',privileges:{standard:true,secure:true,stream:true}}]);
 if (!app.requestSingleInstanceLock()) app.quit();

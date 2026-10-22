@@ -2,7 +2,7 @@
 
 - Date : 2026-10-17
 - Ticket : `docs/travail/tickets/246-capture-the-mac-system-audio-on-recent-macos-and-warn-when-no-sound-is-captured.md`
-- Statut : acceptée
+- Statut : remplacée par l’ADR 0065 pour la voie audio ; son avertissement durable reste
 
 ## Contexte
 

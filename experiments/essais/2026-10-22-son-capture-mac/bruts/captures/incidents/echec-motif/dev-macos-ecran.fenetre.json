@@ -1,0 +1,22 @@
+{
+ "pattern": "^Écran 1$",
+ "seconds": 30,
+ "startedAt": "2026-10-22T14:43:47.364Z",
+ "samples": [],
+ "beforeSelection": {
+  "mode": "PRÊT À REGARDER",
+  "state": "Écran autorisé · Choisis une source",
+  "notice": "",
+  "audioWarning": false,
+  "placeholder": "Choisir une fenêtre ou un écran…"
+ },
+ "source": null,
+ "final": {
+  "mode": "PRÊT À REGARDER",
+  "state": "Écran autorisé · Choisis une source",
+  "notice": "",
+  "audioWarning": false,
+  "placeholder": "Choisir une fenêtre ou un écran…"
+ },
+ "endedAt": "2026-10-22T14:43:47.373Z"
+}

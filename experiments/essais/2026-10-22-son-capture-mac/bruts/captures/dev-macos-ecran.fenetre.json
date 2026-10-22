@@ -1,0 +1,71 @@
+{
+ "pattern": "^Écran\\s1$",
+ "seconds": 30,
+ "startedAt": "2026-10-22T14:45:09.618Z",
+ "samples": [
+  {
+   "t": 5,
+   "mode": "EN DIRECT",
+   "state": "Capture + mémoire actives",
+   "notice": "",
+   "audioWarning": false,
+   "placeholder": "Choisir une fenêtre ou un écran…"
+  },
+  {
+   "t": 10,
+   "mode": "EN DIRECT",
+   "state": "Capture + mémoire actives",
+   "notice": "",
+   "audioWarning": false,
+   "placeholder": "Choisir une fenêtre ou un écran…"
+  },
+  {
+   "t": 15,
+   "mode": "EN DIRECT",
+   "state": "Capture + mémoire actives",
+   "notice": "",
+   "audioWarning": false,
+   "placeholder": "Choisir une fenêtre ou un écran…"
+  },
+  {
+   "t": 20,
+   "mode": "EN DIRECT",
+   "state": "Capture + mémoire actives",
+   "notice": "",
+   "audioWarning": false,
+   "placeholder": "Choisir une fenêtre ou un écran…"
+  },
+  {
+   "t": 25,
+   "mode": "EN DIRECT",
+   "state": "Capture + mémoire actives",
+   "notice": "",
+   "audioWarning": false,
+   "placeholder": "Choisir une fenêtre ou un écran…"
+  },
+  {
+   "t": 30,
+   "mode": "EN DIRECT",
+   "state": "Capture + mémoire actives",
+   "notice": "",
+   "audioWarning": false,
+   "placeholder": "Choisir une fenêtre ou un écran…"
+  }
+ ],
+ "beforeSelection": {
+  "mode": "PRÊT À REGARDER",
+  "state": "Écran autorisé · Choisis une source",
+  "notice": "",
+  "audioWarning": false,
+  "placeholder": "Choisir une fenêtre ou un écran…"
+ },
+ "source": "Écran 1",
+ "final": {
+  "mode": "EN PAUSE",
+  "state": "Capture en pause · Contexte et chat conservés",
+  "notice": "",
+  "audioWarning": false,
+  "placeholder": "Choisir une fenêtre ou un écran…"
+ },
+ "endedAt": "2026-10-22T14:46:09.650Z"
+}

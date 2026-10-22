@@ -1,0 +1,4 @@
+== dev-macos-ecran
+{"source":null,"audioWarningSeen":false,"final":{"mode":"PRÊT À REGARDER","state":"Écran autorisé · Choisis une source","notice":"","audioWarning":false,"placeholder":"Choisir une fenêtre ou un écran…"}}
+{"session":null}
+== dev-macos-fenetre

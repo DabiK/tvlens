@@ -26,6 +26,10 @@ npm start
 # npm run setup:codex
 ```
 
+Sur Mac, `npm start` rouvre l'app par macOS, qui la tient alors pour responsable de l'accès à l'écran et au son :
+sans cela, le son du système n'est pas capté (ADR 0065). La commande rend la main aussitôt, et les journaux de
+l'app vont dans `~/Library/Logs/TVLens/main.log`. L'environnement du terminal lui est transmis.
+
 `setup:speech` installe `whisper-cpp` si nécessaire et télécharge le modèle
 multilingue `ggml-base.bin` (environ 142 Mio) dans `.local/models`, avec vérification
 SHA-256. Cette installation n'est pas un appel d'inférence payant. Whisper peut

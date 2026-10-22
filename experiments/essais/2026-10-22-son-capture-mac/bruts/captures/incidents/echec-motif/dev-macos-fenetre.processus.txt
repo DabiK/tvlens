@@ -1,0 +1,1 @@
+89592     1 /Users/Dabi/Documents/ISN/tvlens-main-app/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron /Users/Dabi/Documents/ISN/tvlens-main-app --config=/Users/Dabi/Documents/ISN/tvlens/.env.local --remote-debugging-port=9333
