@@ -3,6 +3,7 @@ const { countThinking } = require('./thinking.cjs');
 const { VIDEO_TOOL_CALL_LIMIT } = require('../../core/video-tool-contracts.cjs');
 const { toolDefinitions, allowedToolCall } = require('./video-tools.cjs');
 const { schema, buildLocalPrompt } = require('../companion-prompt.cjs');
+const { DECISION_FORMAT, decisionMessages, readDecision } = require('../web-decision-prompt.cjs');
 const { readMessage, readAnswer } = require('./question-response.cjs');
 const { TVLENS_QUESTION_IMAGES_ABSENT, IMAGES_ABSENT_MESSAGE } = require('../../core/video-tools.cjs');
 const { QUESTION_TIMEOUT_MS } = require('../../core/deep-ask.cjs');
@@ -13,10 +14,14 @@ const TVLENS_OLLAMA_TOOL_BUDGET = 'TVLENS_OLLAMA_TOOL_BUDGET';
 const TVLENS_OLLAMA_QUESTION_CLOSED = 'TVLENS_OLLAMA_QUESTION_CLOSED';
 const TVLENS_OLLAMA_QUESTION_TIMEOUT = 'TVLENS_OLLAMA_QUESTION_TIMEOUT';
 const TVLENS_OLLAMA_WEB_TRIGGER_INVALID = 'TVLENS_OLLAMA_WEB_TRIGGER_INVALID';
-const WEB_TRIGGERS = ['auto', 'always'];
+const WEB_TRIGGERS = ['auto', 'always', 'model'];
 const DEFAULT_WEB_TRIGGER = 'auto';
 // Well inside the question deadline (QUESTION_TIMEOUT_MS): a slow retrieval leaves time to answer without pages.
 const WEB_RETRIEVAL_TIMEOUT_MS = 15_000;
+// The model's decision is a short call (under a second when measured): past this delay the rule decides instead.
+const WEB_DECISION_TIMEOUT_MS = 5_000;
+// A boolean and a query of a few keywords: the decision never needs a long generation.
+const WEB_DECISION_MAX_TOKENS = 80;
 const WEB_RETRIEVAL_FAILED_LIMIT = 'La recherche web locale n’a pas abouti.';
 const RESIDENCES = ['local', 'hybrid'];
 
@@ -59,7 +64,7 @@ class OllamaQuestionAgent {
   #retrieval;
   #webTrigger;
   constructor({ now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout, retrieval, webTrigger = DEFAULT_WEB_TRIGGER, ...options } = {}) {
-    if (!WEB_TRIGGERS.includes(webTrigger)) throw Object.assign(Error('Déclencheur web local invalide (auto ou always).'), {
+    if (!WEB_TRIGGERS.includes(webTrigger)) throw Object.assign(Error('Déclencheur web local invalide (auto, always ou model).'), {
       code: TVLENS_OLLAMA_WEB_TRIGGER_INVALID,
     });
     this.#retrieval = retrieval;
@@ -119,10 +124,10 @@ class OllamaQuestionAgent {
   async infer(input) {
     const started = this.#now();
     const { tools, signal } = input;
-    const { pages, retrieval } = await this.#retrieve(input);
+    const usage = {};
+    const { pages, retrieval } = await this.#webPages(input, usage);
     const messages = [{ role: 'user', content: buildLocalPrompt({ ...input, webPages: pages }) }];
     const audit = [];
-    const usage = {};
     let attempts = 0;
     while (true) {
       const availableTools = attempts < VIDEO_TOOL_CALL_LIMIT ? toolDefinitions : [];
@@ -147,21 +152,58 @@ class OllamaQuestionAgent {
     }
   }
 
-  #wantsWeb({ mode, context, question }) {
-    if (!this.#retrieval || mode !== 'chat' || context?.intent) return false;
-    return this.#webTrigger === 'always' || callsForWeb(question);
+  #webEligible({ mode, context }) {
+    return Boolean(this.#retrieval) && mode === 'chat' && !context?.intent;
+  }
+
+  async #webPages(input, usage) {
+    if (!this.#webEligible(input)) return { pages: [] };
+    if (this.#webTrigger === 'model') return this.#decideAndRetrieve(input, usage);
+    if (this.#webTrigger === 'always' || callsForWeb(input.question)) return this.#retrieve(input, retrievalQuery(input.question));
+    return { pages: [] };
+  }
+
+  // The model's query serves the retrieval only: the answer keeps the viewer's question. Without a usable decision the
+  // rule decides, on the raw question.
+  async #decideAndRetrieve(input, usage) {
+    const started = this.#now();
+    const decision = await this.#decide(input, usage);
+    const decisionMs = this.#now() - started;
+    if (decision?.web === false) return { pages: [], retrieval: { decision: 'no-web', decisionMs } };
+    const modelQuery = decision ? retrievalQuery(decision.query) : '';
+    if (modelQuery) return this.#retrieve(input, modelQuery, { decision: 'web', query: modelQuery, decisionMs });
+    if (!callsForWeb(input.question)) return { pages: [], retrieval: { decision: 'failed', decisionMs } };
+    const query = retrievalQuery(input.question);
+    return this.#retrieve(input, query, { decision: 'failed', query, decisionMs });
+  }
+
+  // A short call without tools under its own delay. Its error or delay only costs the decision; a cancelled question stops.
+  async #decide(input, usage) {
+    const expired = new AbortController();
+    const timer = this.#setTimer(() => expired.abort(), WEB_DECISION_TIMEOUT_MS);
+    const signal = AbortSignal.any([input.signal, expired.signal]);
+    try {
+      const data = await this.#client.chat({ messages: decisionMessages({ question: input.question, passages: input.context?.passages }),
+        format: DECISION_FORMAT, options: { num_predict: WEB_DECISION_MAX_TOKENS }, think: false, signal });
+      countThinking(data, usage);
+      reportUsage(input, usage);
+      return readDecision(readMessage(data).content);
+    } catch {
+      // The provider's error is not published: only the question's own cancellation goes on, everything else is no decision.
+      input.signal.throwIfAborted();
+      return null;
+    } finally { this.#clearTimer(timer); }
   }
 
   // Pages are read before the answer. A failed or slow retrieval only costs the pages; a cancelled question stops here.
-  async #retrieve(input) {
-    if (!this.#wantsWeb(input)) return { pages: [] };
+  async #retrieve(input, query, decided = {}) {
     const started = this.#now();
-    const outcome = await this.#raceRetrieval(retrievalQuery(input.question), input.signal);
+    const outcome = await this.#raceRetrieval(query, input.signal);
     input.signal.throwIfAborted();
     const pages = outcome.ok ? boundedPages(outcome.documents) : [];
     const residence = RESIDENCES.includes(this.#retrieval.residence) ? this.#retrieval.residence : 'unknown';
     return { pages, retrieval: { residence, status: retrievalStatus(outcome, pages), documents: pages.length,
-      elapsedMs: this.#now() - started } };
+      elapsedMs: this.#now() - started, ...decided } };
   }
 
   // The port may ignore its signal: the agent stops waiting on abandonment and leaves the late promise settled aside.
@@ -205,4 +247,5 @@ class OllamaQuestionAgent {
 
 module.exports = { OllamaQuestionAgent, TVLENS_OLLAMA_TOOL_REFUSED, TVLENS_OLLAMA_TOOL_BUDGET,
   TVLENS_OLLAMA_QUESTION_CLOSED, TVLENS_OLLAMA_QUESTION_TIMEOUT, TVLENS_OLLAMA_WEB_TRIGGER_INVALID,
-  WEB_TRIGGERS, DEFAULT_WEB_TRIGGER, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT };
+  WEB_TRIGGERS, DEFAULT_WEB_TRIGGER, WEB_RETRIEVAL_TIMEOUT_MS, WEB_DECISION_TIMEOUT_MS, WEB_DECISION_MAX_TOKENS,
+  WEB_RETRIEVAL_FAILED_LIMIT };

@@ -1,7 +1,7 @@
 ---
 id: T314
 titre: Let the local model decide the web search and write its query
-statut: a-faire
+statut: termine
 bloque_par: T311
 adr: oui
 installe: non
@@ -140,3 +140,26 @@ Aucune décision n'est attendue.
 - 22/10, orchestrateur : chiffres et prompt de H2 reportés. Le propriétaire avait demandé de passer à T314 dès
   l'arrivée de H2 ; la session expériences confirme (« T314 peut lancer sa boucle »). Le titre de source reste hors
   périmètre.
+- 22/10, orchestrateur : exploration (`explorateur`, rapport dans `.harness-state/tickets/T314/exploration.md`). Toutes les
+  validations du déclencheur lisent `WEB_TRIGGERS` ; le client HTTP n'a aucun réglage par appel ; l'usage d'une question
+  locale se réduit à `thinkingChars` ; « Quand ce film a-t-il été publié ? » ne déclenche pas `callsForWeb` ; le texte exact
+  de H2 vient du script `rejouer_h2.py` (absent de la branche). Trois écarts déclarés dans `ecarts.md` (usage, critère 5,
+  source du texte H2). Aucun écart de périmètre.
+- 22/10, orchestrateur : implémentation (`implementeur`) : déclencheur `model`, module `adapters/web-decision-prompt.cjs`
+  (texte H2 vérifié identique au script), réglages par appel du client HTTP, règle de datation avec pages, décision
+  reportée par les rejeux, documentation. Rouges vus avant le code, ou par mutation (13 mutations, toutes détectées).
+  `node scripts/check.mjs` : vert, 3132 tests JS et 71 Python.
+- 22/10, orchestrateur : ADR 0064 écrit, limite « requête brute » de l'ADR 0063 amendée, ligne ajoutée à
+  `docs/architecture.md`. `node scripts/check.mjs --changed` : vert, 132 tests.
+- 22/10, orchestrateur : relecture 1 (`relecteur` neuf, `revue-1`) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre ;
+  les quatre écarts déclarés sont acceptés.
+- 22/10, orchestrateur : `node scripts/check.mjs` : vert, 3132 tests JS (160 fichiers) et 71 tests Python.
+
+### Réserves à la clôture
+
+- Écart accepté, périmètre « jetons dans l'usage » : la voie locale ne compte que thinkingChars ; la décision passe par la même comptabilité (countThinking, reportUsage) et compte comme requête au fournisseur, sans compteur de jetons nouveau.
+- Écart accepté, critère 5 : aucun prompt d'avant n'était enregistré ; preuve par la branche sans page inchangée et l'égalité du prompt no-web avec celui d'un agent sans port.
+- Écart accepté, source du texte H2 : le script de l'essai (rejouer_h2.py) fait foi pour les détails que le Markdown du ticket ne fixe pas ; coupe des passages par clipText.
+- Écart accepté : le message système mesuré est recopié dans tests/web-decision-prompt.test.cjs comme spécification.
+- Non vérifié : aucun essai réel (Ollama, SearXNG) du déclencheur model dans le produit ; l'échéance de la question pendant la décision n'a pas de test à part (même chemin que l'annulation, testée).
+- Question pour le propriétaire : le titre de la source, qui améliore la requête dans H2 (22-23/30 contre 19/29), reste à faire arriver de l'hôte jusqu'au contexte (autre ticket).

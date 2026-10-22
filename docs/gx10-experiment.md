@@ -146,7 +146,7 @@ TVLENS_BACKGROUND_INDEX=1
 | Raisonnement perception | `TVLENS_LOCAL_VLM_THINK=default`, `on` ou `off` | Utilisé aussi par le réexamen sans modèle dédié ; autre valeur refusée, réglage nommé. |
 | Raisonnement réexamen dédié | `TVLENS_LOCAL_INSPECTION_THINK=default`, `on` ou `off` | Indépendant de la perception ; valeur invalide refusée avec le nom du réglage. |
 | Raisonnement questions | `TVLENS_LOCAL_QUESTIONS_THINK=default`, `on` ou `off` | Indépendant du réglage VLM. |
-| Web des questions locales | `TVLENS_LOCAL_WEB_BACKEND=corpus` (avec `TVLENS_LOCAL_WEB_CORPUS`) ou `searxng` (avec `TVLENS_LOCAL_WEB_URL`) ; `TVLENS_LOCAL_WEB_TRIGGER=auto` (défaut) ou `always` | Absent ou vide : aucune récupération. Backend inconnu, dossier ou URL manquant, URL non http(s) ou avec identifiants, déclencheur inconnu : refus `TVLENS_LOCAL_WEB_CONFIG_INVALID` au démarrage, sans la valeur. Sans effet avec les questions Codex. |
+| Web des questions locales | `TVLENS_LOCAL_WEB_BACKEND=corpus` (avec `TVLENS_LOCAL_WEB_CORPUS`) ou `searxng` (avec `TVLENS_LOCAL_WEB_URL`) ; `TVLENS_LOCAL_WEB_TRIGGER=auto` (défaut), `always` ou `model` | Absent ou vide : aucune récupération. Backend inconnu, dossier ou URL manquant, URL non http(s) ou avec identifiants, déclencheur inconnu : refus `TVLENS_LOCAL_WEB_CONFIG_INVALID` au démarrage, sans la valeur. Sans effet avec les questions Codex. |
 
 Pour ces réglages de raisonnement, `default` ou l’absence omet le champ `think` de `/api/chat` ; le modèle
 garde son défaut. `on` transmet `think:true`, `off` transmet `think:false`, à chaque tour, y compris
@@ -180,7 +180,11 @@ OpenRouter : l’expérience doit donc toujours fixer ce choix. Le choix des que
 recherche ni inspection. Sans `TVLENS_LOCAL_WEB_BACKEND`, les questions locales n’ont que les trois outils
 vidéo existants, sans web, et une demande de source externe reçoit une limite explicite. Avec lui, une question
 qui appelle le web (ou toutes, avec `TVLENS_LOCAL_WEB_TRIGGER=always`) reçoit d’abord les pages récupérées, et
-seules les sources tirées de ces pages sont acceptées. SearXNG (`searxng`) sort de la machine pour chercher et
+seules les sources tirées de ces pages sont acceptées. Avec `TVLENS_LOCAL_WEB_TRIGGER=model`, le modèle des questions
+décide d’abord, par un appel court sans outil (au plus 5 s), s’il faut chercher et écrit la requête à partir de la
+question et des trois passages récents ; la réponse garde la question du spectateur. Si cet appel échoue ou rend une
+décision inutilisable, la règle de `auto` décide sur la question brute. Cet appel compte comme une requête au
+modèle. SearXNG (`searxng`) sort de la machine pour chercher et
 ouvrir les pages : une campagne qui l’exerce est **hybride** ; le corpus figé (`corpus`) reste local. Le web de
 surveillance reste distant,
 avec détection Codex actuelle distincte. Relever ces deux rôles même s’ils sont non exercés.
@@ -311,11 +315,13 @@ Le dossier du corpus contient `corpus.json` et les fichiers de texte :
 
 Récupération, pour une question :
 
-1. La question est nettoyée (espaces réduits, longueur bornée) puis comparée sans casse ni accents aux `queries`.
+1. La requête est nettoyée (espaces réduits, longueur bornée) puis comparée sans casse ni accents aux `queries`.
+   C’est la question brute avec les déclencheurs `auto` et `always`, mais la requête écrite par le modèle avec
+   `model` : elle ne retrouve alors les `queries` que si elle les reprend, sinon le classement par mots s’applique.
    Si des pages la déclarent, elles sont rendues dans l’ordre du corpus.
-2. Sinon, les pages sont classées par le nombre de mots distincts de la question (hors mots vides, au moins trois
+2. Sinon, les pages sont classées par le nombre de mots distincts de la requête (hors mots vides, au moins trois
    lettres) qui figurent dans leur titre ou leur texte. Deux mots communs au moins sont exigés (un seul pour une
-   question d’un seul mot) ; à score égal, l’ordre du corpus décide.
+   requête d’un seul mot) ; à score égal, l’ordre du corpus décide.
 3. Au plus trois pages sont rendues, chacune coupée à 2 500 caractères. Les coupes et l’absence de page sont
    signalées dans `limits`.
 

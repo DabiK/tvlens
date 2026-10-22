@@ -8,9 +8,11 @@ const { inspect } = require('node:util');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
-const { OllamaQuestionAgent, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT } = require('../adapters/ollama/question-agent.cjs');
+const { OllamaQuestionAgent, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT, WEB_DECISION_TIMEOUT_MS }
+  = require('../adapters/ollama/question-agent.cjs');
 const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS } = require('../core/web-retrieval.cjs');
 const { OllamaHttpClient } = require('../adapters/ollama/http-client.cjs');
+const { DECISION_FORMAT, DECISION_SYSTEM_PROMPT } = require('../adapters/web-decision-prompt.cjs');
 const { FrozenCorpusRetrieval } = require('../adapters/web/frozen-corpus.cjs');
 const { SearxngRetrieval } = require('../adapters/web/searxng.cjs');
 const { deferred, bounded, failure, turns } = require('./helpers/wait.cjs');
@@ -778,6 +780,7 @@ const PAGES = [
   { url: 'https://example.org/salaires-2024', title: 'Salaires en 2024', text: 'PAGE_TEXT_SALARIES Les salaires ont progressé de 3 %.' },
 ];
 const WEB_QUESTION = 'Quelle a été l’inflation en 2024 ?';
+const DATING_RULE = /Date chaque fait daté tiré des pages.*« dernier », « actuel » ou « en ce moment ».*date la plus récente/;
 const pageSource = (page = PAGES[0], extra = {}) => ({ url: page.url, title: page.title,
   evidence: 'Les prix ont augmenté de 2 %', ...extra });
 const externalAnswer = sources => ({ answer: 'L’inflation a été de 2 % en 2024.', kind: 'external', citations: [], limits: [], sources });
@@ -809,6 +812,7 @@ test('a local web question answers from retrieved pages and DeepAsk publishes th
   assert.match(instructions, /reprend exactement l’URL et le titre d’une page de webPages/);
   assert.match(instructions, /evidence le passage de la page/);
   assert.match(instructions, /pages ne suffisent pas, réponds kind=insufficient/);
+  assert.match(instructions, DATING_RULE);
   assert.deepEqual(untrustedData(prompt).webPages, PAGES);
   assert.equal(job.result.kind, 'external');
   assert.deepEqual(job.result.sources, [pageSource()]);
@@ -817,6 +821,7 @@ test('a local web question answers from retrieved pages and DeepAsk publishes th
   const { elapsedMs, ...retrieved } = job.result.retrieval;
   assert.deepEqual(retrieved, { residence: 'local', status: 'used', documents: 2 });
   assert.ok(Number.isFinite(elapsedMs) && elapsedMs >= 0);
+  assert.equal(server.requests.length, 1);
   assert.equal(job.metrics.calls.providerRequests, server.requests.length);
   assert.doesNotMatch(JSON.stringify([s.deep.snapshot(), traces, job.result.limits]), /PAGE_TEXT|PORT_LIMIT/);
 });
@@ -895,12 +900,14 @@ test('outside a web chat question the local agent never retrieves and keeps the 
     s.deep.jobs.splice(0);
     assert.equal(prompt, await promptWithoutPort(t, question, options));
   }
+  assert.equal(server.requests.length, cases.length);
   assert.deepEqual(retrieval.requests, []);
   const plain = await backend(t, (request, res) => reply(res, insufficientAnswer));
   const job = stage(t, plain.url).ask(WEB_QUESTION);
   await job.done;
   const prompt = plain.requests[0].body.messages[0].content;
   assert.match(prompt, /Aucun accès web/);
+  assert.doesNotMatch(prompt, DATING_RULE);
   assert.equal(Object.hasOwn(untrustedData(prompt), 'webPages'), false);
   assert.equal(Object.hasOwn(job.result, 'retrieval'), false);
 });
@@ -913,8 +920,10 @@ test('the always web trigger retrieves a chat question the rule would not send t
   await job.done;
   assert.deepEqual(retrieval.requests.map(request => request.query), ['Que dit-elle ?']);
   assert.deepEqual(untrustedData(server.requests[0].body.messages[0].content).webPages, PAGES);
+  assert.equal(server.requests.length, 1);
   await s.ask('Que dit-elle ?', { mode: 'inspect' }).done;
   assert.equal(retrieval.requests.length, 1);
+  assert.equal(server.requests.length, 2);
 });
 
 test('an unknown web trigger is refused when the local agent is built', () => {
@@ -1025,4 +1034,184 @@ test('cancelling during retrieval sends no inference and late pages change nothi
   assert.deepEqual(s.deep.snapshot(), snapshot);
   assert.equal(server.requests.length, 0);
   assert.equal(job.metrics.calls.providerRequests, 0);
+});
+
+const FILM_QUESTION = 'Quand ce film a-t-il été publié ?';
+const FILM_QUERY = 'Tears of Steel date de sortie';
+const FILM_PAGE = { url: 'https://example.org/tears-of-steel', title: 'Tears of Steel', publishedAt: '2012-09-26',
+  text: 'PAGE_TEXT_FILM Tears of Steel est sorti le 26 septembre 2012.' };
+const filmSource = { url: FILM_PAGE.url, title: FILM_PAGE.title, evidence: 'sorti le 26 septembre 2012' };
+const filmAnswer = { answer: 'Tears of Steel est sorti le 26 septembre 2012.', kind: 'external', citations: [], limits: [],
+  sources: [filmSource] };
+const decision = (web, query = web ? FILM_QUERY : '') => ({ web, query });
+const filmState = { id: 'session', elapsedMs: 16000, history: [], segments: [
+  { ...citation, status: 'ready', available: true,
+    observation: { summary: 'Générique de Tears of Steel.', transcript: 'Vous regardez Tears of Steel, un film du Blender Institute.' } },
+] };
+// The local agent composed from its configuration with the model trigger, around a fake retrieval port; agent options
+// (an injected clock) are added to what the composition passes.
+function modelStage(t, url, retrieval, agentOptions) {
+  const config = { ...localConfig(url), localWeb: { backend: 'corpus', corpus: '/unused', trigger: 'model' } };
+  const LocalAgent = agentOptions && function (options) { return new OllamaQuestionAgent({ ...options, ...agentOptions }); };
+  const s = stage(t, url, { config, createWebRetrieval: () => retrieval.port, ...(LocalAgent && { LocalAgent }) });
+  s.replace(structuredClone(filmState));
+  return s;
+}
+
+test('the model trigger lets the local model name the film in its query and the answer cites a retrieved page', async t => {
+  const retrieval = fakeRetrieval(async () => ({ documents: [structuredClone(FILM_PAGE)], limits: [] }));
+  const server = await backend(t, (request, res, n) => reply(res, n === 1 ? decision(true) : filmAnswer));
+  const s = modelStage(t, server.url, retrieval);
+  const job = s.ask(FILM_QUESTION);
+  await job.done;
+  assert.equal(job.status, 'done', job.message);
+  const [decisionCall, answerCall] = server.requests.map(request => request.body);
+  assert.equal(server.requests.length, 2);
+  assert.equal(Object.hasOwn(decisionCall, 'tools'), false);
+  assert.deepEqual(decisionCall.format, DECISION_FORMAT);
+  assert.equal(decisionCall.options.num_predict, 80);
+  assert.equal(decisionCall.think, false);
+  assert.deepEqual(decisionCall.messages.map(message => message.role), ['system', 'user']);
+  assert.equal(decisionCall.messages[0].content, DECISION_SYSTEM_PROMPT);
+  assert.match(decisionCall.messages[1].content, /« Quand ce film a-t-il été publié \? »/);
+  assert.match(decisionCall.messages[1].content, /- \[0–8 s\] .*Vous regardez Tears of Steel/);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [FILM_QUERY]);
+  assert.match(answerCall.messages[0].content, /DEMANDE \(du spectateur\) : "Quand ce film a-t-il été publié \?"/);
+  assert.doesNotMatch(answerCall.messages[0].content, /Tears of Steel date de sortie/);
+  assert.match(answerCall.messages[0].content, DATING_RULE);
+  assert.equal(Object.hasOwn(answerCall.options, 'num_predict'), false);
+  assert.deepEqual(job.result.sources, [filmSource]);
+  assert.deepEqual(job.validation.sourceValidation, { proposed: 1, accepted: 1, rejected: [] });
+  const { elapsedMs, decisionMs, ...retrieved } = job.result.retrieval;
+  assert.deepEqual(retrieved, { residence: 'local', status: 'used', documents: 1, decision: 'web', query: FILM_QUERY });
+  assert.ok(Number.isFinite(elapsedMs) && Number.isFinite(decisionMs) && decisionMs >= 0);
+  assert.equal(job.metrics.calls.providerRequests, 2);
+});
+
+const isDecision = request => request.body.messages[0].role === 'system';
+
+test('a model decision against the web retrieves nothing and answers with the prompt of an agent without port', async t => {
+  const retrieval = fakeRetrieval();
+  const server = await backend(t, (request, res) => reply(res, isDecision(request) ? decision(false) : insufficientAnswer));
+  const clock = manualClock();
+  const job = modelStage(t, server.url, retrieval, clock.io).ask(FILM_QUESTION);
+  await bounded(job.done);
+  assert.equal(job.status, 'done', job.message);
+  assert.equal(clock.armed, 0);
+  assert.deepEqual(retrieval.requests, []);
+  assert.equal(server.requests.length, 2);
+  assert.equal(job.metrics.calls.providerRequests, 2);
+  const { decisionMs, ...decided } = job.result.retrieval;
+  assert.deepEqual(decided, { decision: 'no-web' });
+  assert.ok(Number.isFinite(decisionMs) && decisionMs >= 0);
+  assert.equal(job.result.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT), false);
+  const prompt = normalizedMarker(server.requests[1].body.messages[0].content);
+  assert.doesNotMatch(prompt, DATING_RULE);
+  const plain = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const withoutPort = stage(t, plain.url);
+  withoutPort.replace(structuredClone(filmState));
+  await withoutPort.ask(FILM_QUESTION).done;
+  assert.equal(prompt, normalizedMarker(plain.requests[0].body.messages[0].content));
+});
+
+const failedDecisions = {
+  'an unreadable content': res => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ message: { role: 'assistant', content: '{"web": oui' }, done: true }));
+  },
+  'a web decision without query': res => reply(res, decision(true, ' \n ')),
+  'an HTTP error': res => { res.writeHead(503); res.end('{}'); },
+};
+for (const [failure, respond] of Object.entries(failedDecisions)) {
+  test(`after ${failure} the rule decides on the raw question and the result says the decision failed`, async t => {
+    const retrieval = fakeRetrieval();
+    const server = await backend(t, (request, res) => (isDecision(request) ? respond(res) : reply(res, insufficientAnswer)));
+    const s = modelStage(t, server.url, retrieval);
+    const ruled = s.ask(WEB_QUESTION);
+    await ruled.done;
+    assert.equal(ruled.status, 'done', ruled.message);
+    assert.deepEqual(retrieval.requests.map(request => request.query), [WEB_QUESTION]);
+    const { elapsedMs, decisionMs, ...retrieved } = ruled.result.retrieval;
+    assert.deepEqual(retrieved, { residence: 'local', status: 'used', documents: 2, decision: 'failed', query: WEB_QUESTION });
+    assert.deepEqual(untrustedData(server.requests[1].body.messages[0].content).webPages, PAGES);
+    assert.equal(ruled.metrics.calls.providerRequests, 2);
+    const unruled = s.ask(FILM_QUESTION);
+    await unruled.done;
+    assert.equal(unruled.status, 'done', unruled.message);
+    assert.equal(retrieval.requests.length, 1);
+    assert.deepEqual(Object.keys(unruled.result.retrieval).sort(), ['decision', 'decisionMs']);
+    assert.equal(unruled.result.retrieval.decision, 'failed');
+    assert.equal(unruled.result.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT), false);
+    assert.equal(server.requests.length, 4);
+  });
+}
+
+test('a decision past its own delay is abandoned and the rule decides on the raw question', async t => {
+  const clock = manualClock(), entered = deferred();
+  const retrieval = fakeRetrieval();
+  const server = await backend(t, (request, res) => (isDecision(request) ? entered.resolve(request) : reply(res, insufficientAnswer)));
+  const job = modelStage(t, server.url, retrieval, clock.io).ask(WEB_QUESTION);
+  const request = await entered.promise;
+  await clock.advance(WEB_DECISION_TIMEOUT_MS - 1);
+  assert.equal(server.requests.length, 1);
+  assert.deepEqual(retrieval.requests, []);
+  await clock.advance(1);
+  await bounded(job.done);
+  assert.equal(job.status, 'done', job.message);
+  assert.equal(await bounded(request.closed), false);
+  assert.deepEqual(retrieval.requests.map(item => item.query), [WEB_QUESTION]);
+  assert.equal(job.result.retrieval.decision, 'failed');
+  assert.equal(job.result.retrieval.decisionMs, WEB_DECISION_TIMEOUT_MS);
+  assert.equal(server.requests.length, 2);
+  assert.equal(clock.armed, 0);
+});
+
+test('cancelling during the decision sends no further request and retrieves nothing', async t => {
+  const entered = deferred();
+  const retrieval = fakeRetrieval();
+  const server = await backend(t, request => entered.resolve(request));
+  const s = modelStage(t, server.url, retrieval);
+  const job = s.ask(WEB_QUESTION);
+  const request = await entered.promise;
+  s.deep.cancel('Annulée.', job.id);
+  await job.done;
+  assert.equal(job.status, 'cancelled');
+  assert.equal(await bounded(request.closed), false);
+  await s.agent.tail.catch(() => {});
+  await turns(2);
+  assert.equal(server.requests.length, 1);
+  assert.deepEqual(retrieval.requests, []);
+  assert.equal(job.metrics.calls.providerRequests, 1);
+});
+
+test('the model trigger makes no decision outside a web chat question or without a retrieval port', async t => {
+  const retrieval = fakeRetrieval();
+  const server = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const s = modelStage(t, server.url, retrieval);
+  for (const options of [{ mode: 'inspect' }, { intent: 'recap', startMs: 0 }]) {
+    const job = s.ask(FILM_QUESTION, options);
+    await job.done;
+    assert.equal(job.metrics.calls.providerRequests, 1);
+    assert.equal(Object.hasOwn(job.result, 'retrieval'), false);
+  }
+  assert.equal(server.requests.some(isDecision), false);
+  assert.deepEqual(retrieval.requests, []);
+  const plain = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const withoutPort = stage(t, plain.url, { agent: localAgent(plain.url, { webTrigger: 'model' }) });
+  withoutPort.replace(structuredClone(filmState));
+  const job = withoutPort.ask(FILM_QUESTION);
+  await job.done;
+  assert.equal(plain.requests.length, 1);
+  assert.equal(isDecision(plain.requests[0]), false);
+  assert.equal(Object.hasOwn(job.result, 'retrieval'), false);
+});
+
+test('the decision counts as a provider request and its thinking enters the question usage', async t => {
+  const server = await backend(t, (request, res) => (isDecision(request)
+    ? reply(res, decision(false), undefined, 'abc') : reply(res, insufficientAnswer, undefined, 'de')));
+  const job = modelStage(t, server.url, fakeRetrieval()).ask(FILM_QUESTION);
+  await job.done;
+  assert.equal(job.metrics.calls.providerRequests, 2);
+  assert.equal(job.metrics.thinkingChars, 5);
+  assert.equal(job.result.thinkingChars, 5);
 });

@@ -171,7 +171,8 @@ La garde sur le résultat visuel consigne son diagnostic sans modifier le résul
 
 `config.localWeb` reprend les réglages `TVLENS_LOCAL_WEB_*` : `{backend, corpus?, url?, trigger?}`, avec
 `backend` `corpus` (et `corpus`) ou `searxng` (et `url`), toute `url` présente en http(s) sans identifiants
-quel que soit le backend, `trigger` `auto` (défaut) ou `always`. Dans un scénario, `corpus` est un chemin relatif au dossier du scénario, descendant, sans `..`.
+quel que soit le backend, `trigger` `auto` (défaut), `always` ou `model` (le modèle des questions décide de chercher
+et écrit la requête). Dans un scénario, `corpus` est un chemin relatif au dossier du scénario, descendant, sans `..`.
 Il est fusionné champ par champ avec `localWeb` de la configuration importée, le scénario l'emportant ;
 sans `localWeb` ni d'un côté ni de l'autre, aucune récupération n'est composée. Un `localWeb` qui n'est pas
 un objet ou un corpus qui sort du dossier est refusé avec `TVLENS_REPLAY_CONFIG_INVALID` ; une forme
@@ -179,12 +180,15 @@ invalide (backend, dossier, URL, déclencheur) avec `TVLENS_LOCAL_WEB_CONFIG_INV
 
 Le rapport relève `webRetrieval` : `backend`, `trigger` et `residence` du port réellement composé, jamais le
 chemin du corpus ni l'URL de recherche. La copie du scénario dans `parameters` garde le chemin relatif du
-corpus et l'URL déclarée, jamais un chemin complet ni une URL avec identifiants. Chaque question qui a récupéré des pages porte `web` : `retrieval`
-(`residence`, `status`, `documents`, `elapsedMs`), `acceptedSources` (URL des sources acceptées) et
-`sourceValidation` (comptes, URL refusées et raison). Ce relevé vient du résultat de l'agent et reste
-présent quand DeepAsk refuse la réponse. Aucun texte de page n'est recopié : la copie de `result` retire
-la citation `evidence` de chaque source. `webResidence` vaut `hybrid` dès qu'une question a récupéré par
-une voie qui sort de la machine (SearXNG) : la campagne est alors hybride. Sans relevé web, il vaut `null`.
+corpus et l'URL déclarée, jamais un chemin complet ni une URL avec identifiants. Chaque question qui a récupéré des
+pages, ou dont le modèle a décidé, porte `web` : `retrieval` (`residence`, `status`, `documents`, `elapsedMs` quand
+des pages ont été demandées ; avec le déclencheur `model`, `decision` `web`, `no-web` ou `failed`, `decisionMs` et
+la requête envoyée `query`), `acceptedSources` (URL des sources acceptées) et `sourceValidation` (comptes, URL
+refusées et raison). Ce relevé vient du résultat de l'agent et reste présent quand DeepAsk refuse la réponse.
+Aucun texte de page n'est recopié : la copie de `result` retire la citation `evidence` de chaque source.
+`webResidence` vaut `hybrid` dès qu'une question a récupéré par une voie qui sort de la machine (SearXNG) : la
+campagne est alors hybride. Sans relevé web, il vaut `null` ; une décision sans récupération ne change pas la
+résidence.
 
 ## Transport, sorties et limites
 
