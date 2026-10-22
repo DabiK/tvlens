@@ -630,6 +630,8 @@ pour le flux réel ; une source ne compte que si sa page a été lue.
   — Configure local web retrieval and let replays declare and report it
 - [T314](314-let-the-local-model-decide-the-web-search-and-write-its-query.md)
   — Let the local model decide the web search and write its query _(demande un ADR)_
+- [T315](315-give-the-model-the-part-of-each-page-that-matches-the-question.md)
+  — Give the model the part of each page that matches the question
 
 ### structure — Filets, contrats et Mémoire
 
