@@ -1,0 +1,416 @@
+[
+ {
+  "questionId": "kennedy-n3",
+  "question": "Quel personnage historique Kennedy a-t-il cité à propos des grandes actions, et que disait-il ?",
+  "answers": [
+   {
+    "textId": "484bd807f1",
+    "kind": "observation",
+    "answer": "Dans la vidéo, Kennedy ne cite pas de personnage historique spécifique pour parler de grandes actions. Il évoque plutôt les premières vagues de la révolution industrielle, de l'invention moderne et de l'énergie nucléaire (moment-27, 208000-216000ms).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "df3c873905",
+    "kind": "observation",
+    "answer": "La vidéo ne mentionne pas de personnage historique spécifique cité par Kennedy à propos de grandes actions. Il évoque seulement que ceux qui nous ont précédés ont fait en sorte que ce pays soit en tête dans la course à l'espace (moment-26, 200000-208000ms).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-n4",
+  "question": "Selon Kennedy, quelles « premières vagues » ceux qui l'ont précédé ont-ils fait prendre au pays ?",
+  "answers": [
+   {
+    "textId": "7122d28268",
+    "kind": "observation",
+    "answer": "La vidéo ne mentionne pas de « premières vagues » spécifiques que ceux qui ont précédé Kennedy auraient fait prendre au pays. Le président affirme seulement que ceux qui l'ont précédé ont fait en sorte que ce pays soit en tête (moment-26, 200000-208000ms).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w1",
+  "question": "Le vaisseau américain qui devait atteindre Vénus, dont parle Kennedy : comment s'appelait-il, et y est-il parvenu ?",
+  "answers": [
+   {
+    "textId": "26f7dff7c4",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain doit atteindre Vénus (moment-11, 80000-88000ms). Selon les archives de la NASA, il s'agissait de la mission Mariner 2, qui a réussi son survol de la planète (https://science.nasa.gov/mission/mariner-2/ : \"Mariner 2 found Venus to be inhospitable, and far hotter than expected.\").",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://science.nasa.gov/mission/mariner-2/",
+      "title": "Mariner 2 - NASA Science",
+      "evidence": "Mariner 2 found Venus to be inhospitable, and far hotter than expected."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c21139f60c",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). D'après les archives de la NASA, ce vaisseau était Mariner 2, qui a effectué un survol réussi de la planète (https://science.nasa.gov/mission/mariner-2/ : \"NASA's Mariner 2 was humanity's first successful planetary science mission. ... Target Venus ... Results Successful\").",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://science.nasa.gov/mission/mariner-2/",
+      "title": "Mariner 2 - NASA Science",
+      "evidence": "NASA's Mariner 2 was humanity's first successful planetary science mission. ... Target Venus ... Results Successful"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d3b5afdc51",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). Selon les archives de la NASA, il s'agissait de la mission Mariner 2, qui a réussi son survol de la planète (https://science.nasa.gov/mission/mariner-2/).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://science.nasa.gov/mission/mariner-2/",
+      "title": "Mariner 2 - NASA Science",
+      "evidence": "Mariner 2 was humanity's first successful planetary science mission."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "dfabbe46b2",
+    "kind": "observation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). La vidéo ne précise pas le nom de ce vaisseau ni s'il y est parvenu.",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m1",
+  "question": "Dans quelle ville Kennedy dit-il se trouver, et dans quel lieu précis et à quelle date a-t-il prononcé ce discours ?",
+  "answers": [
+   {
+    "textId": "3854fba53e",
+    "kind": "explanation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Selon les informations de la NASA, ce discours a été prononcé le 12 septembre 1962 à l'université Rice (https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/",
+      "title": "President John F. Kennedy at Rice University - NASA",
+      "evidence": "President Kennedy speaks before a crowd of 35,000 people at Rice University in the football field on Sept. 12, 1962."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "63a8f3f3cc",
+    "kind": "explanation",
+    "answer": "Kennedy mentionne se trouver à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Ce discours a été prononcé à Rice University le 12 septembre 1962 (https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/",
+      "title": "President John F. Kennedy at Rice University - NASA",
+      "evidence": "President Kennedy speaks before a crowd of 35,000 people at Rice University in the football field on Sept. 12, 1962."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7cb7416583",
+    "kind": "explanation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Selon les informations de la NASA, ce discours a été prononcé le 12 septembre 1962 à Rice University (https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/",
+      "title": "President John F. Kennedy at Rice University - NASA",
+      "evidence": "President Kennedy speaks before a crowd of 35,000 people at Rice University in the football field on Sept. 12, 1962."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8726e81f85",
+    "kind": "explanation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Selon les informations de la NASA, ce discours a été prononcé le 12 septembre 1962 à Rice University (https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/",
+      "title": "President John F. Kennedy at Rice University - NASA",
+      "evidence": "President Kennedy speaks before a crowd of 35,000 people at Rice University in the football field on Sept. 12, 1962."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m2",
+  "question": "Sur son échelle, quand Kennedy situe-t-il la pénicilline, et en réalité, qui l'a découverte et en quelle année ?",
+  "answers": [
+   {
+    "textId": "1937c749e7",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas d'information sur la position de la pénicilline dans l'échelle de Kennedy. En réalité, la pénicilline a été découverte par Alexander Fleming en septembre 1928 (https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic",
+      "title": "The real story behind penicillin | PBS News",
+      "evidence": "Penicillin was discovered in London in September of 1928."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "5990e95441",
+    "kind": "explanation",
+    "answer": "La vidéo ne mentionne pas la pénicilline dans les passages consultés. En réalité, la pénicilline a été découverte par Alexander Fleming en septembre 1928.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic",
+      "title": "The real story behind penicillin | PBS News",
+      "evidence": "Penicillin was discovered in London in September of 1928. As the story goes, Dr. Alexander Fleming, the bacteriologist on duty at St. Mary's Hospital, returned from a summer vacation in Scotland to find a messy lab bench and a good deal more."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "93565c9b63",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas d'information sur la place de la pénicilline dans l'échelle de temps de Kennedy. En réalité, la pénicilline a été découverte par Alexander Fleming en septembre 1928, comme l'indique la page de PBS News.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic",
+      "title": "The real story behind penicillin | PBS News",
+      "evidence": "Penicillin was discovered in London in September of 1928."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "fe0e4fa3f1",
+    "kind": "external",
+    "answer": "La vidéo ne contient pas de mention de la pénicilline dans le discours de Kennedy. En réalité, la pénicilline a été découverte par Alexander Fleming en 1928 (https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic : \"Penicillin was discovered in London in September of 1928.\").",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic",
+      "title": "The real story behind penicillin | PBS News",
+      "evidence": "Penicillin was discovered in London in September of 1928."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w2",
+  "question": "Qui était ce William Bradford que Kennedy cite ?",
+  "answers": [
+   {
+    "textId": "190bad2234",
+    "kind": "external",
+    "answer": "William Bradford était un gouverneur de la colonie de Plymouth et un séparatiste anglais (Wikipedia). Il a fait partie des passagers du Mayflower en 1620 et a dirigé la colonie pendant environ trente ans.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governor) - Wikipedia",
+      "evidence": "William Bradford (c. 19 March 1590 – 9 May 1657) was an English Pilgrim Separatist and Governor of Plymouth Colony"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "3ad40b72c3",
+    "kind": "external",
+    "answer": "William Bradford était un gouverneur de la colonie de Plymouth et un écrivain anglais du XVIIe siècle (https://en.wikipedia.org/wiki/William_Bradford_(governor)). Il faisait partie des passagers du Mayflower et était l'un des membres des séparatistes anglais (https://en.wikipedia.org/wiki/William_Bradford_(governor)).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governance) - Wikipedia",
+      "evidence": "English separatists. People from the Metropolitan Borough of Doncaster Mayflower passengers. Politicians from Plymouth, Massachusetts"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "5baa046009",
+    "kind": "external",
+    "answer": "William Bradford était un écrivain et un homme politique anglais du XVIIe siècle, notamment gouverneur de la colonie de Plymouth en Amérique (https://en.wikipedia.org/wiki/William_Bradford_(governor)). Il est célèbre pour son ouvrage \"Of Plymouth Plantation\", qui relate l'histoire de la fondation de la colonie et la vie des pèlerins (https://en.wikipedia.org/wiki/William_Bradford_(governor)).",
+    "citations": [
+     {
+      "id": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governor) - Wikipedia",
+      "evidence": "William Bradford's most well-known work by far is Of Plymouth Plantation. It is a detailed history in journal form about the founding of the Plymouth Colony and the lives of the colonists from 1621 to 1646"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c528460709",
+    "kind": "external",
+    "answer": "William Bradford était un gouverneur de la colonie de Plymouth et un séparatiste anglais (external). Il a émigré en Amérique sur le Mayflower en 1620 et a servi de gouverneur de la colonie pendant environ trente ans (external).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governor) - Wikipedia",
+      "evidence": "William Bradford (c. 19 March 1590 – 9 May 1657) was an English Pilgrim Separatist and Governor of Plymouth Colony, originally from the West Riding of Yorkshire in Northern England."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w3",
+  "question": "Kennedy dit qu'il n'y a encore aucun conflit dans l'espace. Aujourd'hui, combien de pays ont signé les accords Artemis, le cadre de la NASA pour une exploration pacifique ?",
+  "answers": [
+   {
+    "textId": "6f43da81b2",
+    "kind": "observation",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, les pages de la NASA consultées ne précisent pas le nombre total de pays signataires, mentionnant seulement l'arrivée récente de l'Ouzbékistan.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/organizations/oiir/artemis-accords/nasa-welcomes-uzbekistan-as-newest-artemis-accords-signatory/",
+      "title": "NASA Welcomes Uzbekistan as Newest Artemis Accords Signatory - NASA",
+      "evidence": "NASA Welcomes Uzbekistan as Newest Artemis Accords Signatory"
+     }
+    ],
+    "limits": [
+     "La vidéo confirme l'absence de conflit spatial selon Kennedy, mais les sources web ne fournissent pas le décompte exact des pays signataires des accords Artemis."
+    ]
+   },
+   {
+    "textId": "b61fff69d6",
+    "kind": "external",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Selon les informations de la NASA, l'Ouzbékistan est devenu le 77e pays signataire des accords Artemis le 19 octobre 2026 (https://www.nasa.gov/artemis-accords/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/artemis-accords/",
+      "title": "Artemis Accords - NASA",
+      "evidence": "On October 19, 2026, Uzbekistan became the 77th nation to sign the accords."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cd343d5393",
+    "kind": "insufficient",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, les pages de la NASA consultées indiquent que l'Ouzbékistan est le plus récent signataire, mais elles ne précisent pas le nombre total de pays ayant signé le cadre (kind=insufficient).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/organizations/oiir/artemis-accords/nasa-welcomes-uzbekistan-as-newest-artemis-accords-signatory/",
+      "title": "NASA Welcomes Uzbekistan as Newest Artemis Accords Signatory - NASA",
+      "evidence": "NASA Welcomes Uzbekistan as Newest Artemis Accords Signatory"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d58084f3eb",
+    "kind": "insufficient",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, les pages de la NASA consultées indiquent que l'Ouzbékistan est le plus récent signataire, mais ne précisent pas le nombre total de pays ayant signé le cadre (kind=insufficient).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/organizations/oiir/artemis-accords/nasa-welcomes-uzbekistan-as-newest-artemis-accords-signatory/",
+      "title": "NASA Welcomes Uzbekistan as Newest Artemis Accords Signatory - NASA",
+      "evidence": "NASA Welcomes Uzbekistan as Newest Artemis Accords Signatory"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

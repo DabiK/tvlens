@@ -1,0 +1,329 @@
+[
+ {
+  "questionId": "cuisine-m1",
+  "question": "Quels morceaux de bœuf prend-il d'habitude, et de quelle partie de l'animal viennent-ils ?",
+  "answers": [
+   {
+    "textId": "1f4d171dac",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf sont utilisés habituellement, mentionnant seulement la présence de morceaux de viande dans la préparation [moment-12, 88000, 96000]. Il n'est pas non plus fait mention de la partie de l'animal dont ils proviennent.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne mentionne pas de type de morceau de bœuf spécifique ou d'origine anatomique."
+    ]
+   },
+   {
+    "textId": "9db416a40a",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf l'individu prend d'habitude. On y voit seulement qu'il prépare une marinade avec des morceaux de viande, des oignons, des carottes et des lardons (moment-13, 14:40).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b711293acf",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf sont habituellement utilisés par Patrick Dujancourt. On l'entend seulement mentionner la présence de morceaux de viande dans un bol de marinade avec des oignons, des carottes et des lardons (moment-12 à moment-17).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne mentionne pas de type de morceau de bœuf spécifique, seulement la présence de viande dans la préparation."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w1",
+  "question": "Il n'utilise pas de vin de Bourgogne : avec quel cépage fait-on les bourgognes rouges ?",
+  "answers": [
+   {
+    "textId": "18ae285b78",
+    "kind": "external",
+    "answer": "Les vins rouges de Bourgogne sont produits à partir des cépages pinot noir et gamay (https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+      "title": "Vignoble de Bourgogne — Wikipédia",
+      "evidence": "La Bourgogne produit des vins rouges, à base des cépages pinot noir et gamay, et des vins blancs, à bases de cépages chardonnay et aligoté."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4f1293d89a",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont produits à partir des cépages pinot noir et gamay (https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne). La vidéo montre le chef verser du vin rouge dans un bol, mais ne précise pas l'origine ou le cépage utilisé (moment-20, 152000-160000).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+      "title": "Vignoble de Bourgogne — Wikipédia",
+      "evidence": "La Bourgogne produit des vins rouges, à base des cépages pinot noir et gamay, et des vins blancs, à bases de cépages chardonnay et aligoté."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w2",
+  "question": "Que met-on d'habitude dans un bouquet garni ?",
+  "answers": [
+   {
+    "textId": "035f268731",
+    "kind": "external",
+    "answer": "Un bouquet garni est traditionnellement composé d'un assortiment de plantes aromatiques comme le thym, le laurier sauce et le romarin (https://fr.wikipedia.org/wiki/Bouquet_garni). On peut également y trouver du persil, de la sarriette, de la sauge, de la coriandre ou encore de l'origan (https://fr.wikipedia.org/wiki/Bouquet_garni).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, laurier sauce, et romarin."
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Ingrédients : Thym et laurier sauce, et éventuellement persil, sarriette, sauge, romarin, coriandre, origan"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "13aba793ec",
+    "kind": "external",
+    "answer": "Un bouquet garni est traditionnellement composé d'un assortiment de plantes aromatiques comme le thym, le laurier sauce et le romarin. On peut également y trouver du persil, de la sarriette, de la sauge, de la coriandre ou de l'origan.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, laurier sauce, et romarin."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "2eaa7c8767",
+    "kind": "explanation",
+    "answer": "Un bouquet garni est un assortiment de plantes aromatiques, généralement ficelées ensemble, utilisé pour parfumer les plats. On y trouve classiquement du thym, du laurier sauce et parfois du romarin, du persil ou de la sarriette.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, le laurier sauce, et romarin."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "846b301e4d",
+    "kind": "external",
+    "answer": "Un bouquet garni est un assortiment de plantes aromatiques traditionnelles, généralement ficelées ensemble. On y trouve souvent du thym, du laurier sauce et parfois du romarin, du persil, de la sarriette ou de la sauge.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, laurier sauce, et romarin."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-m2",
+  "question": "Pourquoi tient-il à bien saisir la viande, et comment s'appelle la réaction qui forme cette croûte ?",
+  "answers": [
+   {
+    "textId": "036c3f3693",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à obtenir une couleur brune pour son plat en faisant brunir la viande (moment-50 à moment-51). Cette réaction de brunissement s'appelle la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "C’est aussi la plus facilement observable grâce au brunissement rapide de la viande produit notamment par les mélanoïdines, pigments bruns à haut poids moléculaire résultant de la condensation et de la polymérisation des sucres aldéhydiques et d'acides aminés."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "147916fd83",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à faire brunir la viande pour obtenir une couleur brune pour son plat (moment-50 à moment-51). Cette réaction de brunissement s'appelle la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "C’est aussi la plus facilement observable grâce au brunissement rapide de la viande produit notamment par les mélanoïdines, pigments bruns à haut poids moléculaire résultant de la condensation et de la polymérisation des sucres aldéhydiques et d'acides aminés."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4c218eab02",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à obtenir une couleur brune pour son plat en faisant brunir la viande (moment-50 à moment-51). Cette réaction de brunissement s'appelle la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "C’est aussi la plus facilement observable grâce au brunissement rapide de la viande produit notamment par les mélanoïdines"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "60bf0c7406",
+    "kind": "explanation",
+    "answer": "La réaction qui forme cette croûte brune est la réaction de Maillard. Le cuisinier cherche à faire brunir la viande pour obtenir une couleur brune caractéristique du plat (moment-50).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "C’est aussi la plus facilement observable grâce au brunissement rapide de la viande produit notamment par les mélanoïdines, pigments bruns à haut poids moléculaire..."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w3",
+  "question": "Il a choisi un vin d'Occitanie : comment s'annonce la récolte de vin 2026 dans cette région ?",
+  "answers": [
+   {
+    "textId": "229e9d6d1f",
+    "kind": "external",
+    "answer": "La récolte viticole 2026 en Occitanie devrait augmenter de 18 % par rapport à la très faible récolte de 2025, malgré une baisse des surfaces en production. Le rendement régional se situerait ainsi légèrement au-dessus de la moyenne quinquennale (+ 1,5 %) (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html).",
+    "citations": [
+     {
+      "id": "DRAAF Occitanie",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1st octobre 2026 | DRAAF Occitanie",
+      "evidence": "la récolte augmenterait de 18 % par rapport à la très faible récolte 2025 [...] et se situerait légèrement au-dessus de la moyenne quinquennale (+ 1,5 %)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "3c6fdf37f5",
+    "kind": "external",
+    "answer": "La récolte viticole 2026 en Occitanie devrait augmenter de 18 % par rapport à la très faible récolte de 2025, malgré une baisse des surfaces en production. Le rendement régional se situerait légèrement au-dessus de la moyenne quinquennale, avec une hausse de 1,5 % (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html : « la récolte augmenterait de 18 % par rapport à la très faible récolte 2025 [...] et se situerait légèrement au-dessus de la moyenne quinquennale (+ 1,5 %) »).",
+    "citations": [
+     {
+      "id": "moment-85",
+      "startMs": 672000,
+      "endMs": 680000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "la récolte augmenterait de 18 % par rapport à la très faible récolte 2025, marquée déjà par la canicule, et se situerait légèrement au-dessus de la moyenne quinquennale (+ 1,5 %)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b60d9040a8",
+    "kind": "external",
+    "answer": "La récolte viticole 2026 en Occitanie s'annonce en hausse de 18 % par rapport à la campagne 2025, malgré une baisse des surfaces en production. Le rendement régional devrait se situer légèrement au-dessus de la moyenne quinquennale (+ 1,5 %), avec des résultats proches de ceux de 2022 (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html : \"la récolte augmenterait de 18 % par rapport à la très faible récolte 2025\").",
+    "citations": [
+     {
+      "id": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "la récolte augmenterait de 18 % par rapport à la très faible récolte 2025"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e598c62b4d",
+    "kind": "external",
+    "answer": "La récolte viticole 2026 en Occitanie devrait augmenter de 18 % par rapport à la très faible récolte de 2025, malgré une baisse des surfaces en production. Le rendement régional se situerait légèrement au-dessus de la moyenne quinquennale (+ 1,5 %), avec un rendement proche de celui de la campagne 2022.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "la récolte augmenterait de 18 % par rapport à la très faible récolte 2025, marquée déjà par la canicule, et se situerait légèrement au-dessus de la moyenne quinquennale (+ 1,5 %)"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

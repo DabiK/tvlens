@@ -1,0 +1,324 @@
+[
+ {
+  "questionId": "artemis-n1",
+  "question": "Quel premier lancement Scott, l'invité interviewé au centre des visiteurs, a-t-il vu, et à quel âge ?",
+  "answers": [
+   {
+    "textId": "0b2ba6baae",
+    "kind": "observation",
+    "answer": "L'invité Scott évoque avoir vu un lancement il y a cinq ans (moment-44, 344000-352000). Cependant, la vidéo ne précise pas l'âge qu'il avait lors de cet événement.",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'âge de Scott au moment du lancement n'est pas mentionné dans les passages fournis."
+    ]
+   },
+   {
+    "textId": "0f66327fb7",
+    "kind": "observation",
+    "answer": "L'homme, Scott, évoque une expérience de lancement survenue il y a cinq ans (moment-44, 344000-352000). Cependant, la vidéo ne précise pas son âge au moment de ce premier lancement.",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'âge de Scott au moment du lancement n'est pas mentionné dans les passages consultés."
+    ]
+   },
+   {
+    "textId": "e320de7855",
+    "kind": "observation",
+    "answer": "L'invité Scott évoque avoir vu un lancement il y a cinq ans, mais la vidéo ne précise pas de quel lancement il s'agit ni son âge à ce moment-là. Il mentionne seulement avoir vécu cette expérience devant le lanceur Artemis (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "e860e08e0f",
+    "kind": "observation",
+    "answer": "L'homme mentionne avoir vu un lancement il y a cinq ans (moment-44, 344000-352000). Cependant, la vidéo ne précise pas quel était ce premier lancement ni l'âge qu'il avait à ce moment-là.",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-n2",
+  "question": "Combien de « cutouts » compte la fenêtre de tir, et jusqu'à quelle heure court-elle ?",
+  "answers": [
+   {
+    "textId": "3488f924a7",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne mentionnent pas le nombre de « cutouts » ni l'heure de fin de la fenêtre de tir.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "685b76ffdd",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne mentionnent pas de fenêtre de tir, de nombre de « cutouts » ou d'heure de fin de mission.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "68def284f4",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne mentionnent pas de fenêtre de tir, de cutouts ou d'heure de fin de mission. Les informations disponibles concernent uniquement le lanceur Orion et l'activité de l'équipe de contrôle.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w1",
+  "question": "Pourquoi le décollage a-t-il pris du retard cette nuit-là ?",
+  "answers": [
+   {
+    "textId": "09fb51055a",
+    "kind": "observation",
+    "answer": "Les passages visionnés ne mentionnent pas de retard de décollage. On y voit seulement le lanceur Orion sur sa plateforme avec des jets de gaz liés à la pressurisation (moment-84, 664000-672000) et l'équipe de contrôle basculant sur un canal de communication commun (moment-87, 688000-696000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "14bf5b9fa9",
+    "kind": "external",
+    "answer": "Le décollage de la mission Artemis I a été retardé par deux problèmes de dernière minute. Un test du système de fin de vol a causé un retard, et une équipe a dû intervenir sur la plateforme de lancement pour resserrer des boulons sur une valve qui fuyait de l'hydrogène liquide (https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/).",
+    "citations": [
+     {
+      "id": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch | Air & Space Forces Magazine",
+      "evidence": "A snag in Space Launch Delta 45’s testing of the Artemis 1 flight termination system contributed to a delay of the very-early-morning launch Nov. 16, one of two last-minute glitches in the final preparations to launch America’s new moon rocket for the first time."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7e4915ba8c",
+    "kind": "observation",
+    "answer": "Les images montrent des jets de gaz s'échappant de l'étage supérieur du lanceur Orion, ce qui pourrait être lié à une activité de pressurisation des valves de liquide d'oxygène (moment-84, 664000-672000). Cependant, la vidéo ne mentionne pas explicitement que cet événement est la cause d'un retard de décollage.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m1",
+  "question": "Les employés d'Airbus qu'on a vus applaudir en Allemagne : qu'ont-ils fourni pour cette mission, et à quoi sert cet élément pendant le vol ?",
+  "answers": [
+   {
+    "textId": "4f6f93c4c9",
+    "kind": "insufficient",
+    "answer": "Je ne trouve aucune mention d'employés d'Airbus ou d'un événement en Allemagne dans les passages consultés. La vidéo montre uniquement une équipe de contrôle au centre de lancement pour la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a13e2497e9",
+    "kind": "insufficient",
+    "answer": "Je ne trouve aucune mention d'employés d'Airbus en Allemagne ou de l'élément qu'ils auraient fourni dans les passages consultés. La vidéo montre uniquement une équipe de contrôle supervisant les écrans pour le lancement d'Artemis-1 (moment-115 à moment-120).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f8f5783023",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne mentionnent pas d'employés d'Airbus en Allemagne, ni de matériel spécifique fourni par eux pour cette mission.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m2",
+  "question": "Comment s'appelle la directrice de lancement qui a donné le feu vert pour reprendre le compte à rebours, et qu'a-t-elle de particulier dans l'histoire de la NASA ?",
+  "answers": [
+   {
+    "textId": "410cefddf2",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est responsable de la planification et de la gestion de toutes les opérations du compte à rebours pour les lancements Artemis, ayant notamment dirigé le décollage d'Artemis I en novembre 2022.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Charlie Blackwell-Thompson serves as NASA’s Artemis launch director, responsible for the overall planning and management of all Artemis Launch Countdown operations."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ccfe971812",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est responsable de la planification et de la gestion de toutes les opérations du compte à rebours pour les lancements Artemis, ayant notamment dirigé le lancement d'Artemis I en novembre 2022.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Charlie Blackwell-Thompson serves as NASA’s Artemis launch director, responsible for the overall planning and management of all Artemis Launch Countdown operations."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "eb1c1285eb",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est responsable de la planification et de la gestion de toutes les opérations du compte à rebours pour les lancements Artemis, et elle a dirigé le compte à rebours et le décollage de la mission Artemis I en novembre 2022.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Charlie Blackwell-Thompson serves as NASA’s Artemis launch director, responsible for the overall planning and management of all Artemis Launch Countdown operations."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ee390ad313",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est responsable de la planification et de la gestion de l'ensemble des opérations du compte à rebours pour les lancements Artemis.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Charlie Blackwell-Thompson serves as NASA’s Artemis launch director, responsible for the overall planning and management of all Artemis Launch Countdown operations."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w3",
+  "question": "Depuis ce lancement, où en est aujourd'hui le programme Artemis ?",
+  "answers": [
+   {
+    "textId": "2efa53c3ad",
+    "kind": "explanation",
+    "answer": "Les informations disponibles ne permettent pas de répondre précisément à l'état actuel du programme Artemis. La vidéo montre un lancement en cours, mais ne fournit pas de calendrier pour les missions futures.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "5e01912edd",
+    "kind": "explanation",
+    "answer": "Le programme Artemis de la NASA vise à établir une présence humaine durable sur la Lune et à préparer l'exploration de Mars (https://www.nasa.gov/humans-in-space/artemis/). La vidéo montre le décollage réussi de la mission Artemis I (moment-204, 1624000-1632000).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "NASA’s Artemis Program... Moon to Mars"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b883aca8ba",
+    "kind": "insufficient",
+    "answer": "Les informations disponibles ne permettent pas de répondre précisément à l'état actuel du programme Artemis. La vidéo montre un lancement en cours, mais ne fournit pas de calendrier pour les missions futures.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d9aeae8280",
+    "kind": "external",
+    "answer": "Le programme Artemis de la NASA vise à établir une présence humaine durable sur la Lune et à préparer l'exploration de Mars. La page officielle de la NASA présente Artemis comme une mission allant de la Lune vers Mars.",
+    "citations": [
+     {
+      "id": "NASA's Artemis Program",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "NASA’s Artemis Program is about Moon to Mars."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w2",
+  "question": "Comment cette mission s'est-elle terminée, et combien de temps a-t-elle duré ?",
+  "answers": [
+   {
+    "textId": "06c8c3d531",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations sur la fin de la mission ou sur sa durée totale. Les passages consultés montrent uniquement une phase de vol en cours, incluant la séparation de la coiffe du module de service (moment-229, 1824000-1832000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "1647e226ef",
+    "kind": "external",
+    "answer": "La mission Artemis I s'est terminée par un amerrissage au large de San Diego à 12h40 EST le 11 décembre 2022 (https://www.nasa.gov/mission/artemis-i/). La durée totale de la mission était de 25 jours, 10 heures et 53 minutes (https://www.nasa.gov/mission/artemis-i/).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/mission/artemis-i/",
+      "title": "Artemis I - NASA",
+      "evidence": "Artemis I flew thousands of miles beyond and around the Moon and splashed down to Earth off the coast of San Diego at 12:40 p.m. EST on Dec. 11, 2022. The total mission duration was 25 days, 10 hours, and 53 minutes."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "2a1f38936f",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne permettent pas de dire comment la mission s'est terminée, car ils s'arrêtent alors que le vaisseau est encore en phase de lancement (moment-233, 1856000-1864000). La durée totale de la mission n'est pas non plus mentionnée dans ces extraits.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

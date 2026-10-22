@@ -35,6 +35,9 @@ l'exploration ; confirmé). H1 (hors ligne) mesuré ; flux réel F1 à venir.
 | Outil de recherche en deux temps | non noté : 3 erreurs, 12 réponses > 60 s, 12 JSON invalides, 4/60 sourcées | H1 bras C |
 | Questions O, relecture d'images anciennes | sans outil 0/24 ; journal 0/24 ; `inspect_clip` 4/24 avec 10 inventions, 8,7 s | H1 bras O0, OJ, OI |
 | Déclencheur web du produit (règle de mots-clés) | W 7/18, M 1/12, O 0/12 ; 2/60 questions vidéo à tort | `callsForWeb` de T309, calculé hors GPU |
+| Déclencheur par le modèle (appel court, avec titre) | W 18/18, M 12/12, O 0/12, v3 3/60 à tort ; **0,65 s** médiane ; 102/102 décisions stables | [H2](../2026-10-22-decision-web-hors-ligne-gx10/) |
+| Réponses avec la requête du modèle | 26/60 W/M (question brute 26) : W 22/36 (16), M 4/24 (10), 6 inventions (8) | H2 bras PTQ |
+| SearXNG en rafale | suspendu par Brave, DuckDuckGo, Google CSE après ~80 requêtes ; corrigé (bing, yahoo, qwant, mojeek, startpage ; `fr-FR`) | [SearXNG](../2026-10-22-searxng-gx10/) |
 
 ## Matériel et configuration de référence
 

@@ -38,3 +38,22 @@ reproductibles utiliseront le corpus figé de l'oracle v4 ; SearXNG sert au flux
 - Les résultats dépendent des moteurs amont (Google, Brave, etc.) et varient d'un jour à l'autre : seul le corpus figé
   permet de comparer des variantes.
 - Pour l'arrêter : `docker stop tvlens-searxng` ; pour le relancer : `docker start tvlens-searxng`.
+
+## Suspension et nouveaux réglages (22/10, 18:30 UTC)
+
+- Pendant H2, environ 110 requêtes en 17 minutes, dont 80 en rafale, ont fait suspendre l'instance : Brave (« too many
+  requests »), DuckDuckGo (403) et Google CSE (« unusual traffic »). Les 30 requêtes suivantes n'ont renvoyé aucun
+  résultat. Un redémarrage du conteneur ne lève pas ces blocages, qui viennent des moteurs amont.
+- Réglages ajoutés à 18:33 UTC, depuis le conteneur (le fichier appartient à son utilisateur ; copie de l'ancien :
+  `settings.yml.avant-moteurs-20261022`), puis redémarrage. Version sans secret :
+  [`settings-sans-secret.yml`](settings-sans-secret.yml) :
+  - moteurs `bing`, `yahoo`, `qwant`, `mojeek` et `startpage` activés ;
+  - `default_lang: fr-FR` : sans langue, Bing renvoyait des dictionnaires allemands.
+- Contrôle, une requête toutes les 6 s : 10 à 11 résultats par requête. Les premières pages sont les bonnes pour les
+  requêtes du modèle de H2 :
+  - Wikipedia et Blender pour Tears of Steel ;
+  - NASA et Wikipedia pour Mariner 2 ;
+  - Space.com pour le retard d'Artemis I ;
+  - blender.org pour les versions de Blender.
+- F1 doit éviter les rafales : environ 37 recherches en 90 minutes.
+

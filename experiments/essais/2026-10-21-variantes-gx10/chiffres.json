@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAtUtc": "2026-10-22T18:45:00Z",
+  "updatedAtUtc": "2026-10-22T19:00:00Z",
   "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
   "reference": {
     "configuration": {
@@ -1137,5 +1137,58 @@
       "pSignes": 0.8
     },
     "rejetsJ3DevenusPertinents": 6
+  },
+  "h2DecisionWebHorsLigne": {
+    "source": "experiments/essais/2026-10-22-decision-web-hors-ligne-gx10/",
+    "appelsDecision": 408,
+    "erreurs": 0,
+    "delaiDecisionMedianS": 0.65,
+    "declenchement": {
+      "regleProduit": {
+        "W": "7/18",
+        "M": "1/12",
+        "O": "0/12",
+        "v3ATort": "2/60"
+      },
+      "P": {
+        "W": "18/18",
+        "M": "11/12",
+        "O": "0/12",
+        "v3ATort": "3-4/60",
+        "stables": "99/102"
+      },
+      "PT": {
+        "W": "18/18",
+        "M": "12/12",
+        "O": "0/12",
+        "v3ATort": "3/60",
+        "stables": "102/102"
+      }
+    },
+    "recuperationCorpusTop3": {
+      "questionBrute": "21/30",
+      "P": "19/29",
+      "PT": "22-23/30"
+    },
+    "reponses": {
+      "H1B": {
+        "pertinentes": "26/60",
+        "W": "16/36",
+        "M": "10/24",
+        "inventions": 8
+      },
+      "PQ": {
+        "pertinentes": "21/58",
+        "W": "16/36",
+        "M": "5/22",
+        "inventions": 4
+      },
+      "PTQ": {
+        "pertinentes": "26/60",
+        "W": "22/36",
+        "M": "4/24",
+        "inventions": 6
+      }
+    }
   }
 }

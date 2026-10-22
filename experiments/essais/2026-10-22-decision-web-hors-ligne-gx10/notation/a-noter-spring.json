@@ -1,0 +1,315 @@
+[
+ {
+  "questionId": "spring-w1",
+  "question": "Quand ce court métrage a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "127ee5de91",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne mentionnent pas la date de publication de ce court métrage.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "3933c91d31",
+    "kind": "external",
+    "answer": "Ce court métrage, intitulé « Spring », a été publié en avril 2019, comme l'indiquent les articles de BlenderNation et Cartoon Brew.",
+    "citations": [
+     {
+      "id": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNation",
+      "evidence": "L'article est daté du 4 avril 2019."
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "La page mentionne des articles de presse datant d'avril 2019 concernant le film."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "9a519dc498",
+    "kind": "external",
+    "answer": "Ce court métrage a été publié le 4 avril 2019 (kind=external, sources=[{\"url\":\"https://en.wikipedia.org/wiki/Spring_(2019_film)\",\"text\":\"On April 4, 2019, the film was first released on YouTube.\"}].)",
+    "citations": [
+     {
+      "id": "wikipedia-spring-2019",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "On April 4, 2019, the film was first released on YouTube."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w2",
+  "question": "Qu'est-ce qui a inspiré l'histoire de ce film à son réalisateur ?",
+  "answers": [
+   {
+    "textId": "2c74290333",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations sur l'inspiration du réalisateur pour ce film. Les sources disponibles décrivent l'intrigue de Spring, qui suit une bergère et son chien affrontant des esprits anciens, mais ne mentionnent pas l'origine de l'idée du scénario.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "4db54c63d3",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations dans la vidéo ou les sources consultées pour répondre à cette question. Les extraits montrent des scènes de films du Blender Studio, mais ne mentionnent pas l'inspiration du réalisateur.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "8fa13b01f2",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages de la vidéo consultés ne mentionnent pas l'inspiration du réalisateur. Les séquences montrent uniquement des images de science-fiction et de fantasy, sans aucune parole ou texte explicatif sur la création du film.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d1df39f9c3",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages de la vidéo consultés ne mentionnent pas l'inspiration du réalisateur. Les images montrent uniquement des scènes de science-fiction et de fantasy avec une jeune fille et des créatures.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w3",
+  "question": "Le Blender Studio, qui présente ce film, a-t-il sorti un film plus récent ? Lequel, et que prépare-t-il aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "1aa55c5c6b",
+    "kind": "external",
+    "answer": "kind=external\nLe Blender Studio a sorti plusieurs films après celui-ci, comme Sintel en 2010 ou Big Buck Bunny en 2008, selon la liste de leurs productions. La page du Blender Studio ne précise pas de projet en cours de préparation aujourd'hui.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Sintel 2010. This fantasy short film from 2001 pushed the Blender 2.5 project forward."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "24533b9737",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\n\nJe ne peux pas confirmer si le Blender Studio a sorti un film plus récent que celui que vous regardez, car la vidéo ne mentionne pas le titre du film actuel. Les pages web consultées listent des films comme Sintel (2010), Big Buck Bunny (2008) et Elephants Dream (2006), mais ne précisent pas lequel est diffusé ici.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Sintel 2010, Big Buck Bunny 2008, Elephants Dream 2006."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "2d22951bcc",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti d'autres films après celui présenté, comme Sintel en 2010 ou Big Buck Bunny en 2008. La page du studio liste également Elephants Dream comme premier film open movie en 2006.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Sintel 2010 This fantasy short film from 2010 pushed the Blender 2.5 project forward."
+     },
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Big Buck Bunny 2008 With millions of views all around the world, this 2008 film has become an open source legend."
+     },
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Elephants Dream 2006 Released in 2006, this is widely known as the first open movie ever."
+     }
+    ],
+    "limits": [
+     "Je ne peux pas identifier quel film est présenté dans la vidéo actuelle car aucun titre n'est mentionné dans les passages analysés.",
+     "Je ne peux pas dire ce que le studio prépare aujourd'hui car les pages web consultées ne listent pas de projet en cours de production."
+    ]
+   },
+   {
+    "textId": "3555c52dc2",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti d'autres films comme Sintel (2010), Big Buck Bunny (2008) et Elephants Dream (2006) (https://studio.blender.org/films/). Les informations disponibles ne précisent pas quel film est le plus récent ni ce que le studio prépare actuellement.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Sintel 2010, Big Buck Bunny 2008, Elephants Dream 2006"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m1",
+  "question": "Depuis la crête, la fille et son chien regardent la vallée : qu'est-ce qui la remplit, et quel phénomène météo produit ce genre de paysage ?",
+  "answers": [
+   {
+    "textId": "11f93d66cc",
+    "kind": "explanation",
+    "answer": "La vallée est remplie par une vaste étendue de montagnes enveloppées de brume ou de nuages (moment-10). Ce paysage peut correspondre à une mer de nuages, un phénomène de nuages bas qui s'accumulent dans les vallées lors de conditions anticycloniques d'hiver (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "3565bca311",
+    "kind": "explanation",
+    "answer": "La vallée est remplie par une vaste étendue de montagnes enveloppées de brume (moment-10). Ce type de paysage, où une couche de nuages bas recouvre les vallées, est appelé une mer de nuages (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages : \"Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées\"). Ce phénomène se produit souvent lors de conditions anticycloniques d'hiver (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages : \"...le plus souvent lors de conditions anticycloniques d’hiver\")",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c0d0f52a67",
+    "kind": "explanation",
+    "answer": "La vallée est remplie par une masse de nuages bas qui enveloppe les montagnes (moment-10). Ce phénomène, appelé mer de nuages, se forme souvent lors de conditions anticycloniques d'hiver par condensation de la vapeur d'eau (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualidades-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m2",
+  "question": "Cette immense créature lumineuse qui s'approche d'elle, à quoi ressemble-t-elle, et qu'est-ce que c'est selon les créateurs du film ?",
+  "answers": [
+   {
+    "textId": "2269517b1c",
+    "kind": "observation",
+    "answer": "La créature ressemble à une masse organique bleue, lumineuse et translucide, qui semble flotter ou être suspendue dans l'eau (moment-23). Je ne peux pas dire ce que les créateurs du film en disent car les informations disponibles ne mentionnent pas d'explication sur sa nature.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'identité de la créature selon les créateurs n'est pas mentionnée dans les passages analysés."
+    ]
+   },
+   {
+    "textId": "93e8b8ef1b",
+    "kind": "observation",
+    "answer": "La créature ressemble à une masse organique, bleue, lumineuse et translucide, qui semble pulser dans l'eau sombre (moment-22, moment-23). Je ne peux pas dire ce que les créateurs du film en disent car aucune information de ce type n'est présente dans les passages visionnés.",
+    "citations": [
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'identité de la créature selon les créateurs n'est pas mentionnée dans la vidéo."
+    ]
+   },
+   {
+    "textId": "f0dc78554b",
+    "kind": "observation",
+    "answer": "La créature apparaît comme une masse organique bleue, lumineuse et translucide, qui semble pulser dans l'eau sombre (moment-23). Les informations disponibles ne permettent pas de savoir ce que les créateurs du film disent de sa nature.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "fd58a50580",
+    "kind": "observation",
+    "answer": "La créature apparaît comme une masse organique bleue, lumineuse et translucide, qui semble flotter ou être suspendue dans l'eau (moment-23). Je ne dispose pas d'informations provenant de sources externes pour savoir ce que les créateurs du film disent à son sujet.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]
