@@ -8,7 +8,9 @@ OUT=$L/astra/periodique
 STAMP=$(date -u +%Y%m%dT%H%MZ)
 SSH="ssh -o BatchMode=yes -o ConnectTimeout=30 -o ControlMaster=no -o ControlPath=none gx10-tvlens"
 mkdir -p $OUT
-if pgrep -f "codex exec.*gpt-6-astra" >/dev/null; then echo "revue précédente encore en cours, rien lancé"; exit 0; fi
+# A lock of this script only (other projects may run codex too).
+if ! mkdir $OUT/.revue-en-cours 2>/dev/null; then echo "revue précédente encore en cours, rien lancé"; exit 0; fi
+trap 'rmdir $OUT/.revue-en-cours' EXIT
 
 {
   echo "# État au $STAMP (UTC)"

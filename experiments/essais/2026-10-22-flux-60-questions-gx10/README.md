@@ -48,6 +48,11 @@ les 60 questions de l'oracle v3, dont 27 dépendent de la mémoire, le journal a
 - Sans journal, aucune question entièrement ancienne n'obtient de bonne réponse (0/19), et le modèle s'abstient à tort ou
   invente. Avec le journal, il en réussit 6 sur 19 : la mémoire reste le point faible. Le journal est plafonné à
   10 000 caractères et aminci au milieu sur les longues vidéos, ce qui peut écarter le fait demandé.
+- Diagnostic des 13 échecs sur les questions entièrement anciennes (analyse hors GPU, suggérée par la revue de Codex
+  Astra) : dans les 13 cas, les blocs qui portent le fait sont bien dans le journal ; aucun n'a été perdu ni retiré par
+  le plafond. 11 échecs sont des abstentions alors que le texte est présent (par exemple « Redstone, Saturn I, Saturn V…
+  Apollo 11 » pour `artemis-n1`), 2 sont des inventions (`kennedy-n3` reprend la coquille de transcription « William
+  Brown »). Le goulot n'est plus la mémoire mais l'usage que le modèle fait du journal.
 - Les 30 premières questions confirment la tendance (24 contre 21), mais l'écart y reste du même ordre que les bascules
   entre passages : il fallait les 60 questions pour conclure.
 - Nouvelle meilleure configuration mesurée : **N2 + journal mémoire (J3)**. Pour le produit, il faudra aussi sortir
