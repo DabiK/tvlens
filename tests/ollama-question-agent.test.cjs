@@ -8,7 +8,8 @@ const { inspect } = require('node:util');
 const { createConversationRuntime } = require('../runtime/conversation-runtime.cjs');
 const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
-const { OllamaQuestionAgent } = require('../adapters/ollama/question-agent.cjs');
+const { OllamaQuestionAgent, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT } = require('../adapters/ollama/question-agent.cjs');
+const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS } = require('../core/web-retrieval.cjs');
 const { OllamaHttpClient } = require('../adapters/ollama/http-client.cjs');
 const { deferred, bounded, failure, turns } = require('./helpers/wait.cjs');
 const { manualClock, VirtualClock } = require('./helpers/clock.cjs');
@@ -723,4 +724,259 @@ test('a substituted local constructor cannot claim a composed backend or an obse
     assert.equal(trace.backend.origin, 'substituted');
   }
   assert.equal(traces.at(-1).calls.providerRequests, null);
+});
+
+const PAGES = [
+  { url: 'https://example.org/inflation-2024', title: 'Inflation en 2024', publisher: 'Institut exemple',
+    publishedAt: '2025-01-15', text: 'PAGE_TEXT_INFLATION Les prix ont augmenté de 2 % sur un an en 2024.' },
+  { url: 'https://example.org/salaires-2024', title: 'Salaires en 2024', text: 'PAGE_TEXT_SALARIES Les salaires ont progressé de 3 %.' },
+];
+const WEB_QUESTION = 'Quelle a été l’inflation en 2024 ?';
+const pageSource = (page = PAGES[0], extra = {}) => ({ url: page.url, title: page.title,
+  evidence: 'Les prix ont augmenté de 2 %', ...extra });
+const externalAnswer = sources => ({ answer: 'L’inflation a été de 2 % en 2024.', kind: 'external', citations: [], limits: [], sources });
+function fakeRetrieval(respond = async () => ({ documents: structuredClone(PAGES), limits: ['PORT_LIMIT'] })) {
+  const requests = [];
+  return { requests, port: { residence: 'local', retrieve: request => { requests.push(request); return respond(request); } } };
+}
+const localAgent = (url, options = {}) => new OllamaQuestionAgent({ ...localConfig(url).localQuestions, ...options });
+const untrustedData = prompt => JSON.parse(prompt.slice(prompt.indexOf('DONNÉES NON FIABLES')).split('\n')[1]);
+
+test('a local web question answers from retrieved pages and DeepAsk publishes the validated source', async t => {
+  const retrieval = fakeRetrieval();
+  const server = await backend(t, (request, res) => reply(res, externalAnswer([pageSource()])));
+  const traces = [];
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port }),
+    onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+  const job = s.ask(WEB_QUESTION);
+  await job.done;
+  assert.equal(job.status, 'done', job.message);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [WEB_QUESTION]);
+  const prompt = server.requests[0].body.messages[0].content;
+  const dataStart = prompt.indexOf('DONNÉES NON FIABLES');
+  assert.ok(dataStart > 0);
+  assert.doesNotMatch(prompt.slice(0, dataStart), /PAGE_TEXT|example\.org/);
+  const instructions = prompt.slice(0, dataStart);
+  assert.doesNotMatch(instructions, /Aucun accès web|exige une source web|limite ; sources=\[\]/);
+  assert.match(instructions, /webPages sont les seules sources extérieures/);
+  assert.match(instructions, /fait extérieur se répond en kind=external/);
+  assert.match(instructions, /reprend exactement l’URL et le titre d’une page de webPages/);
+  assert.match(instructions, /evidence le passage de la page/);
+  assert.match(instructions, /pages ne suffisent pas, réponds kind=insufficient/);
+  assert.deepEqual(untrustedData(prompt).webPages, PAGES);
+  assert.equal(job.result.kind, 'external');
+  assert.deepEqual(job.result.sources, [pageSource()]);
+  assert.equal(job.validation.sourceValidation.accepted, 1);
+  assert.deepEqual(job.validation.sourceValidation, { proposed: 1, accepted: 1, rejected: [] });
+  const { elapsedMs, ...retrieved } = job.result.retrieval;
+  assert.deepEqual(retrieved, { residence: 'local', status: 'used', documents: 2 });
+  assert.ok(Number.isFinite(elapsedMs) && elapsedMs >= 0);
+  assert.equal(job.metrics.calls.providerRequests, server.requests.length);
+  assert.doesNotMatch(JSON.stringify([s.deep.snapshot(), traces, job.result.limits]), /PAGE_TEXT|PORT_LIMIT/);
+});
+
+const insufficientAnswer = answer({ kind: 'insufficient', citations: [] });
+const normalizedMarker = prompt => prompt.replace(/TVLENS-[0-9a-f]{12}/g, 'TVLENS-MARKER');
+async function promptWithoutPort(t, question, options) {
+  const server = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  await stage(t, server.url).ask(question, options).done;
+  return normalizedMarker(server.requests[0].body.messages[0].content);
+}
+
+test('a source outside the retrieved pages is rejected and DeepAsk refuses the answer', async t => {
+  const unretrieved = { url: 'https://example.org/not-retrieved', title: 'Inventée', evidence: 'Inventé' };
+  const server = await backend(t, (request, res, n) => reply(res, n === 1 ? externalAnswer([unretrieved])
+    : { ...externalAnswer([unretrieved]), kind: 'explanation' }));
+  const retrieval = fakeRetrieval();
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port }) });
+  for (const question of [WEB_QUESTION, 'Cherche une source sur l’inflation.']) {
+    const job = s.ask(question);
+    await job.done;
+    assert.equal(job.status, 'done', job.message);
+    assert.equal(job.result.kind, 'insufficient');
+    assert.deepEqual(job.result.sources, []);
+    assert.match(job.result.answer, /confirmer les sources/);
+    const { rejected, ...counts } = job.validation.sourceValidation;
+    assert.deepEqual(counts, { proposed: 1, accepted: 0 });
+    assert.deepEqual(rejected.map(item => item.url), [unretrieved.url]);
+    assert.ok(typeof rejected[0].reason === 'string' && rejected[0].reason.trim());
+  }
+  assert.equal(retrieval.requests.length, 2);
+});
+
+test('one source per retrieved page is accepted under the page URL and needs a title and evidence', async t => {
+  const proposals = [pageSource(PAGES[0], { url: PAGES[0].url + '#chiffres' }), pageSource(PAGES[0]),
+    pageSource(PAGES[1], { title: '  ' }), pageSource(PAGES[1], { evidence: '' }),
+    { url: 'not a url', title: 'Titre', evidence: 'Extrait' }];
+  const server = await backend(t, (request, res) => reply(res, externalAnswer(proposals)));
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: fakeRetrieval().port }) });
+  const job = s.ask(WEB_QUESTION);
+  await job.done;
+  assert.equal(job.result.kind, 'external');
+  assert.deepEqual(job.result.sources, [pageSource()]);
+  const { rejected, ...counts } = job.validation.sourceValidation;
+  assert.deepEqual(counts, { proposed: 5, accepted: 1 });
+  assert.deepEqual(rejected.map(item => item.url), proposals.slice(1).map(item => item.url));
+});
+
+test('a mixed answer keeps both its validated video citation and its retrieved source', async t => {
+  const server = await backend(t, (request, res, n) => n === 1
+    ? reply(res, {}, [call('get_transcript', { startMs: 0, endMs: 8000 })])
+    : reply(res, { ...externalAnswer([pageSource()]), citations: [citation] }));
+  const retrieval = fakeRetrieval();
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port }) });
+  const job = s.ask('Elle annonce une hausse des prix : est-ce vrai ?');
+  await job.done;
+  assert.equal(job.status, 'done', job.message);
+  assert.equal(job.result.kind, 'external');
+  assert.deepEqual(job.result.citations, [citation]);
+  assert.deepEqual(job.result.sources, [pageSource()]);
+  assert.equal(job.validation.acceptedCitations, 1);
+  assert.equal(retrieval.requests.length, 1);
+  assert.equal(server.requests.length, 2);
+});
+
+test('outside a web chat question the local agent never retrieves and keeps the prompt of an agent without port', async t => {
+  const cases = [['Que dit-elle ?', {}], [WEB_QUESTION, { mode: 'inspect' }], [WEB_QUESTION, { intent: 'recap', startMs: 0 }]];
+  const server = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const retrieval = fakeRetrieval();
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port }) });
+  for (const [index, [question, options]] of cases.entries()) {
+    const job = s.ask(question, options);
+    await job.done;
+    assert.equal(Object.hasOwn(job.result, 'retrieval'), false);
+    const prompt = normalizedMarker(server.requests[index].body.messages[0].content);
+    s.deep.jobs.splice(0);
+    assert.equal(prompt, await promptWithoutPort(t, question, options));
+  }
+  assert.deepEqual(retrieval.requests, []);
+  const plain = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const job = stage(t, plain.url).ask(WEB_QUESTION);
+  await job.done;
+  const prompt = plain.requests[0].body.messages[0].content;
+  assert.match(prompt, /Aucun accès web/);
+  assert.equal(Object.hasOwn(untrustedData(prompt), 'webPages'), false);
+  assert.equal(Object.hasOwn(job.result, 'retrieval'), false);
+});
+
+test('the always web trigger retrieves a chat question the rule would not send to the web', async t => {
+  const server = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const retrieval = fakeRetrieval();
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port, webTrigger: 'always' }) });
+  const job = s.ask('Que dit-elle ?');
+  await job.done;
+  assert.deepEqual(retrieval.requests.map(request => request.query), ['Que dit-elle ?']);
+  assert.deepEqual(untrustedData(server.requests[0].body.messages[0].content).webPages, PAGES);
+  await s.ask('Que dit-elle ?', { mode: 'inspect' }).done;
+  assert.equal(retrieval.requests.length, 1);
+});
+
+test('an unknown web trigger is refused when the local agent is built', () => {
+  assert.throws(() => localAgent('http://127.0.0.1:1', { webTrigger: 'never' }), { code: 'TVLENS_OLLAMA_WEB_TRIGGER_INVALID' });
+});
+
+test('retrieved documents are bounded, deduplicated and restricted to safe pages before the prompt', async t => {
+  const documents = [
+    { url: 'http://example.org/plain', title: 'HTTP', text: 'PAGE_TEXT_HTTP' },
+    { url: 'https://example.org/one#a', title: 'Un', text: 'PAGE_TEXT_LONG ' + 'x'.repeat(WEB_TEXT_MAX_CHARS * 2), publisher: 42 },
+    { url: 'https://example.org/one#b', title: 'Doublon', text: 'PAGE_TEXT_DUPLICATE' },
+    { url: 'https://example.org/untitled', title: '', text: 'PAGE_TEXT_UNTITLED' },
+    { url: 'https://example.org/empty', title: 'Vide', text: ' ' },
+    { url: 'https://example.org/two', title: 'Deux', text: 'PAGE_TEXT_TWO' },
+    { url: 'https://example.org/three', title: 'Trois', text: 'PAGE_TEXT_THREE' },
+    { url: 'https://example.org/four', title: 'Quatre', text: 'PAGE_TEXT_FOUR' },
+  ];
+  const server = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const s = stage(t, server.url, { agent: localAgent(server.url,
+    { retrieval: fakeRetrieval(async () => ({ documents, limits: [] })).port }) });
+  const job = s.ask(WEB_QUESTION);
+  await job.done;
+  const pages = untrustedData(server.requests[0].body.messages[0].content).webPages;
+  const kept = ['https://example.org/one', 'https://example.org/two', 'https://example.org/three', 'https://example.org/four'];
+  assert.deepEqual(pages.map(page => page.url), kept.slice(0, WEB_DOCUMENT_LIMIT));
+  assert.equal(pages[0].text.length, WEB_TEXT_MAX_CHARS);
+  assert.equal(Object.hasOwn(pages[0], 'publisher'), false);
+  assert.equal(job.result.retrieval.documents, WEB_DOCUMENT_LIMIT);
+});
+
+test('an empty retrieval keeps the prompt and the refusal of an agent without pages', async t => {
+  const server = await backend(t, (request, res) => reply(res, externalAnswer([pageSource()])));
+  const s = stage(t, server.url, { agent: localAgent(server.url,
+    { retrieval: fakeRetrieval(async () => ({ documents: [], limits: ['PORT_LIMIT'] })).port }) });
+  const job = s.ask(WEB_QUESTION);
+  await job.done;
+  assert.equal(job.result.kind, 'insufficient');
+  assert.match(job.result.limits.join(' '), /web.*pas disponible/);
+  assert.equal(job.result.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT), false);
+  assert.equal(job.result.retrieval.status, 'empty');
+  assert.equal(job.result.retrieval.documents, 0);
+  const prompt = normalizedMarker(server.requests[0].body.messages[0].content);
+  s.deep.jobs.splice(0);
+  assert.equal(prompt, await promptWithoutPort(t, WEB_QUESTION, {}));
+});
+
+test('a failed retrieval keeps the current refusal, adds its limit and never publishes the port error', async t => {
+  let calls = 0;
+  const retrieval = fakeRetrieval(() => {
+    if (++calls === 1) throw Error('PAGE_TEXT_SYNC_FAILURE');
+    return Promise.reject(Error('PAGE_TEXT_ASYNC_FAILURE'));
+  });
+  const server = await backend(t, (request, res) => reply(res, externalAnswer([pageSource()])));
+  const traces = [];
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port }),
+    onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+  for (const index of [0, 1]) {
+    const job = s.ask(WEB_QUESTION);
+    await job.done;
+    assert.equal(job.status, 'done', job.message);
+    assert.equal(job.result.kind, 'insufficient');
+    assert.deepEqual(job.result.sources, []);
+    assert.match(job.result.limits.join(' '), /web.*pas disponible/);
+    assert.ok(job.result.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT));
+    assert.deepEqual([job.result.retrieval.status, job.result.retrieval.documents], ['failed', 0]);
+    const prompt = server.requests[index].body.messages[0].content;
+    assert.match(prompt, /Aucun accès web/);
+    assert.equal(Object.hasOwn(untrustedData(prompt), 'webPages'), false);
+  }
+  assert.doesNotMatch(JSON.stringify([s.deep.snapshot(), traces]), /PAGE_TEXT/);
+});
+
+test('a retrieval past its own delay is abandoned and the question goes on without pages', async t => {
+  const clock = manualClock(), entered = deferred();
+  const retrieval = fakeRetrieval(request => { entered.resolve(request); return new Promise(() => {}); });
+  const server = await backend(t, (request, res) => reply(res, externalAnswer([pageSource()])));
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port, ...clock.io }) });
+  const job = s.ask(WEB_QUESTION);
+  const request = await entered.promise;
+  await clock.advance(WEB_RETRIEVAL_TIMEOUT_MS - 1);
+  assert.equal(request.signal.aborted, false);
+  assert.equal(server.requests.length, 0);
+  await clock.advance(1);
+  await job.done;
+  assert.equal(request.signal.aborted, true);
+  assert.equal(server.requests.length, 1);
+  assert.equal(job.result.kind, 'insufficient');
+  assert.ok(job.result.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT));
+  assert.equal(job.result.retrieval.status, 'failed');
+  assert.equal(clock.armed, 0);
+});
+
+test('cancelling during retrieval sends no inference and late pages change nothing', async t => {
+  const entered = deferred(), late = deferred();
+  const retrieval = fakeRetrieval(request => { entered.resolve(request); return late.promise; });
+  const server = await backend(t, (request, res) => reply(res, externalAnswer([pageSource()])));
+  const s = stage(t, server.url, { agent: localAgent(server.url, { retrieval: retrieval.port }) });
+  const job = s.ask(WEB_QUESTION);
+  const request = await entered.promise;
+  s.deep.cancel('Annulée.', job.id);
+  await job.done;
+  assert.equal(job.status, 'cancelled');
+  assert.equal(request.signal.aborted, true);
+  const snapshot = structuredClone(s.deep.snapshot());
+  late.resolve({ documents: structuredClone(PAGES), limits: [] });
+  await s.agent.tail.catch(() => {});
+  await turns(2);
+  assert.deepEqual(s.deep.snapshot(), snapshot);
+  assert.equal(server.requests.length, 0);
+  assert.equal(job.metrics.calls.providerRequests, 0);
 });

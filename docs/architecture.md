@@ -150,7 +150,9 @@ uniquement si la voie est libre et la session encore utilisable (ADR 0008 et 003
 **Questions.** `conversation-runtime` compose `DeepAsk`, `VideoTools` et, selon `questionsBackend`,
 `CodexSessionAgent` (`codex`, défaut) ou `OllamaQuestionAgent` (`local`). Le choix local exige URL et
 modèle explicites, refuse les réglages invalides et ne déclenche aucun repli distant. Les questions
-locales utilisent les trois outils vidéo, sans web ; ce choix ne sélectionne ni embeddings ni inspection.
+locales utilisent les trois outils vidéo ; avec un port de récupération web, une question de chat sans intention
+que la règle juge web reçoit des pages lues dans ses données non fiables et ne cite qu’elles (ADR 0063).
+Ce choix ne sélectionne ni embeddings ni inspection.
 L’identité composée de l’agent accompagne les métriques et les traces, même en cas de refus.
 `DeepAsk` fige l’ancrage et le préfixe admissible à l’envoi, accepte cinq questions en attente,
 publie progression et annulation ciblée, et applique au traitement un plafond de cinq minutes,
@@ -461,3 +463,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0062](adr/0062-les-passages-declares-son-seul-conservent-leur-absence-d-images.md) :
   Les passages déclarés son seul terminent après transcription et conservent leur absence d’images et sa perte à la réouverture.
+
+- [ADR 0063](adr/0063-une-question-locale-repond-du-web-a-partir-des-pages-recuperees-avant-la-reponse.md) :
+  Une question locale récupère ses pages avant la réponse, dans les données non fiables, et ne cite que les pages de ce tour.
