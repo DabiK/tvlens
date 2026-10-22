@@ -7,7 +7,7 @@ const { DECISION_FORMAT, decisionMessages, readDecision } = require('../web-deci
 const { readMessage, readAnswer } = require('./question-response.cjs');
 const { TVLENS_QUESTION_IMAGES_ABSENT, IMAGES_ABSENT_MESSAGE } = require('../../core/video-tools.cjs');
 const { QUESTION_TIMEOUT_MS } = require('../../core/deep-ask.cjs');
-const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS, callsForWeb, retrievalQuery, clipText } = require('../../core/web-retrieval.cjs');
+const { WEB_DOCUMENT_LIMIT, callsForWeb, retrievalQuery, searchTerms, pageExcerpt } = require('../../core/web-retrieval.cjs');
 const { sourceKey } = require('../external-links.cjs');
 const TVLENS_OLLAMA_TOOL_REFUSED = 'TVLENS_OLLAMA_TOOL_REFUSED';
 const TVLENS_OLLAMA_TOOL_BUDGET = 'TVLENS_OLLAMA_TOOL_BUDGET';
@@ -35,14 +35,15 @@ const filled = value => typeof value === 'string' && value.trim() !== '';
 const optionalText = (document, key) => (typeof document[key] === 'string' ? { [key]: document[key] } : {});
 
 // The port is trusted for nothing: the agent bounds what reaches the prompt (count, length, safe URL, one page per URL).
-function boundedPages(documents) {
+// Each page keeps its head and the passage that best matches the search terms.
+function boundedPages(documents, terms) {
   const pages = [], keys = new Set();
   for (const document of Array.isArray(documents) ? documents : []) {
     const key = sourceKey(document?.url);
     if (!key || keys.has(key) || !filled(document.title) || !filled(document.text)) continue;
     keys.add(key);
     pages.push({ url: key, title: document.title, ...optionalText(document, 'publisher'),
-      ...optionalText(document, 'publishedAt'), text: clipText(document.text, WEB_TEXT_MAX_CHARS) });
+      ...optionalText(document, 'publishedAt'), text: pageExcerpt(document.text, terms) });
     if (pages.length === WEB_DOCUMENT_LIMIT) break;
   }
   return pages;
@@ -196,11 +197,12 @@ class OllamaQuestionAgent {
   }
 
   // Pages are read before the answer. A failed or slow retrieval only costs the pages; a cancelled question stops here.
+  // The passage kept from each page matches the viewer's question and the query sent to the port.
   async #retrieve(input, query, decided = {}) {
     const started = this.#now();
     const outcome = await this.#raceRetrieval(query, input.signal);
     input.signal.throwIfAborted();
-    const pages = outcome.ok ? boundedPages(outcome.documents) : [];
+    const pages = outcome.ok ? boundedPages(outcome.documents, searchTerms(input.question, query)) : [];
     const residence = RESIDENCES.includes(this.#retrieval.residence) ? this.#retrieval.residence : 'unknown';
     return { pages, retrieval: { residence, status: retrievalStatus(outcome, pages), documents: pages.length,
       elapsedMs: this.#now() - started, ...decided } };

@@ -2,7 +2,7 @@
  * Plain text out of a fetched web page, without a dependency: enough to quote a page, not an HTML parser.
  * Every pattern is lazy and ends at its delimiter or at the end of the page, so a large or malformed page costs linear time.
  */
-const { WEB_TEXT_MAX_CHARS, clipText } = require('../../core/web-retrieval.cjs');
+const { WEB_PAGE_READ_MAX_CHARS, clipText } = require('../../core/web-retrieval.cjs');
 
 const TITLE_MAX_CHARS = 300;
 const MAX_CODE_POINT = 0x10ffff;
@@ -73,9 +73,9 @@ function bodyText(html) {
 function htmlPage(html) {
   const title = titleText(textOf(TITLE.exec(html)?.[1] ?? ''));
   const kept = DROPPED.reduce((markup, pattern) => markup.replace(pattern, ' '), html.replace(COMMENT, ' '));
-  return { title, text: clipText(bodyText(kept), WEB_TEXT_MAX_CHARS).trim() };
+  return { title, text: clipText(bodyText(kept), WEB_PAGE_READ_MAX_CHARS).trim() };
 }
 
-const plainText = text => clipText(collapse(text), WEB_TEXT_MAX_CHARS).trim();
+const plainText = text => clipText(collapse(text), WEB_PAGE_READ_MAX_CHARS).trim();
 
 module.exports = { htmlPage, plainText, titleText };

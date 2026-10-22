@@ -5,8 +5,8 @@ const { inspect } = require('node:util');
 const {
   SearxngRetrieval, TVLENS_WEB_SEARCH_UNAVAILABLE, SEARCH_TIMEOUT_MS, SEARCH_BYTE_LIMIT, PAGE_BYTE_LIMIT, PAGE_TIMEOUT_MS,
 } = require('../adapters/web/searxng.cjs');
-const { htmlPage } = require('../adapters/web/html-text.cjs');
-const { WEB_TEXT_MAX_CHARS } = require('../core/web-retrieval.cjs');
+const { htmlPage, plainText } = require('../adapters/web/html-text.cjs');
+const { WEB_PAGE_READ_MAX_CHARS } = require('../core/web-retrieval.cjs');
 const { manualClock } = require('./helpers/clock.cjs');
 const { deferred, bounded, failure, until } = require('./helpers/wait.cjs');
 
@@ -153,13 +153,15 @@ test('unsafe or repeated results are never opened and the first five candidates 
   assert.equal(opened[0].request.headers['user-agent'], web.requests[0].headers['user-agent']);
 });
 
+// Prose past the read length, so that the extracted text is cut.
+const LONG_PROSE = PROSE.repeat(Math.ceil(WEB_PAGE_READ_MAX_CHARS / PROSE.length));
 const NOISY_PAGE = `<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>Tram &amp; m&eacute;tro</title>
 <style>body { color: red } /* STYLE_NOISE */</style><script>window.SCRIPT_NOISE = "<p>faux</p>";</script></head>
 <body><header><nav>NAV_NOISE accueil</nav></header><noscript>NOSCRIPT_NOISE</noscript>
 <svg viewBox="0 0 1 1"><text>SVG_NOISE</text></svg><template><p>TEMPLATE_NOISE</p></template>
 <article><h1>Le  tram&nbsp;de nuit</h1><script type="module">import('SCRIPT_NOISE')</script>
 <p>Caf&eacute; &#233;t&#xE9; &laquo;&nbsp;cit&eacute;&nbsp;&raquo; &lt;b&gt; &#x1F68B; &#x110000; &#55296; &unknown;</p>
-<STYLE>p { margin: 0 } STYLE_NOISE</STYLE><p>${PROSE.repeat(40)}</p></article><footer>FOOTER_NOISE</footer></body></html>`;
+<STYLE>p { margin: 0 } STYLE_NOISE</STYLE><p>${LONG_PROSE}</p></article><footer>FOOTER_NOISE</footer></body></html>`;
 
 test('a search reads the first three readable pages in result order with their extracted and bounded text', async t => {
   const releaseFirst = deferred();
@@ -185,13 +187,18 @@ test('a search reads the first three readable pages in result order with their e
     ['https://four.example.org/notes.txt', 'Notes de voyage'],
   ]);
   const [first, third, fourth] = documents;
-  assert.equal(first.text.length, WEB_TEXT_MAX_CHARS);
+  assert.equal(first.text.length, WEB_PAGE_READ_MAX_CHARS);
   assert.ok(first.text.startsWith('Le tram de nuit Café été « cité » <b> 🚋 � � &unknown; '), first.text.slice(0, 80));
   assert.doesNotMatch(first.text, /NOISE|accueil|color|window|import|\s{2}/);
   assert.equal(third.text, longText('Ligne trois'));
   assert.equal(fourth.text, `${longText('Notes')} fin`);
   assert.equal(limits.length, 1, 'only the unreadable PDF counts as a page that could not be read');
   assert.doesNotMatch(limits[0], /example|pdf|https?:|127\.0\.0\.1/);
+});
+
+test('a long plain text page is cut to the read length without splitting a surrogate pair', () => {
+  assert.equal(plainText('a'.repeat(WEB_PAGE_READ_MAX_CHARS - 1) + '😀' + 'b'.repeat(500)), 'a'.repeat(WEB_PAGE_READ_MAX_CHARS - 1));
+  assert.equal(plainText('a'.repeat(WEB_PAGE_READ_MAX_CHARS + 500)), 'a'.repeat(WEB_PAGE_READ_MAX_CHARS));
 });
 
 const redirect = location => (request, res) => { res.writeHead(302, { Location: location, 'Content-Type': 'text/html' }); res.end('<p>moved</p>'); };
