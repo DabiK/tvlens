@@ -4,16 +4,16 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 [`chiffres.json`](chiffres.json). Pertinence : oracle v2 et juges automatiques (modèles), sans relecture humaine.
 « Gardée » : réponse pertinente (≥ 2/3, sans invention) que TVLens accepte aussi (citations remplies).
 
-> **Meilleure configuration à ce jour : N2**
+> **Meilleure configuration à ce jour : N2 + journal mémoire (J3)**
 >
 > - Questions `gemma4:26b-a4b`, pause de la vision pendant les questions, Whisper `small`, vision `gemma3:4b` sans
->   `topicSummary`.
-> - Deux passages identiques (N2 puis N6) : 21/30 puis 22/30 réponses pertinentes, médiane 5,7 puis 5,2 s, 30/30
->   réponses sous 15 s, aucun bloc de vision perdu ([nuit](../2026-10-22-variantes-nuit-gx10/)).
-> - Sur les 60 questions de l'oracle v3 (J2) : médiane 5,0 s, 60/60 sous 15 s, aucun bloc perdu ; pertinence notée
->   avec J3.
-> - Réserve produit : `topicSummary` alimente le résumé cumulatif des cartes de la frise TV. Il ne peut pas être
->   supprimé ; il faut le calculer hors du chemin critique (essai J4).
+>   `topicSummary`, et journal mémoire des passages anciens injecté dans chaque question.
+> - Sur les 60 questions de l'oracle v3 ([J3](../2026-10-22-flux-60-questions-gx10/)) : **38/60 réponses pertinentes contre
+>   28 sans journal**, 9 inventions contre 16, médiane 6,3 s contre 5,0 s, 60/60 sous 15 s.
+> - Sans journal (N2), deux passages identiques sur 30 questions : 21/30 puis 22/30, médiane 5,7 puis 5,2 s, 30/30 sous
+>   15 s, aucun bloc perdu ([nuit](../2026-10-22-variantes-nuit-gx10/)).
+> - Réserves produit : `topicSummary` alimente le résumé cumulatif des cartes de la frise TV, il faut le calculer hors du
+>   chemin critique (J4) ; le journal est injecté par le proxy, il reste à l'intégrer dans TVLens.
 
 ## Connaissance extérieure et outils
 
@@ -112,10 +112,11 @@ statistique (remarque de Codex Astra).
 
 | Essai | Configuration | Délai médian | Réponses sous 15 s | Blocs vision perdus | Pertinence |
 | --- | --- | ---: | ---: | --- | --- |
-| J2 | N2 sur les 60 questions, sans journal | 5,0 s | 60/60 | 0 | à noter avec J3 |
+| J2 | N2 sur les 60 questions, sans journal | 5,0 s | 60/60 | 0 | 28/60 ; 16 inventions ; anciennes 0/19, mixtes 3/8, récentes 25/33 |
+| **J3** | **J2 + journal mémoire** | 6,3 s | 60/60 | 7 (CNRS) | **38/60 ; 9 inventions ; anciennes 6/19, mixtes 7/8, récentes 25/33** |
 
-Source : registre (J2, 22/10, 10:51–12:21 UTC). Premier départ bloqué à 10:50 UTC par le garde-fou GPU, relancé une minute
-plus tard.
+Source : [J2 et J3](../2026-10-22-flux-60-questions-gx10/). J3 gagne 15 questions et en perd 5, toutes récentes (test des
+signes, p ≈ 0,04 bilatéral).
 
 ## Journal mémoire hors ligne (G5, 30 questions de N2 × 2 passages)
 

@@ -1,0 +1,303 @@
+[
+ {
+  "questionId": "spring-01",
+  "answers": [
+   {
+    "textId": "8b8a1c60ee",
+    "kind": "observation",
+    "answer": "Je ne peux pas répondre à cette question car aucun autre personnage n'est visible aux côtés de la jeune fille dans les passages analysés. On voit seulement la jeune fille et un petit chien (moment-7, moment-8).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "465dadb052",
+    "kind": "observation",
+    "answer": "Les passages analysés ne montrent personne d'autre que la jeune fille s'approchant du chien. On ne voit pas d'accompagnateur dans les premières scènes de la vidéo.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "answers": [
+   {
+    "textId": "37a66b12f3",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton lorsqu'elle se trouve dans la forêt. Cet objet est visible dans plusieurs passages, notamment lorsqu'elle observe le paysage ou qu'elle est assise au pied d'un arbre.",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     }
+    ]
+   },
+   {
+    "textId": "b484bfccae",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-18, moment-19, moment-20).",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "answers": [
+   {
+    "textId": "699749a6f0",
+    "kind": "observation",
+    "answer": "La lumière de la grande forme organique est de couleur bleue (moment-23). Cette masse est décrite comme bleue et lumineuse, flottant dans l'eau sombre (moment-23, moment-24).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "eda8a37a3c",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est bleue. On observe une masse organique bleue et lumineuse suspendue dans l'eau (moment-23).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "answers": [
+   {
+    "textId": "d8d5f06117",
+    "kind": "observation",
+    "answer": "Le haut du bâton émet une lumière chaude ou vive. Dans les passages récents, il est décrit comme un bâton lumineux qui éclaire le chemin devant la jeune fille.",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 232000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "b978ff475d",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "answers": [
+   {
+    "textId": "eaa26ca778",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement de montagnes enneigées et de lacs bleus (moment-4) à une forêt sombre, brumeuse et humide (moment-13). À la fin, on observe également des éléments de science-fiction, comme un vaisseau métallique flottant au-dessus des nuages (moment-43).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "6dfe2de7ff",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement sombre, brumeux et aquatique avec une créature marine (moment-41 à moment-42) à un décor de montagnes enneigées et de prairies verdoyantes (moment-44). On observe également l'apparition d'un vaisseau métallique flottant au-dessus des nuages (moment-43).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n1",
+  "answers": [
+   {
+    "textId": "8d12e30bbd",
+    "kind": "observation",
+    "answer": "Le studio Blender Animation Studio présente ce film, comme l'indique le texte affiché sur un écran noir au début de la vidéo.",
+    "citations": [
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "4c93caea72",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car aucun texte mentionnant un studio n'est visible dans les passages analysés. Les séquences montrent uniquement une jeune fille et un chien dans un paysage enneigé.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n2",
+  "answers": [
+   {
+    "textId": "0f23878a31",
+    "kind": "explanation",
+    "answer": "Je ne peux pas répondre à cette question car la scène de la forêt sombre n'est pas encore atteinte dans les passages analysés. Les extraits s'arrêtent avant ce moment.",
+    "citations": []
+   },
+   {
+    "textId": "0ef9eb7911",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent aucun objet posé sur une branche. Les séquences décrivent uniquement la jeune fille et l'environnement forestier.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n3",
+  "answers": [
+   {
+    "textId": "2a28494789",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas ce qui se trouve au bout du sentier avant l'arrivée de la créature. Les extraits s'arrêtent alors que la jeune fille et le chien sont encore dans la forêt ou près d'une cascade.",
+    "citations": []
+   },
+   {
+    "textId": "b99e9d140f",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas ce que le chien et la fille ont trouvé au bout du sentier. Les séquences disponibles s'arrêtent avant l'arrivée de la grande créature lumineuse.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n4",
+  "answers": [
+   {
+    "textId": "b8325d4469",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas de chien s'éloignant de la fille pour poursuivre quoi que ce soit. Les séquences disponibles décrivent la jeune fille observant une main géante et une créature marine dans une forêt sombre.",
+    "citations": []
+   },
+   {
+    "textId": "3a3d44cc5a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas le chien poursuivant quoi que ce soit en s'éloignant de la fille. Les extraits s'arrêtent alors que la jeune fille observe une main géante ou une créature marine.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n5",
+  "answers": [
+   {
+    "textId": "ac70061739",
+    "kind": "observation",
+    "answer": "Les passages analysés ne montrent pas de falaise couverte de grandes plantes. On observe un garçon et un chien progressant sur un sentier escarpé dans un paysage montagneux et verdoyant (moment-50, moment-51).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ]
+   },
+   {
+    "textId": "71ea27e543",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas de fille au pied d'une falaise avec un chien. Les séquences disponibles montrent une jeune fille observant un chat (moment-49) et un garçon progressant avec un chien (moment-50, moment-51).",
+    "citations": []
+   }
+  ]
+ }
+]

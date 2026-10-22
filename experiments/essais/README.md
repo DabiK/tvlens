@@ -38,6 +38,7 @@
 | [2026-10-22-journal-hors-ligne-gx10](2026-10-22-journal-hors-ligne-gx10/) | G5 : quatre formes du journal mémoire rejouées hors ligne ; le journal complet porte les réponses pertinentes de 45 à 49/60 et divise presque par deux les inventions. |
 | [2026-10-22-searxng-gx10](2026-10-22-searxng-gx10/) | SearXNG auto-hébergé en conteneur sur la GX10 (boucle locale, API JSON) pour la recherche web des essais ; 3 s par requête. |
 | [2026-10-22-oracle-v4-web-outils-gx10](2026-10-22-oracle-v4-web-outils-gx10/) | Oracle v4 : 42 questions qui demandent internet (W, M) ou la relecture d'images (O), sources datées, corpus web figé hors Git (dépôt public). |
+| [2026-10-22-flux-60-questions-gx10](2026-10-22-flux-60-questions-gx10/) | J2/J3 : sur 60 questions dans le flux réel, le journal mémoire porte les réponses pertinentes de 28 à 38 et réduit les inventions de 16 à 9, pour 1,3 s de plus. |
 | [2026-10-21-oracle-notation-recherche-gx10](2026-10-21-oracle-notation-recherche-gx10/) | Méthode commune : oracle v2 automatique, notation à l'aveugle des 150 réponses antérieures, recherche bibliographique et consignes des agents. |
 | [2026-10-21-variantes-gx10](2026-10-21-variantes-gx10/) | Registre de toutes les variantes testées sur GX10 : ce qui change, statut, vitesse, pertinence, verdict. |
 | [2026-10-21-audit-nuit-gx10](2026-10-21-audit-nuit-gx10/) | Audit indépendant de la nuit : 221 chiffres confirmés, 30/30 sceaux distants intacts ; gain de la pause surestimé (démarrage à froid), aveugle cassable, oracle hors Git. |

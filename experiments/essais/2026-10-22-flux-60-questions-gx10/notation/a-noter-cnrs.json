@@ -1,0 +1,409 @@
+[
+ {
+  "questionId": "cnrs-01",
+  "answers": [
+   {
+    "textId": "f9ed3a6455",
+    "kind": "observation",
+    "answer": "La distinction repose sur le nombre de neurones et de paramètres. Les petites IA possèdent peu de neurones et quelques millions de paramètres, ce qui permet de les faire tourner sur un ordinateur portable (moment-7, moment-8). À l'inverse, les grandes IA, comme les LLM, peuvent atteindre des ordres de grandeur de mille milliards de paramètres (moment-9, moment-10).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   },
+   {
+    "textId": "e842aa9eb3",
+    "kind": "observation",
+    "answer": "La distinction repose sur le nombre de paramètres et l'usage. Les petites IA possèdent quelques millions de paramètres et peuvent fonctionner sur un ordinateur portable, tandis que les grandes IA, comme les LLM, atteignent des ordres de grandeur de mille milliards de paramètres (moment-8, moment-9, moment-10).",
+    "citations": [
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-02",
+  "answers": [
+   {
+    "textId": "3b99f96837",
+    "kind": "observation",
+    "answer": "La séparation permet de garder des données de côté pour une évaluation finale, comme une interrogation en classe. L'idée est de mettre de côté une partie des données, par exemple 20%, pour vérifier si l'apprentissage s'est bien déroulé sans que ces exemples n'aient servi à l'entraînement.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "b7c9d6fd07",
+    "kind": "observation",
+    "answer": "Pour l'apprentissage, on utilise une grande partie des données, par exemple 80% (moment-23, moment-25). On met de côté une part plus petite, environ 20%, pour l'évaluation afin de vérifier si l'apprentissage s'est bien déroulé (moment-24, moment-25). L'intervenant compare cela à un professeur qui garde quelques exercices de côté pour une interrogation finale (moment-23, moment-24).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-04",
+  "answers": [
+   {
+    "textId": "2ea13cd483",
+    "kind": "observation",
+    "answer": "Le cours explique que le surapprentissage se manifeste par une régression de la performance après une phase de progression initiale (moment-53, moment-54). L'orateur souligne que l'art de l'apprentissage consiste à savoir s'arrêter au moment précis où la qualité commence à se dégrader (moment-55). Pour surveiller ce risque, il est présenté un schéma utilisant des données de validation pour évaluer le modèle (moment-57).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "id": "moment-57",
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   },
+   {
+    "textId": "bdd53f153c",
+    "kind": "explanation",
+    "answer": "Le cours explique que le surapprentissage survient lorsqu'on apprend trop intensément, comme un humain qui finit par apprendre ses exercices par cœur (moment-51, moment-52). Cela entraîne une dégradation de la performance lors de l'évaluation sur de nouvelles données (moment-53, moment-54). L'enjeu est alors de savoir s'arrêter au moment optimal pour préserver la qualité de l'apprentissage (moment-55).",
+    "citations": [
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     },
+     {
+      "id": "moment-52",
+      "startMs": 408000,
+      "endMs": 416000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-05",
+  "answers": [
+   {
+    "textId": "d0bde2e9be",
+    "kind": "observation",
+    "answer": "Pendant le pré-entraînement, le modèle apprend à maîtriser le langage en apprenant à aligner des mots, de manière similaire à un enfant qui apprend à parler (moment-69, moment-70). Cette phase consiste à utiliser de vastes quantités de données provenant d'internet pour que le modèle apprenne à construire des phrases, par exemple en complétant des mots manquants (moment-67, moment-72). Cette étape de création d'un modèle de fondation est décrite comme étant extrêmement coûteuse et nécessitant des capacités de calcul massives (moment-76, moment-77).",
+    "citations": [
+     {
+      "id": "moment-69",
+      "startMs": 544000,
+      "endMs": 552000
+     },
+     {
+      "id": "moment-70",
+      "startMs": 552000,
+      "endMs": 560000
+     },
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     }
+    ]
+   },
+   {
+    "textId": "1fbf0e512a",
+    "kind": "observation",
+    "answer": "Le pré-entraînement, ou création d'un modèle de fondation, est décrit comme une phase d'apprentissage extrêmement importante et coûteuse en calcul (moment-76, moment-77). Bien que la vidéo ne détaille pas précisément le contenu de cet apprentissage, elle compare l'étape finale de l'éducation d'une IA à l'apprentissage d'un enfant qui apprend à maîtriser la langue et à construire des phrases (moment-75, moment-76).",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-06",
+  "answers": [
+   {
+    "textId": "1129702502",
+    "kind": "observation",
+    "answer": "Le fine-tuning est une phase où l'on apprend au modèle de fondation à répondre à des questions spécifiques, comme des exercices de mathématiques ou d'histoire (moment-81, moment-82). L'alignement est une étape suivante qui consiste à lui apprendre des règles éthiques et un savoir-être, comme la bienveillance (moment-91, moment-95).",
+    "citations": [
+     {
+      "id": "moment-81",
+      "startMs": 640000,
+      "endMs": 648000
+     },
+     {
+      "id": "moment-82",
+      "startMs": 648000,
+      "endMs": 656000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ]
+   },
+   {
+    "textId": "5a0c62aa41",
+    "kind": "observation",
+    "answer": "Le cours ne mentionne pas explicitement le terme fine-tuning dans les passages consultés. Il définit l'alignement comme l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-n1",
+  "answers": [
+   {
+    "textId": "96bc0a07be",
+    "kind": "observation",
+    "answer": "L'homme a relevé que le chat et le lapin partagent le même nombre d'yeux et de pattes (moment-16). Il utilise ces points communs pour illustrer comment des caractéristiques similaires peuvent être identifiées malgré des différences apparentes (moment-16, moment-17).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     },
+     {
+      "id": "moment-17",
+      "startMs": 128000,
+      "endMs": 136000
+     }
+    ]
+   },
+   {
+    "textId": "528fdb7554",
+    "kind": "observation",
+    "answer": "L'intervenant relève que le chat et le lapin ont des oreilles pointues (moment-15). Il précise également qu'ils partagent environ le même nombre d'yeux et de pattes (moment-16).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-n2",
+  "answers": [
+   {
+    "textId": "81969996a1",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "3bc9edef57",
+    "kind": "observation",
+    "answer": "Une fois la prédiction effectuée, on utilise des données d'évaluation que le modèle n'a jamais vues pour suivre sa progression (moment-49, moment-50). Ce processus continu permet d'ajuster le modèle en conséquence et de surveiller l'évolution de l'apprentissage au fil des époques (moment-48, moment-50).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-48",
+      "startMs": 376000,
+      "endMs": 384000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-n3",
+  "answers": [
+   {
+    "textId": "8e077dd4f7",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "bd64293350",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne contiennent pas de message de bienvenue mentionnant le nom d'une formation.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-n4",
+  "answers": [
+   {
+    "textId": "28be32cc61",
+    "kind": "observation",
+    "answer": "L'intervenant propose de traduire « instruct model » par « modèle instruit » ou « modèle éduqué » (moment-86).",
+    "citations": [
+     {
+      "id": "moment-86",
+      "startMs": 680000,
+      "endMs": 688000
+     }
+    ]
+   },
+   {
+    "textId": "916dd05f51",
+    "kind": "observation",
+    "answer": "L'orateur propose de traduire « instruct model » par modèle instruit ou modèle éduqué (moment-86). Il précise que l'on peut retenir la traduction modèle éduqué (moment-86).",
+    "citations": [
+     {
+      "id": "moment-86",
+      "startMs": 680000,
+      "endMs": 688000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-n5",
+  "answers": [
+   {
+    "textId": "558582ca0c",
+    "kind": "observation",
+    "answer": "Dans son exemple, on lui impose de se comporter d'une certaine manière, de s'habiller d'une certaine façon, de vendre un type de produit plutôt qu'un autre et d'adopter une posture spécifique (moment-102). Ces instructions font partie des règles et des compétences fixées lors de l'alignement (moment-106).",
+    "citations": [
+     {
+      "id": "moment-102",
+      "startMs": 808000,
+      "endMs": 816000
+     },
+     {
+      "id": "moment-106",
+      "startMs": 840000,
+      "endMs": 848000
+     }
+    ]
+   },
+   {
+    "textId": "2350ad0c45",
+    "kind": "observation",
+    "answer": "Pour ce nouveau collaborateur, on lui donne des règles sur son comportement, sa tenue vestimentaire, ainsi que des consignes sur le type de produit à vendre ou la posture à adopter (moment-102).",
+    "citations": [
+     {
+      "id": "moment-102",
+      "startMs": 808000,
+      "endMs": 816000
+     }
+    ]
+   }
+  ]
+ }
+]

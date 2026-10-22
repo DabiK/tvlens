@@ -1,0 +1,288 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "6c79502272",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique (moment-4, 24000-32000). Thom, quant à lui, souhaite exceller dans l'exploration spatiale (moment-4, 24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "c2b56df2ef",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite exceller dans l'exploration spatiale. Ces intérêts sont mentionnés lors de leur échange sur un pont (moment-4, 24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "b0745bb73c",
+    "kind": "observation",
+    "answer": "Barley ne mentionne pas de durée spécifique dans les passages consultés. On entend seulement une partie de sa réponse indiquant que tout est prêt et que les systèmes sont opérationnels (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "4bccf4f80f",
+    "kind": "observation",
+    "answer": "Dans le passage moment-26 (200000-208000), Barley ne précise pas de durée spécifique. Il mentionne seulement que tout est parfait et qu'il ne manque qu'une minute.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "1ef90734d7",
+    "kind": "observation",
+    "answer": "Thom is advised to be tender and honest with her. The speaker also tells him to remind her what love is (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "6fd564f843",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête avec elle. On lui dit également d'être tendre et de lui rappeler ce qu'est l'amour (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "3fa1f9235c",
+    "kind": "observation",
+    "answer": "Celia reproaches Thom of being freaked out by her robot hand (moment-44, 344000-352000). She also mentions that he forgot her on Earth (moment-49, 384000-392000).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "49e5bbbdce",
+    "kind": "observation",
+    "answer": "Les passages disponibles ne permettent pas de répondre à cette question. On entend Celia dire que Thom l'a oubliée sur Terre, mais il n'est pas explicitement mentionné qu'elle lui fait un reproche précis.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "ee682df901",
+    "kind": "observation",
+    "answer": "The memory override is reported as complete (moment-68, 536000-544000). Previously, it was noted as being in progress (moment-38, 296000-304000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "dbf1e9c74c",
+    "kind": "observation",
+    "answer": "La dernière annonce indique que l'écrasement de la mémoire est terminé. Cette information est rapportée par un scientifique devant un écran de données (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n1",
+  "answers": [
+   {
+    "textId": "b1ac279d2b",
+    "kind": "observation",
+    "answer": "Thom avoue faire des cauchemars où il est poursuivi par d'énormes griffes robotiques (moment-5, 32000-40000). Il précise que cela est lié à la peur que Celia éprouve face à sa main robotique (moment-5, 32000-40000).",
+    "citations": [
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     }
+    ]
+   },
+   {
+    "textId": "8a2b6b8b3a",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne contiennent aucune mention d'un aveu de Thom concernant des cauchemars.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n2",
+  "answers": [
+   {
+    "textId": "f9e892d153",
+    "kind": "observation",
+    "answer": "Les passages disponibles ne montrent pas d'homme avec un œil mécanique observant quelque chose de près. On y voit un homme utilisant une lunette de précision pour observer l'horizon (moment-15, 112000-120000).",
+    "citations": [
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "3816d052d0",
+    "kind": "observation",
+    "answer": "L'homme avec un appareil optique fixé à l'œil examine un cerveau (moment-8, 56000-64000). L'environnement est sombre et technologique.",
+    "citations": [
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n3",
+  "answers": [
+   {
+    "textId": "a3d593e21f",
+    "kind": "observation",
+    "answer": "Pour se justifier auprès de Celia, Thom se décrit comme étant jeune (moment-45, 352000-360000) et comme un con (moment-46, 360000-368000).",
+    "citations": [
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     },
+     {
+      "id": "moment-46",
+      "startMs": 360000,
+      "endMs": 368000
+     }
+    ]
+   },
+   {
+    "textId": "4c2d725392",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne contiennent aucune information sur la description que Thom fait de lui-même pour se justifier auprès de Celia. Les extraits disponibles montrent uniquement des interactions liées à des dispositifs robotiques et des échanges de tensions.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n4",
+  "answers": [
+   {
+    "textId": "647b5e5d9b",
+    "kind": "observation",
+    "answer": "Juste après l'annonce que la réécriture de la mémoire est terminée (moment-68, 536000-544000), on voit un homme âgé en costume en tartan qui examine attentivement un robot complexe et endommagé (moment-69, 544000-552000). Il manipule le robot avec précaution dans un environnement sombre et industriel.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-69",
+      "startMs": 544000,
+      "endMs": 552000
+     }
+    ]
+   },
+   {
+    "textId": "07ef292c3e",
+    "kind": "observation",
+    "answer": "Juste après l'annonce de la fin de la réécriture de mémoire (moment-68, 536000-544000), l'homme âgé examine attentivement un robot complexe et endommagé en manipulant ses composants avec précaution (moment-69, 544000-552000). Il semble ensuite scruter un autre personnage robotique avec une expression de surprise et d'inquiétude (moment-70, 552000-560000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-69",
+      "startMs": 544000,
+      "endMs": 552000
+     },
+     {
+      "id": "moment-70",
+      "startMs": 552000,
+      "endMs": 560000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n5",
+  "answers": [
+   {
+    "textId": "69186a718b",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "43a7f65d16",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne contiennent pas de dialogue entre Thom et Celia juste avant l'annonce de la fin de la réécriture de mémoire. Les extraits consultés s'arrêtent à l'annonce de la fin de l'opération (moment-68, 536000-544000).",
+    "citations": []
+   }
+  ]
+ }
+]

@@ -1,0 +1,382 @@
+[
+ {
+  "questionId": "cuisine-02",
+  "answers": [
+   {
+    "textId": "84a89b4cfa",
+    "kind": "observation",
+    "answer": "Le chef place la viande parée, les oignons, les carottes, les lardons, le bouquet garni, le poivre et le vin dans un plat en plastique (moment-13, 96000-104000 ; moment-14, 104000-112000). Il conseille de laisser reposer la marinade au moins toute la nuit à une température fraîche (moment-23, 176000-184000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "afaf5b219a",
+    "kind": "observation",
+    "answer": "Le chef mélange des morceaux de viande, des oignons hachés et des carottes en dés avec du vin rouge (moment-19 à moment-21). Il laisse ensuite la préparation reposer au moins une nuit à température fraîche (moment-23 à moment-24).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-03",
+  "answers": [
+   {
+    "textId": "29bbf572d1",
+    "kind": "observation",
+    "answer": "La première partie est la viande bien égouttée. La deuxième comprend la garniture de carottes au jus, le bouquet garni et les petits lardons. La troisième partie est le jus de marinade, composé de vin.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "7093b3daf0",
+    "kind": "observation",
+    "answer": "Après la marinade, le chef sépare le contenu en trois parties. La première est la viande bien égouttée, la deuxième est la garniture composée des carottes, des oignons, du bouquet garni et des lardons, et la troisième est le jus de marinade composé du vin (moment-25, 192000-200000 ; moment-26, 200000-208000 ; moment-27, 208000-216000).",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-05",
+  "answers": [
+   {
+    "textId": "4b1e0397d9",
+    "kind": "observation",
+    "answer": "Le cuisinier ne mentionne pas d'action spécifique pour épaissir la préparation. Pour la mouiller, il utilise le jus de la marinade en le versant dans la casserole contenant la viande (moment-53).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     }
+    ]
+   },
+   {
+    "textId": "7a9bad0db9",
+    "kind": "observation",
+    "answer": "Pour épaissir la préparation, il utilise la technique du singer en ajoutant environ 75 grammes de farine (moment-45, 352000-360000 ; moment-47, 368000-376000). Pour mouiller, il verse le jus de la marinade dans la casserole (moment-53, 416000-424000).",
+    "citations": [
+     {
+      "id": "moment-47",
+      "startMs": 368000,
+      "endMs": 376000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-06",
+  "answers": [
+   {
+    "textId": "a1c7140c49",
+    "kind": "observation",
+    "answer": "Le cuisinier recommande une cuisson à feu moyen. Il précise que la préparation doit frémir sans bouillir pendant deux heures (moment-67), puis mentionne une durée totale de trois heures de cuisson (moment-68).",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "654e01a850",
+    "kind": "observation",
+    "answer": "Le chef recommande de faire saisir la viande à feu très vif (moment-29, 224000-232000). Il précise ensuite que la cuisson doit se poursuivre à feu moyen, en veillant à ce que la préparation frémisse sans bouillir (moment-67, 528000-536000).",
+    "citations": [
+     {
+      "id": "moment-29",
+      "startMs": 224000,
+      "endMs": 232000
+     },
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-07",
+  "answers": [
+   {
+    "textId": "4701debd34",
+    "kind": "observation",
+    "answer": "Le cuisinier ajoute les petits oignons une fois que les champignons sont à température (moment-77, 608000-616000). Il continue ensuite de remuer la sauce contenant les champignons et les oignons (moment-80, 632000-640000).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-80",
+      "startMs": 632000,
+      "endMs": 640000
+     }
+    ]
+   },
+   {
+    "textId": "3e2343a703",
+    "kind": "observation",
+    "answer": "Le chef ajoute d'abord les champignons préalablement cuits à blanc (moment-72, 568000-576000). Il termine ensuite en ajoutant délicatement les petits oignons (moment-77, 608000-616000).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-n1",
+  "answers": [
+   {
+    "textId": "003c4762eb",
+    "kind": "observation",
+    "answer": "La vidéo mentionne l'utilisation de lardons dans la préparation, mais ne précise pas leur type exact. L'intervenant indique seulement qu'il préfère les tailler en mirepoix.",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ]
+   },
+   {
+    "textId": "c066643c12",
+    "kind": "observation",
+    "answer": "Le chef prévoit d'utiliser des petits morceaux de poitrine non fumés (moment-8, 56000-64000). Il mentionne également l'utilisation de lardons dans sa préparation (moment-13, 96000-104000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-n2",
+  "answers": [
+   {
+    "textId": "658640d9ae",
+    "kind": "observation",
+    "answer": "Le cuisinier indique que la viande a saisi pendant cinq bonnes minutes (moment-37, 288000-296000).",
+    "citations": [
+     {
+      "id": "moment-37",
+      "startMs": 288000,
+      "endMs": 296000
+     }
+    ]
+   },
+   {
+    "textId": "178f026388",
+    "kind": "observation",
+    "answer": "Le chef conseille de laisser la viande dans la marinade au moins toute la nuit (moment-23, 176000-184000). Il précise que la marinade doit être conservée à une température fraîche (moment-23, 176000-184000).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-n3",
+  "answers": [
+   {
+    "textId": "9ae4a3cf33",
+    "kind": "observation",
+    "answer": "La liste des ingrédients ne précise pas de quantité exacte pour le vin rouge. Le chef indique seulement qu'il faut arroser et recouvrir la viande à hauteur avec le vin (moment-20, 152000-160000).",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "554bedc509",
+    "kind": "insufficient",
+    "answer": "La vidéo ne précise pas la quantité de vin rouge utilisée dans la liste des ingrédients. Seule la présence du vin dans la marinade est mentionnée.",
+    "citations": [
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-n4",
+  "answers": [
+   {
+    "textId": "de1978f30d",
+    "kind": "observation",
+    "answer": "Le chef utilise ses doigts pour transvaser les morceaux de viande afin d'éviter les éclaboussures (moment-58, 456000-464000). Il déverse ensuite la viande d'un bol en terre cuite vers la casserole (moment-58, 456000-464000 ; moment-59, 464000-472000).",
+    "citations": [
+     {
+      "id": "moment-59",
+      "startMs": 464000,
+      "endMs": 472000
+     }
+    ]
+   },
+   {
+    "textId": "aa8365764b",
+    "kind": "observation",
+    "answer": "Le cuisinier déverse des morceaux de viande provenant d'un bol en terre cuite dans la casserole contenant la sauce rouge (moment-59, 464000-472000). Il ajoute ensuite progressivement d'autres morceaux de viande au plat (moment-61, 480000-488000 ; moment-62, 488000-496000).",
+    "citations": [
+     {
+      "id": "moment-59",
+      "startMs": 464000,
+      "endMs": 472000
+     },
+     {
+      "id": "moment-61",
+      "startMs": 480000,
+      "endMs": 488000
+     },
+     {
+      "id": "moment-62",
+      "startMs": 488000,
+      "endMs": 496000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-n5",
+  "answers": [
+   {
+    "textId": "198a12f75e",
+    "kind": "observation",
+    "answer": "Le cuisinier suggère d'accompagner le plat de légumes cuits à l'eau, de coquillettes ou de pommes de terre (moment-89, 704000-712000). Il mentionne également que certains mangent cela avec des tagliatelles (moment-90, 712000-720000).",
+    "citations": [
+     {
+      "id": "moment-89",
+      "startMs": 704000,
+      "endMs": 712000
+     },
+     {
+      "id": "moment-90",
+      "startMs": 712000,
+      "endMs": 720000
+     }
+    ]
+   },
+   {
+    "textId": "41d80f196f",
+    "kind": "observation",
+    "answer": "Le chef mentionne plusieurs options pour accompagner le bœuf bourguignon. Il suggère des légumes pour une version légère, ou des coquillettes et des pommes de terre cuites à l'angloise, c'est-à-dire à l'eau (moment-89, 704000-712000 ; moment-90, 712000-720000). Il évoque également les tagliatelles comme une autre possibilité (moment-90, 712000-720000).",
+    "citations": [
+     {
+      "id": "moment-89",
+      "startMs": 704000,
+      "endMs": 712000
+     },
+     {
+      "id": "moment-90",
+      "startMs": 712000,
+      "endMs": 720000
+     }
+    ]
+   }
+  ]
+ }
+]

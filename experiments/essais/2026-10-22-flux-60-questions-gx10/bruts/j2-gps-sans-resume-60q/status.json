@@ -1,0 +1,227 @@
+{
+  "id": "40947014533343478059bc684e3da694",
+  "startedAtUtc": "2026-10-22T10:51:24.596330+00:00",
+  "deadlineUtc": "2026-10-22T13:11:24.596200+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-GPSR60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/kennedy/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/kennedy-GPSR60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T10:51:30.380515+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T10:51:30.886003+00:00",
+      "durationSeconds": 0.5016875830006029
+    },
+    {
+      "name": "kennedy-GPSR60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/kennedy/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/kennedy-GPSR60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T10:51:30.886475+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T10:58:39.970313+00:00",
+      "durationSeconds": 429.0808403850024
+    },
+    {
+      "name": "spring-GPSR60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/spring/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/spring-GPSR60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T10:58:40.506898+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T10:58:41.011080+00:00",
+      "durationSeconds": 0.5011402819982322
+    },
+    {
+      "name": "spring-GPSR60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/spring/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/spring-GPSR60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T10:58:41.011626+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:06:31.108730+00:00",
+      "durationSeconds": 470.09562255200217
+    },
+    {
+      "name": "cnrs-apprentissage-GPSR60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/cnrs-apprentissage/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/cnrs-apprentissage-GPSR60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T11:06:31.646552+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:06:32.649527+00:00",
+      "durationSeconds": 1.0012343449998298
+    },
+    {
+      "name": "cnrs-apprentissage-GPSR60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/cnrs-apprentissage/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/cnrs-apprentissage-GPSR60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T11:06:32.650004+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:21:19.337905+00:00",
+      "durationSeconds": 886.6862834499989
+    },
+    {
+      "name": "boeuf-bourguignon-GPSR60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/boeuf-bourguignon/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/boeuf-bourguignon-GPSR60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T11:21:19.886674+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:21:20.890992+00:00",
+      "durationSeconds": 1.0020641940027417
+    },
+    {
+      "name": "boeuf-bourguignon-GPSR60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/boeuf-bourguignon/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/boeuf-bourguignon-GPSR60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T11:21:20.891764+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:33:44.792826+00:00",
+      "durationSeconds": 743.8995133310018
+    },
+    {
+      "name": "tears-of-steel-GPSR60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/tears-of-steel/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/tears-of-steel-GPSR60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T11:33:45.337496+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:33:46.341950+00:00",
+      "durationSeconds": 1.0024258039993583
+    },
+    {
+      "name": "tears-of-steel-GPSR60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/tears-of-steel/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/tears-of-steel-GPSR60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T11:33:46.342845+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:46:00.795033+00:00",
+      "durationSeconds": 734.4507405289987
+    },
+    {
+      "name": "artemis-GPSR60-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/artemis/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/artemis-GPSR60-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T11:46:01.339233+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T11:46:02.844817+00:00",
+      "durationSeconds": 1.5023517789995822
+    },
+    {
+      "name": "artemis-GPSR60-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/inputs/artemis/scenario-GPSR60.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/config-GPSR60.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/j2-gps-sans-resume-60q-results/artemis-GPSR60-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T11:46:02.845800+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T12:21:16.584120+00:00",
+      "durationSeconds": 2113.7371794009996
+    }
+  ],
+  "updatedAtUtc": "2026-10-22T12:21:16.652036+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

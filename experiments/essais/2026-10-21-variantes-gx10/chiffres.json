@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAtUtc": "2026-10-22T12:35:00Z",
+  "updatedAtUtc": "2026-10-22T14:20:00Z",
   "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
   "reference": {
     "configuration": {
@@ -987,39 +987,63 @@
     "abstentionsSansJournal": "1/60"
   },
   "meilleureConfiguration": {
-    "nom": "N2",
+    "nom": "N2 + journal mémoire (J3)",
     "questions": "gemma4:26b-a4b-it-q4_K_M",
     "pauseVision": true,
     "whisper": "small",
     "vision": "gemma3:4b sans topicSummary",
-    "passages": [
-      {
-        "essai": "N2",
-        "pertinentes": 21,
-        "sur": 30,
-        "delaiMedianS": 5.7,
-        "sous15s": 30,
-        "blocsPerdus": 0
-      },
-      {
-        "essai": "N6",
-        "pertinentes": 22,
-        "sur": 30,
-        "delaiMedianS": 5.2,
-        "sous15s": 30,
-        "blocsPerdus": 0
-      }
-    ],
-    "reserveProduit": "topicSummary alimente le résumé cumulatif des cartes de la frise TV : le calculer hors du chemin critique, pas le supprimer"
+    "journalMemoire": "complet, 10 000 caractères, injecté par le proxy",
+    "sur60Questions": {
+      "pertinentes": 38,
+      "inventions": 9,
+      "delaiMedianS": 6.3,
+      "sous15s": 60
+    },
+    "sansJournal60Questions": {
+      "pertinentes": 28,
+      "inventions": 16,
+      "delaiMedianS": 5.0,
+      "sous15s": 60
+    },
+    "reservesProduit": [
+      "topicSummary : le calculer hors du chemin critique (J4)",
+      "journal : à intégrer dans TVLens (aujourd'hui dans le proxy)"
+    ]
   },
   "j2Gps60Questions": {
-    "source": "2026-10-21-variantes-gx10 (registre, ligne J2)",
+    "source": "2026-10-22-flux-60-questions-gx10",
     "configuration": "N2 sur les 60 questions de l'oracle v3, sans journal",
     "questions": 60,
     "delaiMedianS": 5.0,
     "sous15s": 60,
     "blocsPerdus": 0,
-    "pertinence": "à noter avec J3",
-    "incident": "premier départ bloqué à 10:50 UTC (OTHER_GPU_PROCESS_ACTIVE), relancé à 10:51 UTC"
+    "pertinence": "28/60",
+    "incident": "premier départ bloqué à 10:50 UTC (OTHER_GPU_PROCESS_ACTIVE), relancé à 10:51 UTC",
+    "inventions": 16,
+    "anciennesSur19": 0,
+    "mixtesSur8": 3,
+    "recentesSur33": 25
+  },
+  "j3Journal60Questions": {
+    "source": "2026-10-22-flux-60-questions-gx10",
+    "pertinentes": 38,
+    "inventions": 9,
+    "abstentionsInjustifiees": 14,
+    "noteMoyenne": 1.91,
+    "delaiMedianS": 6.3,
+    "sous15s": 60,
+    "blocsPerdus": {
+      "cnrs": 7
+    },
+    "anciennesSur19": 6,
+    "mixtesSur8": 7,
+    "recentesSur33": 25,
+    "gainsPertesFaceJ2": [
+      15,
+      5
+    ],
+    "testDesSignesBilateral": 0.041,
+    "trentePremieres": 24,
+    "trenteNouvelles": 14
   }
 }
