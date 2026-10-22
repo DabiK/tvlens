@@ -151,7 +151,7 @@ uniquement si la voie est libre et la session encore utilisable (ADR 0008 et 003
 `CodexSessionAgent` (`codex`, défaut) ou `OllamaQuestionAgent` (`local`). Le choix local exige URL et
 modèle explicites, refuse les réglages invalides et ne déclenche aucun repli distant. Les questions
 locales utilisent les trois outils vidéo ; avec un port de récupération web, une question de chat sans intention
-que la règle juge web reçoit des pages lues dans ses données non fiables et ne cite qu’elles (ADR 0063). Avec le
+que la règle juge web reçoit des pages lues dans ses données non fiables et ne cite qu’elles (ADR 0066). Avec le
 déclencheur `model`, un appel court du modèle décide avant la règle s’il faut chercher et écrit la requête ; la
 règle reprend s’il échoue, et la réponse garde la question du spectateur.
 Ce choix ne sélectionne ni embeddings ni inspection.
@@ -472,7 +472,8 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0065](adr/0065-la-capture-mac-passe-par-coreaudio-tap-et-s-ouvre-par-macos.md) :
   La capture Mac passe par CoreAudio Tap, et un lancement depuis un terminal se rouvre par macOS pour en avoir le son.
 - [ADR 0063](adr/0063-une-question-locale-repond-du-web-a-partir-des-pages-recuperees-avant-la-reponse.md) :
+- [ADR 0066](adr/0066-une-question-locale-repond-du-web-a-partir-des-pages-recuperees-avant-la-reponse.md) :
   Une question locale récupère ses pages avant la réponse, dans les données non fiables, et ne cite que les pages de ce tour.
 
-- [ADR 0064](adr/0064-le-modele-local-decide-la-recherche-web-et-ecrit-sa-requete.md) :
+- [ADR 0067](adr/0067-le-modele-local-decide-la-recherche-web-et-ecrit-sa-requete.md) :
   Avec le déclencheur `model`, un appel court décide la recherche et écrit la requête ; la règle reprend s’il échoue.

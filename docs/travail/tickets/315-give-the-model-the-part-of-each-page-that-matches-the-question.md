@@ -32,7 +32,7 @@ même longueur qu'aujourd'hui. Un fait situé au milieu d'une longue page attein
   - début de 800 plus deux fenêtres de 850 : 22/27.
   La moitié des faits est dans les 900 premiers caractères ; un quart au-delà de 2 500, jusqu'à 17 000. Réserve : ce
   sont les pages de l'oracle, pas forcément celles que SearXNG ouvrira.
-- T314 (`05c1592`) : déclencheur `model`, requête du modèle passée au port ; ADR 0064.
+- T314 (`05c1592`) : déclencheur `model`, requête du modèle passée au port ; ADR 0067.
 - Mots vides et normalisation déjà écrits : `adapters/web/frozen-corpus.cjs:32` (`STOP_WORDS`), `:85` (`wordsOf`),
   `core/web-retrieval.cjs:27` (`normalizeText`).
 

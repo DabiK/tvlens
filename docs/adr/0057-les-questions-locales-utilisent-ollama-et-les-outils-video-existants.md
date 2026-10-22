@@ -2,7 +2,7 @@
 
 - Date : 2026-10-18
 - Ticket : `docs/travail/tickets/263-answer-session-questions-with-ollama-and-the-existing-video-tools.md`
-- Statut : acceptée ; amendée par l'ADR 0063 (récupération web locale)
+- Statut : acceptée ; amendée par l'ADR 0066 (récupération web locale)
 
 ## Contexte
 

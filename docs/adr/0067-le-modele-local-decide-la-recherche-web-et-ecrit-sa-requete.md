@@ -1,12 +1,12 @@
-# 0064 — Le modèle local décide la recherche web et écrit sa requête, dans un appel court avant la récupération
+# 0067 — Le modèle local décide la recherche web et écrit sa requête, dans un appel court avant la récupération
 
 - Date : 2026-10-22
 - Ticket : `docs/travail/tickets/314-let-the-local-model-decide-the-web-search-and-write-its-query.md`
-- Statut : acceptée ; amende l'ADR 0063
+- Statut : acceptée ; amende l'ADR 0066
 
 ## Contexte
 
-L'ADR 0063 récupère des pages avant la réponse quand la règle `callsForWeb` (`core/web-retrieval.cjs`) juge la question
+L'ADR 0066 récupère des pages avant la réponse quand la règle `callsForWeb` (`core/web-retrieval.cjs`) juge la question
 web, avec la question brute pour requête. L'essai H1 du 22/10 (`experiments/essais/2026-10-22-web-outils-hors-ligne-gx10/`)
 montre que les pages apportent 26 réponses pertinentes sur 60 aux questions web et mixtes, mais que la règle ne
 déclenche que 7 questions web sur 18 et 1 mixte sur 12 ; 7 des 9 recherches ratées sont des questions qui ne nomment
@@ -39,7 +39,7 @@ sans intention, `OllamaQuestionAgent` fait d'abord un appel de décision, puis s
 
 ## Alternatives écartées
 
-- Donner la recherche au modèle comme un outil de la boucle de réponse : écarté par l'ADR 0063 (contrats d'outils
+- Donner la recherche au modèle comme un outil de la boucle de réponse : écarté par l'ADR 0066 (contrats d'outils
   vidéo, petit modèle) ; un appel court au format imposé est borné en durée et ne produit jamais de réponse.
 - Enrichir la règle `callsForWeb` : elle ne peut pas nommer le sujet d'une question qui ne le nomme pas.
 - Remplacer `auto` par `model` : la décision coûte une requête de plus par question de chat ; le choix reste un réglage

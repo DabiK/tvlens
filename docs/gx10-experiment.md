@@ -322,8 +322,9 @@ Récupération, pour une question :
 2. Sinon, les pages sont classées par le nombre de mots distincts de la requête (hors mots vides, au moins trois
    lettres) qui figurent dans leur titre ou leur texte. Deux mots communs au moins sont exigés (un seul pour une
    requête d’un seul mot) ; à score égal, l’ordre du corpus décide.
-3. Au plus trois pages sont rendues, chacune coupée à 2 500 caractères. Les coupes et l’absence de page sont
-   signalées dans `limits`.
+3. Au plus trois pages sont rendues, chacune coupée à 20 000 caractères. L’agent local n’en donne au modèle que le
+   début (1 000 caractères) et la fenêtre de 1 500 caractères qui recoupe le mieux la question et la requête.
+   Les coupes et l’absence de page sont signalées dans `limits`.
 
 Le corpus et tous les fichiers de texte sont lus une fois, à la première récupération. Un corpus illisible ou invalide
 (JSON, version, champ manquant, chemin refusé, fichier absent) est refusé avec le code `TVLENS_WEB_CORPUS_INVALID`,
