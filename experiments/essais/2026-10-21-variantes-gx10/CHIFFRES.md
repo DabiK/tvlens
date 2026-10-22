@@ -73,6 +73,8 @@ N1 à N4 sont notés dans un premier paquet ; N5 et N6 dans un second, avec GPS 
 | Chiffre | Valeur | Source |
 | --- | --- | --- |
 | **Variabilité d'un passage à l'autre** | GPS rejoué : 8 questions sur 30 basculent (21 puis 17) ; N2 rejoué : 7 (21 puis 22) | [nuit](../2026-10-22-variantes-nuit-gx10/) |
+| **Bruit de notation** (mêmes réponses renotées dans un autre paquet) | 2 statuts sur 30 changent pour N2 et pour GPS ; totaux inchangés | nuit, paquets N1–N4 et N5–N6 ; relevé par Codex Astra |
+| **Accord des juges avec un juge d'une autre famille** (Codex Astra, 13 questions, 51 textes) | même statut pertinent 46/51 (90 %) ; même note 47/51 ; écart ≤ 1 point 51/51 ; désaccords seulement sur l'étiquette « invention » | [audit](revues/README.md) |
 | Vision `gemma3:4b` sans `topicSummary`, dans le flux | 4,9–5,4 s par bloc ; 1 bloc sur 667 au-delà de 8 s | nuit, N2 |
 | N2 plus rapide que GPS, question par question | 25 sur 30 (test des signes, p ≈ 0,0003) ; que N1 : 26 sur 30 | nuit, N2 |
 | Condition pour le produit | `topicSummary` sert aux cartes de la frise TV et au contexte de la vision suivante : le calculer hors du chemin critique (changement de sujet, tous les N blocs, hors pause) plutôt que le supprimer | code, `docs/lg-timeline.md` |
@@ -81,6 +83,18 @@ N1 à N4 sont notés dans un premier paquet ; N5 et N6 dans un second, avec GPS 
 
 Source : [nuit du 22 octobre](../2026-10-22-variantes-nuit-gx10/). Un passage par variante : en dessous de 4 à
 5 réponses, un écart de pertinence n'est pas un signal.
+
+## Journal mémoire hors ligne (G5, 30 questions de N2 × 2 passages)
+
+| Bras | Pertinentes /60 | Inventions | Mémoire /12 | Récentes /48 | Délai médian |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Sans journal | 45 | 13 | 4 | 41 | 4,2 s |
+| **Journal complet** | **49** | **7** | **10** | 39 | 5,5 s |
+| Journal plafonné à 3 000 car. | 46 | 12 | 8 | 38 | 4,7 s |
+| Journal après les passages récents | 45 | 12 | 8 | 37 | 5,5 s |
+
+Source : [G5](../2026-10-22-journal-hors-ligne-gx10/). Sans journal, le modèle ne s'abstient presque jamais (1/60) : il
+invente.
 
 ## Premier résultat (E4, flux réel, Kennedy + Spring + CNRS, 15 questions)
 

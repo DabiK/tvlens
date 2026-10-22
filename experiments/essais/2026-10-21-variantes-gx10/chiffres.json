@@ -900,5 +900,90 @@
       "gpsRenotee": 21,
       "n2Renotee": 21
     }
+  },
+  "auditJugesAstra": {
+    "source": "2026-10-21-variantes-gx10/revues/audit-juges-2026-10-22",
+    "questions": 13,
+    "textes": 51,
+    "reponses": 52,
+    "memeStatutPertinent": 46,
+    "memeNote": 47,
+    "ecartAuPlus1": 51,
+    "memeInvention": 45,
+    "pertinentesClaude": 38,
+    "pertinentesAstra": 37,
+    "parConfigClaudeAstra": {
+      "GPS": [
+        10,
+        10
+      ],
+      "N2": [
+        10,
+        9
+      ],
+      "N5": [
+        10,
+        11
+      ],
+      "N6": [
+        9,
+        8
+      ]
+    },
+    "verifiable": {
+      "transcription": 43,
+      "oracleSeulement": 8
+    }
+  },
+  "bruitNotation": {
+    "renotationMemesReponses": "2 statuts sur 30 changent pour N2 et pour GPS entre les paquets N1–N4 et N5–N6"
+  },
+  "g5JournalHorsLigne": {
+    "source": "2026-10-22-journal-hors-ligne-gx10",
+    "base": "requêtes capturées de N2",
+    "passages": 2,
+    "bras": {
+      "A_sansJournal": {
+        "pertinentes": 45,
+        "inventions": 13,
+        "memoireSur12": 4,
+        "recentesSur48": 41,
+        "delaiMedianS": 4.22,
+        "contexteJetons": 2486
+      },
+      "B_journalComplet": {
+        "pertinentes": 49,
+        "inventions": 7,
+        "memoireSur12": 10,
+        "recentesSur48": 39,
+        "delaiMedianS": 5.5,
+        "contexteJetons": 4825
+      },
+      "D_plafond3000": {
+        "pertinentes": 46,
+        "inventions": 12,
+        "memoireSur12": 8,
+        "recentesSur48": 38,
+        "delaiMedianS": 4.69,
+        "contexteJetons": 3884
+      },
+      "E_apresRecents": {
+        "pertinentes": 45,
+        "inventions": 12,
+        "memoireSur12": 8,
+        "recentesSur48": 37,
+        "delaiMedianS": 5.47,
+        "contexteJetons": 4825
+      },
+      "F_AsinonB": {
+        "pertinentes": 45,
+        "inventions": 14,
+        "memoireSur12": 4,
+        "recentesSur48": 41,
+        "delaiMedianS": 4.27
+      }
+    },
+    "choix": "B pour J3",
+    "abstentionsSansJournal": "1/60"
   }
 }

@@ -1,0 +1,5 @@
+2026-10-22T10:29:48Z
+3.69 3.28 3.50 1/1003 679073
+64734, /usr/local/lib/ollama/llama-server
+65184, /usr/local/lib/ollama/llama-server
+609598, /usr/local/lib/ollama/llama-server

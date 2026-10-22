@@ -1,0 +1,2162 @@
+{
+ "d160cef47fb3": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3183.9,
+  "tokens": 145,
+  "citationsFilled": true
+ },
+ "67e11885dc7b": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 5287.1,
+  "tokens": 260,
+  "citationsFilled": true
+ },
+ "ea9e0e569489": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 5463.5,
+  "tokens": 264,
+  "citationsFilled": true
+ },
+ "466bde9a6bcb": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4038.6,
+  "tokens": 181,
+  "citationsFilled": true
+ },
+ "ec30b24e65a0": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4029.9,
+  "tokens": 177,
+  "citationsFilled": true
+ },
+ "ae5ca405c553": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4505.5,
+  "tokens": 216,
+  "citationsFilled": true
+ },
+ "e76f30aa1cd1": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4250.9,
+  "tokens": 197,
+  "citationsFilled": true
+ },
+ "e45caec28e1c": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4154.4,
+  "tokens": 193,
+  "citationsFilled": true
+ },
+ "4e6c6063f658": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4603.3,
+  "tokens": 221,
+  "citationsFilled": true
+ },
+ "ee3d645c5771": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 5526.5,
+  "tokens": 283,
+  "citationsFilled": true
+ },
+ "7459e728e78e": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 6615.9,
+  "tokens": 341,
+  "citationsFilled": true
+ },
+ "b22efa4e47aa": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4575.5,
+  "tokens": 212,
+  "citationsFilled": true
+ },
+ "a89a4f136455": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 7003.9,
+  "tokens": 366,
+  "citationsFilled": true
+ },
+ "e8434d0f8be2": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4655.4,
+  "tokens": 216,
+  "citationsFilled": true
+ },
+ "7937318d26bf": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3396.1,
+  "tokens": 130,
+  "citationsFilled": true
+ },
+ "6c0c07dcd032": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 6158.6,
+  "tokens": 323,
+  "citationsFilled": true
+ },
+ "10e6e604d66f": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4705.6,
+  "tokens": 224,
+  "citationsFilled": true
+ },
+ "4c918cdeaec9": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4136.6,
+  "tokens": 184,
+  "citationsFilled": true
+ },
+ "a1a594c4c433": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4123.2,
+  "tokens": 192,
+  "citationsFilled": true
+ },
+ "4c54560f58d5": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4029.3,
+  "tokens": 182,
+  "citationsFilled": true
+ },
+ "35ed73e3ee74": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3182.4,
+  "tokens": 137,
+  "citationsFilled": true
+ },
+ "68551b914a85": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3150.0,
+  "tokens": 133,
+  "citationsFilled": true
+ },
+ "c59139f1f009": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3338.2,
+  "tokens": 138,
+  "citationsFilled": true
+ },
+ "95f0ad120e30": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3543.8,
+  "tokens": 149,
+  "citationsFilled": true
+ },
+ "f057bca85ec4": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3106.1,
+  "tokens": 121,
+  "citationsFilled": true
+ },
+ "ddf4d0f7f4d9": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4963.7,
+  "tokens": 236,
+  "citationsFilled": true
+ },
+ "d390e62c2671": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4735.6,
+  "tokens": 219,
+  "citationsFilled": true
+ },
+ "31e3e92136f4": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4176.2,
+  "tokens": 190,
+  "citationsFilled": true
+ },
+ "9be275e88783": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4016.8,
+  "tokens": 180,
+  "citationsFilled": true
+ },
+ "4043802ce34f": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 5176.6,
+  "tokens": 247,
+  "citationsFilled": true
+ },
+ "b5dc7c9f82ea": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 3187.5,
+  "tokens": 145,
+  "citationsFilled": true
+ },
+ "b464907863b4": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 3750.6,
+  "tokens": 156,
+  "citationsFilled": true
+ },
+ "1b22bcbef100": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 4702.8,
+  "tokens": 192,
+  "citationsFilled": true
+ },
+ "a6f3e7f0520f": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 6293.3,
+  "tokens": 284,
+  "citationsFilled": true
+ },
+ "45973dacef70": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 4984.8,
+  "tokens": 183,
+  "citationsFilled": true
+ },
+ "bceeb8dd224b": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 3234.3,
+  "tokens": 136,
+  "citationsFilled": true
+ },
+ "3ca4385ebb41": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 7134.7,
+  "tokens": 346,
+  "citationsFilled": true
+ },
+ "c4568b3c0f73": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 3594.2,
+  "tokens": 129,
+  "citationsFilled": true
+ },
+ "99e867372ba1": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5245.4,
+  "tokens": 217,
+  "citationsFilled": true
+ },
+ "96d2de424b6c": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 6634.1,
+  "tokens": 287,
+  "citationsFilled": true
+ },
+ "cc4593695bb9": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 6003.7,
+  "tokens": 291,
+  "citationsFilled": true
+ },
+ "c90f9195978b": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 7037.2,
+  "tokens": 311,
+  "citationsFilled": true
+ },
+ "224ce5ef94f0": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 8899.4,
+  "tokens": 371,
+  "citationsFilled": true
+ },
+ "23b3b9c93c1d": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 8749.0,
+  "tokens": 375,
+  "citationsFilled": true
+ },
+ "0d26b46da4b6": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 8266.4,
+  "tokens": 344,
+  "citationsFilled": true
+ },
+ "36de383635e2": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 7954.5,
+  "tokens": 413,
+  "citationsFilled": true
+ },
+ "7be5eb3aab8c": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5422.6,
+  "tokens": 248,
+  "citationsFilled": true
+ },
+ "d03956dbd4c7": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5856.6,
+  "tokens": 232,
+  "citationsFilled": true
+ },
+ "8491f0451094": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 6252.7,
+  "tokens": 237,
+  "citationsFilled": true
+ },
+ "b0b3f7f52b00": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5491.7,
+  "tokens": 168,
+  "citationsFilled": true
+ },
+ "452eef804bb6": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 2958.5,
+  "tokens": 121,
+  "citationsFilled": true
+ },
+ "8e3b97774e3a": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 3540.9,
+  "tokens": 132,
+  "citationsFilled": true
+ },
+ "6330f1b65d28": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 3537.4,
+  "tokens": 127,
+  "citationsFilled": true
+ },
+ "118d33440d7b": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 6196.1,
+  "tokens": 264,
+  "citationsFilled": true
+ },
+ "1bcbe6eb05f0": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5449.8,
+  "tokens": 194,
+  "citationsFilled": true
+ },
+ "8e13d54bfd9c": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 8516.3,
+  "tokens": 357,
+  "citationsFilled": true
+ },
+ "0bd2c7841f97": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 6359.2,
+  "tokens": 224,
+  "citationsFilled": true
+ },
+ "67161a0f1526": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5720.5,
+  "tokens": 188,
+  "citationsFilled": true
+ },
+ "1d54a67f7cc8": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5549.1,
+  "tokens": 183,
+  "citationsFilled": true
+ },
+ "7a77a760de77": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "B",
+  "pass": 2,
+  "wallMs": 5625.2,
+  "tokens": 188,
+  "citationsFilled": true
+ },
+ "a252a30ebfb6": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3113.9,
+  "tokens": 145,
+  "citationsFilled": true
+ },
+ "a32b20ee98b4": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4258.0,
+  "tokens": 191,
+  "citationsFilled": true
+ },
+ "a64ddc4f099a": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 5289.4,
+  "tokens": 242,
+  "citationsFilled": true
+ },
+ "c401beeb7710": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4492.3,
+  "tokens": 181,
+  "citationsFilled": true
+ },
+ "530e239936a6": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4649.4,
+  "tokens": 180,
+  "citationsFilled": true
+ },
+ "fbfea81f118f": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3159.5,
+  "tokens": 133,
+  "citationsFilled": true
+ },
+ "459a7419153f": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 6920.2,
+  "tokens": 345,
+  "citationsFilled": true
+ },
+ "2bc0d731d919": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3662.7,
+  "tokens": 137,
+  "citationsFilled": true
+ },
+ "53786227a6c1": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4810.9,
+  "tokens": 203,
+  "citationsFilled": true
+ },
+ "42679ea8ff41": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 7040.0,
+  "tokens": 351,
+  "citationsFilled": true
+ },
+ "3fbb39440bad": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 5148.4,
+  "tokens": 245,
+  "citationsFilled": true
+ },
+ "ab8de2846c9b": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4736.3,
+  "tokens": 194,
+  "citationsFilled": true
+ },
+ "a43e7ca7f24b": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 7074.9,
+  "tokens": 331,
+  "citationsFilled": true
+ },
+ "b3bf24a612d7": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 6901.3,
+  "tokens": 314,
+  "citationsFilled": true
+ },
+ "d7176f473d6f": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 7035.6,
+  "tokens": 315,
+  "citationsFilled": true
+ },
+ "41c49656e97f": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 6563.4,
+  "tokens": 305,
+  "citationsFilled": true
+ },
+ "41169535594b": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 5833.6,
+  "tokens": 256,
+  "citationsFilled": true
+ },
+ "00f14f7f1f1c": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 6401.9,
+  "tokens": 286,
+  "citationsFilled": true
+ },
+ "3b827fcc6323": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4994.2,
+  "tokens": 206,
+  "citationsFilled": true
+ },
+ "e54c87c14dcf": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 6399.1,
+  "tokens": 294,
+  "citationsFilled": true
+ },
+ "6a8b4638b73b": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 2918.7,
+  "tokens": 124,
+  "citationsFilled": true
+ },
+ "bd3fe16d8510": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3816.3,
+  "tokens": 151,
+  "citationsFilled": true
+ },
+ "eff8cd60d971": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3596.4,
+  "tokens": 130,
+  "citationsFilled": true
+ },
+ "ec34d75cb72f": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3890.2,
+  "tokens": 135,
+  "citationsFilled": true
+ },
+ "f13fc9e93adc": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3970.4,
+  "tokens": 125,
+  "citationsFilled": true
+ },
+ "445c8157b18c": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4355.9,
+  "tokens": 187,
+  "citationsFilled": true
+ },
+ "cb73886c6d6e": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 5014.3,
+  "tokens": 219,
+  "citationsFilled": true
+ },
+ "c5b1ae04f440": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4680.1,
+  "tokens": 196,
+  "citationsFilled": true
+ },
+ "5fd395f91a88": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 4412.2,
+  "tokens": 184,
+  "citationsFilled": true
+ },
+ "65ab3ba2d710": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "D",
+  "pass": 3,
+  "wallMs": 3748.0,
+  "tokens": 139,
+  "citationsFilled": true
+ },
+ "7cd88889e673": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 3216.7,
+  "tokens": 143,
+  "citationsFilled": true
+ },
+ "f52faf990271": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 4852.8,
+  "tokens": 218,
+  "citationsFilled": true
+ },
+ "fb2788162610": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5621.5,
+  "tokens": 250,
+  "citationsFilled": true
+ },
+ "f4a639ea5e0f": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 4671.4,
+  "tokens": 181,
+  "citationsFilled": true
+ },
+ "abb28b4126ca": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5218.9,
+  "tokens": 195,
+  "citationsFilled": true
+ },
+ "be02d01a0b6f": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 3266.2,
+  "tokens": 139,
+  "citationsFilled": true
+ },
+ "2df67ecf70bc": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 3624.4,
+  "tokens": 132,
+  "citationsFilled": false
+ },
+ "6393c7883ebf": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 3792.8,
+  "tokens": 138,
+  "citationsFilled": true
+ },
+ "142769b82060": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 4926.5,
+  "tokens": 195,
+  "citationsFilled": true
+ },
+ "b18303255be9": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6846.3,
+  "tokens": 293,
+  "citationsFilled": true
+ },
+ "dc081cfa9580": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6010.5,
+  "tokens": 283,
+  "citationsFilled": true
+ },
+ "f2c08f934e96": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5771.4,
+  "tokens": 239,
+  "citationsFilled": true
+ },
+ "cd9832b6db3c": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 8868.1,
+  "tokens": 371,
+  "citationsFilled": true
+ },
+ "7c61625107b7": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6949.5,
+  "tokens": 258,
+  "citationsFilled": true
+ },
+ "7129f7885f1a": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 7820.4,
+  "tokens": 310,
+  "citationsFilled": true
+ },
+ "9966d1f0dd7a": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6790.2,
+  "tokens": 333,
+  "citationsFilled": true
+ },
+ "04f07d2ea65a": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5604.7,
+  "tokens": 249,
+  "citationsFilled": true
+ },
+ "63ed379dab37": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6142.1,
+  "tokens": 243,
+  "citationsFilled": true
+ },
+ "5ee6f4e9ccab": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5287.1,
+  "tokens": 171,
+  "citationsFilled": true
+ },
+ "cbc9afcc87aa": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5565.3,
+  "tokens": 167,
+  "citationsFilled": true
+ },
+ "0b8fcbb6a7ff": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 3003.0,
+  "tokens": 124,
+  "citationsFilled": true
+ },
+ "48bfb9fdc82a": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 3957.3,
+  "tokens": 154,
+  "citationsFilled": true
+ },
+ "cb3653467e91": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 3623.9,
+  "tokens": 127,
+  "citationsFilled": true
+ },
+ "4163bbf34ff1": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 4173.7,
+  "tokens": 134,
+  "citationsFilled": true
+ },
+ "478aee34fce8": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 4745.0,
+  "tokens": 145,
+  "citationsFilled": true
+ },
+ "2088677d7dea": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6852.3,
+  "tokens": 248,
+  "citationsFilled": true
+ },
+ "ae0e7639611c": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6181.3,
+  "tokens": 210,
+  "citationsFilled": true
+ },
+ "3a62f74ffa9f": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 6147.1,
+  "tokens": 212,
+  "citationsFilled": true
+ },
+ "f4b0bb3efcce": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5779.6,
+  "tokens": 189,
+  "citationsFilled": true
+ },
+ "c1ea82631684": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "E",
+  "pass": 4,
+  "wallMs": 5848.3,
+  "tokens": 194,
+  "citationsFilled": true
+ },
+ "fe9a8b1ea33d": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 3230.0,
+  "tokens": 147,
+  "citationsFilled": true
+ },
+ "62d8ffe5ab91": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 4646.0,
+  "tokens": 213,
+  "citationsFilled": true
+ },
+ "956cb34621e3": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5604.0,
+  "tokens": 249,
+  "citationsFilled": true
+ },
+ "4af24854ac66": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 4606.6,
+  "tokens": 181,
+  "citationsFilled": true
+ },
+ "31f65e261ac5": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 4810.9,
+  "tokens": 172,
+  "citationsFilled": true
+ },
+ "3e570b9e9862": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 3234.3,
+  "tokens": 135,
+  "citationsFilled": true
+ },
+ "583a25d46011": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 3569.3,
+  "tokens": 130,
+  "citationsFilled": false
+ },
+ "2b23d0d3ab74": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 3728.5,
+  "tokens": 137,
+  "citationsFilled": true
+ },
+ "45386774cd57": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 4916.3,
+  "tokens": 200,
+  "citationsFilled": true
+ },
+ "ae4db2daeb4a": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 7502.0,
+  "tokens": 334,
+  "citationsFilled": true
+ },
+ "cbd7c345d98b": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5199.3,
+  "tokens": 236,
+  "citationsFilled": true
+ },
+ "61bf53ce7351": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5825.6,
+  "tokens": 241,
+  "citationsFilled": true
+ },
+ "f7a212b9a261": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 7008.9,
+  "tokens": 251,
+  "citationsFilled": true
+ },
+ "44a4c6d520b0": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 8580.1,
+  "tokens": 350,
+  "citationsFilled": true
+ },
+ "77c13d02fe5d": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 9143.9,
+  "tokens": 372,
+  "citationsFilled": true
+ },
+ "f91ea343dbcb": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 6897.1,
+  "tokens": 329,
+  "citationsFilled": true
+ },
+ "139139710b90": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5065.7,
+  "tokens": 209,
+  "citationsFilled": true
+ },
+ "48363702229c": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 6230.5,
+  "tokens": 243,
+  "citationsFilled": true
+ },
+ "6440bf444d23": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5371.5,
+  "tokens": 174,
+  "citationsFilled": true
+ },
+ "fc30eaa40a18": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 6769.6,
+  "tokens": 228,
+  "citationsFilled": true
+ },
+ "1a391e066943": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 2989.2,
+  "tokens": 124,
+  "citationsFilled": true
+ },
+ "17c2b35b66a6": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 3558.8,
+  "tokens": 126,
+  "citationsFilled": true
+ },
+ "2e5d26eab1d6": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 3535.2,
+  "tokens": 126,
+  "citationsFilled": true
+ },
+ "f4ae3ef181d3": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5179.7,
+  "tokens": 201,
+  "citationsFilled": true
+ },
+ "13203cc1b2a6": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5641.3,
+  "tokens": 204,
+  "citationsFilled": true
+ },
+ "f295f6f44304": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 4749.5,
+  "tokens": 132,
+  "citationsFilled": true
+ },
+ "5ceccef18df9": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5907.5,
+  "tokens": 202,
+  "citationsFilled": true
+ },
+ "39ebaf549352": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5845.6,
+  "tokens": 200,
+  "citationsFilled": true
+ },
+ "9055daf0889b": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5679.2,
+  "tokens": 189,
+  "citationsFilled": true
+ },
+ "43bf82d37edf": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "E",
+  "pass": 5,
+  "wallMs": 5667.6,
+  "tokens": 190,
+  "citationsFilled": true
+ },
+ "93bf2e87e2b6": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3207.7,
+  "tokens": 151,
+  "citationsFilled": true
+ },
+ "5385a18904b5": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4057.3,
+  "tokens": 182,
+  "citationsFilled": true
+ },
+ "8dd963eec699": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4610.8,
+  "tokens": 192,
+  "citationsFilled": true
+ },
+ "882727b67926": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4520.4,
+  "tokens": 181,
+  "citationsFilled": true
+ },
+ "f8732cfbd142": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4780.5,
+  "tokens": 188,
+  "citationsFilled": true
+ },
+ "0f784f076524": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3233.0,
+  "tokens": 141,
+  "citationsFilled": true
+ },
+ "5ddb83eb243e": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 6904.6,
+  "tokens": 346,
+  "citationsFilled": true
+ },
+ "a846e9ba7296": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3688.5,
+  "tokens": 137,
+  "citationsFilled": true
+ },
+ "bcbf0c7bc942": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3923.3,
+  "tokens": 143,
+  "citationsFilled": true
+ },
+ "0c97c466928a": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 6998.9,
+  "tokens": 349,
+  "citationsFilled": true
+ },
+ "d4921a987dec": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 5915.4,
+  "tokens": 292,
+  "citationsFilled": true
+ },
+ "21fda4e4cf3f": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 5630.2,
+  "tokens": 251,
+  "citationsFilled": true
+ },
+ "a4f152b0901e": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 6559.2,
+  "tokens": 311,
+  "citationsFilled": true
+ },
+ "b7603a6ee818": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 5556.2,
+  "tokens": 250,
+  "citationsFilled": true
+ },
+ "f15a9ae67764": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4948.0,
+  "tokens": 204,
+  "citationsFilled": true
+ },
+ "d26d75276493": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 5051.4,
+  "tokens": 228,
+  "citationsFilled": true
+ },
+ "a7b61b15acd9": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 5375.0,
+  "tokens": 242,
+  "citationsFilled": true
+ },
+ "4f91d33953be": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 6159.4,
+  "tokens": 285,
+  "citationsFilled": true
+ },
+ "eb8c0038cb79": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4558.7,
+  "tokens": 183,
+  "citationsFilled": true
+ },
+ "f2ae8cca40fb": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 6254.3,
+  "tokens": 285,
+  "citationsFilled": true
+ },
+ "4588aa22e6d2": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3165.0,
+  "tokens": 137,
+  "citationsFilled": true
+ },
+ "12d2538b1f5e": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4100.8,
+  "tokens": 169,
+  "citationsFilled": true
+ },
+ "d0c3a59765d9": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3577.3,
+  "tokens": 129,
+  "citationsFilled": true
+ },
+ "3cd2ad608d47": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4987.1,
+  "tokens": 207,
+  "citationsFilled": true
+ },
+ "72245cc45623": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3714.7,
+  "tokens": 115,
+  "citationsFilled": true
+ },
+ "6d927d3cd7b4": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4707.6,
+  "tokens": 204,
+  "citationsFilled": true
+ },
+ "d843f8c530c0": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4822.4,
+  "tokens": 210,
+  "citationsFilled": true
+ },
+ "a08c47ec16a4": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4652.5,
+  "tokens": 195,
+  "citationsFilled": true
+ },
+ "7d549d18ba1e": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 4420.0,
+  "tokens": 185,
+  "citationsFilled": true
+ },
+ "c7ef804a828e": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "D",
+  "pass": 6,
+  "wallMs": 3705.2,
+  "tokens": 139,
+  "citationsFilled": true
+ },
+ "bd4529084277": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 3146.6,
+  "tokens": 148,
+  "citationsFilled": true
+ },
+ "5562d63a85d7": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 4051.6,
+  "tokens": 182,
+  "citationsFilled": true
+ },
+ "307553303c6f": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5625.0,
+  "tokens": 263,
+  "citationsFilled": true
+ },
+ "b237d8008f34": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 4602.2,
+  "tokens": 183,
+  "citationsFilled": true
+ },
+ "ba957c4a24db": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 4964.6,
+  "tokens": 189,
+  "citationsFilled": true
+ },
+ "166b592bde22": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 3142.3,
+  "tokens": 134,
+  "citationsFilled": true
+ },
+ "3ef3269f65a3": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 6983.7,
+  "tokens": 350,
+  "citationsFilled": true
+ },
+ "3af77b4a35e4": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 3714.6,
+  "tokens": 137,
+  "citationsFilled": true
+ },
+ "ea795eaae210": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5189.6,
+  "tokens": 222,
+  "citationsFilled": true
+ },
+ "b1e5ec9c932f": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 7490.2,
+  "tokens": 350,
+  "citationsFilled": true
+ },
+ "fd9854b059c6": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5922.1,
+  "tokens": 293,
+  "citationsFilled": true
+ },
+ "4098ae289c02": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 4841.0,
+  "tokens": 193,
+  "citationsFilled": true
+ },
+ "e8dad5fc6f02": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 8308.4,
+  "tokens": 346,
+  "citationsFilled": true
+ },
+ "b576a83a5f11": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 8486.5,
+  "tokens": 366,
+  "citationsFilled": true
+ },
+ "1363c26dac65": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 7632.9,
+  "tokens": 309,
+  "citationsFilled": true
+ },
+ "8499f718aa13": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 3691.6,
+  "tokens": 141,
+  "citationsFilled": false
+ },
+ "c50bfd694f52": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5469.0,
+  "tokens": 244,
+  "citationsFilled": true
+ },
+ "d2b1c2247d7c": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 6730.2,
+  "tokens": 285,
+  "citationsFilled": true
+ },
+ "2deaaccf5728": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 4579.5,
+  "tokens": 136,
+  "citationsFilled": true
+ },
+ "24bda934123e": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5460.0,
+  "tokens": 169,
+  "citationsFilled": true
+ },
+ "16b05c438283": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 3207.3,
+  "tokens": 137,
+  "citationsFilled": true
+ },
+ "500ad8d0cf61": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 4052.3,
+  "tokens": 166,
+  "citationsFilled": true
+ },
+ "cd016b57f742": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 3607.1,
+  "tokens": 130,
+  "citationsFilled": true
+ },
+ "30003a4d8f98": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5276.1,
+  "tokens": 206,
+  "citationsFilled": true
+ },
+ "49d0ef80568a": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5499.2,
+  "tokens": 195,
+  "citationsFilled": true
+ },
+ "91a3ea8ac10b": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5449.6,
+  "tokens": 177,
+  "citationsFilled": true
+ },
+ "be1292a96d92": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 6304.3,
+  "tokens": 218,
+  "citationsFilled": true
+ },
+ "2a481eda4d76": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5877.2,
+  "tokens": 193,
+  "citationsFilled": true
+ },
+ "b0821d385dc7": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5726.2,
+  "tokens": 191,
+  "citationsFilled": true
+ },
+ "0f4d632a76db": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "B",
+  "pass": 7,
+  "wallMs": 5677.9,
+  "tokens": 191,
+  "citationsFilled": true
+ },
+ "0e9e1f35608e": {
+  "questionId": "kennedy-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3159.9,
+  "tokens": 147,
+  "citationsFilled": true
+ },
+ "9550ac0cf28f": {
+  "questionId": "kennedy-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 5383.5,
+  "tokens": 278,
+  "citationsFilled": true
+ },
+ "29c5a7088bb4": {
+  "questionId": "kennedy-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 5281.4,
+  "tokens": 268,
+  "citationsFilled": true
+ },
+ "fe3a8139eb28": {
+  "questionId": "kennedy-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3949.3,
+  "tokens": 177,
+  "citationsFilled": true
+ },
+ "3d4848bc8651": {
+  "questionId": "kennedy-08",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4279.8,
+  "tokens": 189,
+  "citationsFilled": true
+ },
+ "523d98feab98": {
+  "questionId": "spring-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3887.3,
+  "tokens": 177,
+  "citationsFilled": true
+ },
+ "37541b60fb1b": {
+  "questionId": "spring-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 5491.1,
+  "tokens": 270,
+  "citationsFilled": true
+ },
+ "8c4015dc1504": {
+  "questionId": "spring-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3560.7,
+  "tokens": 147,
+  "citationsFilled": true
+ },
+ "cd94b69330d6": {
+  "questionId": "spring-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4155.7,
+  "tokens": 186,
+  "citationsFilled": true
+ },
+ "b9fa01075086": {
+  "questionId": "spring-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 6903.6,
+  "tokens": 358,
+  "citationsFilled": true
+ },
+ "c5b097e67a3b": {
+  "questionId": "cnrs-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4926.9,
+  "tokens": 231,
+  "citationsFilled": true
+ },
+ "d27a97a34997": {
+  "questionId": "cnrs-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4593.5,
+  "tokens": 217,
+  "citationsFilled": true
+ },
+ "7f4bfeb40dda": {
+  "questionId": "cnrs-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 5243.9,
+  "tokens": 245,
+  "citationsFilled": true
+ },
+ "01a053dab160": {
+  "questionId": "cnrs-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4752.5,
+  "tokens": 220,
+  "citationsFilled": true
+ },
+ "2a294f1e33e7": {
+  "questionId": "cnrs-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4298.3,
+  "tokens": 186,
+  "citationsFilled": true
+ },
+ "f0107cb78344": {
+  "questionId": "cuisine-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 6177.4,
+  "tokens": 321,
+  "citationsFilled": true
+ },
+ "ccd96635f5d3": {
+  "questionId": "cuisine-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 5133.4,
+  "tokens": 247,
+  "citationsFilled": true
+ },
+ "66e283dd33b3": {
+  "questionId": "cuisine-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4194.8,
+  "tokens": 193,
+  "citationsFilled": true
+ },
+ "c1efd1aa8e51": {
+  "questionId": "cuisine-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4008.6,
+  "tokens": 183,
+  "citationsFilled": true
+ },
+ "67812fcfb18d": {
+  "questionId": "cuisine-07",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3800.6,
+  "tokens": 170,
+  "citationsFilled": true
+ },
+ "6b2c833822e6": {
+  "questionId": "tears-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3438.2,
+  "tokens": 151,
+  "citationsFilled": true
+ },
+ "487af3960284": {
+  "questionId": "tears-03",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3511.3,
+  "tokens": 151,
+  "citationsFilled": true
+ },
+ "c7bcfb58960e": {
+  "questionId": "tears-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3301.6,
+  "tokens": 138,
+  "citationsFilled": true
+ },
+ "77860b163186": {
+  "questionId": "tears-06",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3080.2,
+  "tokens": 122,
+  "citationsFilled": true
+ },
+ "957988bf5e43": {
+  "questionId": "tears-07",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 3352.6,
+  "tokens": 140,
+  "citationsFilled": true
+ },
+ "a8740256bcf9": {
+  "questionId": "artemis-01",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 5286.9,
+  "tokens": 255,
+  "citationsFilled": true
+ },
+ "b5977cb47bff": {
+  "questionId": "artemis-02",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4432.9,
+  "tokens": 205,
+  "citationsFilled": true
+ },
+ "36f868d8228c": {
+  "questionId": "artemis-04",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4131.3,
+  "tokens": 190,
+  "citationsFilled": true
+ },
+ "10f89abaa370": {
+  "questionId": "artemis-05",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4001.9,
+  "tokens": 180,
+  "citationsFilled": true
+ },
+ "297a2bac1ba7": {
+  "questionId": "artemis-07",
+  "source": "G5",
+  "arm": "A",
+  "pass": 8,
+  "wallMs": 4318.0,
+  "tokens": 198,
+  "citationsFilled": true
+ }
+}

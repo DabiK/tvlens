@@ -1,0 +1,361 @@
+{
+ "experiment": "g5-variantes-journal",
+ "capSeconds": 7200,
+ "cases": [
+  {
+   "kind": "prebuilt",
+   "id": "kennedy-01",
+   "requests": {
+    "A": "g5-preparation/requetes/kennedy-01-A.json",
+    "B": "g5-preparation/requetes/kennedy-01-B.json",
+    "C": "g5-preparation/requetes/kennedy-01-C.json",
+    "D": "g5-preparation/requetes/kennedy-01-D.json",
+    "E": "g5-preparation/requetes/kennedy-01-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "kennedy-03",
+   "requests": {
+    "A": "g5-preparation/requetes/kennedy-03-A.json",
+    "B": "g5-preparation/requetes/kennedy-03-B.json",
+    "C": "g5-preparation/requetes/kennedy-03-C.json",
+    "D": "g5-preparation/requetes/kennedy-03-D.json",
+    "E": "g5-preparation/requetes/kennedy-03-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "kennedy-05",
+   "requests": {
+    "A": "g5-preparation/requetes/kennedy-05-A.json",
+    "B": "g5-preparation/requetes/kennedy-05-B.json",
+    "C": "g5-preparation/requetes/kennedy-05-C.json",
+    "D": "g5-preparation/requetes/kennedy-05-D.json",
+    "E": "g5-preparation/requetes/kennedy-05-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "kennedy-06",
+   "requests": {
+    "A": "g5-preparation/requetes/kennedy-06-A.json",
+    "B": "g5-preparation/requetes/kennedy-06-B.json",
+    "C": "g5-preparation/requetes/kennedy-06-C.json",
+    "D": "g5-preparation/requetes/kennedy-06-D.json",
+    "E": "g5-preparation/requetes/kennedy-06-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "kennedy-08",
+   "requests": {
+    "A": "g5-preparation/requetes/kennedy-08-A.json",
+    "B": "g5-preparation/requetes/kennedy-08-B.json",
+    "C": "g5-preparation/requetes/kennedy-08-C.json",
+    "D": "g5-preparation/requetes/kennedy-08-D.json",
+    "E": "g5-preparation/requetes/kennedy-08-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "spring-01",
+   "requests": {
+    "A": "g5-preparation/requetes/spring-01-A.json",
+    "B": "g5-preparation/requetes/spring-01-B.json",
+    "C": "g5-preparation/requetes/spring-01-C.json",
+    "D": "g5-preparation/requetes/spring-01-D.json",
+    "E": "g5-preparation/requetes/spring-01-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "spring-02",
+   "requests": {
+    "A": "g5-preparation/requetes/spring-02-A.json",
+    "B": "g5-preparation/requetes/spring-02-B.json",
+    "C": "g5-preparation/requetes/spring-02-C.json",
+    "D": "g5-preparation/requetes/spring-02-D.json",
+    "E": "g5-preparation/requetes/spring-02-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "spring-03",
+   "requests": {
+    "A": "g5-preparation/requetes/spring-03-A.json",
+    "B": "g5-preparation/requetes/spring-03-B.json",
+    "C": "g5-preparation/requetes/spring-03-C.json",
+    "D": "g5-preparation/requetes/spring-03-D.json",
+    "E": "g5-preparation/requetes/spring-03-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "spring-04",
+   "requests": {
+    "A": "g5-preparation/requetes/spring-04-A.json",
+    "B": "g5-preparation/requetes/spring-04-B.json",
+    "C": "g5-preparation/requetes/spring-04-C.json",
+    "D": "g5-preparation/requetes/spring-04-D.json",
+    "E": "g5-preparation/requetes/spring-04-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "spring-06",
+   "requests": {
+    "A": "g5-preparation/requetes/spring-06-A.json",
+    "B": "g5-preparation/requetes/spring-06-B.json",
+    "C": "g5-preparation/requetes/spring-06-C.json",
+    "D": "g5-preparation/requetes/spring-06-D.json",
+    "E": "g5-preparation/requetes/spring-06-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cnrs-01",
+   "requests": {
+    "A": "g5-preparation/requetes/cnrs-01-A.json",
+    "B": "g5-preparation/requetes/cnrs-01-B.json",
+    "C": "g5-preparation/requetes/cnrs-01-C.json",
+    "D": "g5-preparation/requetes/cnrs-01-D.json",
+    "E": "g5-preparation/requetes/cnrs-01-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cnrs-02",
+   "requests": {
+    "A": "g5-preparation/requetes/cnrs-02-A.json",
+    "B": "g5-preparation/requetes/cnrs-02-B.json",
+    "C": "g5-preparation/requetes/cnrs-02-C.json",
+    "D": "g5-preparation/requetes/cnrs-02-D.json",
+    "E": "g5-preparation/requetes/cnrs-02-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cnrs-04",
+   "requests": {
+    "A": "g5-preparation/requetes/cnrs-04-A.json",
+    "B": "g5-preparation/requetes/cnrs-04-B.json",
+    "C": "g5-preparation/requetes/cnrs-04-C.json",
+    "D": "g5-preparation/requetes/cnrs-04-D.json",
+    "E": "g5-preparation/requetes/cnrs-04-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cnrs-05",
+   "requests": {
+    "A": "g5-preparation/requetes/cnrs-05-A.json",
+    "B": "g5-preparation/requetes/cnrs-05-B.json",
+    "C": "g5-preparation/requetes/cnrs-05-C.json",
+    "D": "g5-preparation/requetes/cnrs-05-D.json",
+    "E": "g5-preparation/requetes/cnrs-05-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cnrs-06",
+   "requests": {
+    "A": "g5-preparation/requetes/cnrs-06-A.json",
+    "B": "g5-preparation/requetes/cnrs-06-B.json",
+    "C": "g5-preparation/requetes/cnrs-06-C.json",
+    "D": "g5-preparation/requetes/cnrs-06-D.json",
+    "E": "g5-preparation/requetes/cnrs-06-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cuisine-02",
+   "requests": {
+    "A": "g5-preparation/requetes/cuisine-02-A.json",
+    "B": "g5-preparation/requetes/cuisine-02-B.json",
+    "C": "g5-preparation/requetes/cuisine-02-C.json",
+    "D": "g5-preparation/requetes/cuisine-02-D.json",
+    "E": "g5-preparation/requetes/cuisine-02-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cuisine-03",
+   "requests": {
+    "A": "g5-preparation/requetes/cuisine-03-A.json",
+    "B": "g5-preparation/requetes/cuisine-03-B.json",
+    "C": "g5-preparation/requetes/cuisine-03-C.json",
+    "D": "g5-preparation/requetes/cuisine-03-D.json",
+    "E": "g5-preparation/requetes/cuisine-03-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cuisine-05",
+   "requests": {
+    "A": "g5-preparation/requetes/cuisine-05-A.json",
+    "B": "g5-preparation/requetes/cuisine-05-B.json",
+    "C": "g5-preparation/requetes/cuisine-05-C.json",
+    "D": "g5-preparation/requetes/cuisine-05-D.json",
+    "E": "g5-preparation/requetes/cuisine-05-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cuisine-06",
+   "requests": {
+    "A": "g5-preparation/requetes/cuisine-06-A.json",
+    "B": "g5-preparation/requetes/cuisine-06-B.json",
+    "C": "g5-preparation/requetes/cuisine-06-C.json",
+    "D": "g5-preparation/requetes/cuisine-06-D.json",
+    "E": "g5-preparation/requetes/cuisine-06-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "cuisine-07",
+   "requests": {
+    "A": "g5-preparation/requetes/cuisine-07-A.json",
+    "B": "g5-preparation/requetes/cuisine-07-B.json",
+    "C": "g5-preparation/requetes/cuisine-07-C.json",
+    "D": "g5-preparation/requetes/cuisine-07-D.json",
+    "E": "g5-preparation/requetes/cuisine-07-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "tears-01",
+   "requests": {
+    "A": "g5-preparation/requetes/tears-01-A.json",
+    "B": "g5-preparation/requetes/tears-01-B.json",
+    "C": "g5-preparation/requetes/tears-01-C.json",
+    "D": "g5-preparation/requetes/tears-01-D.json",
+    "E": "g5-preparation/requetes/tears-01-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "tears-03",
+   "requests": {
+    "A": "g5-preparation/requetes/tears-03-A.json",
+    "B": "g5-preparation/requetes/tears-03-B.json",
+    "C": "g5-preparation/requetes/tears-03-C.json",
+    "D": "g5-preparation/requetes/tears-03-D.json",
+    "E": "g5-preparation/requetes/tears-03-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "tears-04",
+   "requests": {
+    "A": "g5-preparation/requetes/tears-04-A.json",
+    "B": "g5-preparation/requetes/tears-04-B.json",
+    "C": "g5-preparation/requetes/tears-04-C.json",
+    "D": "g5-preparation/requetes/tears-04-D.json",
+    "E": "g5-preparation/requetes/tears-04-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "tears-06",
+   "requests": {
+    "A": "g5-preparation/requetes/tears-06-A.json",
+    "B": "g5-preparation/requetes/tears-06-B.json",
+    "C": "g5-preparation/requetes/tears-06-C.json",
+    "D": "g5-preparation/requetes/tears-06-D.json",
+    "E": "g5-preparation/requetes/tears-06-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "tears-07",
+   "requests": {
+    "A": "g5-preparation/requetes/tears-07-A.json",
+    "B": "g5-preparation/requetes/tears-07-B.json",
+    "C": "g5-preparation/requetes/tears-07-C.json",
+    "D": "g5-preparation/requetes/tears-07-D.json",
+    "E": "g5-preparation/requetes/tears-07-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "artemis-01",
+   "requests": {
+    "A": "g5-preparation/requetes/artemis-01-A.json",
+    "B": "g5-preparation/requetes/artemis-01-B.json",
+    "C": "g5-preparation/requetes/artemis-01-C.json",
+    "D": "g5-preparation/requetes/artemis-01-D.json",
+    "E": "g5-preparation/requetes/artemis-01-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "artemis-02",
+   "requests": {
+    "A": "g5-preparation/requetes/artemis-02-A.json",
+    "B": "g5-preparation/requetes/artemis-02-B.json",
+    "C": "g5-preparation/requetes/artemis-02-C.json",
+    "D": "g5-preparation/requetes/artemis-02-D.json",
+    "E": "g5-preparation/requetes/artemis-02-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "artemis-04",
+   "requests": {
+    "A": "g5-preparation/requetes/artemis-04-A.json",
+    "B": "g5-preparation/requetes/artemis-04-B.json",
+    "C": "g5-preparation/requetes/artemis-04-C.json",
+    "D": "g5-preparation/requetes/artemis-04-D.json",
+    "E": "g5-preparation/requetes/artemis-04-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "artemis-05",
+   "requests": {
+    "A": "g5-preparation/requetes/artemis-05-A.json",
+    "B": "g5-preparation/requetes/artemis-05-B.json",
+    "C": "g5-preparation/requetes/artemis-05-C.json",
+    "D": "g5-preparation/requetes/artemis-05-D.json",
+    "E": "g5-preparation/requetes/artemis-05-E.json"
+   }
+  },
+  {
+   "kind": "prebuilt",
+   "id": "artemis-07",
+   "requests": {
+    "A": "g5-preparation/requetes/artemis-07-A.json",
+    "B": "g5-preparation/requetes/artemis-07-B.json",
+    "C": "g5-preparation/requetes/artemis-07-C.json",
+    "D": "g5-preparation/requetes/artemis-07-D.json",
+    "E": "g5-preparation/requetes/artemis-07-E.json"
+   }
+  }
+ ],
+ "arms": [
+  {
+   "label": "A"
+  },
+  {
+   "label": "B"
+  },
+  {
+   "label": "D"
+  },
+  {
+   "label": "E"
+  }
+ ],
+ "order": [
+  "A",
+  "B",
+  "D",
+  "E",
+  "E",
+  "D",
+  "B",
+  "A"
+ ],
+ "note": "Réduit à A, B, D, E après la revue de Codex Astra (C change plusieurs choses à la fois) ; requêtes C construites mais non jouées."
+}

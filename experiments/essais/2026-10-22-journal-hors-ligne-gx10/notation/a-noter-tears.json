@@ -1,0 +1,439 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "4bc36267bc",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique [moment-4, 24000-32000]. Thom, quant à lui, exprime le souhait d'exceller dans l'exploration spatiale [moment-4, 24000-32000].",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "837c78bcd1",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite exceller dans l'exploration spatiale [moment-4, 24000-32000].",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "be0a0da8c0",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite exceller dans l'exploration spatiale (moment-4, 24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "c2b56df2ef",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite exceller dans l'exploration spatiale. Ces intérêts sont mentionnés lors de leur échange sur un pont (moment-4, 24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "b1774c4798",
+    "kind": "observation",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas de durée spécifique concernant ce que Barley devrait avoir. On entend seulement Barley répondre que tout est prêt et que les systèmes sont opérationnels (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "67ce49f042",
+    "kind": "observation",
+    "answer": "Je ne trouve pas de mention d'une durée spécifique que Barley devrait avoir dans les passages consultés. On l'entend seulement répondre à une question sur l'état de la situation en disant que c'est parfait et qu'ils n'ont qu'une minute de retard (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "6349a36afa",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé de mention de la durée que Barley devrait avoir dans les passages consultés. La vidéo s'arrête juste après que Barley a été interrogé sur l'état de la situation (moment-25, 192000-200000).",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "e15d8b7227",
+    "kind": "observation",
+    "answer": "Je n'ai pas trouvé de mention d'une durée spécifique que Barley devrait avoir dans les passages consultés. Il est seulement mentionné que tout est prêt et qu'ils n'ont qu'une minute de retard.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "2fd4c1b6e1",
+    "kind": "observation",
+    "answer": "Barley ne mentionne pas de durée précise dans les passages consultés. On l'entend seulement répondre à une question sur l'état de la situation, mais la suite de sa réponse n'est pas disponible.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "afb7fa6513",
+    "kind": "observation",
+    "answer": "Barley ne précise pas de durée exacte, mais il indique que tout est prêt et qu'il ne manque qu'une minute (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "48d9b4c584",
+    "kind": "observation",
+    "answer": "Barley mentionne qu'il ne manque qu'une minute (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "eec1022caf",
+    "kind": "observation",
+    "answer": "I cannot determine how much time Barley says they should have because the available footage does not contain the full context of his response. The video ends while the characters are discussing their readiness and systems status (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "5652f9f3b5",
+    "kind": "observation",
+    "answer": "Thom is advised to be tender and honest with her. He is also told to remind her what love is (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "78db9a60f8",
+    "kind": "observation",
+    "answer": "Thom is advised to be tender and honest with her, and to remind her what love is (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "b471c280f5",
+    "kind": "observation",
+    "answer": "L'homme défiguré conseille à Thom d'être tendre et honnête avec elle, et de lui rappeler ce qu'est l'amour (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "9c2544527a",
+    "kind": "observation",
+    "answer": "Celia does not explicitly reproach Thom in the provided footage, but Thom suggests that she is freaked out by his robot hand (moment-44, 344000-352000). She also mentions having nightmares about being chased by his giant robotic claws (moment-6, 40000-48000).",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ]
+   },
+   {
+    "textId": "c69fe563f1",
+    "kind": "observation",
+    "answer": "Celia reproaches Thom of forgetting her on Earth (moment-49, 384000-392000). She expresses her heartbreak and even threatens to crush him (moment-49, 384000-392000).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "0cad3c24ab",
+    "kind": "observation",
+    "answer": "Celia does not explicitly reproach Thom for a specific action in the provided clips, but she expresses that she is having nightmares about being chased by his giant robotic claws (moment-5, 40000-48000).",
+    "citations": [
+     {
+      "id": "moment-5",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ]
+   },
+   {
+    "textId": "9a634277e9",
+    "kind": "observation",
+    "answer": "Celia does not explicitly reproach Thom with a specific accusation in the provided footage, but she expresses being freaked out by his robot hand (moment-5, 32000-40000). She also mentions having nightmares about being chased by his giant robotic claws (moment-6, 40000-48000).",
+    "citations": [
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ]
+   },
+   {
+    "textId": "e5a707b6fa",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre (moment-49, 384000-392000).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "47872b9141",
+    "kind": "observation",
+    "answer": "Celia does not explicitly reproach Thom for a specific action in the provided clips, but she expresses that she is freaked out by his robot hand (moment-5, 32000-40000). Thom also asks her to admit that she is frightened by it (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   },
+   {
+    "textId": "574694cc5d",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom d'être effrayé par sa main robotique (moment-44, 344000-352000). Elle mentionne également faire des cauchemars où elle est poursuivie par de grandes griffes robotiques (moment-5, 32000-40000 ; moment-6, 40000-48000).",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ]
+   },
+   {
+    "textId": "ce46048dee",
+    "kind": "observation",
+    "answer": "Celia does not directly reproach Thom in the provided footage. However, Thom suggests that she is freaked out by his robotic hand (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "8dced70309",
+    "kind": "observation",
+    "answer": "L'état le plus récent annoncé est que l'écrasement de la mémoire est terminé (Memory override complete!). Cette information est rapportée par un scientifique devant un écran de données (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "49d057a363",
+    "kind": "observation",
+    "answer": "The latest announced state is that the memory override is complete (moment-68, 536000-544000). This follows a previous mention of the process being in progress (moment-38, 296000-304000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-38",
+      "startMs": 296000,
+      "endMs": 304000
+     }
+    ]
+   },
+   {
+    "textId": "e6263e9830",
+    "kind": "observation",
+    "answer": "L'état le plus récent annoncé est que l'écrasement de la mémoire est terminé (moment-68, 536000-544000). Auparavant, un processus d'écrasement était en cours (moment-38, 296000-304000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-38",
+      "startMs": 296000,
+      "endMs": 304000
+     }
+    ]
+   },
+   {
+    "textId": "7197412c8b",
+    "kind": "observation",
+    "answer": "L'écrasement de la mémoire est annoncé comme étant terminé (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "2b69a3443f",
+    "kind": "observation",
+    "answer": "L'annonce la plus récente indique que l'écrasement de la mémoire est terminé (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "3af400eede",
+    "kind": "observation",
+    "answer": "The latest announced state is that the memory override is complete (moment-68, 536000-544000). This follows an earlier mention of a memory override being in progress (moment-38, 296000-304000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-38",
+      "startMs": 296000,
+      "endMs": 304000
+     }
+    ]
+   },
+   {
+    "textId": "b7f8579817",
+    "kind": "observation",
+    "answer": "The memory override is announced as complete (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "85551f2620",
+    "kind": "observation",
+    "answer": "L'écrasement de la mémoire est annoncé comme étant terminé. Cette information est rapportée par une voix alors qu'un scientifique observe des données sur un écran (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

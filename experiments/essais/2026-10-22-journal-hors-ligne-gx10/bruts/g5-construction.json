@@ -1,0 +1,538 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "olderBlocks": 0,
+  "recent": [
+   "moment-1",
+   "moment-2",
+   "moment-3"
+  ],
+  "journalBPassages": 0,
+  "journalCPassages": 0,
+  "journalDPassages": 0,
+  "journalBChars": 0,
+  "journalCChars": 0,
+  "journalDChars": 0
+ },
+ {
+  "questionId": "kennedy-03",
+  "olderBlocks": 9,
+  "recent": [
+   "moment-10",
+   "moment-11",
+   "moment-12",
+   "moment-13",
+   "moment-14",
+   "moment-15"
+  ],
+  "journalBPassages": 9,
+  "journalCPassages": 1,
+  "journalDPassages": 9,
+  "journalBChars": 1187,
+  "journalCChars": 668,
+  "journalDChars": 1187
+ },
+ {
+  "questionId": "kennedy-05",
+  "olderBlocks": 20,
+  "recent": [
+   "moment-21",
+   "moment-22",
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26"
+  ],
+  "journalBPassages": 20,
+  "journalCPassages": 1,
+  "journalDPassages": 20,
+  "journalBChars": 2105,
+  "journalCChars": 668,
+  "journalDChars": 2105
+ },
+ {
+  "questionId": "kennedy-06",
+  "olderBlocks": 27,
+  "recent": [
+   "moment-28",
+   "moment-29",
+   "moment-30",
+   "moment-31",
+   "moment-32",
+   "moment-33"
+  ],
+  "journalBPassages": 27,
+  "journalCPassages": 1,
+  "journalDPassages": 27,
+  "journalBChars": 2794,
+  "journalCChars": 668,
+  "journalDChars": 2794
+ },
+ {
+  "questionId": "kennedy-08",
+  "olderBlocks": 38,
+  "recent": [
+   "moment-39",
+   "moment-40",
+   "moment-41",
+   "moment-42",
+   "moment-43",
+   "moment-44"
+  ],
+  "journalBPassages": 38,
+  "journalCPassages": 1,
+  "journalDPassages": 31,
+  "journalBChars": 3586,
+  "journalCChars": 668,
+  "journalDChars": 2998
+ },
+ {
+  "questionId": "spring-01",
+  "olderBlocks": 2,
+  "recent": [
+   "moment-3",
+   "moment-4",
+   "moment-5",
+   "moment-6",
+   "moment-7",
+   "moment-8"
+  ],
+  "journalBPassages": 2,
+  "journalCPassages": 2,
+  "journalDPassages": 2,
+  "journalBChars": 489,
+  "journalCChars": 531,
+  "journalDChars": 489
+ },
+ {
+  "questionId": "spring-02",
+  "olderBlocks": 17,
+  "recent": [
+   "moment-18",
+   "moment-19",
+   "moment-20",
+   "moment-21",
+   "moment-22",
+   "moment-23"
+  ],
+  "journalBPassages": 17,
+  "journalCPassages": 13,
+  "journalDPassages": 17,
+  "journalBChars": 2589,
+  "journalCChars": 2806,
+  "journalDChars": 2589
+ },
+ {
+  "questionId": "spring-03",
+  "olderBlocks": 21,
+  "recent": [
+   "moment-22",
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26",
+   "moment-27"
+  ],
+  "journalBPassages": 21,
+  "journalCPassages": 13,
+  "journalDPassages": 21,
+  "journalBChars": 2670,
+  "journalCChars": 2864,
+  "journalDChars": 2670
+ },
+ {
+  "questionId": "spring-04",
+  "olderBlocks": 26,
+  "recent": [
+   "moment-27",
+   "moment-28",
+   "moment-29",
+   "moment-30",
+   "moment-31",
+   "moment-32"
+  ],
+  "journalBPassages": 26,
+  "journalCPassages": 13,
+  "journalDPassages": 26,
+  "journalBChars": 2773,
+  "journalCChars": 2918,
+  "journalDChars": 2773
+ },
+ {
+  "questionId": "spring-06",
+  "olderBlocks": 40,
+  "recent": [
+   "moment-41",
+   "moment-42",
+   "moment-43",
+   "moment-44",
+   "moment-45",
+   "moment-46"
+  ],
+  "journalBPassages": 40,
+  "journalCPassages": 18,
+  "journalDPassages": 19,
+  "journalBChars": 3989,
+  "journalCChars": 4173,
+  "journalDChars": 2861
+ },
+ {
+  "questionId": "cnrs-01",
+  "olderBlocks": 5,
+  "recent": [
+   "moment-10",
+   "moment-11",
+   "moment-6",
+   "moment-7",
+   "moment-8",
+   "moment-9"
+  ],
+  "journalBPassages": 5,
+  "journalCPassages": 1,
+  "journalDPassages": 5,
+  "journalBChars": 1174,
+  "journalCChars": 730,
+  "journalDChars": 1174
+ },
+ {
+  "questionId": "cnrs-02",
+  "olderBlocks": 22,
+  "recent": [
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26",
+   "moment-27",
+   "moment-28"
+  ],
+  "journalBPassages": 22,
+  "journalCPassages": 5,
+  "journalDPassages": 16,
+  "journalBChars": 4581,
+  "journalCChars": 2331,
+  "journalDChars": 2979
+ },
+ {
+  "questionId": "cnrs-04",
+  "olderBlocks": 52,
+  "recent": [
+   "moment-53",
+   "moment-54",
+   "moment-55",
+   "moment-56",
+   "moment-57",
+   "moment-58"
+  ],
+  "journalBPassages": 45,
+  "journalCPassages": 20,
+  "journalDPassages": 16,
+  "journalBChars": 9636,
+  "journalCChars": 8719,
+  "journalDChars": 2982
+ },
+ {
+  "questionId": "cnrs-05",
+  "olderBlocks": 74,
+  "recent": [
+   "moment-75",
+   "moment-76",
+   "moment-77",
+   "moment-78",
+   "moment-79",
+   "moment-80"
+  ],
+  "journalBPassages": 40,
+  "journalCPassages": 22,
+  "journalDPassages": 11,
+  "journalBChars": 9656,
+  "journalCChars": 9983,
+  "journalDChars": 2982
+ },
+ {
+  "questionId": "cnrs-06",
+  "olderBlocks": 92,
+  "recent": [
+   "moment-93",
+   "moment-94",
+   "moment-95",
+   "moment-96",
+   "moment-97",
+   "moment-98"
+  ],
+  "journalBPassages": 42,
+  "journalCPassages": 21,
+  "journalDPassages": 12,
+  "journalBChars": 9892,
+  "journalCChars": 9757,
+  "journalDChars": 2959
+ },
+ {
+  "questionId": "cuisine-02",
+  "olderBlocks": 18,
+  "recent": [
+   "moment-19",
+   "moment-20",
+   "moment-21",
+   "moment-22",
+   "moment-23",
+   "moment-24"
+  ],
+  "journalBPassages": 18,
+  "journalCPassages": 5,
+  "journalDPassages": 18,
+  "journalBChars": 2222,
+  "journalCChars": 1782,
+  "journalDChars": 2222
+ },
+ {
+  "questionId": "cuisine-03",
+  "olderBlocks": 24,
+  "recent": [
+   "moment-25",
+   "moment-26",
+   "moment-27",
+   "moment-28",
+   "moment-29",
+   "moment-30"
+  ],
+  "journalBPassages": 24,
+  "journalCPassages": 5,
+  "journalDPassages": 24,
+  "journalBChars": 2647,
+  "journalCChars": 1782,
+  "journalDChars": 2647
+ },
+ {
+  "questionId": "cuisine-05",
+  "olderBlocks": 50,
+  "recent": [
+   "moment-51",
+   "moment-52",
+   "moment-53",
+   "moment-54",
+   "moment-55",
+   "moment-56"
+  ],
+  "journalBPassages": 50,
+  "journalCPassages": 7,
+  "journalDPassages": 25,
+  "journalBChars": 5066,
+  "journalCChars": 2342,
+  "journalDChars": 2972
+ },
+ {
+  "questionId": "cuisine-06",
+  "olderBlocks": 62,
+  "recent": [
+   "moment-63",
+   "moment-64",
+   "moment-65",
+   "moment-66",
+   "moment-67",
+   "moment-68"
+  ],
+  "journalBPassages": 62,
+  "journalCPassages": 9,
+  "journalDPassages": 26,
+  "journalBChars": 6129,
+  "journalCChars": 3272,
+  "journalDChars": 2976
+ },
+ {
+  "questionId": "cuisine-07",
+  "olderBlocks": 75,
+  "recent": [
+   "moment-76",
+   "moment-77",
+   "moment-78",
+   "moment-79",
+   "moment-80",
+   "moment-81"
+  ],
+  "journalBPassages": 75,
+  "journalCPassages": 9,
+  "journalDPassages": 28,
+  "journalBChars": 7158,
+  "journalCChars": 3447,
+  "journalDChars": 2993
+ },
+ {
+  "questionId": "tears-01",
+  "olderBlocks": 0,
+  "recent": [
+   "moment-1",
+   "moment-2",
+   "moment-3",
+   "moment-4",
+   "moment-5"
+  ],
+  "journalBPassages": 0,
+  "journalCPassages": 0,
+  "journalDPassages": 0,
+  "journalBChars": 0,
+  "journalCChars": 0,
+  "journalDChars": 0
+ },
+ {
+  "questionId": "tears-03",
+  "olderBlocks": 20,
+  "recent": [
+   "moment-21",
+   "moment-22",
+   "moment-23",
+   "moment-24",
+   "moment-25",
+   "moment-26"
+  ],
+  "journalBPassages": 20,
+  "journalCPassages": 6,
+  "journalDPassages": 20,
+  "journalBChars": 1868,
+  "journalCChars": 1822,
+  "journalDChars": 1868
+ },
+ {
+  "questionId": "tears-04",
+  "olderBlocks": 26,
+  "recent": [
+   "moment-27",
+   "moment-28",
+   "moment-29",
+   "moment-30",
+   "moment-31",
+   "moment-32"
+  ],
+  "journalBPassages": 26,
+  "journalCPassages": 6,
+  "journalDPassages": 26,
+  "journalBChars": 2082,
+  "journalCChars": 2022,
+  "journalDChars": 2082
+ },
+ {
+  "questionId": "tears-06",
+  "olderBlocks": 44,
+  "recent": [
+   "moment-45",
+   "moment-46",
+   "moment-47",
+   "moment-48",
+   "moment-49",
+   "moment-50"
+  ],
+  "journalBPassages": 44,
+  "journalCPassages": 10,
+  "journalDPassages": 30,
+  "journalBChars": 3448,
+  "journalCChars": 3207,
+  "journalDChars": 2960
+ },
+ {
+  "questionId": "tears-07",
+  "olderBlocks": 62,
+  "recent": [
+   "moment-63",
+   "moment-64",
+   "moment-65",
+   "moment-66",
+   "moment-67",
+   "moment-68"
+  ],
+  "journalBPassages": 62,
+  "journalCPassages": 12,
+  "journalDPassages": 40,
+  "journalBChars": 4486,
+  "journalCChars": 4152,
+  "journalDChars": 2988
+ },
+ {
+  "questionId": "artemis-01",
+  "olderBlocks": 114,
+  "recent": [
+   "moment-115",
+   "moment-116",
+   "moment-117",
+   "moment-118",
+   "moment-119",
+   "moment-120"
+  ],
+  "journalBPassages": 63,
+  "journalCPassages": 28,
+  "journalDPassages": 17,
+  "journalBChars": 9969,
+  "journalCChars": 9992,
+  "journalDChars": 2714
+ },
+ {
+  "questionId": "artemis-02",
+  "olderBlocks": 149,
+  "recent": [
+   "moment-150",
+   "moment-151",
+   "moment-152",
+   "moment-153",
+   "moment-154",
+   "moment-155"
+  ],
+  "journalBPassages": 61,
+  "journalCPassages": 28,
+  "journalDPassages": 20,
+  "journalBChars": 9949,
+  "journalCChars": 9848,
+  "journalDChars": 2956
+ },
+ {
+  "questionId": "artemis-04",
+  "olderBlocks": 201,
+  "recent": [
+   "moment-202",
+   "moment-203",
+   "moment-204",
+   "moment-205",
+   "moment-206",
+   "moment-207"
+  ],
+  "journalBPassages": 54,
+  "journalCPassages": 27,
+  "journalDPassages": 17,
+  "journalBChars": 9928,
+  "journalCChars": 9698,
+  "journalDChars": 2882
+ },
+ {
+  "questionId": "artemis-05",
+  "olderBlocks": 217,
+  "recent": [
+   "moment-218",
+   "moment-219",
+   "moment-220",
+   "moment-221",
+   "moment-222",
+   "moment-223"
+  ],
+  "journalBPassages": 57,
+  "journalCPassages": 28,
+  "journalDPassages": 17,
+  "journalBChars": 9955,
+  "journalCChars": 9874,
+  "journalDChars": 2855
+ },
+ {
+  "questionId": "artemis-07",
+  "olderBlocks": 255,
+  "recent": [
+   "moment-256",
+   "moment-257",
+   "moment-258",
+   "moment-259",
+   "moment-260",
+   "moment-261"
+  ],
+  "journalBPassages": 53,
+  "journalCPassages": 31,
+  "journalDPassages": 16,
+  "journalBChars": 9998,
+  "journalCChars": 9871,
+  "journalDChars": 2928
+ }
+]

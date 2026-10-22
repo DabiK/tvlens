@@ -1,0 +1,687 @@
+[
+ {
+  "questionId": "spring-01",
+  "answers": [
+   {
+    "textId": "ae81b11235",
+    "kind": "observation",
+    "answer": "Au début de la vidéo, la jeune fille semble être seule avec un petit chien. Aucun autre personnage n'est visible lorsqu'elle s'approche de l'animal (moment-7, 48000-56000).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "92557a019d",
+    "kind": "observation",
+    "answer": "Les passages observés montrent une jeune fille en rouge s'approchant d'un petit chien (moment-7, 48000-56000), mais aucun autre personnage n'est visible pour l'accompagner.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "a255ad3198",
+    "kind": "observation",
+    "answer": "Au début de la vidéo, la jeune fille est seule et s'approche d'un petit chien (moment-7, 48000-56000). Aucun autre personnage n'est visible à ses côtés dans les passages analysés.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "300b4f845b",
+    "kind": "observation",
+    "answer": "Les passages disponibles ne montrent personne d'autre que la jeune fille s'approchant du chien (moment-7, 48000-56000 ms). Il n'est pas possible de dire qui l'accompagne.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "63b4347dcb",
+    "kind": "observation",
+    "answer": "Au début de la vidéo, une jeune fille vêtue de rouge s'approche d'un petit chien (moment-7, 48000-56000). Aucun autre personnage n'est visible pour l'accompagner dans ces premières scènes (moment-7, 48000-56000 ; moment-8, 56000-64000).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "c8255d3ca6",
+    "kind": "observation",
+    "answer": "Au début de la vidéo, on voit une jeune fille en rouge s'approcher d'un petit chien (moment-7, 48000-56000). Aucun autre personnage n'est visible pour l'accompagner dans ces séquences.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "5e8e93950a",
+    "kind": "observation",
+    "answer": "Les passages disponibles ne montrent personne d'autre que la jeune fille s'approchant du chien (moment-7, 48000-56000). Il n'est pas possible de dire qui l'accompagne.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   },
+   {
+    "textId": "a882165d72",
+    "kind": "observation",
+    "answer": "Les passages analysés ne montrent personne d'autre que la jeune fille s'approchant du chien (moment-7, 48000-56000 ms). Il n'est pas possible de dire qui l'accompagne au début de la vidéo.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "answers": [
+   {
+    "textId": "400f3f3f75",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-13, 136000-144000 ; moment-14, 104000-112000). Elle est également vue avec cet objet dans un environnement brumeux (moment-20, 152000-160000).",
+    "citations": []
+   },
+   {
+    "textId": "c60104b7b7",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton lorsqu'elle se trouve dans la forêt (moment-10, moment-13, moment-14, moment-18, moment-19, moment-20).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "f1dd6f0525",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-18, 136000-144000). Elle semble l'utiliser alors qu'elle observe son environnement avec inquiétude (moment-19, 144000-152000).",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   },
+   {
+    "textId": "a6fa18aa2a",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt [moment-18, 136000-144000]. Elle est également vue avec ce bâton dans un environnement sombre et brumeux [moment-19, 144000-152000] et portant une robe rouge [moment-20, 152000-160000].",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "c839aae21c",
+    "kind": "observation",
+    "answer": "Dans la forêt, la jeune fille tient un bâton (moment-10, moment-13, moment-14, moment-18, moment-19, moment-20).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "63857b5f6e",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-13, 136000-144000). Elle est également vue avec cet objet dans d'autres passages de la séquence (moment-14, 104000-112000 ; moment-20, 152000-160000).",
+    "citations": []
+   },
+   {
+    "textId": "4729bc39d6",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-10, moment-13, moment-14, moment-18, moment-19, moment-20).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "answers": [
+   {
+    "textId": "d4dbd8da2e",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est bleue (moment-23, 176000-184000). Cette masse est décrite comme étant bleue et lumineuse, flottant dans l'eau sombre.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "58292a503e",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est de couleur bleue (moment-23, 176000-184000). L'ensemble de la scène est baigné d'une lumière bleue et sombre (moment-24, 184000-192000).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "6d29cd6dd7",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est de couleur bleue (moment-23, 176000-184000). Cette masse est décrite comme étant bleue et lumineuse (moment-23, 176000-184000).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "c619438762",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est de couleur bleue (moment-23, 176000-184000). Cette masse est décrite comme étant bleue et lumineuse.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "f76bacc1f2",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est de couleur bleue (moment-23, 176000-184000). Cette structure est décrite comme étant bleue et lumineuse, flottant dans l'eau sombre.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "7cca375352",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est de couleur bleue (moment-23, 176000-184000). Cette masse est décrite comme étant bleue et lumineuse, flottant dans l'eau sombre.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "answers": [
+   {
+    "textId": "6870abec2a",
+    "kind": "observation",
+    "answer": "Le haut du bâton émet une lumière vive ou chaude (moment-30, 232000-240000 ; moment-32, 248000-256000). Il sert d'instrument lumineux pour éclairer le chemin dans la forêt sombre (moment-32, 248000-256000).",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 232000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "dfb484d996",
+    "kind": "observation",
+    "answer": "Le haut du bâton émet une lumière vive et chaude qui illumine le chemin devant la jeune fille (moment-30, 230000-240000 ; moment-32, 248000-256000).",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 230000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "ce03e337b8",
+    "kind": "observation",
+    "answer": "Le bâton émet désormais une lumière vive et chaude (moment-30, 232000-240000 ; moment-32, 248000-256000). Il sert d'instrument lumineux pour éclairer le chemin de la jeune fille dans la forêt brumeuse.",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 232000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "1e0389b9b3",
+    "kind": "observation",
+    "answer": "Le haut du bâton émet une lumière chaude (moment-30, 230000-240000). Plus tard, il est décrit comme un bâton lumineux qui illumine le chemin (moment-32, 248000-256000).",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 230000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "c66edf526b",
+    "kind": "observation",
+    "answer": "Le haut du bâton émet une lumière vive ou chaude (moment-30, 232000-240000 ; moment-32, 248000-256000). Cet objet lumineux sert à éclairer le chemin de la jeune fille dans la forêt sombre (moment-32, 248000-256000).",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 232000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "2d256dc448",
+    "kind": "observation",
+    "answer": "Le haut du bâton émet une lumière vive et chaude (moment-30, 230000-240000 ; moment-32, 248000-256000). Il sert à éclairer le chemin de la jeune fille dans la forêt brumeuse (moment-32, 248000-256000).",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 230000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "a52825dbb5",
+    "kind": "observation",
+    "answer": "Le bâton émet désormais une lumière vive et chaude (moment-32, 248000-256000). Il sert à éclairer le chemin devant la jeune fille alors qu'elle avance dans la forêt brumeuse.",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "answers": [
+   {
+    "textId": "c851c9da5f",
+    "kind": "observation",
+    "answer": "Le paysage évolue d'un environnement de forêt sombre et brumeuse (moment-13, 96000-104000) vers des vues plus vastes et dégagées, comme un lac montagneux sous les nuages (moment-43, 336000-344000). On observe également une transition vers une prairie verdoyante entourée de montagnes enneigées (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   },
+   {
+    "textId": "d20a00e40e",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement de montagnes enneigées et de lacs clairs au début (moment-4, 24000-32000) à des décors beaucoup plus sombres et brumeux (moment-36, 280000-288000). On observe également l'apparition d'éléments fantastiques, comme une forêt humide (moment-32, 248000-256000) puis une créature marine massive (moment-42, 328000-336000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-36",
+      "startMs": 280000,
+      "endMs": 288000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     }
+    ]
+   },
+   {
+    "textId": "0d7aac819a",
+    "kind": "observation",
+    "answer": "Le paysage évolue d'un environnement sombre et brumeux avec une main géante (moment-41, 320000-328000) vers une vue aérienne de montagnes enneigées et d'un lac (moment-43, 336000-344000). On observe ensuite une transition vers une prairie verdoyante (moment-44, 344000-352000) avant une scène de colline sous un ciel nuageux (moment-45, 352000-360000).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ]
+   },
+   {
+    "textId": "ee26c7d3f8",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement de montagnes enneigées et de lacs bleus (moment-4, 24000-32000) à des zones de forêts sombres, brumeuses et humides (moment-13, 96000-104000). À la fin de la séquence, on observe également des vues aériennes de lacs montagneux sous des nuages épais (moment-43, 336000-344000) et une prairie verdoyante (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   },
+   {
+    "textId": "0bc917d7f9",
+    "kind": "observation",
+    "answer": "Le paysage évolue d'un environnement sombre et organique avec des structures squelettiques (moment-1, 0-8000) vers des scènes de montagnes enneigées et de lacs (moment-4, 24000-32000). Plus tard, l'environnement devient une forêt brumeuse et sombre (moment-13, 96000-104000) avant de montrer des plaines verdoyantes entourées de montagnes (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     },
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   },
+   {
+    "textId": "eb787ecdf9",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement de montagnes enneigées et de lacs clairs (moment-4, 24000-32000) à une forêt sombre, humide et brumeuse (moment-32, 248000-256000). On observe également l'apparition d'éléments fantastiques comme une main géante (moment-38, 296000-304000) et un vaisseau métallique flottant au-dessus des nuages (moment-43, 336000-344000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-38",
+      "startMs": 296000,
+      "endMs": 304000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "4307ea31cc",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement de montagnes enneigées et de lacs bleus (moment-4, 24000-32000) à des zones de forêts sombres, brumeuses et humides (moment-13, 96000-104000). À la fin, on observe également des éléments de science-fiction, comme un vaisseau métallique flottant au-dessus des nuages (moment-43, 336000-344000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "acb3c6b5aa",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement sombre et brumeux avec une créature marine (moment-42, 320000-336000) à une vue aérienne de montagnes enneigées et d'un lac (moment-43, 336000-344000). Il évolue ensuite vers une prairie verdoyante entourée de montagnes (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 320000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   }
+  ]
+ }
+]
