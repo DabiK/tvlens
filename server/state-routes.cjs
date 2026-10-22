@@ -1,5 +1,10 @@
-function createStateRoutes({ runtime }) {
+function createStateRoutes({ runtime, build = null, nodeVersion }) {
   return [
+    {
+      method: "GET",
+      path: "/v1/version",
+      handler: ({ send }) => send(200, { build, node: nodeVersion }),
+    },
     {
       method: "GET",
       path: "/v1/session",

@@ -1,0 +1,31 @@
+✔ CI refuses a relaxed or removed baseline and increased or new lint suppressions (2.384958ms)
+✔ CI accepts an unchanged or tightened quality policy (0.531875ms)
+✔ a green partial or skipped check is not a complete CI check (0.187375ms)
+✖ CI compares a committed relaxation with its base even when the checkout is clean (184.945417ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 213.620834
+
+✖ failing tests:
+
+test at tests/ci-policy.test.cjs:53:1
+✖ CI compares a committed relaxation with its base even when the checkout is clean (184.945417ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /scripts\/new.mjs/. Input:
+  
+  ''
+  
+      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/ci-policy.test.cjs:80:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '',
+    expected: /scripts\/new.mjs/,
+    operator: 'match',
+    diff: 'simple'
+  }

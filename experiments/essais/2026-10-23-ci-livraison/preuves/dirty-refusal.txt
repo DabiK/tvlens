@@ -1,0 +1,1 @@
+PASS : la construction CI refuse le dépôt modifié avant tout empaquetage.

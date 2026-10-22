@@ -25,6 +25,7 @@ const {ViewingSettings}=require('../adapters/viewing-settings.cjs');
 const {CodexQuota}=require('../adapters/codex-quota.cjs');
 const { app, BrowserWindow, globalShortcut, desktopCapturer, ipcMain, session, systemPreferences, shell, protocol, dialog, safeStorage, screen } = require('electron');
 const path = require('node:path');
+const { readBuildInfo } = require('../adapters/build-info.cjs');
 const { randomUUID } = require('node:crypto');
 const { SessionLibrary, sessionTitle } = require('../adapters/session-library.cjs');
 const { DiskGuard } = require('../adapters/disk-guard.cjs');
@@ -77,6 +78,7 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'tvlens-media', privileges: { st
 if (!app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { window?.show(); window?.focus(); });
 app.whenReady().then(async () => {
+  const build = await readBuildInfo(path.join(__dirname, '..'));
   sessionsRoot = path.join(app.getPath('userData'), 'sessions');
   // A crash leaves private Codex trees behind, each holding links to the credentials. Swept once, off the
   // start path: it neither delays nor fails the launch. Saved sessions are never cleaned at start any more.
@@ -279,7 +281,7 @@ app.whenReady().then(async () => {
   const segmentMs = smoke && !process.argv.includes('--live-observation') ? 1800 : 8000;
   // The ceiling really enforced and the retention really applied: the renderer derives its texts from them.
   const configuration = () => ({ hasKey:Boolean(config.apiKey),canObserve:Boolean(codexBinary)||smoke, model: config.model, codexModel:selectedModels.codexModel, audioInput: Boolean(config.audioInput) || smoke, verificationAvailable: Boolean(codexBinary) || smoke, segmentMs,
-    transcription: (loaded?.runtime.transcriber || transcriber).availability(),
+    build, transcription: (loaded?.runtime.transcriber || transcriber).availability(),
     questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: 'until-deleted', retentionMs: null });
   handle('app:config', configuration);
   handle('models:get', () => selectedModels);

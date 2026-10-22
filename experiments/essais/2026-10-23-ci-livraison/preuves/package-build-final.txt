@@ -1,0 +1,6 @@
+
+> tvlens@0.1.0 package:mac
+> node scripts/package.mjs --out dist/ci-validation
+
+Packaging app for platform darwin arm64 using electron v44.4.5
+Paquet Mac construit : /Users/Dabi/Documents/ISN/tvlens/dist/ci-validation/TVLens-darwin-arm64

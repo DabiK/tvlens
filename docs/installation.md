@@ -57,8 +57,11 @@ peuvent être sauvegardés chiffrés avec le stockage macOS. Aucun secret n'est 
 
 ## App macOS et permissions
 
+La [CI et construction Mac](ci-delivery.md) décrit les contrôles du paquet, le ZIP de validation téléchargeable et ses limites. La distribution avec signature Apple et installation guidée reste à réaliser.
+
 ```sh
 npm run package:mac
+npm run verify:mac -- dist/TVLens-darwin-arm64/TVLens.app
 npm run open:mac
 ```
 

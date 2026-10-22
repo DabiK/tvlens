@@ -1,0 +1,27 @@
+✔ the archive verifier reads construction and verifies every shipped source byte (35.215708ms)
+✔ the archive verifier refuses leaked files, dev dependencies, missing assets, drift and stale identity (47.96675ms)
+✖ the archive verifier refuses stray files next to unpacked native modules (9.780167ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 121.498458
+
+✖ failing tests:
+
+test at tests/package-verification.test.cjs:56:1
+✖ the archive verifier refuses stray files next to unpacked native modules (9.780167ms)
+  AssertionError [ERR_ASSERTION]: Missing expected rejection.
+      at async TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/package-verification.test.cjs:61:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /décompressés/,
+    operator: 'rejects',
+    diff: 'simple'
+  }

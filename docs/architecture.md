@@ -265,6 +265,9 @@ de ses modules, elle conserve verrou, lancement et compteurs en rechargeant le c
 
 ## Décisions
 
+- [ADR 0066](adr/0066-la-livraison-controle-le-paquet-et-son-identite.md) :
+  La CI compare les règles avec sa base Git et vérifie un paquet Mac limité aux sources utiles, avec une identité générée à la construction.
+
 Chaque entrée renvoie au texte daté de la décision. Les statuts et preuves historiques de ces ADR
 restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cible de l’état livré.
 

@@ -1,0 +1,36 @@
+✖ simulated surveillance reads visual evidence even when speech is present (1.284291ms)
+✔ the same simulated quote in speech and vision is proposed only once (0.400959ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 29.594167
+
+✖ failing tests:
+
+test at tests/simulated-surveillance.test.cjs:6:1
+✖ simulated surveillance reads visual evidence even when speech is present (1.284291ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   [
+  -     'signal',
+  -     '2 images reçues.'
+  -   ]
+  - ]
+  
+      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/simulated-surveillance.test.cjs:13:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ [ 'signal', '2 images reçues.' ] ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

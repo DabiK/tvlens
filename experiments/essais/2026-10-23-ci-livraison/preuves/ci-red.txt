@@ -1,0 +1,44 @@
+✖ CI refuses a relaxed or removed baseline and increased or new lint suppressions (1.44225ms)
+✔ CI accepts an unchanged or tightened quality policy (0.273375ms)
+✖ a green partial or skipped check is not a complete CI check (3.066416ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 32.052791
+
+✖ failing tests:
+
+test at tests/ci-policy.test.cjs:7:1
+✖ CI refuses a relaxed or removed baseline and increased or new lint suppressions (1.44225ms)
+  AssertionError [ERR_ASSERTION]: {"baseline":{"lignes_longues_prod":3,"cas_de_test_produit":10},"suppressions":{"app/main.cjs":{"complexity":{"count":1}}}}
+      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/ci-policy.test.cjs:19:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/ci-policy.test.cjs:38:1
+✖ a green partial or skipped check is not a complete CI check (3.066416ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(validateFullCheck(report).length)
+  
+      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/ci-policy.test.cjs:49:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

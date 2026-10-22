@@ -28,6 +28,8 @@ function spans(text) {
   return tidy(text).split(/(?<=[.!?…])\s+/).map(s => (s.length <= 240 ? s : s.slice(0, 240).replace(/\s+\S*$/, ''))).filter(s => s.replace(/[^\p{L}\p{N}]+/gu, ' ').trim().length >= 8);
 }
 const lowerFirst = text => text.charAt(0).toLowerCase() + text.slice(1);
+// Speech does not replace what is visible; each quote stays within its original field.
+const passageQuotes = passage => [...new Set([passage.transcript, passage.visual].flatMap(text => spans(text || '')))];
 const hash = text => [...String(text)].reduce((sum, char) => (sum * 31 + char.codePointAt(0)) % 9973, 7);
 
 class SimulatedSurveillanceAgent {
@@ -47,7 +49,7 @@ class SimulatedSurveillanceAgent {
     const goal = fold(instruction), signalMode = SIGNAL_INTENT.test(goal) && !VERIFY_INTENT.test(goal);
     const topics = (goal.match(/[a-z]{4,}/g) || []).filter(word => !STOP_WORDS.has(word));
     const claims = [];
-    for (const passage of passages) for (const quote of spans(passage.transcript || passage.visual || '')) {
+    for (const passage of passages) for (const quote of passageQuotes(passage)) {
       const flat = fold(quote);
       let item = null;
       if (signalMode) {

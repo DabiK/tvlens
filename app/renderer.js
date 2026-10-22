@@ -1,4 +1,5 @@
 import { createRendererWiring } from './ui/renderer-wiring.mjs';
+import { buildLabel } from './ui/build-info.mjs';
 import { element as el, formatTime, action } from './ui/format.js';
 import { ViewingShell } from './ui/shell.js';
 import { createBrowserCaptureController } from './ui/browser-capture.mjs';
@@ -71,6 +72,7 @@ function sourcesNotice(text) {
 }
 function setConfig(value) {
   configuration = value;
+  $('build-info').textContent = buildLabel(value.build);
   wiring.receiveTranscription(value.transcription);
   $('provider').textContent = `Codex ${value.canObserve ? 'prêt' : 'indisponible'} · ${value.model.split('/').at(-1)}`;
   $('cloud-note').textContent = 'Images et transcription envoyées à Codex · audio transcrit sur ce Mac.';

@@ -27,7 +27,11 @@
     "format:check": "prettier --check .",
     "loop": "node scripts/loop/run.mjs",
     "loop:web": "node scripts/loop-web.mjs",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "ci:check": "node scripts/ci-check.mjs",
+    "build:info": "node scripts/build-info.mjs",
+    "verify:mac": "node scripts/verify-package.mjs",
+    "test:electron:identity": "node scripts/smoke-build-info.mjs"
   },
   "devDependencies": {
     "@electron/packager": "^20.3.0",
@@ -36,11 +40,15 @@
     "eslint": "9.39.5",
     "globals": "14.0.0",
     "playwright-core": "^1.63.0",
-    "prettier": "3.8.1"
+    "prettier": "3.8.1",
+    "@electron/asar": "4.3.1"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.31.0",
     "sharp": "^0.35.5",
     "zod": "^3.25.76"
+  },
+  "engines": {
+    "node": ">=24"
   }
 }

@@ -199,7 +199,7 @@ function sendError(error, res, send, reportError) {
 }
 
 class RemoteServer {
-  constructor({ runtime, media, token, logError = () => {} }) {
+  constructor({ runtime, media, token, build = null, logError = () => {} }) {
     if (typeof token !== "string" || token.length < 32)
       throw Error("Device token required");
     Object.assign(this, { runtime, media, token, logError });
@@ -207,7 +207,7 @@ class RemoteServer {
     this.lastSequence = -1;
     this.epoch = runtime.captureEpoch;
     this.ingesting = false;
-    this.routes = createRoutes({ runtime, media, transport: this });
+    this.routes = createRoutes({ runtime, media, transport: this, build, nodeVersion: process.version });
     this.server = http.createServer((req, res) => this.handle(req, res));
     this.server.requestTimeout = REQUEST_TIMEOUT_MS;
     this.server.headersTimeout = HEADERS_TIMEOUT_MS;

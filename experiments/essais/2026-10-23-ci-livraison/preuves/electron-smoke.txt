@@ -1,0 +1,13 @@
+
+> tvlens@0.1.0 test:electron
+> node scripts/smoke-electron.mjs
+
+file:///Users/Dabi/Documents/ISN/tvlens/scripts/smoke-electron.mjs:676
+async function waitState(page,fn,arg){const end=Date.now()+stateTimeoutMs;while(Date.now()<end){if(await page.evaluate(fn,arg))return;await page.waitForTimeout(150);}throw Error('State timeout');}
+                                                                                                                                                                            ^
+
+Error: State timeout
+    at waitState (file:///Users/Dabi/Documents/ISN/tvlens/scripts/smoke-electron.mjs:676:173)
+    at async file:///Users/Dabi/Documents/ISN/tvlens/scripts/smoke-electron.mjs:342:3
+
+Node.js v24.12.0

@@ -46,3 +46,6 @@ device-token
 
 # État local de la boucle de tickets et des hooks (verdicts, rapports d'échec, journal d'événements).
 .harness-state/
+
+# Identité générée pour un lancement local ou un export serveur.
+/build-info.json

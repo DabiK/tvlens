@@ -1094,12 +1094,13 @@ test("HTTP refuses a future capture after admission and before acquiring or asse
   assert.deepEqual(f.events.map(([name]) => name), ["admit", "admit", "accept", "assemble", "ingest", "finish"]);
 });
 
-test("the composed table gives each of the 26 method and path pairs exactly one group owner", () => {
+test("the composed table gives each of the 27 method and path pairs exactly one group owner", () => {
   const f = ingestionFixture();
   const groups = [
     [
       createStateRoutes,
       [
+        ["GET", "/v1/version"],
         ["GET", "/v1/session"],
         ["GET", "/v1/state"],
         ["POST", "/v1/settings/transcription"],
@@ -1145,7 +1146,7 @@ test("the composed table gives each of the 26 method and path pairs exactly one 
     [createIngestRoutes, [["POST", "/v1/segments"]]],
   ];
   const table = createRoutes(f);
-  assert.equal(table.length, 26);
+  assert.equal(table.length, 27);
   const entries = groups.map(([factory]) => factory(f));
   for (const [owner, [, cases]] of groups.entries()) {
     for (const [method, path] of cases) {

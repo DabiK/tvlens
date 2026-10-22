@@ -10,6 +10,7 @@ L’inventaire porte sur les documents suivis par Git ; les brouillons locaux n�
 | --- | --- |
 | [Présentation](../README.md) | Expérience Mac/TV et présentation du projet |
 | [Installation Mac](installation.md) | Prérequis, configuration, autorisations et dépannage |
+| [CI et construction Mac](ci-delivery.md) | Contrôles, contenu du paquet, identité et artefacts téléchargeables |
 | [Interface](interface.md) | Direct, Mémoire, mode flottant et interactions |
 | [Installation LG](lg-installation.md) | Composants, appairage et parcours TV vers hôte |
 | [Installation serveur](server-installation.md) | Configuration Linux et service ; relevés historiques identifiés dans le guide |

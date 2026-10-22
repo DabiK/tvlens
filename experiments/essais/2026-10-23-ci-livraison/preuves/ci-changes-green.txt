@@ -1,0 +1,12 @@
+✔ CI refuses a relaxed or removed baseline and increased or new lint suppressions (2.511458ms)
+✔ CI accepts an unchanged or tightened quality policy (0.722833ms)
+✔ a green partial or skipped check is not a complete CI check (0.229209ms)
+✔ CI compares a committed relaxation with its base even when the checkout is clean (219.567333ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 252.415334

@@ -142,6 +142,8 @@ Le modèle base et la stratégie de décodage restent inchangés. Les métriques
 
 ## Mise à jour reproductible
 
+Pour identifier l’export, générer son `build-info.json` au moment de la construction : `npm run build:info -- --out /chemin/de/l-export`. Le JSON doit accompagner les sources à leur racine et être régénéré à chaque mise à jour. Le serveur le lit sans Git au démarrage et l’expose, avec sa version Node, sur `GET /v1/version`, authentifié par le jeton habituel. Sans fichier, `build` vaut `null` et le journal indique « Construction inconnue ». Voir [CI et construction Mac](ci-delivery.md) pour le schéma et les contrôles.
+
 Déployer une révision Git identifiée après validation. Avant de mettre à jour, arrêter manuellement la capture, sauvegarder la configuration privée et noter `git rev-parse HEAD`. Ne pas écraser des modifications non commitées sur l’hôte. Installer les dépendances correspondant au lockfile, redémarrer le service, puis vérifier l’état et une capture réelle. Un retour à une révision précédente ne restaure pas une session en mémoire.
 
 Les changements du serveur et ceux de `tv/app` se déploient séparément. Mettre à jour le panneau en préservant `connection.js`, puis le fermer et le rouvrir. L’installation Mac packagée doit également être reconstruite séparément.

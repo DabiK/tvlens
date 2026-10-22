@@ -1,4 +1,5 @@
 const { executable } = require('../adapters/system-paths.cjs');
+const { readBuildInfo } = require('../adapters/build-info.cjs');
 const { cleanupCodexContexts } = require('../runtime/codex-cleanup.cjs');
 const fs=require('node:fs/promises');const path=require('node:path');const os=require('node:os');const {randomBytes}=require('node:crypto');
 const {loadConfig}=require('../adapters/config.cjs');const {ModelSettings}=require('../adapters/model-settings.cjs');
@@ -19,6 +20,7 @@ function settings(env=process.env){
   disk:{minFreeBytes:megabytes('TVLENS_DISK_MIN_FREE_MB',1024),warnFreeBytes:megabytes('TVLENS_DISK_WARN_FREE_MB',2048)}};
 }
 async function main(){
+ const build = await readBuildInfo(path.join(__dirname, '..'));
  const host=settings();
  const root=path.resolve(process.env.TVLENS_SERVER_DATA||path.join(os.homedir(),'Documents','TVLens-private','server'));
  await fs.mkdir(root,{recursive:true,mode:0o700});
@@ -37,10 +39,11 @@ async function main(){
  const sessionsRoot=path.join(root,'sessions');
  const runtime=new HeadlessRuntime({userData:root,sessionsRoot,host:'server',guard:new DiskGuard({path:sessionsRoot,...host.disk}),config,transcriptionSettings,selectedModels,codexBinary:executable('codex', {override:process.env.TVLENS_CODEX_BINARY})});
  const server=await new RemoteServer({
-  runtime,media:new RemoteMedia({ffmpeg:config.ffmpeg}),token:token.trim(),
+  runtime,media:new RemoteMedia({ffmpeg:config.ffmpeg}),token:token.trim(),build,
   logError:entry=>console.error('Erreur HTTP inattendue.',entry),
  }).listen(Number(process.env.TVLENS_PORT||8787),process.env.TVLENS_BIND||'127.0.0.1');
  console.log('TVLens server '+server.url+' — device token stored in '+tokenFile);
+ console.log(build ? `Construction ${build.version} · ${build.commit}${build.dirty ? ' · modifiée' : ''}` : 'Construction inconnue');
  // Stopping archives the session in memory: its media, questions and surveillance registry stay on disk.
  let closing=false;const close=async()=>{if(closing)return;closing=true;await server.close();await runtime.close();process.exit(0);};
  process.on('SIGTERM',close);process.on('SIGINT',close);

@@ -1,0 +1,9 @@
+......................./Users/Dabi/Documents/ISN/tvlens/prototypes/lg-remote/test_panel.py:582: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tmpzsiwaovg/panel.lock' mode='w' encoding='UTF-8'>
+  panel.main()
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+...................
+----------------------------------------------------------------------
+Ran 42 tests in 0.087s
+
+OK
+running 123

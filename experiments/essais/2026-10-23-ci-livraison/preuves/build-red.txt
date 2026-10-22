@@ -1,0 +1,36 @@
+✖ build identity comes from package metadata and the commit, not the build clock (4.159708ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 30.67475
+
+✖ failing tests:
+
+test at tests/build-info.test.cjs:18:1
+✖ build identity comes from package metadata and the commit, not the build clock (4.159708ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + null
+  - {
+  -   commit: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  -   commitDate: '2026-10-23T10:00:00+02:00',
+  -   dirty: false,
+  -   name: 'tvlens',
+  -   version: '0.1.0'
+  - }
+  
+      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/build-info.test.cjs:24:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: { name: 'tvlens', version: '0.1.0', commit: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', commitDate: '2026-10-23T10:00:00+02:00', dirty: false },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
