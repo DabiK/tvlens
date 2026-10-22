@@ -46,6 +46,15 @@ module.exports = {};
  */
 
 /**
+ * @typedef {{url:string,title:string,text:string,publisher?:string,publishedAt?:string}} WebDocument
+ * @typedef {{documents:WebDocument[],limits:string[]}} WebRetrieval
+ * @typedef {{residence:'local'|'hybrid',retrieve:(request:{query:string,signal?:AbortSignal})=>Promise<WebRetrieval>}} WebRetrievalPort
+ * A WebDocument is a page whose text was actually read, never a mere search result: only such a page may be
+ * cited as a source. residence is 'local' when the query stays on the machine and 'hybrid' when it leaves it
+ * (a search engine, a remote service). The shared bounds are in core/web-retrieval.cjs.
+ */
+
+/**
  * @typedef {{transcribe:(audio:Uint8Array|null,signal?:AbortSignal)=>Promise<{text:string,limits:string[],code?:string}>}} TranscriptionPort
  * @typedef {{answer:(request:{question:string,tools:object,signal:AbortSignal,context?:object,conversation?:object[],mode:string,onProgress?:(event:{message?:string,preview?:string})=>void})=>Promise<object>,close?:()=>Promise<void>}} SessionAgentPort
  * Session agent implementations may retain a provider thread; the domain owns

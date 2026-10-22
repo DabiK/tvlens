@@ -1,7 +1,7 @@
 ---
 id: T308
 titre: Retrieve web pages from a frozen local corpus behind a retrieval port
-statut: a-faire
+statut: termine
 bloque_par:
 adr: non
 installe: non
@@ -105,3 +105,25 @@ Aucune décision n'est attendue.
 
 - 22/10, orchestrateur : ticket ouvert depuis l'exploration de la recherche web locale (réponses extérieures sur la
   voie locale), découpée en T308 à T312.
+- 22/10, session ticket : cadrage fait (première tentative, aucun jalon antérieur). Exploration (`explorateur`) : rapport dans
+  `.harness-state/tickets/T308/exploration.md`. En cinq lignes : (1) aucun écart de périmètre, les onze cas du critère 1 sont tenables avec des mots entiers ;
+  (2) `adapters/web/` et `core/web-retrieval.cjs` n'exigent aucune déclaration d'architecture, mais la garde de pureté du cœur interdit `document.` et `process(` en code ;
+  (3) `safeExternalUrl` est plus strict que le ticket ne le décrit (port 443, hôtes sans point, `.lan`, `.home`…) et `sourceKey` en hérite ; les copies existantes de la clé d'URL
+  ne refusent ni IP ni `.local` (à savoir pour T312) ; (4) « fichier absent » impose de lire tous les textes à la première récupération ; (5) le format du corpus se documente dans `docs/gx10-experiment.md`.
+  Écarts déclarés dans `ecarts.md` (année à quatre chiffres bornée, comportement exact de `safeExternalUrl`).
+- 22/10, implémentation (`implementeur`) : `sourceKey` exporté, `core/web-retrieval.cjs`, typedefs de port, `adapters/web/frozen-corpus.cjs`,
+  trois fichiers de tests neufs, sous-section « Corpus web figé » de `docs/gx10-experiment.md`. `node scripts/check.mjs --changed` : vert.
+- 22/10, relecture 1 : à corriger (0 bloquant, 2 mineurs) : mots vides et mots répétés non testés ; caractères combinants bruts dans une regex.
+  Corrigés par l'implémenteur ; rouge vérifié par mutation temporaire (mots vides vidés, `Set` retiré), code remis.
+- 22/10, relecture 2 (correction) : accepté, 0 constat, NON CORRIGÉS : 0.
+- 22/10, contrôle final : `node scripts/check.mjs` : vert (3078 tests JS, 0 échec ; 71 tests Python OK).
+  Réserves : `Qui parle en ce moment ?` et `Qui est-ce ?` donnent vrai ; un lien symbolique sortant du dossier du corpus n'est pas détecté ;
+  `sourceKey` est plus strict que les copies existantes (à savoir pour T312).
+
+### Réserves à la clôture
+
+- Écart accepté, critère 1 : année à quatre chiffres bornée à 1500-2099 (motif (?:1[5-9]|20)\d{2}).
+- Écart accepté, périmètre sourceKey : reprend exactement safeExternalUrl, plus strict que la description du ticket (port 443, hôtes sans point, .lan, .home).
+- Réserve de conception : « Qui parle en ce moment ? » et « Qui est-ce ? » donnent vrai (la règle ne les distingue pas d'un fait extérieur).
+- Non traité : un lien symbolique du dossier du corpus qui sort du dossier n'est pas détecté (validation de chemin textuelle).
+- Pour T312 : les copies existantes de la clé d'URL (core/verification.cjs, core/surveillance.cjs, adapters/codex-session-events.cjs) ne refusent ni IP ni .local ; les règles ne sont pas identiques.

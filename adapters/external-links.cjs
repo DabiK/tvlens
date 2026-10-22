@@ -8,4 +8,12 @@ function safeExternalUrl(value) {
     return url.href;
   } catch { return null; }
 }
-module.exports = { safeExternalUrl };
+// A page is identified without its fragment: two links to the same page must collapse into one source.
+function sourceKey(value) {
+  const href = safeExternalUrl(value);
+  if (!href) return null;
+  const url = new URL(href);
+  url.hash = '';
+  return url.href;
+}
+module.exports = { safeExternalUrl, sourceKey };

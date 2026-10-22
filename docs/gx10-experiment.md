@@ -255,6 +255,55 @@ Sans cette preuve d’antériorité, G2 refuse la campagne ; ne pas compléter u
 Il n’existe pas de CLI autonome de création/validation des seuls attendus : la validation du scoreur
 contrôle l’ensemble manifeste/attendus/rapport/revue. Les fixtures permettent de l’exercer sans inférence.
 
+### Corpus web figé
+
+Les essais reproductibles de la voie locale n’interrogent pas le web : ils lisent un corpus de pages déjà extraites
+en texte, sur le disque local (`adapters/web/frozen-corpus.cjs`, port `WebRetrievalPort` de `core/ports.cjs`).
+Une même question rend toujours les mêmes pages. Le flux réel, lui, passe par SearXNG sur la GX10.
+
+Le dossier du corpus contient `corpus.json` et les fichiers de texte :
+
+```json
+{
+  "version": 1,
+  "documents": [
+    {
+      "url": "https://www.example.org/volcans/etna",
+      "title": "Le volcan Etna",
+      "publisher": "Revue de géologie imaginaire",
+      "publishedAt": "2024-03-02",
+      "file": "pages/etna.txt",
+      "queries": ["Quelle est la hauteur du volcan Etna ?"]
+    }
+  ]
+}
+```
+
+- `url`, `title` et `file` sont obligatoires ; `publisher`, `publishedAt` et `queries` sont facultatifs.
+- `url` doit être une adresse publique que `sourceKey` (`adapters/external-links.cjs`) accepte : https, sans
+  identifiants, sans IP ni domaine local. Elle est rendue sans son fragment. Une page dont l’adresse est refusée,
+  qui répète une adresse déjà vue (la première gagne) ou dont le texte est vide est écartée.
+- `file` est un chemin relatif sous le dossier du corpus, vers le texte UTF-8 de la page : ni chemin absolu, ni
+  `..`, ni antislash.
+- `queries` liste des questions exactes que la page traite.
+
+Récupération, pour une question :
+
+1. La question est nettoyée (espaces réduits, longueur bornée) puis comparée sans casse ni accents aux `queries`.
+   Si des pages la déclarent, elles sont rendues dans l’ordre du corpus.
+2. Sinon, les pages sont classées par le nombre de mots distincts de la question (hors mots vides, au moins trois
+   lettres) qui figurent dans leur titre ou leur texte. Deux mots communs au moins sont exigés (un seul pour une
+   question d’un seul mot) ; à score égal, l’ordre du corpus décide.
+3. Au plus trois pages sont rendues, chacune coupée à 2 500 caractères. Les coupes et l’absence de page sont
+   signalées dans `limits`.
+
+Le corpus et tous les fichiers de texte sont lus une fois, à la première récupération. Un corpus illisible ou invalide
+(JSON, version, champ manquant, chemin refusé, fichier absent) est refusé avec le code `TVLENS_WEB_CORPUS_INVALID`,
+sans chemin dans le message.
+
+Le dépôt GitHub est public : les pages réelles d’un corpus d’essai (texte extrait de sites tiers) restent hors de Git,
+dans le dossier de l’opérateur. Les tests n’utilisent que des pages inventées, sur des domaines `example.org` ou `example.com`.
+
 ## Commandes vérifiées sans fournisseur
 
 Avec les variables `CODE`, `CHECK`, `FIXTURES` du contrôle local :
