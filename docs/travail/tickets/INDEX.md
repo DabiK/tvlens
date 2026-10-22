@@ -512,6 +512,16 @@ décision attestant la fin de l'expérience, pas seulement ce gel** ; la boucle 
   — Detect surveillance claims locally after the GX10 experiment
   (sensible ; dépend de T261 ; décision du propriétaire attendue après l'expérience).
 
+## Journal mémoire de la voie locale
+
+Mesure du 22/10 sur la GX10 (J2 contre J3, 60 questions dans le flux réel) : le journal compact des passages anciens,
+injecté jusqu'ici par le proxy de mesure, porte les réponses pertinentes de 28 à 38 et ramène les inventions de 16 à 9.
+Le produit le construit lui-même pour la voie locale ; un essai dans le flux réel, sans réécriture du proxy, suit
+l'intégration hors boucle.
+
+- [T313](313-give-local-questions-a-compact-digest-of-the-older-passages.md)
+  — Give local questions a compact digest of the older passages before the recent ones (sensible ; aucune dépendance ; ADR).
+
 ## Jalons
 
 Un jalon est un livrable dont d'autres lots dépendent.
@@ -548,7 +558,9 @@ section « Hypothèses bloquantes » du ticket.
   [T316](316-extract-readable-pages-and-bound-local-web-latency.md),
   [T318](318-give-the-web-decision-the-title-of-the-watched-source.md).
 - **Installe une dépendance** (`installe: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md),
-  [T316](316-extract-readable-pages-and-bound-local-web-latency.md).
+  [T316](316-extract-readable-pages-and-bound-local-web-latency.md),
+  [T313](313-give-local-questions-a-compact-digest-of-the-older-passages.md).
+- **Installe une dépendance** (`installe: oui`) : [T026](026-install-prettier-with-default-settings-and-a-staged-ignore.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md).
 - **Touche au harnais** (`harnais: oui`) : [T002](002-refuse-a-ticket-whose-final-change-differs-from-the-one-its.md), [T003](003-never-start-a-ticket-that-still-waits-for-an-owner-decision.md), [T007](007-add-a-test-launcher-that-stops-and-names-a-test-file-that.md), [T012](012-run-npm-test-and-the-quality-check-through-the-test-launcher.md), [T013](013-give-each-test-file-a-private-temp-directory-and-report-what.md), [T014](014-run-every-python-test-from-npm-test-and-from-the-quality.md), [T031](031-lint-with-eslint-in-the-quality-check-and-freeze-the.md), [T032](032-refuse-any-growth-of-the-frozen-lint-violations-in-the.md), [T034](034-add-a-type-check-step-and-a-typed-files-measure-to-the.md), [T102](102-move-the-installed-tv-remote-and-the-ipk-builder-out-of.md), [T103](103-move-the-tv-remote-python-tests-into-tests-and-run-them-in.md), [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T141](141-refuse-resuming-a-reviewer-or-an-unknown-sub-agent-in-a.md), [T142](142-show-the-retrospective-every-tool-the-orchestrator-called-in.md), [T143](143-measure-a-ticket-session-over-all-its-turns-and-keep-each-run.md), [T144](144-keep-the-reserves-of-a-finished-ticket-in-its-journal-and.md), [T152](152-run-the-mac-and-tv-smokes-in-the-full-quality-check.md), [T153](153-accept-a-review-only-when-no-finding-is-left-in-the-ticket.md), [T154](154-tune-the-harness-instructions-from-recurring-retrospective.md), [T156](156-set-aside-what-a-refused-tuning-leaves-and-keep-its-reviewer-out.md), [T158](158-run-a-ticket-with-codex-reviewed-by-claude-through-the-loop.md), [T159](159-give-a-codex-session-the-same-hooks-as-a-claude-session-and.md), [T160](160-keep-the-last-review-reserves-of-a-codex-ticket-and-start-its.md), [T161](161-review-a-correction-against-the-previous-review-and-escalate.md), [T162](162-resume-the-codex-session-for-a-correction-and-prove-its-hooks.md), [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md), [T194](194-remove-the-unused-answer-path-the-serial-lane-and-the-masked.md), [T196](196-count-the-harness-test-cases-apart-from-the-product-s-in-the.md), [T199](199-ignore-a-codex-reconnection-its-turn-recovered-from-and-keep.md), [T200](200-name-the-skill-of-each-engine-in-one-hook-helper-and-enforce.md), [T223](223-remove-the-rolling-pruning-from-the-viewing-memory.md), [T229](229-restart-the-loop-after-integrating-its-own-code.md), [T230](230-retry-capacity-failures-in-the-same-codex-session.md), [T231](231-stop-the-loop-clearly-when-the-codex-quota-is-exhausted.md), [T251](251-resume-a-quota-stopped-ticket-with-claude-when-asked.md).
 - **Supprime des tests** (`supprime_tests: oui`) : [T139](139-remove-the-legacy-openrouter-and-codex-exec-adapters-and-the.md), [T165](165-remove-the-closed-panel-ambient-page-its-build-and-its-dedicated-tools.md), [T166](166-remove-the-ambient-supervisor-its-relay-and-their-routes.md), [T181](181-remove-the-ambient-capture-gate.md), [T182](182-remove-the-ambient-integrations-of-the-tv-page-and-its-documents.md), [T194](194-remove-the-unused-answer-path-the-serial-lane-and-the-masked.md), [T223](223-remove-the-rolling-pruning-from-the-viewing-memory.md).
 
