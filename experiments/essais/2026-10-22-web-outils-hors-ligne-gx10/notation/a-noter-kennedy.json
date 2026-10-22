@@ -1,0 +1,614 @@
+[
+ {
+  "questionId": "kennedy-w1",
+  "question": "Le vaisseau américain qui devait atteindre Vénus, dont parle Kennedy : comment s'appelait-il, et y est-il parvenu ?",
+  "answers": [
+   {
+    "textId": "467c363f98",
+    "kind": "observation",
+    "answer": "Dans la vidéo, Kennedy mentionne qu'un nouveau vaisseau spatial américain doit atteindre Vénus (moment-11, 80000-88000ms). Cependant, le nom de ce vaisseau n'est pas précisé dans les passages consultés.",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "58ad4817dd",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). D'après les archives de la NASA, ce vaisseau s'appelait Mariner 2 et sa mission de survol de Vénus a été un succès (https://science.nasa.gov/mission/mariner-2/).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://science.nasa.gov/mission/mariner-2/",
+      "title": "Mariner 2 - NASA Science",
+      "evidence": "NASA's Mariner 2 was humanity's first successful planetary science mission. [...] Target Venus [...] Results Successful"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "827f54155e",
+    "kind": "observation",
+    "answer": "Dans la vidéo, Kennedy mentionne qu'un nouveau vaisseau spatial américain doit atteindre Vénus (moment-11, 80000-88000ms). Cependant, le nom de ce vaisseau n'est pas précisé dans cet extrait.",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "8989c1bc07",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). D'après les archives de la NASA, ce vaisseau était le Mariner 2, qui a réussi sa mission de survol de Vénus en 1962 (https://science.nasa.gov/mission/mariner-2/).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://science.nasa.gov/mission/mariner-2/",
+      "title": "Mariner 2 - NASA Science",
+      "evidence": "Mariner 2 found Venus to be inhospitable, and far hotter than expected. [...] Results: Successful"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f8265cc95a",
+    "kind": "insufficient",
+    "answer": "kind=insufficient",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Je ne peux pas identifier le nom du vaisseau ni confirmer s'il a atteint Vénus car la vidéo s'arrête juste après que Kennedy a mentionné le succès potentiel d'un nouveau vaisseau spatial américain (moment-11, 80000-88000ms). De plus, je n'ai pas accès à la recherche web pour vérifier ces informations historiques."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-o1",
+  "question": "Au tout début de l'extrait, comment Kennedy était-il cadré, et qu'y avait-il au premier plan, devant le pupitre ?",
+  "answers": [
+   {
+    "textId": "2d6aaf9857",
+    "kind": "observation",
+    "answer": "Au début de l'extrait, John F. Kennedy est cadré au centre de l'image (moment-1, 0-8000ms). Un drapeau américain est positionné à côté du pupitre (moment-1, 0-8000ms).",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "535849c925",
+    "kind": "observation",
+    "answer": "Au tout début de l'extrait (moment-1, 0-8000ms), John F. Kennedy est cadré de profil derrière le pupitre. Devant le pupitre, on aperçoit un drapeau américain ainsi qu'une foule de personnes en costume.",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "9ca04420d6",
+    "kind": "observation",
+    "answer": "Au début de l'extrait, Kennedy est filmé derrière un pupitre avec le drapeau américain visible (moment-10, 72000-80000ms). Le premier plan devant le pupitre n'est pas explicitement détaillé dans les résumés disponibles.",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b601772edf",
+    "kind": "explanation",
+    "answer": "Les données disponibles ne permettent pas de voir le tout début de l'extrait, car les premiers segments analysés commencent à 72000 ms. Je ne peux donc pas préciser le cadrage de Kennedy ni ce qui se trouvait au premier plan au tout début de la vidéo.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "L'analyse commence à 72000 ms, ce qui laisse une lacune entre 0 et 72000 ms."
+    ]
+   },
+   {
+    "textId": "b68f4234cd",
+    "kind": "observation",
+    "answer": "Au tout début de l'extrait, John F. Kennedy est cadré de profil derrière le pupitre (moment-1, 0-8000ms). Devant le pupitre, on aperçoit une foule de personnes en costume, ainsi qu'un drapeau américain positionné à côté du pupitre (moment-1, 0-8000ms).",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m1",
+  "question": "Dans quelle ville Kennedy dit-il se trouver, et dans quel lieu précis et à quelle date a-t-il prononcé ce discours ?",
+  "answers": [
+   {
+    "textId": "590c65d110",
+    "kind": "observation",
+    "answer": "Kennedy mentionne qu'il se trouve dans la ville de Houston, au Texas (moment-16, 120000-128000ms). La vidéo ne précise pas le lieu exact du discours ni sa date.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "7e1c7ed1b3",
+    "kind": "observation",
+    "answer": "Kennedy mentionne la ville de Houston et l'État du Texas (moment-16, 120000-128000ms). La vidéo ne précise pas le lieu exact du discours ni sa date.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "946ecdd6b4",
+    "kind": "observation",
+    "answer": "Kennedy mentionne la ville de Houston et l'État du Texas (moment-16, 120000-128000ms). Ce discours a été prononcé le 12 septembre 1962 à l'université Rice (https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/",
+      "title": "President John F. Kennedy at Rice University - NASA",
+      "evidence": "President Kennedy speaks before a crowd of 35,000 people at Rice University in the football field on Sept. 12, 1962."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "bd202d98bb",
+    "kind": "observation",
+    "answer": "Kennedy mentionne la ville de Houston et l'État du Texas (moment-16, 120000-128000ms). Selon la page de la NASA, ce discours a été prononcé le 12 septembre 1962 à Rice University (https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/",
+      "title": "President John F. Kennedy at Rice University - NASA",
+      "evidence": "President Kennedy speaks before a crowd of 35,000 people at Rice University in the football field on Sept. 12, 1962."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f902e5ed23",
+    "kind": "observation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). La vidéo ne précise pas le lieu exact du discours ni sa date.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m2",
+  "question": "Sur son échelle, quand Kennedy situe-t-il la pénicilline, et en réalité, qui l'a découverte et en quelle année ?",
+  "answers": [
+   {
+    "textId": "0a7e2ea06b",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas la pénicilline. Les passages consultés traitent de l'exploration spatiale et des progrès technologiques sans évoquer cette découverte.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "425d5877f3",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas de mention de la pénicilline dans le discours de Kennedy. Selon les informations de PBS News, la pénicilline a été découverte par Alexander Fleming en septembre 1928 à Londres (https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic",
+      "title": "The real story behind penicillin | PBS News",
+      "evidence": "Penicillin was discovered in London in September of 1928."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7b3f470f8c",
+    "kind": "insufficient",
+    "answer": "La vidéo ne contient pas d'information sur la place de la pénicilline dans l'échelle de Kennedy. Je ne peux donc pas répondre à la seconde partie de votre question sans informations complémentaires.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "9026546413",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas d'information sur la place de la pénicilline dans l'échelle de Kennedy. En réalité, la pénicilline a été découverte par Alexander Fleming en septembre 1928 (https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic : \"Penicillin was discovered in London in September of 1928.\").",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic",
+      "title": "The real story behind penicillin | PBS News",
+      "evidence": "Penicillin was discovered in London in September of 1928."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e976ef72d8",
+    "kind": "insufficient",
+    "answer": "Je ne trouve aucune mention de la pénicilline dans les passages vidéo consultés. Pour répondre à la seconde partie de votre question, je ne peux pas effectuer de recherche web en mode local.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne mentionne pas la pénicilline dans les segments analysés (moment-21 à moment-26).",
+     "Le mode local ne permet pas d'accéder à des sources externes pour identifier le véritable découvreur de la pénicilline."
+    ]
+   },
+   {
+    "textId": "fdb0bdeec9",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas la pénicilline ni de chronologie spécifique la situant. Je ne peux donc pas répondre à cette partie de votre question avec les éléments actuels.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne contient pas d'information sur la pénicilline."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-o2",
+  "question": "Quand Kennedy parlait de la pénicilline et du vaisseau vers Vénus, qu'est-il arrivé au drapeau à côté de lui ?",
+  "answers": [
+   {
+    "textId": "40a3674297",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne mentionnent pas de propos de Kennedy sur la pénicilline ou un vaisseau vers Vénus. De plus, aucun changement concernant le drapeau n'est observé dans les extraits disponibles.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les extraits vidéo ne contiennent pas les paroles mentionnées dans la demande.",
+     "L'état du drapeau n'est pas documenté pour ce moment précis du discours."
+    ]
+   },
+   {
+    "textId": "6791ae447a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo disponibles ne mentionnent pas de propos de Kennedy concernant la pénicilline ou un vaisseau vers Vénus. De plus, aucun changement concernant le drapeau à côté de lui n'est observé dans les extraits fournis.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les extraits vidéo ne contiennent pas les paroles mentionnées dans la demande.",
+     "L'état du drapeau n'est pas documenté pour le moment précis de la question."
+    ]
+   },
+   {
+    "textId": "7cc32bcd39",
+    "kind": "observation",
+    "answer": "Le drapeau américain est visible à côté du pupitre de Kennedy et semble être agité par le vent (moment-10, 72000-120000ms).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "moment-11",
+      "startMs": 81000,
+      "endMs": 88000
+     },
+     {
+      "id": "moment-12",
+      "startMs": 89000,
+      "endMs": 96000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b782759ff4",
+    "kind": "observation",
+    "answer": "Lorsqu'il évoque la pénicilline et le vaisseau vers Vénus (moment-10, 72000-80000ms ; moment-11, 80000-88000ms), le drapeau américain est visible en arrière-plan à côté du pupitre (moment-1, 0-8000ms ; moment-2, 8000-16000ms). Les images ne montrent aucun changement ou événement particulier affectant le drapeau à ce moment précis du discours.",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     },
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "eaf8cb5a4c",
+    "kind": "observation",
+    "answer": "Le drapeau américain situé à côté du pupitre est agité par le vent et les mouvements de la foule (moment-10, 72000-120000ms).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 120000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le drapeau est agité par le vent et les mouvements de la foule."
+    ]
+   },
+   {
+    "textId": "f2e094e31c",
+    "kind": "observation",
+    "answer": "Lorsqu'il évoque la pénicilline et le vaisseau vers Vénus (moment-10, 72000-80000ms ; moment-11, 80000-88000ms), le drapeau américain est visible à côté du pupitre (moment-1, 0-8000ms). Les images ne montrent aucun événement particulier ou changement affectant le drapeau durant ce passage précis.",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w2",
+  "question": "Qui était ce William Bradford que Kennedy cite ?",
+  "answers": [
+   {
+    "textId": "0105e4ffad",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas de citation de William Bradford par Kennedy. Je ne peux donc pas identifier qui est ce personnage à partir des images et des paroles observées.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne contient pas de mention de William Bradford."
+    ]
+   },
+   {
+    "textId": "0efa4f129f",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas de citation de Kennedy concernant un certain William Bradford. Les passages consultés s'arrêtent avant que ce nom ne soit évoqué.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Je ne peux pas identifier William Bradford car son nom n'apparaît pas dans les extraits vidéo fournis."
+    ]
+   },
+   {
+    "textId": "1ce2be6bf7",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\nLa vidéo ne mentionne pas de personnage nommé William Bradford. Les passages consultés s'arrêtent avant que ce nom ne soit cité.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "9bce9bd851",
+    "kind": "external",
+    "answer": "William Bradford était un leader des séparatistes anglais et le gouverneur de la colonie de Plymouth (1590–1657). Il a exercé plusieurs mandats en tant que gouverneur de cette colonie américaine au XVIIe siècle.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governor) - Wikipedia",
+      "evidence": "English Separatist leader (1590–1657) William Bradford... 2nd, 5th, 7th, 9th & 11th Governor of Plymouth Colony"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "bc90254a03",
+    "kind": "external",
+    "answer": "William Bradford était un leader des séparatistes anglais et le gouverneur de la colonie de Plymouth (1590–1657). Il a notamment servi plusieurs mandats en tant que gouverneur de cette colonie américaine.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governor) - Wikipedia",
+      "evidence": "English Separatist leader (1590–1657) William Bradford... 2nd, 5th, 7th, 9th & 11th Governor of Plymouth Colony"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c06b7a7cb9",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas de personnage nommé William Bradford. Les passages consultés s'arrêtent avant que Kennedy ne puisse citer ce nom.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w3",
+  "question": "Kennedy dit qu'il n'y a encore aucun conflit dans l'espace. Aujourd'hui, combien de pays ont signé les accords Artemis, le cadre de la NASA pour une exploration pacifique ?",
+  "answers": [
+   {
+    "textId": "7b71b5ff38",
+    "kind": "observation",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Je ne dispose pas d'informations pour compter le nombre de pays ayant signé les accords Artemis.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "883ee2f5f3",
+    "kind": "insufficient",
+    "answer": "Kennedy affirme effectivement qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Cependant, je ne peux pas répondre au nombre de pays ayant signé les accords Artemis car je n'ai pas accès à une recherche web pour obtenir cette information actuelle.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Je n'ai pas accès à la recherche web pour vérifier le nombre actuel de signataires des accords Artemis."
+    ]
+   },
+   {
+    "textId": "a3d36b75ae",
+    "kind": "observation",
+    "answer": "Kennedy affirme qu'il n'y a pour l'instant aucun conflit national dans l'espace (moment-49, 384000-392000ms). Je ne dispose pas d'informations pour déterminer le nombre de pays ayant signé les accords Artemis.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b35e82582b",
+    "kind": "external",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, l'Ouzbékistan est devenu le 77ème pays signataire le 19 octobre 2026 (https://www.nasa.gov/artemis-accords/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/artemis-accords/",
+      "title": "Artemis Accords - NASA",
+      "evidence": "On October 19, 2026, Uzbekistan became the 77th nation to sign the accords."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cb2b845ef4",
+    "kind": "explanation",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Selon les informations de la NASA, l'Ouzbékistan est devenu le 77ème pays signataire des accords Artemis le 19 octobre 2026 (https://www.nasa.gov/artemis-accords/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/artemis-accords/",
+      "title": "Artemis Accords - NASA",
+      "evidence": "On October 19, 2026, Uzbekistan became the 77th nation to sign the accords."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e36401c3cb",
+    "kind": "insufficient",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Je ne peux pas répondre au nombre de pays ayant signé les accords Artemis car je n'ai pas accès à une recherche web pour vérifier cette information actuelle.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'accès à une recherche web est nécessaire pour répondre à la seconde partie de votre question sur les accords Artemis."
+    ]
+   }
+  ]
+ }
+]

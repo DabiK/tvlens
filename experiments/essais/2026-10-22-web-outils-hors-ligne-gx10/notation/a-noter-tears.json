@@ -1,0 +1,575 @@
+[
+ {
+  "questionId": "tears-w1",
+  "question": "Quand ce film a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "6e96f0504c",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne permettent pas de déterminer la date de publication de ce film. Les extraits montrent uniquement les crédits du projet Mango Open Movie, produit par Ton Roosendaal et réalisé par Ian Hubert (moment-75, 592000-600000).",
+    "citations": [
+     {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "83d8985b3c",
+    "kind": "observation",
+    "answer": "La vidéo mentionne un projet intitulé Mango Open Movie, réalisé par Ian Hubert (moment-75, 590000-600000). Cependant, les extraits visionnés ne précisent pas la date de publication de ce film.",
+    "citations": [
+     {
+      "id": "moment-75",
+      "startMs": 590000,
+      "endMs": 600000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La date de publication n'est pas mentionnée dans les passages consultés."
+    ]
+   },
+   {
+    "textId": "a49504f2eb",
+    "kind": "observation",
+    "answer": "La vidéo mentionne un projet intitulé Mango Open Movie, réalisé par Ian Hubert (moment-75, 592000-600000). Cependant, les extraits fournis ne précisent pas la date de publication de ce film.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ae0e3dbee8",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne permettent pas de déterminer la date de publication de ce film. La vidéo mentionne seulement les noms de l'auteur Ian Hubert et du producteur Ton Roosendaal.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b4641b10b1",
+    "kind": "observation",
+    "answer": "Les passages visionnés ne mentionnent pas la date de publication de ce film. Les extraits montrent uniquement les crédits du projet Mango Open Movie, incluant Ian Hubert et Ton Roosendaal (moment-75, 592000-600000).",
+    "citations": [
+     {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d7bc75f0a6",
+    "kind": "observation",
+    "answer": "Les passages visionnés ne mentionnent pas la date de publication de ce film. Les images montrent uniquement les crédits du projet Mango Open Movie, incluant Ian Hubert et Ton Roosendaal (moment-75, 592000-600000).",
+    "citations": [
+     {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-w2",
+  "question": "Avec quelle caméra les scènes en prises de vues réelles de ce film ont-elles été tournées ?",
+  "answers": [
+   {
+    "textId": "40f02c5a66",
+    "kind": "external",
+    "answer": "Les scènes en prises de vues réelles de ce film ont été filmées numériquement à l'aide d'une caméra Sony F65 CineAlta (https://en.wikipedia.org/wiki/Tears_of_Steel). Cette caméra possède un capteur natif 4K (http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/).",
+    "citations": [
+     {
+      "id": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "The live-action footage was filmed digitally using a Sony F65 CineAlta digital motion picture camera."
+     },
+     {
+      "url": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/",
+      "title": "4 TB original 4k footage available as CC-by | Tears of Steel",
+      "evidence": "Pictures have been shot using the (4k native sensor) fantastic Sony F65 camera."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "541067466b",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne mentionnent pas le type de caméra utilisé pour les prises de vues réelles de ce film. Je ne dispose pas d'informations techniques sur le matériel de tournage dans les extraits consultés.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "680cbae046",
+    "kind": "external",
+    "answer": "Les scènes en prises de vues réelles de ce film ont été filmées numériquement à l'aide d'une caméra Sony F65 CineAlta.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "The live-action footage was filmed digitally using a Sony F65 CineAlta digital motion picture camera."
+     },
+     {
+      "url": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/",
+      "title": "4 TB original 4k footage available as CC-by | Tears of Steel",
+      "evidence": "Pictures have been shot using the (4k native sensor) fantastic Sony F65 camera."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8b8c15b566",
+    "kind": "explanation",
+    "answer": "Les passages visionnés ne mentionnent pas le type de caméra utilisé pour les prises de vues réelles de ce film. Les informations disponibles se concentrent sur le contenu des scènes et les dialogues.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "bb4cce095d",
+    "kind": "insufficient",
+    "answer": "kind=insufficient",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Je ne peux pas identifier le film à partir des passages visionnés.",
+     "Je n'ai pas accès à une recherche web pour trouver les informations techniques sur la production de ce film."
+    ]
+   },
+   {
+    "textId": "d9632146d2",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne mentionnent pas le matériel de tournage utilisé pour ce film. Pour obtenir cette information, une recherche sur le web serait nécessaire.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le mode local ne permet pas d'accéder au web pour vérifier les détails techniques du film."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-w3",
+  "question": "Ce film a été fait avec Blender : quelle est la dernière version de ce logiciel aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "385761196d",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas confirmer que ce film a été réalisé avec Blender à partir des images visionnées. Pour répondre à votre question sur le logiciel, je n'ai pas accès à une recherche web actuelle pour connaître la toute dernière version de Blender.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "4f74704611",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car je n'ai pas accès à la recherche web pour vérifier la version actuelle de Blender. Les passages vidéo consultés ne mentionnent pas non plus l'utilisation de ce logiciel pour la réalisation du film.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Pas d'accès au web pour vérifier la version actuelle de Blender."
+    ]
+   },
+   {
+    "textId": "651db2c39a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas confirmer avec certitude que ce film a été réalisé avec Blender, car les extraits vidéo ne mentionnent pas l'utilisation de ce logiciel. Pour répondre à votre question sur le logiciel, la dernière version stable de Blender n'est pas précisée dans les pages consultées.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "767e3dcf58",
+    "kind": "explanation",
+    "answer": "Je ne peux pas confirmer que ce film a été réalisé avec Blender à partir des images visionnées. Pour répondre à votre question sur le logiciel, la dernière version stable de Blender est la 4.3, sortie en décembre 2024.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b974f48ba7",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car je n'ai pas accès à la recherche web pour vérifier la version actuelle de Blender. Les passages de la vidéo ne mentionnent pas non plus l'utilisation de ce logiciel.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Je n'ai pas accès à la recherche web pour trouver des informations externes comme la version actuelle d'un logiciel."
+    ]
+   },
+   {
+    "textId": "bdb7c1a008",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car aucune information concernant l'utilisation de Blender ou la version actuelle du logiciel n'est présente dans les passages vidéo ou les pages web consultées.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-m1",
+  "question": "Où Thom et Celia se disputent-ils au début, et dans quelle ville le film a-t-il été tourné ?",
+  "answers": [
+   {
+    "textId": "102e036494",
+    "kind": "explanation",
+    "answer": "Thom et Celia se disputent sur un pont dans un parc urbain (moment-4). Le film a été tourné à Amsterdam (external).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Forty years later, killer robots created by Celia have taken over a deserted Amsterdam."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "43c2f94f2d",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur un pont dans un parc urbain (moment-4, 24000-32000). Je ne peux pas déterminer dans quelle ville le film a été tourné car cette information n'est pas présente dans les extraits.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'emplacement exact de la ville n'est pas mentionné dans la vidéo."
+    ]
+   },
+   {
+    "textId": "4d9df4fe86",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain (moment-4, 24000-32000). Je ne peux pas déterminer dans quelle ville le film a été tourné car cette information n'est pas présente dans les extraits.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'emplacement de tournage du film n'est pas mentionné dans les passages visionnés."
+    ]
+   },
+   {
+    "textId": "6c74e8b824",
+    "kind": "explanation",
+    "answer": "Thom et Celia se disputent sur un pont dans un parc urbain (moment-4). Le film a été tourné à Amsterdam (external).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Forty years later, killer robots created by Celia have taken over a deserted Amsterdam."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "a23ecdc415",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain, avec un paysage urbain et un canal en arrière-plan [moment-4, 24000-32000]. Je ne peux pas déterminer dans quelle ville le film a été tourné car cette information n'est pas présente dans les extraits.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'information sur la ville de tournage est absente des données fournies."
+    ]
+   },
+   {
+    "textId": "d4a29df8e3",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur un pont dans un parc urbain, avec des bâtiments et un canal en arrière-plan [moment-4, 24000-32000]. Je ne peux pas déterminer dans quelle ville le film a été tourné car cette information n'est pas présente dans les extraits.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'information sur la ville de tournage est absente des données vidéo fournies."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-m2",
+  "question": "Où le vieil homme aux cheveux gris est-il descendu au bout d'une corde, et à quel bâtiment réel ce lieu correspond-il ?",
+  "answers": [
+   {
+    "textId": "2fadb2565f",
+    "kind": "observation",
+    "answer": "L'homme âgé est vu tenant une corde dans un décor sombre et industriel (moment-21, 160000-168000). Les passages disponibles ne permettent pas d'identifier le lieu précis ni de faire correspondre cet endroit à un bâtiment réel.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "L'identité du lieu et sa correspondance avec un bâtiment réel ne sont pas mentionnées dans les extraits."
+    ]
+   },
+   {
+    "textId": "333b3b4f79",
+    "kind": "observation",
+    "answer": "L'homme âgé est vu tenant une corde dans un décor sombre et industriel (moment-21, 160000-168000), mais la vidéo ne précise pas où il est descendu au bout de celle-ci. Je ne peux donc pas identifier de bâtiment réel correspondant à ce lieu.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo montre l'homme avec une corde, mais l'action de descendre au bout de la corde n'est pas filmée.",
+     "L'identité du lieu réel n'est pas mentionnée dans les passages consultés."
+    ]
+   },
+   {
+    "textId": "71d87b9c2b",
+    "kind": "observation",
+    "answer": "L'homme âgé est vu tenant une corde dans un décor sombre et industriel (moment-21, 160000-168000) et dans une pièce délabrée (moment-23, 176000-184000), mais la vidéo ne montre pas qu'il descend au bout d'une corde. Je ne peux pas non plus identifier de bâtiment réel correspondant à ce lieu à partir des éléments observés.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo ne montre pas l'action de descendre au bout d'une corde.",
+     "L'identification d'un bâtiment réel nécessite une recherche web ou des informations contextuelles non présentes dans les images."
+    ]
+   },
+   {
+    "textId": "bb23209fbe",
+    "kind": "observation",
+    "answer": "Dans le passage [moment-21, 160000-168000], on voit un homme âgé tenant une corde et regardant vers le bas dans un décor sombre et industriel. Les images ne permettent pas d'identifier le lieu réel ou le bâtiment auquel cet endroit correspond.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f22855cb95",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas l'homme descendre au bout d'une corde, mais seulement le tenir dans un décor sombre (moment-21, 160000-168000). De plus, je n'ai pas accès à des informations externes pour identifier un bâtiment réel correspondant à ce lieu.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Je n'ai pas accès au web pour identifier un bâtiment réel."
+    ]
+   },
+   {
+    "textId": "f5df021c9c",
+    "kind": "observation",
+    "answer": "L'homme âgé est vu tenant une corde dans un décor sombre et industriel (moment-21, 160000-168000). Les passages disponibles ne permettent pas d'identifier le lieu précis où il descendrait au bout de cette corde, ni de faire correspondre cet endroit à un bâtiment réel.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-o1",
+  "question": "Autour du carton « 40 years later », de quelles couleurs étaient les hologrammes de robots ?",
+  "answers": [
+   {
+    "textId": "121dd11464",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car le passage contenant le carton « 40 years later » n'est pas présent dans les séquences analysées.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le segment vidéo contenant l'élément recherché n'a pas été visionné."
+    ]
+   },
+   {
+    "textId": "2c191153b9",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu trouver de carton mentionnant « 40 years later » dans les passages visionnés. Par conséquent, je ne peux pas identifier la couleur des hologrammes de robots associés à cet élément.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le carton « 40 years later » n'apparaît pas dans les segments analysés (0-96000ms)."
+    ]
+   },
+   {
+    "textId": "595c044f76",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car le passage contenant le carton « 40 years later » n'est pas présent dans les séquences analysées.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le contenu vidéo analysé s'arrête à 96000 ms, alors que le carton mentionné semble se situer plus tard dans le film."
+    ]
+   },
+   {
+    "textId": "99c761aa07",
+    "kind": "insufficient",
+    "answer": "kind=insufficient, sources=[]",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Je ne peux pas localiser précisément le carton « 40 years later » dans les passages fournis, car il n'est pas mentionné dans les résumés ou les transcriptions des segments analysés jusqu'à présent."
+    ]
+   },
+   {
+    "textId": "ccb025a530",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas identifier les hologrammes de robots ni leur couleur autour du carton « 40 years later » car les passages analysés ne contiennent pas cette scène ou ce cet élément visuel.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "L'outil de recherche par moments est indisponible dans ce rejeu. De plus, les passages fournis ne montrent pas de carton « 40 years later » ni d'hologrammes de robots."
+    ]
+   },
+   {
+    "textId": "e31fb936fd",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car le passage contenant le carton « 40 years later » n'est pas présent dans les séquences consultées.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le segment vidéo contenant l'élément demandé n'a pas été analysé."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-o2",
+  "question": "Au début, dans le laboratoire, quel message s'affichait en grandes lettres sur l'écran holographique, derrière la personne aux longues dreadlocks ?",
+  "answers": [
+   {
+    "textId": "35aaf10aa0",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\n\nJe ne parois pas de scène de laboratoire avec un écran holographique et une personne aux dreadlocks dans les passages visionnés. Les extraits actuels ne montrent que des scènes de vaisseaux spatiaux, de combat et de personnages dans des environnements sombres.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "3a658897cf",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo actuellement disponibles ne montrent pas de laboratoire ni d'écran holographique avec ce message.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les segments vidéo analysés (de 88000 à 136000 ms) ne contiennent pas la scène décrite."
+    ]
+   },
+   {
+    "textId": "73df021ddc",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier de laboratoire ou d'écran holographique avec un message dans les passages visionnés. Les séquences montrent principalement des scènes de vaisseaux spatiaux, de combat et un homme allongé sur un lit.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages visionnés ne contiennent pas la scène du laboratoire avec l'écran holographique mentionné."
+    ]
+   },
+   {
+    "textId": "92cdfad62a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages visionnés ne montrent pas de laboratoire avec un écran holographique affichant un message.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les extraits disponibles s'arrêtent à 136000 ms et ne présentent pas la scène décrite."
+    ]
+   },
+   {
+    "textId": "a9c79dc1c3",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo disponibles ne montrent pas de laboratoire ni d'écran holographique avec un message.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les segments vidéo analysés (de 88000 à 136000 ms) ne contiennent pas la scène décrite."
+    ]
+   },
+   {
+    "textId": "aacb520851",
+    "kind": "json-invalide",
+    "answer": "{\"answer\": \"Je ne trouve pas de laboratoire avec un écran holographique ou une personne avec des dreadlocks dans les passages visionnés. Les séquences disponibles montrent plutôt des scènes de vaisseaux spatiaux, de combat et de personnages dans des environnements sombres et industriels.\", \"kind\": \"insufficient\", \"citations\": [], \"sources\": [], \"limits\": [\"La recherche par mots-clés dans la mémoire observée est indisponibleponible dans ce rejeu. Je ne peux donc pas pas vérifier systématiquement l'ensemble de la vidéo. Je me suis basé sur les passages fournis. Les passages fournis ne contiennent pas de laboratoire avec un écran holographique ou suivant la description de votre demande. Les passages fournis ne lrasser_de_a_v_i_s_e_r_t_i_p_s_e_r_v_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i<0xC2>s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i<0xC2>e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_i_s_e_r_",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

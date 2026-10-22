@@ -1,0 +1,3447 @@
+{
+ "f1be08111ffe": {
+  "questionId": "kennedy-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3304.0,
+  "tokens": 131,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "e5a71dd79e4f": {
+  "questionId": "kennedy-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3491.6,
+  "tokens": 140,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "fdea8eec09db": {
+  "questionId": "kennedy-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3535.4,
+  "tokens": 141,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "136fd5223d94": {
+  "questionId": "kennedy-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 2709.5,
+  "tokens": 91,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "2d6aa4aba1fa": {
+  "questionId": "kennedy-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4571.1,
+  "tokens": 192,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "37dfff4bbe22": {
+  "questionId": "spring-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 2529.5,
+  "tokens": 82,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "e8850b7fade2": {
+  "questionId": "spring-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3439.1,
+  "tokens": 139,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "78bfe392f26a": {
+  "questionId": "spring-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3015.4,
+  "tokens": 118,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "b23a9ad5cc2a": {
+  "questionId": "spring-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3060.9,
+  "tokens": 122,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "eca088bd1c3b": {
+  "questionId": "spring-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4337.5,
+  "tokens": 198,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "bce5cee195a5": {
+  "questionId": "cnrs-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3455.2,
+  "tokens": 142,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "e3eed357f0cd": {
+  "questionId": "cnrs-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3091.3,
+  "tokens": 118,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "06cb1e825e2c": {
+  "questionId": "cnrs-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3835.8,
+  "tokens": 154,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "0fdb1ca46954": {
+  "questionId": "cnrs-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 5392.9,
+  "tokens": 256,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "51eb3a1cfd0f": {
+  "questionId": "cnrs-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4137.3,
+  "tokens": 177,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "e35e4f84ee6b": {
+  "questionId": "cuisine-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4427.9,
+  "tokens": 205,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "134cea30dc14": {
+  "questionId": "cuisine-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3928.8,
+  "tokens": 185,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "a2007c6f8915": {
+  "questionId": "cuisine-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 2719.4,
+  "tokens": 106,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "7893358ec542": {
+  "questionId": "cuisine-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3620.2,
+  "tokens": 157,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "c2b56c8a3974": {
+  "questionId": "cuisine-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3412.9,
+  "tokens": 143,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "7a0d9ac6b3a8": {
+  "questionId": "tears-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3474.1,
+  "tokens": 148,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "9a87c7338a73": {
+  "questionId": "tears-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 2677.7,
+  "tokens": 94,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "f41225d82c30": {
+  "questionId": "tears-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 2909.0,
+  "tokens": 110,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "3c4a5a074d03": {
+  "questionId": "tears-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3884.3,
+  "tokens": 182,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "1fb21f44188c": {
+  "questionId": "tears-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 4004.7,
+  "tokens": 186,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "e24a939a2a06": {
+  "questionId": "artemis-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 2850.2,
+  "tokens": 115,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "203561b5d81f": {
+  "questionId": "artemis-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3043.8,
+  "tokens": 125,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "15626cb13f6c": {
+  "questionId": "artemis-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 2915.5,
+  "tokens": 114,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "5762ed9e3b50": {
+  "questionId": "artemis-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 3013.4,
+  "tokens": 115,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "5ad3d7247284": {
+  "questionId": "artemis-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 1,
+  "wallMs": 5708.0,
+  "tokens": 263,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "4dab9361d1cb": {
+  "questionId": "kennedy-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3524.8,
+  "tokens": 142,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "d9f8b5f3f5e1": {
+  "questionId": "kennedy-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3380.7,
+  "tokens": 130,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "a4755523f3af": {
+  "questionId": "kennedy-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2604.9,
+  "tokens": 84,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "430d6a40edeb": {
+  "questionId": "kennedy-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2540.4,
+  "tokens": 72,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "f53ae11f9acb": {
+  "questionId": "kennedy-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3673.4,
+  "tokens": 139,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "c4b5234038bc": {
+  "questionId": "spring-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2414.4,
+  "tokens": 74,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "2eec3d831196": {
+  "questionId": "spring-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2509.8,
+  "tokens": 82,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "8a0fc8694cfa": {
+  "questionId": "spring-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2443.6,
+  "tokens": 83,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "3ee6e9b9b845": {
+  "questionId": "spring-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3399.8,
+  "tokens": 137,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "2f92a878994c": {
+  "questionId": "spring-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3602.4,
+  "tokens": 147,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "6910a197a2f2": {
+  "questionId": "cnrs-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3233.7,
+  "tokens": 123,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "9f006c99c54e": {
+  "questionId": "cnrs-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2684.5,
+  "tokens": 90,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "a8c38f7aa8b3": {
+  "questionId": "cnrs-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3823.0,
+  "tokens": 144,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "3aa3a48ecdda": {
+  "questionId": "cnrs-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 5531.8,
+  "tokens": 246,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "c9e2af72db27": {
+  "questionId": "cnrs-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3908.9,
+  "tokens": 151,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "dd9ad2c242a8": {
+  "questionId": "cuisine-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2993.4,
+  "tokens": 114,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "909b83822225": {
+  "questionId": "cuisine-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2871.7,
+  "tokens": 103,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "a23d5e3661d8": {
+  "questionId": "cuisine-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2708.7,
+  "tokens": 98,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "bf14e0d61938": {
+  "questionId": "cuisine-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3630.6,
+  "tokens": 150,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "b51048321dd7": {
+  "questionId": "cuisine-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2466.8,
+  "tokens": 80,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "50d155eaef5a": {
+  "questionId": "tears-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2504.9,
+  "tokens": 80,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "bb495293b667": {
+  "questionId": "tears-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2461.9,
+  "tokens": 79,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "eace71be5ec6": {
+  "questionId": "tears-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2634.0,
+  "tokens": 88,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "70083ea62411": {
+  "questionId": "tears-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3812.8,
+  "tokens": 165,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "1b2e46655c0a": {
+  "questionId": "tears-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3621.0,
+  "tokens": 150,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "ccb4f91f18c6": {
+  "questionId": "artemis-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2488.0,
+  "tokens": 85,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "9d20d1d140c9": {
+  "questionId": "artemis-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 3238.6,
+  "tokens": 125,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "5bb655cd0078": {
+  "questionId": "artemis-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2761.2,
+  "tokens": 96,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "2e8986bdf76a": {
+  "questionId": "artemis-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 2715.0,
+  "tokens": 84,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "d215b8959fcf": {
+  "questionId": "artemis-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 2,
+  "wallMs": 4062.7,
+  "tokens": 162,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "9ba07b79dfb7": {
+  "questionId": "kennedy-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 5624.8,
+  "tokens": 245,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "6a2627020522": {
+  "questionId": "kennedy-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 6161.1,
+  "tokens": 268,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "a38417c63d38": {
+  "questionId": "kennedy-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4902.5,
+  "tokens": 197,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "851bf083832c": {
+  "questionId": "kennedy-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4927.0,
+  "tokens": 189,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "3a54ec37c7c1": {
+  "questionId": "kennedy-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 5979.3,
+  "tokens": 250,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "8da20a51c8c9": {
+  "questionId": "spring-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 2696.6,
+  "tokens": 71,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "15f64935cb8b": {
+  "questionId": "spring-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 5213.3,
+  "tokens": 221,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "8e7cbf7cf442": {
+  "questionId": "spring-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 7092.4,
+  "tokens": 346,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "d1a062203260": {
+  "questionId": "spring-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 6088.2,
+  "tokens": 286,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "cd45ad35372f": {
+  "questionId": "spring-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 5858.2,
+  "tokens": 257,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "38067907fe5e": {
+  "questionId": "cnrs-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4838.4,
+  "tokens": 200,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "27b2785f541e": {
+  "questionId": "cnrs-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 3135.9,
+  "tokens": 96,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "4acbfac53c4c": {
+  "questionId": "cnrs-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4771.9,
+  "tokens": 186,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "20c01d0c43a0": {
+  "questionId": "cnrs-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 5065.1,
+  "tokens": 203,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "c0666ec50d0b": {
+  "questionId": "cnrs-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 5038.1,
+  "tokens": 201,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "edbc563e10ac": {
+  "questionId": "cuisine-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 3097.9,
+  "tokens": 100,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "c00959c50700": {
+  "questionId": "cuisine-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4351.2,
+  "tokens": 177,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "bcbd52add55a": {
+  "questionId": "cuisine-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 3833.0,
+  "tokens": 143,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "1aca35ce36e3": {
+  "questionId": "cuisine-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 6110.9,
+  "tokens": 281,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "1571a0f559b5": {
+  "questionId": "cuisine-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 6178.3,
+  "tokens": 276,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "2356638aa772": {
+  "questionId": "tears-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4513.9,
+  "tokens": 165,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "4ab541c93698": {
+  "questionId": "tears-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 8227.5,
+  "tokens": 405,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "4ec6eda5e7a1": {
+  "questionId": "tears-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 3008.4,
+  "tokens": 91,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "d2e18ad53908": {
+  "questionId": "tears-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 3606.6,
+  "tokens": 139,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "a90f77ab7df2": {
+  "questionId": "tears-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 3966.4,
+  "tokens": 155,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "0b970035fd41": {
+  "questionId": "artemis-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 2866.2,
+  "tokens": 83,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "9fe045a76c74": {
+  "questionId": "artemis-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 2888.0,
+  "tokens": 83,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "8f2c7958cf47": {
+  "questionId": "artemis-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4280.7,
+  "tokens": 168,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "e245074a3c2d": {
+  "questionId": "artemis-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 4962.8,
+  "tokens": 195,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "cd5fdd538d50": {
+  "questionId": "artemis-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 3,
+  "wallMs": 3316.5,
+  "tokens": 95,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "a6cc26e6b91c": {
+  "questionId": "kennedy-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 3630.9,
+  "tokens": 146,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "dc0ad25c2e2e": {
+  "questionId": "kennedy-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 3542.1,
+  "tokens": 140,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "6d0e758c8100": {
+  "questionId": "spring-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 2845.6,
+  "tokens": 107,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "f850310485c5": {
+  "questionId": "spring-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 3090.8,
+  "tokens": 117,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "8f6d2dde63a9": {
+  "questionId": "cnrs-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 3550.2,
+  "tokens": 132,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "12e0ff7892a5": {
+  "questionId": "cnrs-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 3370.0,
+  "tokens": 123,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "bfd67774288f": {
+  "questionId": "cuisine-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 2934.5,
+  "tokens": 110,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "2226905ad633": {
+  "questionId": "cuisine-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 3107.9,
+  "tokens": 116,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "dc7131566829": {
+  "questionId": "tears-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 2626.7,
+  "tokens": 96,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "d587dc187759": {
+  "questionId": "tears-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 2847.0,
+  "tokens": 105,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "c4b242eaf7cd": {
+  "questionId": "artemis-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 2826.8,
+  "tokens": 109,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "fb7e93a3e652": {
+  "questionId": "artemis-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 5,
+  "wallMs": 3416.5,
+  "tokens": 129,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "4810c5e236fa": {
+  "questionId": "kennedy-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 3579.5,
+  "tokens": 138,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "5303467085e8": {
+  "questionId": "kennedy-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 6150.0,
+  "tokens": 259,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "1719aad4e9be": {
+  "questionId": "spring-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 3688.8,
+  "tokens": 125,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "85eb08d7ecb9": {
+  "questionId": "spring-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 4078.6,
+  "tokens": 141,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "cf42f4f32cbc": {
+  "questionId": "cnrs-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 4640.3,
+  "tokens": 117,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "b0235a11556b": {
+  "questionId": "cnrs-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 4363.3,
+  "tokens": 93,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "752c8830a4f8": {
+  "questionId": "cuisine-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 4997.4,
+  "tokens": 189,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "638bf68f7176": {
+  "questionId": "cuisine-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 4649.4,
+  "tokens": 144,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "5adbfed0d1f8": {
+  "questionId": "tears-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 3089.4,
+  "tokens": 113,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "2a2c96ed6fb6": {
+  "questionId": "tears-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 3024.6,
+  "tokens": 102,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "b221bf8404f4": {
+  "questionId": "artemis-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 5156.4,
+  "tokens": 167,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "dd658d5a943b": {
+  "questionId": "artemis-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 6,
+  "wallMs": 4597.7,
+  "tokens": 117,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "63549db4fa78": {
+  "questionId": "kennedy-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 11093.9,
+  "tokens": 183,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 8000,
+     "question": "Comment Kennedy est-il cadré au tout début de l'extrait, et qu'y a-t-il au premier plan, devant le pupitre ?",
+     "startMs": 0
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 0,
+       "endMs": 8000,
+       "images": 5
+      }
+     ],
+     "answer": "Au tout début de l'extrait, John F. Kennedy est cadré de profil, debout derrière le pupitre. Devant le pupitre, on voit une foule de personnes en costume, incluant des hommes d'âge mûr et des hommes plus jeunes. On distingue également un drapeau américain flottant à côté du pupitre.",
+     "wallMs": 6387.3
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "ac03747ca909": {
+  "questionId": "kennedy-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 8840.1,
+  "tokens": 215,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 120000,
+     "question": "Pendant que Kennedy parle de la pénicilline et du vaisseau vers Vénus, que se passe-t-il avec le drapeau à côté de lui ?",
+     "startMs": 72000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 72000,
+       "endMs": 120000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, le drapeau américain est visible à côté de la tribune sur laquelle se tient John F. Kennedy. Il est agité par le vent et les mouvements de la foule.",
+     "wallMs": 3206.0
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "fb735970603b": {
+  "questionId": "spring-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 6897.5,
+  "tokens": 122,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 64000,
+     "question": "Le petit chien porte-t-il quelque chose autour du cou ? Si oui, quoi, et de quelle couleur ?",
+     "startMs": 40000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 40000,
+       "endMs": 64000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images fournies, le petit chien porte un morceau de bois autour du cou. Le bois est brun.",
+     "wallMs": 3027.5
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "d16cf0888cc4": {
+  "questionId": "spring-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 3907.7,
+  "tokens": 114,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "search_moments",
+    "arguments": {
+     "query": "grande pierre sculptée fille mains yeux"
+    },
+    "result": {
+     "error": "outil indisponible dans ce rejeu"
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "323330bd49be": {
+  "questionId": "cnrs-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 13832.2,
+  "tokens": 206,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 520000,
+     "question": "Sur la première diapositive « L'éducation d'une grande IA », celle des deux têtes (robot et humain), quelle petite annotation figurait à côté du titre ?",
+     "startMs": 472000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 472000,
+       "endMs": 520000,
+       "images": 5
+      }
+     ],
+     "answer": "Voici la description des images, en français, sans rien inventer :\n\n**Image 1 :**\n\n*   Un schéma illustrant le processus d'apprentissage et d'évaluation d'un modèle d'IA, avec une répartition de 80% pour l'apprentissage et 20% pour l'évaluation.\n*   Une courbe d'apprentissage est représentée.\n*   Un homme est représenté en train de regarder l'écran d'un téléphone.\n\n**Image 2 :**\n\n*   Un titre : \"L'éducation d'une « grande IA »\".\n*   Deux illustrations de têtes de robots, l'une représentant un cerveau classique et l'autre un cerveau plus complexe.\n*   Une question marquant : \"Celles qui sont à la mode !\"\n\n**Image 3 :**\n\n*   Un titre : \"L'éducation d'une « grande IA »\".\n*   Un schéma illustrant les étapes de l'éducation d'une IA :\n    *   Données\n    *   Modèle de fondation\n    *   Instruct model\n    *   Modèle aligné\n    *   Au boulot !\n*   Des illustrations accompagnent chaque étape (observation, langage et bases, spécialisation et métier, briefing, éthique et bonne conduite, au boulot !)\n\n**Image 4 :**\n\n*   Un schéma similaire à l'image 3, avec les mêmes étapes et illustrations.",
+     "wallMs": 7147.7
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "a9a8b66233e7": {
+  "questionId": "cnrs-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 12765.5,
+  "tokens": 245,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 696000,
+     "question": "Sur le graphique du suivi de l'apprentissage, de quelles couleurs étaient la courbe d'apprentissage et la courbe de validation ?",
+     "startMs": 550000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 550000,
+       "endMs": 696000,
+       "images": 5
+      }
+     ],
+     "answer": "Sur les images, on observe un schéma illustrant l'éducation d'une \"grande IA\". Il y a six étapes représentées :\n\n1.  **Données :** Un gros serveur de données est représenté.\n2.  **Modèle de fondation :** Un réseau neuronal complexe est affiché.\n3.  **Instruct model :** Un ordinateur portable avec un utilisateur est représenté.\n4.  **Modèle aligné :** Un cerveau avec des connexions neuronales est affiché.\n5.  **Briefing, éthique et bonne conduite :** Un personnage avec un micro est représenté.\n6.  **Au boulot :** Un personnage avec un casque est représenté.\n\nChaque étape est reliée à la suivante par des flèches. Les couleurs utilisées sont principalement le bleu et le gris.",
+     "wallMs": 5255.1
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "20d24f00d2af": {
+  "questionId": "cuisine-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 8781.8,
+  "tokens": 198,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 232000,
+     "question": "Avec quoi a-t-il versé l'huile dans la cocotte avant de saisir la viande ?",
+     "startMs": 216000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 216000,
+       "endMs": 232000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, on voit un homme verser de l'huile dans une cocotte en acier inoxydable. Il utilise un petit pot en verre contenant de l'huile pour y verser le liquide dans la cocotte.",
+     "wallMs": 3342.4
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "bc334bbe58d5": {
+  "questionId": "cuisine-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 9644.6,
+  "tokens": 225,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 384000,
+     "exactSpeech": true,
+     "question": "Avec quoi a-t-il pris et versé la farine pour singer ?",
+     "startMs": 352000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 352000,
+       "endMs": 384000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, une personne portant un tablier \"Learn With A Chef\" ajoute de la farine à un récipient contenant un liquide (probablement du lait) avec une cuillère.",
+     "wallMs": 3227.1
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "d82f22ab164a": {
+  "questionId": "tears-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 4161.6,
+  "tokens": 158,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "search_moments",
+    "arguments": {
+     "query": "40 years later"
+    },
+    "result": {
+     "error": "outil indisponible dans ce rejeu"
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "0201398634f4": {
+  "questionId": "tears-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 3469.1,
+  "tokens": 118,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "search_moments",
+    "arguments": {
+     "query": "laboratoire écran holographique message dreadlocks"
+    },
+    "result": {
+     "error": "outil indisponible dans ce rejeu"
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "e88ee87512d3": {
+  "questionId": "artemis-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 11934.6,
+  "tokens": 249,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 100000,
+     "question": "Quel titre s'est affiché en grand sur une vue de la surface de la Lune dans le petit film du début ?",
+     "startMs": 88000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 88000,
+       "endMs": 100000,
+       "images": 5
+      }
+     ],
+     "answer": "Voici une description des images :\n\n*   **Image 1 :** Une vue de la surface de la Lune, dominée par des cratères et des roches. Le texte \"WHAT\" est superposé à l'image. Le logo de la NASA est visible en haut à droite.\n*   **Image 2 :** Une vue similaire de la surface de la Lune, avec le texte \"WHAT WE'LL DO\" superposé. Le logo de la NASA est également présent.\n*   **Image 3 :** Une image d'un astronaute souriant, portant un équipement spatial de la NASA.\n*   **Image 4 :** Une image d'une femme dans un centre de contrôle, portant un t-shirt avec le logo \"Artemis\".",
+     "wallMs": 5095.3
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "ab984d32d805": {
+  "questionId": "artemis-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 7,
+  "wallMs": 10849.5,
+  "tokens": 223,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 1928000,
+     "question": "Juste avant que l'animation de la fusée ne remplace pour la première fois les images réelles, la caméra a montré quelques secondes un ciel noir : qu'y voyait-on ?",
+     "startMs": 1920000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 1920000,
+       "endMs": 1928000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, on voit une fusée, probablement dans le cadre du programme Artemis, avec des étincelles bleues à son niveau. En dessous de la fusée, il y a une ligne avec des termes comme \"LIFTOFF\", \"MAX Q\", \"SRB SEP\", etc., qui représentent différentes étapes du lancement. On voit également un fond sombre, ressemblant à un ciel nocturne. Dans la dernière image, on observe uniquement la fusée et ses étincelles.",
+     "wallMs": 4100.3
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "abafd24936aa": {
+  "questionId": "kennedy-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 5508.3,
+  "tokens": 160,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 8000,
+     "question": "Comment Kennedy est-il cadré au tout début de l'extrait, et qu'y a-t-il au premier plan, devant le pupitre ?",
+     "startMs": 0
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 0,
+       "endMs": 8000,
+       "images": 5
+      }
+     ],
+     "answer": "Au tout début de l'extrait, John F. Kennedy est cadré de profil, debout derrière le pupitre. Devant le pupitre, on voit une foule de personnes en costume, incluant des hommes d'âge mûr et des hommes plus jeunes, ainsi qu'un drapeau américain.",
+     "wallMs": 1142.1
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "c8109013e1da": {
+  "questionId": "kennedy-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 7571.1,
+  "tokens": 279,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 120000,
+     "question": "Pendant que Kennedy parle de la pénicilline et du vaisseau vers Vénus, que se passe-t-il avec le drapeau à côté de lui ?",
+     "startMs": 72000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 72000,
+       "endMs": 120000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, le drapeau américain est visible à côté de la tribune sur laquelle se tient John F. Kennedy. Il est souvent agité par le vent et les mouvements de la foule.",
+     "wallMs": 827.3
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "215b8ea2a621": {
+  "questionId": "spring-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 5809.5,
+  "tokens": 206,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 64000,
+     "question": "Le petit chien porte-t-il quelque chose autour du cou ? Si oui, quoi, et de quelle couleur ?",
+     "startMs": 40000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 40000,
+       "endMs": 64000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images fournies, le petit chien porte un morceau de bois autour du cou. Le bois est brun.",
+     "wallMs": 570.4
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "89c3ad124f5c": {
+  "questionId": "spring-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 9676.8,
+  "tokens": 207,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 268000,
+     "question": "Près de la grande pierre sculptée, juste après avoir fermé les yeux, quel geste fait la fille avec ses mains ?",
+     "startMs": 256000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 256000,
+       "endMs": 268000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images fournies, on peut observer la fille effectuer plusieurs gestes. Elle semble manipuler des branches et des racines, parfois en les tordant ou en les manipulant avec ses doigts. Elle utilise également ses mains pour toucher et explorer des éléments de l'environnement, notamment des racines rouges et des plantes. Elle semble interagir avec la grande pierre sculptée, mais les détails de ses actions sont difficiles à discerner en raison de l'obscurité et de la distance.",
+     "wallMs": 4151.6
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "be6981c64140": {
+  "questionId": "cnrs-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 9064.1,
+  "tokens": 159,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 520000,
+     "question": "Sur la première diapositive « L'éducation d'une grande IA », celle des deux têtes (robot et humain), quelle petite annotation figurait à côté du titre ?",
+     "startMs": 480000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 480000,
+       "endMs": 520000,
+       "images": 5
+      }
+     ],
+     "answer": "Sur la première diapositive, à côté du titre \"L'éducation d'une « grande IA »\", il y a l'annotation \"Celles qui sont à la mode !\".\n",
+     "wallMs": 3251.3
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "d76dda3a594a": {
+  "questionId": "cnrs-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 5737.3,
+  "tokens": 159,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "search_moments",
+    "arguments": {
+     "query": "graphique suivi apprentissage courbe apprentissage courbe validation couleurs"
+    },
+    "result": {
+     "error": "outil indisponible dans ce rejeu"
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "e0fd323611f8": {
+  "questionId": "cuisine-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 6271.0,
+  "tokens": 196,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 232000,
+     "question": "Avec quoi a-t-il versé l'huile dans la cocotte avant de saisir la viande ?",
+     "startMs": 216000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 216000,
+       "endMs": 232000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, on voit un homme verser de l'huile dans une cocotte en acier inoxydable. Il utilise un petit pot en verre contenant de l'huile jaune pour y verser l'huile dans la cocotte.",
+     "wallMs": 927.0
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "38fef27fc0a9": {
+  "questionId": "cuisine-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 8402.9,
+  "tokens": 175,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 392000,
+     "question": "Avec quoi le chef prend-il et verse-t-il la farine pour singer ?",
+     "startMs": 352000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 352000,
+       "endMs": 392000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, le chef prend un cuillère en bois et verse de la farine dans le pot.",
+     "wallMs": 2985.8
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "2b6e388b011c": {
+  "questionId": "tears-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 3805.8,
+  "tokens": 143,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "search_moments",
+    "arguments": {
+     "query": "40 years later hologram robots"
+    },
+    "result": {
+     "error": "outil indisponible dans ce rejeu"
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "feca7f45c7ce": {
+  "questionId": "tears-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 235148.2,
+  "tokens": 13167,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "search_moments",
+    "arguments": {
+     "query": "laboratoire écran holographique message dreadlocks"
+    },
+    "result": {
+     "error": "outil indisponible dans ce rejeu"
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "edfcf4f92fa0": {
+  "questionId": "artemis-o1",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 9471.4,
+  "tokens": 242,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 100000,
+     "question": "Quel titre s'est affiché en grand sur une vue de la surface de la Lune dans le petit film du début ?",
+     "startMs": 88000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 88000,
+       "endMs": 100000,
+       "images": 5
+      }
+     ],
+     "answer": "Voici une description des images :\n\n*   **Image 1 :** Une vue de la surface de la Lune, dominée par des cratères et des roches. Le texte \"WHAT\" est superposé à l'image. Le logo de la NASA est visible en haut à droite.\n*   **Image 2 :** Une vue similaire de la surface de la Lune, avec le texte \"WHAT WE'LL DO\" superposé. Le logo de la NASA est également présent.\n*   **Image 3 :** Une image d'un astronaute souriant, portant un équipement spatial de la NASA.\n*   **Image 4 :** Une image d'une femme dans un centre de contrôle, portant un t-shirt avec le logo \"Artemis\".",
+     "wallMs": 2587.7
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "fb8efd2957d0": {
+  "questionId": "artemis-o2",
+  "source": "H1",
+  "arm": "OI",
+  "pass": 8,
+  "wallMs": 8528.5,
+  "tokens": 196,
+  "turns": 2,
+  "tools": [
+   {
+    "name": "inspect_clip",
+    "arguments": {
+     "endMs": 1928000,
+     "question": "Juste avant que l'animation de la fusée ne remplace pour la première fois les images réelles, la caméra a montré quelques secondes un ciel noir : qu'y voyait-on ?",
+     "startMs": 1920000
+    },
+    "result": {
+     "intervals": [
+      {
+       "startMs": 1920000,
+       "endMs": 1928000,
+       "images": 5
+      }
+     ],
+     "answer": "Dans les images, on voit une fusée, probablement dans le cadre du programme Artemis. On observe également des phases de lancement, indiquées par des étiquettes comme \"Liftoff\", \"Max Q\", \"SRB Sep\", etc. Il y a aussi un écran avec un temps (T+0:04:54, T+0:04:56, T+0:04:57, T+0:04:59, T+0:05:01) et le logo de la NASA. Enfin, on voit un ciel noir, avec une petite lumière brillante, probablement la trace de la fusée.",
+     "wallMs": 2190.9
+    }
+   }
+  ],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "bf18791fa431": {
+  "questionId": "kennedy-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 3804.2,
+  "tokens": 138,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "6138648da1ab": {
+  "questionId": "kennedy-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 7334.7,
+  "tokens": 324,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "aacb55221a6f": {
+  "questionId": "spring-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 3726.5,
+  "tokens": 125,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "64f99b14ae26": {
+  "questionId": "spring-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 3822.9,
+  "tokens": 127,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "0a52c748bb07": {
+  "questionId": "cnrs-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 5599.9,
+  "tokens": 167,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "1cdaadb6edcf": {
+  "questionId": "cnrs-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 4285.3,
+  "tokens": 89,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "58b5163f7f07": {
+  "questionId": "cuisine-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 4910.7,
+  "tokens": 191,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "8d9264dfe64d": {
+  "questionId": "cuisine-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 4390.7,
+  "tokens": 131,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "1e708cc461d9": {
+  "questionId": "tears-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 3185.0,
+  "tokens": 119,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "0e90a84733ad": {
+  "questionId": "tears-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 3309.1,
+  "tokens": 115,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "88518edb9109": {
+  "questionId": "artemis-o1",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 4234.7,
+  "tokens": 117,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "248056021c4b": {
+  "questionId": "artemis-o2",
+  "source": "H1",
+  "arm": "OJ",
+  "pass": 9,
+  "wallMs": 5099.5,
+  "tokens": 141,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": true
+ },
+ "3bbac4f4d69b": {
+  "questionId": "kennedy-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 3329.9,
+  "tokens": 134,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "3f0c2692bd8a": {
+  "questionId": "kennedy-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 3521.8,
+  "tokens": 137,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "9bcf0b48e9cd": {
+  "questionId": "spring-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 2397.2,
+  "tokens": 80,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "51efcf1be3f2": {
+  "questionId": "spring-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 2845.7,
+  "tokens": 102,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "585176315d2c": {
+  "questionId": "cnrs-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 3384.7,
+  "tokens": 119,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "0aaf34af13d4": {
+  "questionId": "cnrs-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 3430.3,
+  "tokens": 124,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "53be12658e28": {
+  "questionId": "cuisine-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 2934.6,
+  "tokens": 110,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "0227d81ab049": {
+  "questionId": "cuisine-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 3206.1,
+  "tokens": 123,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "8f10e5e30631": {
+  "questionId": "tears-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 2655.5,
+  "tokens": 95,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "0500eaa3315e": {
+  "questionId": "tears-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 2791.5,
+  "tokens": 106,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "8a9ffaf082ec": {
+  "questionId": "artemis-o1",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 2785.8,
+  "tokens": 104,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "8e1c1b6589b6": {
+  "questionId": "artemis-o2",
+  "source": "H1",
+  "arm": "O0",
+  "pass": 10,
+  "wallMs": 3872.4,
+  "tokens": 160,
+  "turns": 1,
+  "tools": [],
+  "category": "O",
+  "citationsFilled": false
+ },
+ "0e7e3de439e6": {
+  "questionId": "kennedy-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5736.8,
+  "tokens": 248,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "7b292798d315": {
+  "questionId": "kennedy-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 6195.3,
+  "tokens": 270,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "99fbe63acd38": {
+  "questionId": "kennedy-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5069.1,
+  "tokens": 212,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "0ba8fba77356": {
+  "questionId": "kennedy-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4757.9,
+  "tokens": 183,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "c6859f12dd22": {
+  "questionId": "kennedy-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5836.1,
+  "tokens": 249,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "b4908712d30f": {
+  "questionId": "spring-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 2705.0,
+  "tokens": 72,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "7e2ddf175240": {
+  "questionId": "spring-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 3151.6,
+  "tokens": 102,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "32f5e308a4be": {
+  "questionId": "spring-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5215.0,
+  "tokens": 231,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "4110b5bda736": {
+  "questionId": "spring-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5669.6,
+  "tokens": 253,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "9013995218a0": {
+  "questionId": "spring-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4955.3,
+  "tokens": 209,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "c361106347c6": {
+  "questionId": "cnrs-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5213.9,
+  "tokens": 216,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "cebeb43cce66": {
+  "questionId": "cnrs-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 3027.7,
+  "tokens": 88,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "3f56a0e3d9b7": {
+  "questionId": "cnrs-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4396.5,
+  "tokens": 160,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "6681124c3649": {
+  "questionId": "cnrs-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 6886.1,
+  "tokens": 304,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "826af70cd3b4": {
+  "questionId": "cnrs-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5423.2,
+  "tokens": 218,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "8cf219734c4f": {
+  "questionId": "cuisine-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4276.3,
+  "tokens": 155,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "3b5b1f311ff2": {
+  "questionId": "cuisine-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5124.2,
+  "tokens": 215,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "1cc795883c62": {
+  "questionId": "cuisine-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4157.3,
+  "tokens": 158,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "8b77690c22ea": {
+  "questionId": "cuisine-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 6546.3,
+  "tokens": 298,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "f67f02b8bc0f": {
+  "questionId": "cuisine-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 6524.2,
+  "tokens": 291,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "b98d32bff143": {
+  "questionId": "tears-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 3381.1,
+  "tokens": 95,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "587636f1b73c": {
+  "questionId": "tears-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 5500.2,
+  "tokens": 238,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "37599ddd766c": {
+  "questionId": "tears-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 3249.0,
+  "tokens": 103,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "3af7e68a077b": {
+  "questionId": "tears-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4209.9,
+  "tokens": 180,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "3c7d611948be": {
+  "questionId": "tears-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4914.0,
+  "tokens": 213,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "88536ec907b6": {
+  "questionId": "artemis-w1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 3618.1,
+  "tokens": 134,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "0582eb3e744b": {
+  "questionId": "artemis-m1",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 2866.7,
+  "tokens": 84,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "2210bf18635c": {
+  "questionId": "artemis-m2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 3834.2,
+  "tokens": 145,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "689ce04cfeea": {
+  "questionId": "artemis-w3",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 3380.3,
+  "tokens": 99,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "960e3c05c882": {
+  "questionId": "artemis-w2",
+  "source": "H1",
+  "arm": "B",
+  "pass": 12,
+  "wallMs": 4095.5,
+  "tokens": 142,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "3d16ee842b4a": {
+  "questionId": "kennedy-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3449.5,
+  "tokens": 137,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "7c8e7bbdd118": {
+  "questionId": "kennedy-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3379.7,
+  "tokens": 138,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "6e15f23b9b15": {
+  "questionId": "kennedy-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2453.7,
+  "tokens": 81,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "72837987aeaa": {
+  "questionId": "kennedy-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2307.9,
+  "tokens": 63,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "c761a0bcca62": {
+  "questionId": "kennedy-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3674.2,
+  "tokens": 141,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "fc263f4f924e": {
+  "questionId": "spring-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2396.6,
+  "tokens": 72,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "4adf491f5c09": {
+  "questionId": "spring-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2520.3,
+  "tokens": 85,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "0d20342e3ee2": {
+  "questionId": "spring-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2465.1,
+  "tokens": 81,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "d5b43558123c": {
+  "questionId": "spring-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3332.4,
+  "tokens": 132,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "a0daca71e36a": {
+  "questionId": "spring-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 4350.8,
+  "tokens": 192,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "ca05de7d3db3": {
+  "questionId": "cnrs-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3234.4,
+  "tokens": 122,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "7f3cd8f708ff": {
+  "questionId": "cnrs-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2727.0,
+  "tokens": 92,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "ebb97784cc75": {
+  "questionId": "cnrs-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2803.5,
+  "tokens": 85,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "482c82251a2d": {
+  "questionId": "cnrs-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 4754.7,
+  "tokens": 200,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "65ddb82d0ab9": {
+  "questionId": "cnrs-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3855.5,
+  "tokens": 145,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "9d8881f5f11a": {
+  "questionId": "cuisine-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3707.3,
+  "tokens": 158,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "5359a5e51f0f": {
+  "questionId": "cuisine-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3612.6,
+  "tokens": 152,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "c8bcd1eb22a8": {
+  "questionId": "cuisine-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2334.1,
+  "tokens": 77,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "e81e5ed374a1": {
+  "questionId": "cuisine-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3033.8,
+  "tokens": 115,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "f67d7eeb2b04": {
+  "questionId": "cuisine-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2621.8,
+  "tokens": 87,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "c409f0f062eb": {
+  "questionId": "tears-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3738.5,
+  "tokens": 152,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "6ac9d28dd1c2": {
+  "questionId": "tears-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2544.6,
+  "tokens": 85,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "11d2720f62c5": {
+  "questionId": "tears-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2517.1,
+  "tokens": 80,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "a87d9e58c446": {
+  "questionId": "tears-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3910.8,
+  "tokens": 171,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "c3a6de740244": {
+  "questionId": "tears-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 4045.7,
+  "tokens": 174,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "ddd352ad0f59": {
+  "questionId": "artemis-w1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 3480.8,
+  "tokens": 144,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "350cf29d2b94": {
+  "questionId": "artemis-m1",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2698.1,
+  "tokens": 93,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "6527864a2a0f": {
+  "questionId": "artemis-m2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2518.3,
+  "tokens": 82,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "fbb37db4c755": {
+  "questionId": "artemis-w3",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 2573.6,
+  "tokens": 79,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "dd7a7159c910": {
+  "questionId": "artemis-w2",
+  "source": "H1",
+  "arm": "A2",
+  "pass": 13,
+  "wallMs": 4763.4,
+  "tokens": 198,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "e81ca7d9194c": {
+  "questionId": "kennedy-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3467.2,
+  "tokens": 141,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "db2f19a6df54": {
+  "questionId": "kennedy-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3491.0,
+  "tokens": 139,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "7b5f05b4af44": {
+  "questionId": "kennedy-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2786.3,
+  "tokens": 98,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "2630a6fe5019": {
+  "questionId": "kennedy-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2911.5,
+  "tokens": 101,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "37ff4a90cddc": {
+  "questionId": "kennedy-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 4491.2,
+  "tokens": 189,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "07c7819e0b1a": {
+  "questionId": "spring-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2587.4,
+  "tokens": 86,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "0a4dd659ae5c": {
+  "questionId": "spring-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3323.2,
+  "tokens": 136,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "d397f6489ee3": {
+  "questionId": "spring-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2744.9,
+  "tokens": 101,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "30a7f892a9c7": {
+  "questionId": "spring-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3250.0,
+  "tokens": 135,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "3bd07721d4e6": {
+  "questionId": "spring-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 4780.9,
+  "tokens": 224,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "e1de9ff3fe0c": {
+  "questionId": "cnrs-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 4366.6,
+  "tokens": 194,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "3ac95fdf0144": {
+  "questionId": "cnrs-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2996.9,
+  "tokens": 112,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "da2160453802": {
+  "questionId": "cnrs-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3700.3,
+  "tokens": 143,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "58bb9847b5b6": {
+  "questionId": "cnrs-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 5314.4,
+  "tokens": 244,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "141242218a24": {
+  "questionId": "cnrs-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3625.6,
+  "tokens": 144,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "f97096c3403a": {
+  "questionId": "cuisine-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 4130.3,
+  "tokens": 195,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "fef90b1c055c": {
+  "questionId": "cuisine-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2954.3,
+  "tokens": 121,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "76918005d5e1": {
+  "questionId": "cuisine-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3180.3,
+  "tokens": 136,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "792bb6fbf4e6": {
+  "questionId": "cuisine-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3940.9,
+  "tokens": 182,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "9e40b33d9040": {
+  "questionId": "cuisine-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3017.7,
+  "tokens": 117,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "f092335542ba": {
+  "questionId": "tears-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3473.2,
+  "tokens": 147,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "cc9b1b0b7670": {
+  "questionId": "tears-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2940.6,
+  "tokens": 110,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "d9721c051063": {
+  "questionId": "tears-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2979.7,
+  "tokens": 115,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "f236b89331e8": {
+  "questionId": "tears-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3783.3,
+  "tokens": 177,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "2816da4e357e": {
+  "questionId": "tears-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 5626.1,
+  "tokens": 286,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": true
+ },
+ "16483939a7e4": {
+  "questionId": "artemis-w1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 4181.5,
+  "tokens": 196,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": true
+ },
+ "6cd3344ef7fa": {
+  "questionId": "artemis-m1",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 2979.6,
+  "tokens": 119,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "685d2911c44e": {
+  "questionId": "artemis-m2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3096.3,
+  "tokens": 128,
+  "turns": 1,
+  "tools": [],
+  "category": "M",
+  "citationsFilled": false
+ },
+ "4fe2c29e435c": {
+  "questionId": "artemis-w3",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 3048.3,
+  "tokens": 119,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ },
+ "b91e1b41c6ab": {
+  "questionId": "artemis-w2",
+  "source": "H1",
+  "arm": "A",
+  "pass": 14,
+  "wallMs": 4121.8,
+  "tokens": 175,
+  "turns": 1,
+  "tools": [],
+  "category": "W",
+  "citationsFilled": false
+ }
+}

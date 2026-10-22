@@ -1,0 +1,656 @@
+[
+ {
+  "questionId": "cnrs-w1",
+  "question": "Il cite Gemini : quel est aujourd'hui le modèle Gemini le plus récent de Google ?",
+  "answers": [
+   {
+    "textId": "3e3dead31b",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\n\nLa vidéo mentionne Gemini comme un exemple de modèle de grande taille (moment-6, 40000-48000), mais elle ne précise pas quelle est la version la plus récente de ce modèle.\n\nComme je n'ai pas accès à la recherche web en mode local, je ne peux pas répondre à cette question avec des informations externes.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Je n'ai pas accès à la recherche web pour vérifier les actualités technologiques récentes."
+    ]
+   },
+   {
+    "textId": "48e8e746aa",
+    "kind": "observation",
+    "answer": "La vidéo mentionne Gemini comme un exemple de modèle de grande taille, mais ne précise pas quelle version est la plus récente. Pour répondre à votre question, je dois effectuer une recherche externe.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "998f2ec2d1",
+    "kind": "external",
+    "answer": "D'après les notes de mise à jour de Google, le modèle Gemini 3 Flash est présenté comme le nouveau modèle par défaut dans l'application Gemini (https://gemini.google/release-notes/). Les documents mentionnent également l'existence d'un modèle 2.5 Pro expérimental (https://gemini.google/release-notes/).",
+    "citations": [
+     {
+      "id": "web-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://gemini.google/release-notes/",
+      "title": "Mises à jour et améliorations des applications Gemini",
+      "evidence": "Gemini 3 Flash est désormais le nouveau modèle par défaut dans l'appli Gemini."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b1e867861c",
+    "kind": "observation",
+    "answer": "La vidéo mentionne Gemini comme un exemple de modèle de grande taille, mais ne précise pas quelle est la version la plus récente. Je ne dispose pas d'informations externes pour répondre à cette question.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d464971e14",
+    "kind": "external",
+    "answer": "D'après les notes de mise à jour de Google, le modèle Gemini 3 Flash est présenté comme le nouveau modèle par défaut dans l'application Gemini (https://gemini.google/release-notes/). Il est décrit comme une avancée majeure offrant une intelligence de nouvelle génération ultra-rapide.",
+    "citations": [
+     {
+      "id": "web-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://gemini.google/release-notes/",
+      "title": "Mises à jour et améliorages des applications Gemini",
+      "evidence": "Gemini 3 Flash est désormais le nouveau modèle par défaut dans l'appli Gemini."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "df41931827",
+    "kind": "observation",
+    "answer": "La vidéo mentionne Gemini comme un exemple de modèle très large, mais elle ne précise pas quelle version est la plus récente. Pour répondre à cette question, une recherche externe est nécessaire.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo ne fournit pas d'information sur la version la plus récente de Gemini."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m1",
+  "question": "Combien de neurones a-t-il donnés pour l'éléphant, et combien en compte un cerveau humain ?",
+  "answers": [
+   {
+    "textId": "8b4157e3b5",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas de nombre de neurones pour un éléphant ni pour un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA avec des exemples de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne contient pas l'information demandée."
+    ]
+   },
+   {
+    "textId": "d35441dd3f",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas le nombre de neurones pour un éléphant, ni le nombre de neurones dans un cerveau humain. Les passages consultés traitent de l'apprentissage des IA à partir d'images de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d8ceeaf791",
+    "kind": "insufficient",
+    "answer": "Je ne trouve aucune mention du nombre de neurones pour un éléphant ou pour un cerveau humain dans les passages visionnés. La vidéo traite actuellement de l'apprentissage supervisé avec des exemples de chats et de lapins (moment-16 à moment-21).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les informations demandées ne sont pas présentes dans les segments vidéo analysés."
+    ]
+   },
+   {
+    "textId": "df00c597c6",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas le nombre de neurones pour un éléphant ni pour un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA à partir d'images de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "fdfa0e64a1",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé d'information concernant le nombre de neurones pour l'éléphant ou pour un cerveau humain dans les passages visionnés. La vidéo traite de l'apprentissage des IA avec des exemples de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ffbd1cd597",
+    "kind": "observation",
+    "answer": "La vidéo ne mentionne pas de nombre de neurones pour un éléphant, ni de nombre de neurones dans un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA à partir d'exemples de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-o1",
+  "question": "Sur la première diapositive « L'éducation d'une grande IA », celle des deux têtes (robot et humain), quelle petite annotation figurait à côté du titre ?",
+  "answers": [
+   {
+    "textId": "202d14caae",
+    "kind": "observation",
+    "answer": "Sur la première diapositive, à côté du titre « L'éducation d'une grande IA », figurait l'annotation « Celles qui sont à la mode ! ».",
+    "citations": [
+     {
+      "id": "moment-60",
+      "startMs": 480000,
+      "endMs": 520000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "7be764f878",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la diapositive mentionnée n'est pas présente dans les passages vidéo que j'ai pu analyser.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo analysée commence à 520 000 ms et se termine à 568 000 ms, ne couvrant pas le début de la présentation."
+    ]
+   },
+   {
+    "textId": "825cc467d6",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la diapositive mentionnée n'est pas présente dans les passages vidéo analysés. Les extraits disponibles commencent à la fin du processus d'éducation d'une IA (moment-66).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La diapositive avec le titre « L'éducation d'une grande IA » et l'image des deux têtes n'est pas visible dans les segments fournis."
+    ]
+   },
+   {
+    "textId": "9cd6b5e070",
+    "kind": "insufficient",
+    "answer": "Je ne parviens pas à identifier cette annotation. Les passages disponibles ne montrent pas la diapositive mentionnée avec le titre et l'image des deux têtes.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La diapositive spécifique avec le titre « L'éducation d'une grande IA » et l'image des deux têtes n'est pas visible dans les segments vidéo fournis."
+    ]
+   },
+   {
+    "textId": "a3a89aee12",
+    "kind": "observation",
+    "answer": "Sur la diapositive présentant deux têtes (un robot et un humain), il n'y a pas d'autre annotation visible à côté du titre « L'éducation d'une grande IA » que celui-ci lui-même. Les éléments visuels de ce passage montrent un schéma avec deux cerveaux, mais aucune petite annotation supplémentaire n'est mentionnée dans les données disponibles.",
+    "citations": [
+     {
+      "id": "moment-60",
+      "startMs": 472000,
+      "endMs": 480000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c888165b3c",
+    "kind": "observation",
+    "answer": "kind=observation\n\nSur la diapositive présentant les deux têtes de robots avec le titre « L'éducation d'une « grande IA » », l'annotation située juste en dessous du titre est « Celles qui sont à la mode ! » (moment-472000 à 520000, image 2).",
+    "citations": [
+     {
+      "id": "moment-472000-520000",
+      "startMs": 472000,
+      "endMs": 520000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w2",
+  "question": "Qui a inventé l'expression « modèle de fondation » dont il parle, et quand ?",
+  "answers": [
+   {
+    "textId": "3120e241bc",
+    "kind": "external",
+    "answer": "L'expression « modèle de fondation » a été inventée par le Center for Research on Foundation Models (CRFM) de l'institut Stanford HAI en août 2021. Ce terme a été choisi pour désigner tout modèle entraîné sur de vastes ensembles de données et adaptable à de nombreuses tâches.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Foundation_model",
+      "title": "Foundation model - Wikipedia",
+      "evidence": "The Stanford Institute for Human-Centered Artificial Intelligence's (HAI) Center for Research on Foundation Models (CRFM) coined the term \"foundation model\" in August 2021"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "633b4fc729",
+    "kind": "observation",
+    "answer": "La vidéo mentionne l'existence d'un modèle de fondation (moment-76), mais l'orateur ne précise pas qui a inventé cette expression ni quand elle a été créée. Je ne dispose pas d'informations externes pour répondre à cette question.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "99b94ecf75",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo mentionne l'existence d'un modèle de fondation (moment-76), mais ne précise pas qui a inventé l'expression ni quand.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a658cb711c",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo mentionne l'existence d'un modèle de fondation (moment-76), mais ne précise pas qui a inventé l'expression ni quand.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo ne fournit pas l'origine historique ou l'auteur de l'expression."
+    ]
+   },
+   {
+    "textId": "db54da449f",
+    "kind": "observation",
+    "answer": "La vidéo mentionne l'existence d'un modèle de fondation (moment-76), mais l'orateur ne précise pas qui a inventé cette expression ni quand elle a été créée. Je ne peux donc pas répondre à votre question avec les éléments de la vidéo.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "fb3bb90561",
+    "kind": "external",
+    "answer": "L'expression « modèle de fondation » a été inventée par le Center for Research on Foundation Models (CRFM) de l'institut Stanford HAI en août 2021.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Foundation_model",
+      "title": "Foundation model - Wikipedia",
+      "evidence": "The Stanford Institute for Human-Centered Artificial Intelligence's (HAI) Center for Research on Foundation Models (CRFM) coined the term \"foundation model\" in August 2021"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-o2",
+  "question": "Sur le graphique du suivi de l'apprentissage, de quelles couleurs étaient la courbe d'apprentissage et la courbe de validation ?",
+  "answers": [
+   {
+    "textId": "0001f2c4f0",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car le graphique du suivi de l'apprentissage n'est pas visible dans les passages vidéo consultésés.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "L'outil search_moments est indisponible dans ce rejeu, et les passages vidéo consultésés ne contiennent pas d'image de ce graphique. Les informations sur les couleurs des courbes sur ce graphique spécifique ne sont pas présentes dans les données fournies.",
+     "    "
+    ]
+   },
+   {
+    "textId": "08963772ac",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne montrent pas le graphique du suivi de l'apprentissage. Les extraits disponibles traitent de l'analogie entre l'éducation d'une IA et celle d'un enfant, mais ne présentent pas les couleurs des courbes.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages vidéo consultés ne contiennent pas l'image du graphique mentionné."
+    ]
+   },
+   {
+    "textId": "2d467e07a7",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne montrent pas le graphique du suivi de l'apprentissage mentionné.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages vidéo analysés (moment-81 à moment-86) traitent de l'étape de fine-tuning et de l'inférence, mais ne présentent pas le graphique spécifique contenant les courbes d'apprentissage et de validation."
+    ]
+   },
+   {
+    "textId": "58eb1ed36d",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne montrent pas le graphique du suivi de l'apprentissage.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les extraits vidéo disponibles s'arrêtent avant l'affichage du graphique mentionné."
+    ]
+   },
+   {
+    "textId": "e778b808a5",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne montrent pas le graphique du suivi de l'apprentissage mentionné.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages vidéo disponibles s'arrêtent avant la présentation du graphique du suivi de l'apprentissage."
+    ]
+   },
+   {
+    "textId": "f4d8238701",
+    "kind": "observation",
+    "answer": "Sur le graphique du suivi de l'apprentissage, je n'ai pas pu identifier de courbe d'apprentissage ou de courbe de validation. Les passages vidéo consultés montrent des schémas sur les étapes de l'éducation d'une IA, mais pas de graphique avec des courbes.",
+    "citations": [
+     {
+      "id": "moment-65",
+      "startMs": 520000,
+      "endMs": 528000
+     },
+     {
+      "id": "moment-76",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-86",
+      "startMs": 680000,
+      "endMs": 688000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le graphique avec les courbes d'apprentissage et de validation n'est pas présent dans les segments vidéo analysés."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m2",
+  "question": "Selon lui, quelle a été la force d'OpenAI avec ChatGPT, et par quelle méthode OpenAI a-t-il réalisé cet alignement ?",
+  "answers": [
+   {
+    "textId": "1a8f3fb2be",
+    "kind": "observation",
+    "answer": "La force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Cet alignement repose sur l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "4e7ca21885",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Cet alignement repose sur l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 750000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "7f36dda42f",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit robuste et difficile à briser (moment-96, moment-97). Cet alignement repose sur l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "85d7ae9591",
+    "kind": "observation",
+    "answer": "La force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à briser face à des utilisateurs cherchant à faire faire des erreurs à l'IA (moment-96, moment-97, moment-98). Cet alignement repose sur l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-98",
+      "startMs": 776000,
+      "endMs": 784000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a2042e5b0e",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Pour réaliser cet alignement, l'orateur mentionne l'apprentissage d'un savoir-être et de règles éthiques, comme le fait de répondre avec bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 750000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d2250094c1",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Cet alignement repose sur l'apprentissage d'un savoir-être et de règles éthiques, comme le fait de répondre avec bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w3",
+  "question": "Il parle des règles éthiques imposées aux IA : où en est aujourd'hui l'AI Act, la loi européenne sur l'IA ?",
+  "answers": [
+   {
+    "textId": "0127725794",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas l'état actuel de l'AI Act. L'orateur évoque seulement l'importance des règles éthiques fixées lors de l'alignement de l'IA (moment-106).",
+    "citations": [
+     {
+      "id": "moment-106",
+      "startMs": 840000,
+      "endMs": 848000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo traite de l'alignement éthique technique mais ne fournit aucune information sur la législation européenne."
+    ]
+   },
+   {
+    "textId": "4e95b55bbd",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai). Il instaure des règles basées sur le niveau de risque pour les développeurs et les utilisateurs afin de garantir une IA digne de confiance en Europe.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s digital future",
+      "evidence": "The AI Act is the first-ever legal framework on AI, which addresses the risks of AI and positions Europe to play a leading role globally."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "a50420fc50",
+    "kind": "observation",
+    "answer": "L'orateur mentionne que l'IA est dotée de règles éthiques fixées pendant l'alignement (moment-106). Cependant, la vidéo ne fournit aucune information sur l'état actuel ou le contenu de l'AI Act européen.",
+    "citations": [
+     {
+      "id": "moment-106",
+      "startMs": 840000,
+      "endMs": 848000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c98e08fcac",
+    "kind": "observation",
+    "answer": "L'orateur mentionne que l'IA est dotée de règles éthiques fixées pendant l'alignement (moment-106). Cependant, la vidéo ne fournit aucune information sur l'état actuel de l'AI Act ou de la législation européenne.",
+    "citations": [
+     {
+      "id": "moment-106",
+      "startMs": 840000,
+      "endMs": 848000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d6115c2dad",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai). Il instaure une approche basée sur les risques pour garantir une IA digne de confiance en Europe.",
+    "citations": [
+     {
+      "id": "web-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s digital future",
+      "evidence": "The AI Act is the first-ever legal framework on AI, which addresses the risks of AI and positions Europe to play a leading role globally."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e3c536eec1",
+    "kind": "observation",
+    "answer": "L'orateur mentionne que l'IA est capable de répondre aux requêtes avec les règles éthiques qui lui ont été fixées lors de l'alignement (moment-106). Cependant, la vidéo ne fournit aucune information sur l'état actuel ou le contenu de l'AI Act européen.",
+    "citations": [
+     {
+      "id": "moment-106",
+      "startMs": 840000,
+      "endMs": 848000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

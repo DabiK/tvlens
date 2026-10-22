@@ -19,13 +19,20 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 
 Catégorie à part, prioritaire depuis le 22/10 : W (web), M (vidéo + extérieur), O (relecture d'images). Point de départ
 établi dans le code : la voie locale refuse toute réponse extérieure et n'a aucun outil web (à confirmer par
-l'exploration ; confirmé). Chiffres à venir : essai hors ligne H1, flux réel F1.
+l'exploration ; confirmé). H1 (hors ligne) mesuré ; flux réel F1 à venir.
 
 | Chiffre | Valeur | Source |
 | --- | --- | --- |
 | Questions de la catégorie (oracle v4) | 42 : 18 W (11 stables, 7 d'actualité), 12 M, 12 O ; 0 rejetée | [oracle v4](../2026-10-22-oracle-v4-web-outils-gx10/) |
 | Corpus web figé | 51 pages sur 54 ; 59 extraits sur 67 retrouvés ; 28/30 questions W/M avec une source retrouvée | oracle v4 |
 | Recherche SearXNG sur la GX10 | 3,0 s par requête (50 résultats) | [SearXNG](../2026-10-22-searxng-gx10/) |
+| W/M pertinentes, produit actuel (refus du web) | **0/60** (2 passages × 30), 3,4 s | [H1](../2026-10-22-web-outils-hors-ligne-gx10/) bras A |
+| W/M pertinentes avec 3 passages de pages injectés | **26/60** (W 16/36, M 10/24), **4,9 s** (+1,5 s), 8 inventions (A : 2), 26 gagnées et 0 perdue | H1 bras B |
+| W/M pertinentes, web autorisé sans page | 3/60, 1 invention : le modèle n'invente pas de mémoire | H1 bras A2 |
+| Bonne page parmi les 3 récupérées (plongements) | 21 questions W/M sur 30 ; 7 des 9 ratées ne nomment pas leur sujet (« ce film ») | H1, `construction.json` |
+| Outil de recherche en deux temps | non noté : 3 erreurs, 12 réponses > 60 s, 12 JSON invalides, 4/60 sourcées | H1 bras C |
+| Questions O, relecture d'images anciennes | sans outil 0/24 ; journal 0/24 ; `inspect_clip` 4/24 avec 10 inventions, 8,7 s | H1 bras O0, OJ, OI |
+| Déclencheur web du produit (règle de mots-clés) | W 7/18, M 1/12, O 0/12 ; 2/60 questions vidéo à tort | `callsForWeb` de T309, calculé hors GPU |
 
 ## Matériel et configuration de référence
 

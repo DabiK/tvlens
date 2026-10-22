@@ -1,0 +1,77 @@
+export const meta = {
+  name: 'notation-h1-web-outils',
+  description: 'Blind scoring of H1 answers (W/M arms A, A2, B; O arms O0, OJ, OI) against oracle v4, two judges per video, a third on disagreements',
+  phases: [{ title: 'Notation', detail: 'two blind judges per video, a third on disagreements' }],
+}
+
+const A = args
+const MAX = 4
+let active = 0
+const waiting = []
+async function limited(fn) {
+  if (active >= MAX) { await new Promise(r => waiting.push(r)) } else { active++ }
+  try { return await fn() } finally { const next = waiting.shift(); if (next) next(); else active-- }
+}
+
+const VIDEOS = A.videos || ['kennedy', 'spring', 'cnrs', 'cuisine', 'tears', 'artemis']
+const JUDGE_SCHEMA = {
+  type: 'object',
+  properties: {
+    video: { type: 'string' },
+    scores: { type: 'array', items: { type: 'object', properties: {
+      textId: { type: 'string' }, questionId: { type: 'string' }, score: { type: 'number', enum: [0, 1, 2, 3] },
+      invention: { type: 'boolean' }, abstention: { type: 'string', enum: ['none', 'justified', 'unjustified'] },
+      sourceOk: { type: 'string', enum: ['yes', 'no', 'na'] }, rationale: { type: 'string' } },
+      required: ['textId', 'questionId', 'score', 'invention', 'abstention', 'sourceOk', 'rationale'] } },
+  },
+  required: ['video', 'scores'],
+}
+
+function judgePrompt(video, which, subset) {
+  const scope = subset ? `Ne note QUE ces textId : ${JSON.stringify(subset)}.` : 'Note tous les textes du paquet.'
+  return `Tu es le juge ${which}, indépendant, de réponses d'un compagnon de visionnage, vidéo « ${video} ». Notation à l'aveugle.
+Paquet : ${A.packets}/a-noter-${video}.json (questions et réponses anonymisées, avec leurs champs citations, sources et limits ;
+« insufficient » = abstention ; « json-invalide » = sortie mal formée, à noter sur son contenu). ${scope}
+Oracle v4 : clé « ${video} » du fichier ${A.oracle}, questions dont questionId figure dans le paquet (catégories W = web,
+M = vidéo + fait extérieur, O = relecture d'images anciennes). Pour chacune : requiredFacts, optionalFacts, sources,
+inventionTraps, abstentionPolicy et la grille rubric s3–s0, à appliquer telle quelle (elle fixe le plafond d'une réponse
+sans source, d'une réponse dans l'autre langue, et l'abstention justifiée quand l'outil manque).
+Règles communes :
+- Un fait extérieur n'est crédité que s'il est juste ; une source compte si elle soutient le fait. Pour le vérifier, le
+  corpus figé est dans ${A.corpus} : manifeste.json associe chaque URL à une clé, le texte est dans texte/<clé>.txt. Une
+  source hors corpus n'est pas fausse pour autant : juge le fait sur l'oracle. sourceOk = yes si au moins une source
+  citée soutient les faits extérieurs donnés, no si les sources citées ne les soutiennent pas ou si un fait extérieur
+  est donné sans source, na s'il n'y a pas de fait extérieur.
+- invention = true si un fait est faux, non soutenu, ou présenté comme dit ou montré dans la vidéo alors qu'il ne l'est
+  pas (voir inventionTraps). Une abstention n'est pas une invention.
+- abstention none/justified/unjustified selon abstentionPolicy.
+INTERDIT : ouvrir cle.json, membres-*, calls.jsonl, construction.json, h1-resultats, ou chercher d'où vient une réponse.
+Tu peux vérifier un fait de la vidéo dans ${A.lab}/oracle/transcriptions/${video}.transcript.txt, ou les images
+${A.media}/frames/${video}/ (python3 -I ${A.lab}/planche.py --frames … --from s --to s --out <ton dossier>/f.jpg puis Read),
+en particulier pour les questions O (champ inspectInterval).
+Dossier de travail : ${A.packets}/travail/${video}-juge${which}/ (crée-le).
+Pour chaque texte : score 0–3, invention, abstention, sourceOk, rationale courte. Sois constant entre les réponses d'une
+même question.`
+}
+
+const results = await pipeline(
+  VIDEOS,
+  async video => {
+    const [j1, j2] = await parallel([1, 2].map(n => () =>
+      limited(() => agent(judgePrompt(video, n, null), { label: `juge:${video}:${n}`, phase: 'Notation', schema: JUDGE_SCHEMA }))))
+    let j3 = null
+    if (j1 && j2) {
+      const s2 = new Map(j2.scores.map(s => [s.textId, s]))
+      const disputed = j1.scores.filter(s => {
+        const o = s2.get(s.textId)
+        return !o || Math.abs(o.score - s.score) >= 2 || o.invention !== s.invention
+      }).map(s => s.textId)
+      if (disputed.length) {
+        log(`${video}: ${disputed.length} désaccord(s) tranché(s) par un troisième juge`)
+        j3 = await limited(() => agent(judgePrompt(video, 3, disputed), { label: `juge:${video}:3`, phase: 'Notation', schema: JUDGE_SCHEMA }))
+      }
+    }
+    return { video, judges: [j1, j2, j3] }
+  },
+)
+return results.filter(Boolean)

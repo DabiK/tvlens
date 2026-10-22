@@ -1,0 +1,513 @@
+[
+ {
+  "questionId": "artemis-o1",
+  "question": "Dans le petit film du début, quel titre s'est affiché en grand sur une vue de la surface de la Lune ?",
+  "answers": [
+   {
+    "textId": "05a97f5c67",
+    "kind": "observation",
+    "answer": "Le titre qui s'est affiché sur la surface de la Lune est composé de plusieurs mots successifs : WHAT, WHAT WE'LL DO. Les images montrent une vue de la surface lunaire avec ces textes superposés (88000-100000 ms).",
+    "citations": [
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "0e49dd954d",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo disponibles ne montrent pas le début du film mentionné. Les extraits actuels commencent directement avec un homme s'exprimant devant le lanceur Artemis.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages vidéo analysés ne couvrent pas le début du film."
+    ]
+   },
+   {
+    "textId": "176760e0c5",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo analysés ne montrent pas le début du film ni de vue de la surface de la Lune.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les segments vidéo disponibles (de 344000 à 392000 ms) ne contiennent pas le début du film mentionné."
+    ]
+   },
+   {
+    "textId": "60cf513592",
+    "kind": "observation",
+    "answer": "Le titre qui s'est affiché sur une vue de la surface de la Lune est composé de plusieurs mots successifs : WHAT, puis WHAT WE'LL DO (moment-12, 88000-100000 ms).",
+    "citations": [
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     },
+     {
+      "id": "moment-1      ",
+      "startMs": 96000,
+      "endMs": 100000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "62a9b24dea",
+    "kind": "observation",
+    "answer": "Aucun titre n'est visible sur une vue de la surface de la Lune dans les passages analysés. Les images montrant la Lune ou la Terre présentent des paysages spatiaux sans texte superposé en grand.",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     },
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "7196af9de9",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier de titre s'affichant sur une vue de la surface de la Lune dans les passages consultés. Les images montrent des vues de la Lune ou de la Terre, mais aucun texte de titre n'est visible sur ces plans.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages analysés ne contiennent pas de vue de la Lune avec un titre affiché en grand."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w1",
+  "question": "Pourquoi le décollage a-t-il pris du retard cette nuit-là ?",
+  "answers": [
+   {
+    "textId": "288f33f136",
+    "kind": "observation",
+    "answer": "Les passages visionnés ne mentionnent pas de retard de décollage. On y voit le lanceur Orion sur sa plateforme avec des jets de gaz liés à la pressurisation (moment-84, 664000-672000) et l'équipe de contrôle basculer sur un canal de communication commun (moment-88, 696000-704000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "4e789ca940",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne permettent pas de répondre à cette question. La vidéo montre le lanceur Orion et l'équipe de contrôle en pleine activité, mais ne mentionne aucune cause de retard pour le décollage.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "683a1764cd",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne mentionnent pas de retard de décollage. La vidéo montre uniquement des activités de pressurisation sur le lanceur Orion et le passage de l'équipe de lancement sur un canal de communication commun (moment-84 à moment-89).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne contient pas d'information sur une cause de retard."
+    ]
+   },
+   {
+    "textId": "76ee620b33",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne mentionnent pas de retard de décollage. La vidéo montre l'équipe de contrôle surveillant les données et le lanceur Orion sur sa plateforme, mais aucune cause de retard n'est évoquée.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a2d47a18e2",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne mentionnent pas de retard de décollage. La vidéo montre uniquement des activités de pressurisation sur le lanceur Orion et le passage de l'équipe de lancement sur un canal de communication commun.",
+    "citations": [
+     {
+      "id": "moment-84",
+      "startMs": 664000,
+      "endMs": 672000
+     },
+     {
+      "id": "moment-89",
+      "startMs": 704000,
+      "endMs": 712000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo ne fournit aucune information sur un éventuel retard de décollage."
+    ]
+   },
+   {
+    "textId": "d123bd4fe8",
+    "kind": "insufficient",
+    "answer": "Les passages consultés montrent des activités de pressurisation sur le lanceur Orion (moment-84, 664000-672000) et une équipe de contrôle travaillant sur un canal de communication commun (moment-89, 704000-712000), mais la vidéo ne mentionne pas de retard de décollage. Je ne dispose pas d'informations suffisantes pour expliquer la cause d'un éventuel retard.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m1",
+  "question": "Les employés d'Airbus qu'on a vus applaudir en Allemagne : qu'ont-ils fourni pour cette mission, et à quoi sert cet élément pendant le vol ?",
+  "answers": [
+   {
+    "textId": "1b67757ce8",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé de passage montrant des employés d'Airbus en Allemagne dans les séquences consultées. Par conséquent, je ne peux pas identifier l'élément fourni ni son utilité pendant le vol.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages consultés ne montrent que l'équipe de contrôle de la mission Artemis-1 et ne mentionnent pas d'employés d'Airbus en Allemagne."
+    ]
+   },
+   {
+    "textId": "3d1dcf4545",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier d'employés d'Airbus en Allemagne dans les passages consultés. Les extraits montrent uniquement une équipe de contrôle dans un centre de lancement pour la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "5872953a8a",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas d'employés d'Airbus en Allemagne, ni de matériel spécifique qu'ils auraient fourni pour cette mission. Les passages consultés se concentrent sur l'équipe de contrôle et l'autorisation de lancement de la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne contient aucune information sur des employés d'Airbus ou sur des composants fournis par l'Allemagne."
+    ]
+   },
+   {
+    "textId": "5ce24880b2",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas d'employés d'Airbus applaudissant en Allemagne, ni de matériel spécifique fourni par eux pour cette mission. Les passages consultés se concentrent sur l'équipe de contrôle et l'autorisation de lancement de la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne contient aucune information sur des employés d'Airbus en Allemagne ou sur les composants fournis par cette entreprise."
+    ]
+   },
+   {
+    "textId": "79765160a9",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas d'employés d'Airbus en Allemagne, ni de matériel spécifique fourni par eux pour cette mission. Les passages consultés se concentrent sur l'équipe de contrôle et l'autorisation de lancement de la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "fb7ec7ad9a",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier d'employés d'Airbus applaudissant en Allemagne dans les passages consultés. Les extraits montrent uniquement une équipe de contrôle au centre de lancement de la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m2",
+  "question": "Comment s'appelle la directrice de lancement qui a donné le feu vert pour reprendre le compte à rebours, et qu'a-t-elle de particulier dans l'histoire de la NASA ?",
+  "answers": [
+   {
+    "textId": "07e579e663",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas le nom de la directrice de lancement ayant donné le feu vert pour reprendre le compte à rebours. Les passages consultés décrivent uniquement les phases de préparation du lanceur Artemis I et l'autorisation de reprise de l'horloge.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "2641c22334",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car le nom de la directrice de lancement et les détails de son parcours ne sont pas mentionnés dans les passages consultés. Les extraits disponibles montrent uniquement les phases de préparation du lanceur Artemis I et le compte à rebours.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages vidéo consultés ne contiennent pas le nom de la directrice de lancement ni d'informations sur son histoire à la NASA."
+    ]
+   },
+   {
+    "textId": "9584cd4961",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas le nom de la directrice de lancement ayant donné le feu vert pour reprendre le compte à rebours. Je ne peux donc pas non plus préciser ce qu'elle a de particulier dans l'histoire de la NASA.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le nom de la directrice de lancement n'est pas cité dans les passages visionnés."
+    ]
+   },
+   {
+    "textId": "ec3d0552db",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est la première femme de l'histoire de la NASA à occuper ce poste (https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Appointed to the position in January 2016, Blackwell-Thompson is NASA’s first female launch director."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f534706688",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est la première femme de l'histoire de la NASA à occuper ce poste.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Appointed to the position in January 2016, Blackwell-Thompson is NASA’s first female launch director."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f85ceb064f",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas le nom de la directrice de lancement ni ses particularités historiques. Les passages consultés montrent uniquement les phases de préparation du lanceur Artemis I et l'annonce de la reprise du compte à rebours.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w3",
+  "question": "Depuis ce lancement, où en est aujourd'hui le programme Artemis ?",
+  "answers": [
+   {
+    "textId": "5bd6fe171b",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\nLes passages vidéo consultés montrent le décollage de la mission Artemis I, mais ne fournissent aucune information sur l'état actuel ou l'avancement du programme Artemis.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "7a167130b5",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne contient pas d'informations sur l'état actuel du programme Artemis. Les passages consultés se concentrent uniquement sur le déroulement du lancement de la mission Artemis I.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne traite que du lancement de la mission Artemis I et ne fournit aucune information sur l'avancement du programme à ce jour."
+    ]
+   },
+   {
+    "textId": "b2881e2b21",
+    "kind": "insufficient",
+    "answer": "Les pages web consultées mentionnent le programme Artemis mais ne fournissent pas de détails précis sur l'état d'avancement actuel des missions. Les informations disponibles se limitent à l'existence du programme et à des discussions sur l'accélération de ses futures missions lunaires.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b620bcc779",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car je n'ai pas accès à des informations externes ou à une recherche web pour connaître l'état actuel du programme Artemis. La vidéo consultée montre uniquement le lancement de la mission Artemis I.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Je n'ai pas accès à la recherche web pour fournir des informations actualisées hors de la vidéo."
+    ]
+   },
+   {
+    "textId": "be74f4325e",
+    "kind": "external",
+    "answer": "Les pages web de la NASA mentionnent le programme Artemis comme une mission vers la Lune et Mars, mais ne fournissent pas de calendrier détaillé de l'état d'avancement actuel. Les informations disponibles se concentrent sur les objectifs de la mission et les dernières actualités liées aux technologies spatiales.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "NASA’s Artemis Program is a mission to the Moon and Mars."
+     }
+    ],
+    "limits": [
+     "Les pages web consultées ne précisent pas l'état d'avancement précis des prochaines étapes du programme Artemis."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w2",
+  "question": "Comment cette mission s'est-elle terminée, et combien de temps a-t-elle duré ?",
+  "answers": [
+   {
+    "textId": "00726a6f92",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne permettent pas de savoir comment la mission s'est terminée, ni sa durée totale. Les passages consultés décrivent uniquement une phase de vol en cours, incluant la séparation de la coiffe et des systèmes d'éjection (moment-229, 1824000-1832000 ; moment-230, 1832000-1840000).",
+    "citations": [
+     {
+      "id": "moment-229",
+      "startMs": 1824000,
+      "endMs": 1832000
+     },
+     {
+      "id": "moment-230",
+      "startMs": 1832000,
+      "endMs": 1840000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo s'arrête alors que la mission est encore en cours de vol."
+    ]
+   },
+   {
+    "textId": "088e87d954",
+    "kind": "observation",
+    "answer": "La vidéo ne montre pas la fin de la mission, mais elle montre une phase de vol où la coiffe du module de service s'est séparée (moment-229, 1824000-1832000). Il n'est pas possible de déterminer la durée totale de la mission avec les éléments fournis.",
+    "citations": [
+     {
+      "id": "moment-229",
+      "startMs": 1824000,
+      "endMs": 1832000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La fin de la mission n'est pas présente dans les passages analysés.",
+     "La durée totale de la mission n'est pas mentionnée."
+    ]
+   },
+   {
+    "textId": "0ce6f98e6b",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne permettent pas de savoir comment la mission s'est terminée, ni sa durée totale. Les informations s'arrêtent alors que la mission est encore en cours, avec la séparation de la coiffe du module de service et des systèmes d'évacuation.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "3b67ccdc85",
+    "kind": "insufficient",
+    "answer": "Les informations disponibles ne permettent pas de dire comment la mission s'est terminée, ni quelle a été sa durée totale. Les passages consultés s'arrêtent alors que la mission est encore en cours, avec la séparation de la coiffe du module de service et des systèmes d'échappement.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo s'arrête à 1864000 ms, alors que la mission est toujours en phase de vol actif.",
+     "Aucune information sur la fin de la mission ou sa durée totale n'est présente dans les segments analysés."
+    ]
+   },
+   {
+    "textId": "4aa63b3d44",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations sur la fin de la mission ou sur sa durée totale. Les passages consultés montrent uniquement une phase de vol où la séparation de la coiffe du module de service et du système d'abandon de la capsule a eu lieu (moment-229, 1824000-1832000 ; moment-230, 1832000-1840000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a08bcd72df",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne permettent pas de savoir comment la mission s'est terminée, ni sa durée totale. Les passages consultés décrivent uniquement une phase de vol en cours, incluant la séparation de la coiffe du module de service et des systèmes d'échappement (moment-229, 1824000-1832000 ; moment-230, 1832000-1840000).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La fin de la mission et sa durée totale ne sont pas mentionnées dans les segments vidéo analysés."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-o2",
+  "question": "Juste avant que l'animation de la fusée ne remplace pour la première fois les images réelles, la caméra a montré quelques secondes un ciel noir : qu'y voyait-on ?",
+  "answers": [
+   {
+    "textId": "5afe7236ae",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo disponibles s'arrêtent avant le moment où l'animation de la fusée apparaît. Les données actuelles ne montrent que les images réelles du vaisseau spatial en ascension jusqu'à T+0:07:39 (moment-261, 2080000-2088000).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les segments vidéo analysés s'arrêtent à 2088000 ms, ce qui est antérieur à l'événement recherché."
+    ]
+   },
+   {
+    "textId": "6fb57d773a",
+    "kind": "observation",
+    "answer": "L'image montre un fond noir qui ressemble à un ciel nocturne, avec la fusée visible et des étincelles bleues émanant de ses moteurs. Une ligne de texte affiche également les différentes étapes du lancement, comme LIFTOFF, MAX Q ou SRB SEP.",
+    "citations": [
+     {
+      "id": "moment-241",
+      "startMs": 1920000,
+      "endMs": 1928000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "767c8b096f",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les images de ce passage précis ne sont pas disponibles dans les données fournies. Les segments analysés montrent le vaisseau spatial Orion en vol, mais ne contiennent pas la séquence de ciel noir que vous décrivez.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les données fournies ne couvrent pas la séquence de ciel noir située juste avant la première animation de la fusée."
+    ]
+   },
+   {
+    "textId": "b999256e78",
+    "kind": "observation",
+    "answer": "Dans le ciel noir, on peut voir une petite lumière brillante, qui est probablement la trace de la fusée dans l'espace.",
+    "citations": [
+     {
+      "id": "moment-241",
+      "startMs": 1920000,
+      "endMs": 1928000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     ""
+    ]
+   },
+   {
+    "textId": "ca1f51c1cf",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo analysés s'arrêtent avant l'apparition de l'animation de la fusée. Les données disponibles ne montrent que la phase d'ascension du vaisseau avec ses moteurs en fonctionnement.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages analysés s'arrêtent à 2088000 ms, alors que l'événement recherché se situe après ce point."
+    ]
+   },
+   {
+    "textId": "fb66037461",
+    "kind": "observation",
+    "answer": "Juste avant que l'animation de la fusée ne commence, la caméra montre un ciel noir avec un point lumineux qui représente le vaisseau spatial Orion (moment-242, 1928000-1936000).",
+    "citations": [
+     {
+      "id": "moment-242",
+      "startMs": 1928000,
+      "endMs": 1936000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]
