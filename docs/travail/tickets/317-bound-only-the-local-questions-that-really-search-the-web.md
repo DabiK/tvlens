@@ -1,7 +1,7 @@
 ---
 id: T317
 titre: Bound only the local questions that really search the web
-statut: a-faire
+statut: termine
 bloque_par: T316
 adr: non
 installe: non
@@ -83,3 +83,27 @@ Aucune décision n'est attendue.
 
 - 23/10, orchestrateur : ticket ouvert depuis la réserve de clôture de T316, les mesures et la demande de la session
   expériences.
+- 23/10, exploration (rapport `.harness-state/tickets/T317/exploration.md`) : la seule récupération part de `#retrieve` ;
+  le classement « cherche » se fait à l'entrée pour `auto`/`always`, au premier appel de `#retrieve` pour `model`.
+  Plan : échéance de 14 s comptée depuis l'entrée mais qui n'abandonne qu'une question classée « cherche » (aussitôt si
+  elle est déjà écoulée), enveloppe d'abandon conservée sans minuterie pour les autres. Aucun test de T316 ne vise une
+  question non cherchante. Documentation : ADR 0068 et `docs/architecture.md:157-158`, `:478`. Hors périmètre : l'ADR
+  0067 (`:30-31`) dit que l'échéance de la question interrompt la décision.
+- 23/10, implémentation : échéance de 14 s comptée depuis l'entrée, qui n'abandonne qu'une question classée « cherche »
+  (dès l'entrée pour `auto`/`always`, en tête de `#retrieve` pour `model`) ; enveloppe d'abandon sans minuterie pour les
+  autres. Six tests ajoutés (critères 1, 2 et 4), vus rouges sur le code de `HEAD` (`TVLENS_OLLAMA_QUESTION_TIMEOUT` à
+  14 000 ms), verts ensuite ; ADR 0068 et `docs/architecture.md` corrigés. Implémenteur :
+  `node --test tests/ollama-question-agent.test.cjs` 86/86, `node scripts/check.mjs --changed` vert.
+- 23/10, relecture 1 (`.harness-state/tickets/T317/relecture-1.md`) : à corriger, 0 bloquant, 2 mineurs (documentation
+  qui promettait 14 s à `model`, règle « cherche » écrite deux fois), 1 hors périmètre (ADR 0067). Correction :
+  `#webPages` s'appuie sur `#searchesAtEntry`, ADR 0068 et `docs/architecture.md` nuancés pour `model` ; implémenteur :
+  86/86 sur le fichier de test, `node scripts/check.mjs --changed` vert.
+- 23/10, relecture de correction (`.harness-state/tickets/T317/relecture-2.md`) : accepté, 0 bloquant, 0 mineur,
+  1 hors périmètre (ADR 0067), non corrigés 0. `node scripts/check.mjs` : vert, tests JS 3183/3183 sur 161 fichiers,
+  Python 71 OK, cliquet `cas_de_test_produit` 1756 → 1759.
+
+### Réserves à la clôture
+
+- Hors périmètre : docs/adr/0067-le-modele-local-decide-la-recherche-web-et-ecrit-sa-requete.md:30-31 dit encore que l'échéance de la question interrompt la décision ; avec model, les 14 s ne l'interrompent plus (seuls le plafond général, l'annulation et la fermeture).
+- Limite connue documentée dans l'ADR 0068 : avec model, une question non classée à 14 s (en file ou pendant sa décision) s'arrête au plus tôt à la fin de sa file plus jusqu'à 1,5 s de décision, et derrière un travail bloqué attend le plafond général.
+- Non vérifié en réel : aucune mesure de latence en flux réel ni essai sur la TV après le changement.

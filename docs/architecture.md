@@ -154,8 +154,11 @@ locales utilisent les trois outils vidéo ; avec un port de récupération web, 
 que la règle juge web reçoit des pages lues dans ses données non fiables et ne cite qu’elles (ADR 0066). Avec le
 déclencheur `model`, un appel court du modèle décide avant la règle s’il faut chercher et écrit la requête ; la
 règle reprend s’il échoue, et la réponse garde la question du spectateur.
-Les pages sont lues par Readability, avec repli sur l’extraction par motifs, et une question éligible au web
-est bornée à 14 s depuis son entrée dans l’agent, décision et récupération comprises (ADR 0068).
+Les pages sont lues par Readability, avec repli sur l’extraction par motifs, et une question qui cherche vraiment
+sur le web est bornée à 14 s depuis son entrée dans l’agent, décision et récupération comprises ; une question qui ne
+cherche pas garde le plafond général. Avec `model`, l’échéance ne coupe qu’une fois la question classée « cherche » :
+une question non classée à 14 s, en file ou pendant sa décision, peut finir plus tard (fin de file, plus jusqu’à 1,5 s
+de décision), et derrière un travail bloqué elle attend le plafond général (ADR 0068).
 Ce choix ne sélectionne ni embeddings ni inspection.
 L’identité composée de l’agent accompagne les métriques et les traces, même en cas de refus.
 `DeepAsk` fige l’ancrage et le préfixe admissible à l’envoi, accepte cinq questions en attente,
@@ -481,4 +484,4 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
   Avec le déclencheur `model`, un appel court décide la recherche et écrit la requête ; la règle reprend s’il échoue.
 
 - [ADR 0068](adr/0068-la-recherche-web-locale-lit-les-pages-avec-readability-et-borne-la-question-a-14-s.md) :
-  Les pages web sont lues par Readability, repli par motifs ; décision 1,5 s, récupération 5 s, question éligible au web 14 s.
+  Les pages web sont lues par Readability, repli par motifs ; décision 1,5 s, récupération 5 s, question qui cherche sur le web 14 s.

@@ -15,7 +15,7 @@ const { OllamaHttpClient } = require('../adapters/ollama/http-client.cjs');
 const { DECISION_FORMAT, DECISION_SYSTEM_PROMPT } = require('../adapters/web-decision-prompt.cjs');
 const { FrozenCorpusRetrieval } = require('../adapters/web/frozen-corpus.cjs');
 const { SearxngRetrieval } = require('../adapters/web/searxng.cjs');
-const { deferred, bounded, failure, turns } = require('./helpers/wait.cjs');
+const { deferred, bounded, failure, turns, until } = require('./helpers/wait.cjs');
 const { manualClock, VirtualClock } = require('./helpers/clock.cjs');
 const { QUESTION_TIMEOUT_MS } = require('../core/deep-ask.cjs');
 const { LocalSessionStore } = require('../adapters/local-store.cjs');
@@ -1566,3 +1566,84 @@ test('a failed decision, a failed retrieval and a question past its deadline sta
   await turns(3);
   assert.equal(clock.armed, 0);
 });
+
+// Slower than the 14 s web deadline, far below the general ceiling: live video-only questions reached 12.6 s.
+const SLOW_ANSWER_MS = 20_000;
+
+test('with the auto trigger, a video-only question answered after 20 s is rendered by DeepAsk without the web deadline', async t => {
+  const clock = manualClock();
+  const transport = stalledTransport(clock, () => ({ delayMs: SLOW_ANSWER_MS, content: answer() }));
+  const retrieval = fakeRetrieval();
+  const agent = new OllamaQuestionAgent({ ...localConfig().localQuestions, ...clock.io, fetchImpl: transport.fetchImpl,
+    webTrigger: 'auto', retrieval: retrieval.port });
+  const job = stage(t, 'http://127.0.0.1:1', { agent }).ask('Que dit-elle ?');
+  await until(() => transport.calls.length === 1, 'the answer request is sent');
+  await clock.advance(SLOW_ANSWER_MS);
+  await bounded(job.done);
+  assert.equal(job.errorDetail?.code, undefined);
+  assert.equal(job.status, 'done', job.message);
+  assert.equal(job.result.answer, answer().answer);
+  assert.deepEqual(retrieval.requests, []);
+  assert.equal(transport.calls.length, 1);
+  assert.equal(clock.armed, 0);
+});
+
+// Decisions that keep a question the rule leaves off the web from searching, and when each one ends.
+const NO_SEARCH_DECISIONS = {
+  'a decision against the web': { decisionReply: { delayMs: 0, content: decision(false) }, recorded: 'no-web', decisionMs: 0 },
+  'a stalled decision': { decisionReply: { delayMs: Infinity }, recorded: 'failed', decisionMs: WEB_DECISION_TIMEOUT_MS },
+  'an unreadable decision': { decisionReply: { delayMs: 0, content: 'pas une décision' }, recorded: 'failed', decisionMs: 0 },
+};
+for (const [label, { decisionReply, recorded, decisionMs }] of Object.entries(NO_SEARCH_DECISIONS)) {
+  test(`with the model trigger, ${label} on a question the rule keeps off the web lets an answer after 20 s through`, async t => {
+    const clock = manualClock();
+    const transport = stalledTransport(clock, body => (decides(body) ? decisionReply : { delayMs: SLOW_ANSWER_MS, content: insufficientAnswer }));
+    const retrieval = fakeRetrieval();
+    const answered = watch(clock, timedAgent(t, { clock, transport, retrieval }).ask(FILM_QUESTION));
+    await clock.advance(decisionMs + SLOW_ANSWER_MS);
+    const { at, value, error } = await bounded(answered.promise);
+    assert.equal(error?.code, undefined);
+    assert.equal(at, decisionMs + SLOW_ANSWER_MS);
+    assert.equal(value.kind, 'insufficient');
+    assert.deepEqual(value.retrieval, { decision: recorded, decisionMs });
+    assert.deepEqual(retrieval.requests, []);
+    assert.equal(transport.calls.length, 2);
+    assert.equal(clock.armed, 0);
+  });
+}
+
+// Long enough for a second question to wait past its 14 s behind the first one.
+const QUEUED_PAST_DEADLINE_MS = 15_000;
+
+for (const searches of [true, false]) {
+  test(`with the model trigger, a question queued past 14 s ${searches ? 'stops once it decides to search'
+    : 'still answers once it decides not to search'}`, async t => {
+    const clock = manualClock();
+    const transport = stalledTransport(clock, (body, n) => {
+      if (decides(body)) return { delayMs: 0, content: decision(n > 1 && searches) };
+      return { delayMs: n === 2 ? QUEUED_PAST_DEADLINE_MS : 0, content: insufficientAnswer };
+    });
+    const retrieval = fakeRetrieval();
+    const { ask } = timedAgent(t, { clock, transport, retrieval });
+    const first = watch(clock, ask(FILM_QUESTION));
+    const queued = watch(clock, ask(FILM_QUESTION));
+    await clock.advance(WEB_QUESTION_TIMEOUT_MS);
+    assert.equal(queued.settled, undefined, 'unclassified at 14 s, the queued question waits');
+    await clock.advance(QUEUED_PAST_DEADLINE_MS - WEB_QUESTION_TIMEOUT_MS);
+    assert.equal((await bounded(first.promise)).value?.kind, 'insufficient');
+    const { at, value, error } = await bounded(queued.promise);
+    assert.equal(at, QUEUED_PAST_DEADLINE_MS);
+    assert.deepEqual(retrieval.requests, [], 'the port is never called');
+    if (searches) {
+      assert.deepEqual([value, error?.code], [undefined, TIMEOUT_CODE]);
+      assert.equal(transport.calls.length, 3, 'its decision is its only request');
+      assert.ok(decides(transport.calls[2].body));
+    } else {
+      assert.equal(error?.code, undefined);
+      assert.equal(value.kind, 'insufficient');
+      assert.equal(value.retrieval.decision, 'no-web');
+      assert.equal(transport.calls.length, 4);
+    }
+    assert.equal(clock.armed, 0);
+  });
+}
