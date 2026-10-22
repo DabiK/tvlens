@@ -1,5 +1,6 @@
 import { cleanError } from "./text.mjs";
 import { describeArchive } from "./sessions-view.mjs";
+import { describeSourceListing } from "./source-menu.mjs";
 
 export function bindCaptureActions(dependencies) {
   return new CaptureActions(dependencies);
@@ -170,7 +171,9 @@ class CaptureActions {
         this.get("float-source-error").textContent =
           "Connecte ton compte Codex avant de lancer l’analyse.";
     } catch (e) {
-      this.get("float-source-error").textContent = cleanError(e);
+      this.get("float-source-error").textContent = describeSourceListing({
+        error: e,
+      }).notice;
     } finally {
       this.get("float-refresh").disabled = false;
     }

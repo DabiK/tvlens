@@ -5,6 +5,7 @@ import { createBrowserCaptureController } from './ui/browser-capture.mjs';
 import { bindCaptureActions } from './ui/capture-actions.mjs';
 import { bindMomentActions } from './ui/moment-actions.mjs';
 import { renderCaptureControls } from './ui/capture-controls.mjs';
+import { describeSourceListing } from './ui/source-menu.mjs';
 import { cleanError, formatBytes, plural } from './ui/text.mjs';
 import { clockLabel } from './ui/job-view.mjs';
 import { isRestoring, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
@@ -40,22 +41,33 @@ async function refresh() {
     const result = await window.capture.sources();
     setSources(result);
     $('start').disabled = !result.sources.length || capture.previewOpen;
-    if (!capture.previewOpen) {
-      status(result.permission === 'granted'
-        ? 'Écran autorisé · Choisis une source'
-        : `Autorisation écran : ${result.permission} · Vérifie les autorisations`);
-    }
-  } catch (error) { status(`Capture indisponible : ${reason(error)}`); }
+    if (!capture.previewOpen) status(describeSourceListing({ result }).status);
+  } catch (error) {
+    // The sources listed before stay selectable: only the menu's first line, its placeholder, says the failure.
+    const failed = describeSourceListing({ error });
+    $('source').options[0].text = failed.placeholder;
+    status(failed.status);
+    sourcesNotice(failed.notice);
+  }
   finally {
     $('refresh').disabled = capture.previewOpen;
     updateButtons();
   }
 }
 function setSources(result) {
+  const listing = describeSourceListing({ result });
   const previous = $('source').value;
   const chosen = result.sources.some(source => source.id === previous) ? previous : result.preferredSourceId || (result.sources.length === 1 ? result.sources[0].id : '');
-  $('source').replaceChildren(new Option('Choisir une fenêtre ou un écran…', ''), ...result.sources.map(source => new Option(source.name, source.id)));
+  $('source').replaceChildren(new Option(listing.placeholder, ''), ...result.sources.map(source => new Option(source.name, source.id)));
   $('source').value = chosen;
+  sourcesNotice(listing.notice);
+}
+// The notice is shared with every view: a listing clears only the access notice it wrote itself.
+let shownSourcesNotice = '';
+function sourcesNotice(text) {
+  if (text) notice(text);
+  else if ($('notice').textContent === shownSourcesNotice) notice('');
+  shownSourcesNotice = text;
 }
 function setConfig(value) {
   configuration = value;

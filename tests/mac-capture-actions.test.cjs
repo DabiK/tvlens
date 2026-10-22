@@ -2,7 +2,7 @@ const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { deferred } = require("./helpers/wait.cjs");
 
-async function fixture() {
+async function fixture(overrides = {}) {
   const { bindCaptureActions } = await import("../app/ui/capture-actions.mjs");
   const nodes = new Map(),
     events = [],
@@ -114,6 +114,7 @@ async function fixture() {
       get("notice").textContent = text;
     },
     forceBottom: () => {},
+    ...overrides,
   };
   const actions = bindCaptureActions(options);
   const { bindMomentActions } = await import("../app/ui/moment-actions.mjs");
@@ -342,4 +343,16 @@ test("changing the floating source waits for stop before returning to full mode 
     ["mode", false, undefined],
     ["focus", "source"],
   ]);
+});
+
+test("the floating bar says how to give screen access when the sources cannot be listed", async () => {
+  const f = await fixture({
+    sources: async () => {
+      throw new Error("Failed to get sources.");
+    },
+  });
+  await f.get("float-refresh").onclick();
+  assert.match(f.get("float-source-error").textContent, /ne peut pas lister les fenêtres/);
+  assert.match(f.get("float-source-error").textContent, /Enregistrement de l’écran/);
+  assert.equal(f.get("float-refresh").disabled, false);
 });
