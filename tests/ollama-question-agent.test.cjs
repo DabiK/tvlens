@@ -10,7 +10,7 @@ const { memoryOf } = require('./helpers/memory-consultation.cjs');
 const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
 const { OllamaQuestionAgent, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT, WEB_DECISION_TIMEOUT_MS }
   = require('../adapters/ollama/question-agent.cjs');
-const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS } = require('../core/web-retrieval.cjs');
+const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS, WEB_EXCERPT_HEAD_CHARS, searchTerms, wordsOf } = require('../core/web-retrieval.cjs');
 const { OllamaHttpClient } = require('../adapters/ollama/http-client.cjs');
 const { DECISION_FORMAT, DECISION_SYSTEM_PROMPT } = require('../adapters/web-decision-prompt.cjs');
 const { FrozenCorpusRetrieval } = require('../adapters/web/frozen-corpus.cjs');
@@ -949,9 +949,36 @@ test('retrieved documents are bounded, deduplicated and restricted to safe pages
   const pages = untrustedData(server.requests[0].body.messages[0].content).webPages;
   const kept = ['https://example.org/one', 'https://example.org/two', 'https://example.org/three', 'https://example.org/four'];
   assert.deepEqual(pages.map(page => page.url), kept.slice(0, WEB_DOCUMENT_LIMIT));
-  assert.equal(pages[0].text.length, WEB_TEXT_MAX_CHARS);
+  assert.equal(pages[0].text, documents[1].text.slice(0, WEB_TEXT_MAX_CHARS));
   assert.equal(Object.hasOwn(pages[0], 'publisher'), false);
   assert.equal(job.result.retrieval.documents, WEB_DOCUMENT_LIMIT);
+});
+
+// A page of 12 000 characters whose only fact sits near the 9 000th character, among sentences unrelated to any question.
+const LATE_FACT_AT = 9000, LONG_PAGE_CHARS = 12000;
+function lateFactPage(fact) {
+  const prose = length => 'Texte sans rapport avec le sujet. '.repeat(Math.ceil(length / 34)).slice(0, length);
+  const before = prose(LATE_FACT_AT - 1);
+  return `${before} ${fact} ${prose(LONG_PAGE_CHARS - before.length - fact.length - 2)}`;
+}
+function assertHeadAndFact(page, text, fact) {
+  assert.equal(text.length, LONG_PAGE_CHARS);
+  assert.ok(text.indexOf(fact) >= LATE_FACT_AT - 100);
+  assert.ok(page.text.startsWith(text.slice(0, WEB_EXCERPT_HEAD_CHARS)), 'the page keeps its head');
+  assert.ok(page.text.includes(fact), 'the page keeps the window of the fact');
+  assert.ok(page.text.length <= WEB_TEXT_MAX_CHARS, `length ${page.text.length}`);
+}
+
+test('a fact far down a long page reaches the answer prompt with the head of the page, within the page length', async t => {
+  const fact = 'Hauteur officielle du volcan Etna : 3 357 mètres.';
+  const text = lateFactPage(fact);
+  const page = { url: 'https://example.org/etna', title: 'Etna', text };
+  const server = await backend(t, (request, res) => reply(res, insufficientAnswer));
+  const s = stage(t, server.url, { agent: localAgent(server.url,
+    { retrieval: fakeRetrieval(async () => ({ documents: [page], limits: [] })).port }) });
+  await s.ask('Quelle est la hauteur officielle du volcan Etna ?').done;
+  const [prompted] = untrustedData(server.requests[0].body.messages[0].content).webPages;
+  assertHeadAndFact(prompted, text, fact);
 });
 
 test('an empty retrieval keeps the prompt and the refusal of an agent without pages', async t => {
@@ -1086,6 +1113,33 @@ test('the model trigger lets the local model name the film in its query and the 
   assert.deepEqual(retrieved, { residence: 'local', status: 'used', documents: 1, decision: 'web', query: FILM_QUERY });
   assert.ok(Number.isFinite(elapsedMs) && Number.isFinite(decisionMs) && decisionMs >= 0);
   assert.equal(job.metrics.calls.providerRequests, 2);
+});
+
+test('with the model trigger, a late fact named only by the model\'s query reaches the answer prompt', async t => {
+  const fact = 'Sortie de Tears of Steel : 26 septembre 2012.';
+  const text = lateFactPage(fact);
+  const retrieval = fakeRetrieval(async () => ({ documents: [{ url: FILM_PAGE.url, title: FILM_PAGE.title, text }], limits: [] }));
+  const server = await backend(t, (request, res, n) => reply(res, n === 1 ? decision(true) : insufficientAnswer));
+  const job = modelStage(t, server.url, retrieval).ask(FILM_QUESTION);
+  await job.done;
+  assert.equal(job.status, 'done', job.message);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [FILM_QUERY]);
+  const [prompted] = untrustedData(server.requests[1].body.messages[0].content).webPages;
+  assertHeadAndFact(prompted, text, fact);
+});
+
+test('with the model trigger, a late fact named only by the viewer\'s question reaches the answer prompt', async t => {
+  const fact = 'Film publié le 26 septembre 2012 par le Blender Institute.';
+  const text = lateFactPage(fact);
+  const retrieval = fakeRetrieval(async () => ({ documents: [{ url: FILM_PAGE.url, title: FILM_PAGE.title, text }], limits: [] }));
+  const server = await backend(t, (request, res, n) => reply(res, n === 1 ? decision(true) : insufficientAnswer));
+  const job = modelStage(t, server.url, retrieval).ask(FILM_QUESTION);
+  await job.done;
+  assert.equal(job.status, 'done', job.message);
+  assert.deepEqual(retrieval.requests.map(request => request.query), [FILM_QUERY]);
+  assert.equal(searchTerms(FILM_QUERY).some(term => wordsOf(fact).includes(term)), false, 'the query names nothing of the fact');
+  const [prompted] = untrustedData(server.requests[1].body.messages[0].content).webPages;
+  assertHeadAndFact(prompted, text, fact);
 });
 
 const isDecision = request => request.body.messages[0].role === 'system';

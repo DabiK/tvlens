@@ -12,7 +12,7 @@
  *
  * Retrieval: pages that declare the query (same normalisation as retrievalQuery, case and accents ignored) come
  * back in corpus order. Otherwise pages are ranked by the number of distinct query words, minus stop words, found in
- * their title or text; ties keep corpus order. At most WEB_DOCUMENT_LIMIT pages, each text cut to WEB_TEXT_MAX_CHARS.
+ * their title or text; ties keep corpus order. At most WEB_DOCUMENT_LIMIT pages, each text cut to WEB_PAGE_READ_MAX_CHARS.
  * A page with an unsafe address, a repeated address (the first one wins) or an empty text is left out.
  *
  * The corpus and all page files are read once, on the first retrieval; an invalid corpus is refused with
@@ -21,22 +21,16 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { domainError } = require('../../core/shared/domain-error.cjs');
-const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS, normalizeText, queryKey, clipText } = require('../../core/web-retrieval.cjs');
+const { WEB_DOCUMENT_LIMIT, WEB_PAGE_READ_MAX_CHARS, queryKey, clipText, wordsOf, searchTerms } = require('../../core/web-retrieval.cjs');
 const { sourceKey } = require('../external-links.cjs');
 
 const TVLENS_WEB_CORPUS_INVALID = 'TVLENS_WEB_CORPUS_INVALID';
 const CORPUS_FILE = 'corpus.json';
 const CORPUS_VERSION = 1;
-const MIN_WORD_LENGTH = 3;
 const MIN_SHARED_WORDS = 2;
-const STOP_WORDS = new Set([
-  'les', 'des', 'une', 'que', 'qui', 'est', 'sont', 'dans', 'sur', 'pour', 'par', 'avec', 'sans', 'pas', 'ses', 'son',
-  'ces', 'cette', 'quel', 'quelle', 'quels', 'quelles', 'quoi', 'comment', 'pourquoi', 'aux', 'elle', 'elles', 'ils',
-  'nous', 'vous', 'mais', 'donc', 'aussi', 'plus', 'tout', 'tous', 'ont', 'etre', 'avoir', 'peut', 'cela', 'leur', 'leurs',
-]);
 const NO_PAGE_LIMIT = 'Aucune page du corpus ne correspond à la requête.';
 const CUT_COUNT_LIMIT = `Seules les ${WEB_DOCUMENT_LIMIT} pages les plus pertinentes sont conservées.`;
-const CUT_TEXT_LIMIT = `Le texte de certaines pages est coupé à ${WEB_TEXT_MAX_CHARS} caractères.`;
+const CUT_TEXT_LIMIT = `Le texte de certaines pages est coupé à ${WEB_PAGE_READ_MAX_CHARS} caractères.`;
 
 const invalid = (message, cause) => domainError(TVLENS_WEB_CORPUS_INVALID, `Corpus web invalide : ${message}`, cause);
 const isText = value => typeof value === 'string' && value.trim() !== '';
@@ -82,10 +76,6 @@ function pageOf({ entry, text }) {
   return page;
 }
 
-function wordsOf(value) {
-  return normalizeText(value).match(/[a-z0-9]+/g) ?? [];
-}
-
 function indexPage(loaded) {
   const page = pageOf(loaded);
   return {
@@ -113,12 +103,8 @@ async function loadCorpus(directory, readFile) {
   return kept;
 }
 
-function queryWords(query) {
-  return [...new Set(wordsOf(query).filter(word => word.length >= MIN_WORD_LENGTH && !STOP_WORDS.has(word)))];
-}
-
 function rankLexically(pages, query) {
-  const words = queryWords(query);
+  const words = searchTerms(query);
   const threshold = Math.min(MIN_SHARED_WORDS, words.length);
   if (!threshold) return [];
   return pages
@@ -139,7 +125,7 @@ function answerFrom(candidates) {
   const limits = [];
   if (candidates.length > WEB_DOCUMENT_LIMIT) limits.push(CUT_COUNT_LIMIT);
   const documents = candidates.slice(0, WEB_DOCUMENT_LIMIT).map(({ page }) => {
-    const text = clipText(page.text, WEB_TEXT_MAX_CHARS);
+    const text = clipText(page.text, WEB_PAGE_READ_MAX_CHARS);
     if (text.length < page.text.length && !limits.includes(CUT_TEXT_LIMIT)) limits.push(CUT_TEXT_LIMIT);
     return { ...page, text };
   });

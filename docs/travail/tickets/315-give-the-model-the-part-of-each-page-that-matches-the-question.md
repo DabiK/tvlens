@@ -1,7 +1,7 @@
 ---
 id: T315
 titre: Give the model the part of each page that matches the question
-statut: a-faire
+statut: termine
 bloque_par: T314
 adr: non
 installe: non
@@ -77,3 +77,32 @@ Aucune décision n'est attendue.
 - 22/10, orchestrateur : ticket préparé pendant T314, depuis la simulation de la session expériences ; à déposer
   après l'intégration de T314. La double récupération (requête du modèle et question brute,
   pages alternées et dédoublonnées) reste hors de ce ticket : elle attend la notation H2b.
+- 22/10, exploration (explorateur, rapport dans `.harness-state/tickets/T315/exploration.md`) : `boundedPages` n'a
+  qu'un appelant, `#retrieve`, où la question brute et la requête envoyée au port sont disponibles ; aucun autre
+  consommateur des adaptateurs web, la limite d'octets de SearXNG (1,5 Mio) suffit pour 20 000 caractères. Le
+  vocabulaire (`STOP_WORDS`, `wordsOf`, `queryWords`) passe du corpus au cœur. Les fixtures longues de SearXNG et du
+  corpus doivent grandir, et le test de page longue de l'agent (longueur exacte) change ; écarts déclarés dans
+  `ecarts.md` (marque d'élision prise sur le budget de la fenêtre, `<=` comme `clipText`).
+- 22/10, implémentation (implementeur) : vocabulaire (`STOP_WORDS`, `wordsOf`, `searchTerms`) déplacé dans
+  `core/web-retrieval.cjs` ; constantes `WEB_PAGE_READ_MAX_CHARS`, `WEB_EXCERPT_HEAD_CHARS`,
+  `WEB_EXCERPT_WINDOW_CHARS` et `pageExcerpt` ; `boundedPages` prend les termes de la question et de la requête ;
+  SearXNG et corpus rendent 20 000 caractères. Test d'acceptation rouge avant la correction de l'agent
+  (`the page keeps the window of the fact`, actual false).
+- 22/10, relecture 1 : « à corriger », 1 bloquant (fenêtre recalée au début de phrase, qui perdait des termes :
+  écart refusé), 2 mineurs (test d'égalité non discriminant, part de la question non prouvée).
+- 22/10, correction (implementeur) : fenêtre de nouveau ouverte sur son premier terme ; tests du contre-exemple, de
+  l'égalité sans fenêtre complète et du fait nommé par la seule question, chacun vu rouge (ou tué par mutation).
+- 22/10, relecture 2 (correction) : accepté, 0 bloquant, 0 mineur, 1 hors périmètre (`docs/gx10-experiment.md:325`
+  parle encore de pages coupées à 2 500 caractères), NON CORRIGÉS : 0.
+- 22/10, `node scripts/check.mjs` (orchestrateur) : vert, 3 149/3 149 tests JS, 71 tests Python, cliquet
+  `cas_de_test_produit` 1720 → 1737.
+
+### Réserves à la clôture
+
+- Hors périmètre : docs/gx10-experiment.md:325 dit encore « chacune coupée à 2 500 caractères » ; le corpus rend désormais 20 000 caractères et c'est l'agent qui réduit à 2 500.
+- Écart accepté, critère 2 : la marque d'élision est prise sur le budget de la fenêtre et n'apparaît que s'il y a un vrai trou ; sans terme commun, l'extrait est le préfixe du texte.
+- Écart accepté, critère 2 : un texte d'au plus WEB_TEXT_MAX_CHARS (et non « de moins de ») est rendu entier, comme clipText.
+- Écart accepté, critère 3 : les fixtures longues de SearXNG et du corpus sont agrandies au-delà de 20 000 caractères, en plus des assertions, pour que la coupe reste prouvée.
+- Écart accepté : le test existant de page longue de l'agent compare désormais le texte exact au lieu de la seule longueur.
+- Écart accepté, critère 2 : la fenêtre s'ouvre sur son premier terme ; les fixtures de faits tardifs commencent par un terme.
+- Non vérifié : aucun essai avec un vrai SearXNG ni un vrai modèle ; l'effet sur la notation H2 n'est pas mesuré.

@@ -4,7 +4,7 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 const { FrozenCorpusRetrieval, TVLENS_WEB_CORPUS_INVALID } = require('../adapters/web/frozen-corpus.cjs');
-const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS } = require('../core/web-retrieval.cjs');
+const { WEB_DOCUMENT_LIMIT, WEB_PAGE_READ_MAX_CHARS } = require('../core/web-retrieval.cjs');
 
 // Invented pages: nothing here comes from a real site.
 const ETNA = {
@@ -116,11 +116,12 @@ test('declared pages are capped like ranked pages', async t => {
 });
 
 test('a long page is cut to the bound without splitting a surrogate pair, and the cut is announced', async t => {
-  const long = 'a'.repeat(WEB_TEXT_MAX_CHARS - 1) + '😀' + 'b'.repeat(500);
+  const long = 'a'.repeat(WEB_PAGE_READ_MAX_CHARS - 1) + '😀' + 'b'.repeat(500);
   const directory = await corpusDirectory(t, corpusOf([{ ...ETNA, file: 'long.txt' }]), { 'long.txt': long });
   const result = await new FrozenCorpusRetrieval({ directory }).retrieve({ query: ETNA.queries[0] });
-  assert.equal(result.documents[0].text, 'a'.repeat(WEB_TEXT_MAX_CHARS - 1));
+  assert.equal(result.documents[0].text, 'a'.repeat(WEB_PAGE_READ_MAX_CHARS - 1));
   assert.equal(result.limits.length, 1);
+  assert.match(result.limits[0], new RegExp(`\\b${WEB_PAGE_READ_MAX_CHARS}\\b`));
   const whole = await corpusDirectory(t, corpusOf([{ ...ETNA, file: 'short.txt' }]), { 'short.txt': 'Court.' });
   assert.deepEqual((await new FrozenCorpusRetrieval({ directory: whole }).retrieve({ query: ETNA.queries[0] })).limits, []);
 });
