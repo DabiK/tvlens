@@ -1,0 +1,262 @@
+[
+ {
+  "questionId": "kennedy-w1",
+  "question": "Le vaisseau américain qui devait atteindre Vénus, dont parle Kennedy : comment s'appelait-il, et y est-il parvenu ?",
+  "answers": [
+   {
+    "textId": "1699ecc339",
+    "kind": "explanation",
+    "answer": "Dans la vidéo, Kennedy mentionne un nouveau vaisseau spatial américain qui pourrait atteindre Vénus (moment-11, 80000-88000ms), mais il ne précise pas son nom. Selon les sources externes, la mission Mariner 2 a réussi un premier survol de la planète en 1962 (https://fr.wikipedia.org/wiki/Exploration_de_V%C3%A9nus).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Exploration_de_V%C3%A9nus",
+      "title": "Exploration de Vénus — Wikipédia",
+      "evidence": "La NASA réussit un premier survol en 1962 avec la mission américaine Mariner 2 qui dévoile un monde particulièrement hostile"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c259296745",
+    "kind": "external",
+    "answer": "Il s’appelait Mariner 2. Oui : il a survolé Vénus le 14 décembre 1962 et a transmis des données sur la planète ; il ne s’y est pas posé. [La NASA confirme aussi que c’était la sonde évoquée dans le contexte du discours de Kennedy.]",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     },
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://science.nasa.gov/mission/mariner-2/",
+      "title": "Mariner 2 — NASA Science",
+      "evidence": "La NASA identifie Mariner 2 comme une mission de survol de Vénus et indique qu’elle l’a survolée le 14 décembre 1962, recueillant des données."
+     },
+     {
+      "url": "https://www.nasa.gov/history/60-years-ago-president-kennedy-reaffirms-moon-landing-goal-in-rice-university-speech/",
+      "title": "60 Years Ago: President Kennedy Reaffirms Moon Landing Goal in Rice University Speech — NASA",
+      "evidence": "La NASA indique que Mariner 2 a quitté la Terre en août 1962 pour sa mission d’exploration de Vénus."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-o1",
+  "question": "Au tout début de l'extrait, comment Kennedy était-il cadré, et qu'y avait-il au premier plan, devant le pupitre ?",
+  "answers": [
+   {
+    "textId": "cb421b71ba",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles ne décrivent pas le cadrage de Kennedy au tout début ni ce qui se trouvait devant le pupitre. Ils commencent à 72 000 ms ; il me manque donc les images du début pour répondre.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages fournis couvrent 72 000 à 120 000 ms, pas le début de l’extrait."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m1",
+  "question": "Dans quelle ville Kennedy dit-il se trouver, et dans quel lieu précis et à quelle date a-t-il prononcé ce discours ?",
+  "answers": [
+   {
+    "textId": "09a444942c",
+    "kind": "observation",
+    "answer": "Kennedy dit se trouver à Houston, au Texas (moment-16, 120000–128000 ms). Les passages fournis ne précisent ni le lieu exact du discours ni sa date ; je ne peux donc pas les établir à partir de la vidéo seule.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les passages consultés ne donnent pas le lieu précis ni la date du discours."
+    ]
+   },
+   {
+    "textId": "7bcb9b79b3",
+    "kind": "observation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). La vidéo ne précise pas la date exacte de ce discours, bien qu'il évoque les avancées technologiques et l'espace.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m2",
+  "question": "Sur son échelle, quand Kennedy situe-t-il la pénicilline, et en réalité, qui l'a découverte et en quelle année ?",
+  "answers": [
+   {
+    "textId": "08aa0437e6",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas d'information mentionnant la pénicilline ou l'échelle de temps de Kennedy à ce sujet. En réalité, la découverte de la pénicilline est attribuée au scientifique britannique Alexander Fleming en 1928.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline",
+      "title": "Découverte de la pénicilline — Wikipédia",
+      "evidence": "La découverte de la pénicilline est attribuée au médecin et scientifique britannique Alexander Fleming, qui est le premier à démontrer que la moisissure Penicillium notatum produit une substance antibactérienne."
+     },
+     {
+      "url": "https://www.worldhistory.org/trans/fr/2-2490/decouverte-de-la-penicilline/",
+      "title": "Découverte de la Pénicilline - Encyclopédie de l'Histoire du Monde",
+      "evidence": "L'ère des antibiotiques commença en septembre 1928, avec la découverte de la pénicilline par Alexander Fleming."
+     }
+    ],
+    "limits": [
+     "La vidéo ne mentionne pas la pénicilline."
+    ]
+   },
+   {
+    "textId": "cbf005ccfe",
+    "kind": "external",
+    "answer": "Les passages fournis ne couvrent pas le moment où Kennedy situe la pénicilline : ils s’arrêtent à 208 000 ms, avec une lacune jusqu’au repère de 216 003 ms. Je ne peux donc pas établir sa place sur l’échelle à partir de ces extraits. Historiquement, Alexander Fleming a découvert la pénicilline en 1928 ; Howard Florey et Ernst Chain ont ensuite contribué à en démontrer l’usage thérapeutique. [Science History Institute](https://www.sciencehistory.org/education/scientific-biographies/alexander-fleming/)",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.sciencehistory.org/education/scientific-biographies/alexander-fleming/",
+      "title": "Alexander Fleming",
+      "evidence": "La page indique qu’Alexander Fleming a découvert la pénicilline en 1928 et que Florey et Chain ont démontré en 1940 son usage thérapeutique."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-o2",
+  "question": "Quand Kennedy parlait de la pénicilline et du vaisseau vers Vénus, qu'est-il arrivé au drapeau à côté de lui ?",
+  "answers": [
+   {
+    "textId": "5f5dd77816",
+    "kind": "insufficient",
+    "answer": "Dans les passages disponibles, le drapeau américain est près de Kennedy au pupitre, mais on ne voit pas ce qui lui arrive ensuite. Les images fournies s’arrêtent à 240 000 ms, avant le repère de 248 003 ms ; je ne peux donc pas déterminer s’il bouge ou tombe.",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 232000,
+      "endMs": 240000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le segment entre 240 000 ms et 248 003 ms n’est pas fourni."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w2",
+  "question": "Qui était ce William Bradford que Kennedy cite ?",
+  "answers": [
+   {
+    "textId": "15a9731084",
+    "kind": "external",
+    "answer": "William Bradford était un dirigeant des colons anglais du Mayflower et gouverneur de Plymouth, en Nouvelle-Angleterre, pendant de nombreuses années. Kennedy le cite pour cette idée : les grandes actions exigent de grandes difficultés et un courage à la mesure de ces difficultés. [Le Pilgrim Hall Museum](https://www.pilgrimhall.org/william-bradford-kelso/) confirme son rôle de gouverneur ; le texte de cette citation n’apparaît pas dans les passages vidéo fournis.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.pilgrimhall.org/william-bradford-kelso/",
+      "title": "The Life of William Bradford | Pilgrim Hall Museum",
+      "evidence": "Le musée indique que Bradford fut choisi comme gouverneur après la mort de John Carver et qu’il servit 36 ans."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c9675c2c99",
+    "kind": "external",
+    "answer": "William Bradford était un leader des Pères pèlerins et le gouverneur de la colonie de Plymouth en Amérique du Nord (https://fr.wikipedia.org/wiki/William_Bradford). Il a joué un rôle déterminant dans l'établissement de cette colonie après la traversée du Mayflower en 1620 (https://www.worldhistory.org/trans/fr/1-19260/william_bradford/).",
+    "citations": [
+     {
+      "id": "https://fr.wikipedia.org/wiki/William_Bradford",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://www.worldhistory.org/trans/fr/1-19260/william_bradford/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/William_Bradford",
+      "title": "William Bradford — Wikipédia",
+      "evidence": "William Bradford... est un protestant anglais dissident, un des chefs du groupe des Pèlerins pèlerins (Pilgrim fathers) qui, en 1620, fait sur le Mayflower la traversée d'Angleterre vers l'Amérique, puis fonde la colonie de New Plymouth"
+     },
+     {
+      "url": "https://www.worldhistory.org/trans/fr/1-19260/william_bradford/",
+      "title": "William Bradford - Encyclopédie de l'Histoire du Monde",
+      "evidence": "William Bradford (1590-1657) était l'un des principaux membres de la congrégation des pèlerins venus en Amérique du Nord à bord du Mayflower"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w3",
+  "question": "Kennedy dit qu'il n'y a encore aucun conflit dans l'espace. Aujourd'hui, combien de pays ont signé les accords Artemis, le cadre de la NASA pour une exploration pacifique ?",
+  "answers": [
+   {
+    "textId": "369c53d6a6",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, le nombre de signataires varie selon la source : Wikipédia mentionne 75 parties (https://fr.wikipedia.org/wiki/Accords_Artemis), tandis que le site de la NASA indique que l'Ouzbékistan est devenu la 77ème nation signataire le 19 octobre 2026 (https://www.nasa.gov/artemis-accodes/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Accords_Artemis",
+      "title": "Accords Artemis — Wikipédia",
+      "evidence": "Signataires 75 Parties"
+     },
+     {
+      "url": "https://www.nasa.gov/artemis-accords/",
+      "title": "Artemis Accords - NASA",
+      "evidence": "On October 19, 2026, Uzbekistan became the 77th nation to sign the accords."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e410ab2034",
+    "kind": "external",
+    "answer": "À la date de la dernière annonce de la NASA que j’ai consultée, 76 pays avaient signé les accords Artemis. La NASA les présente comme des principes visant une exploration pacifique et coordonnée de l’espace ; ce nombre ne permet pas, à lui seul, de conclure qu’il n’existe aucun conflit spatial.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/news-release/nasa-celebrates-as-artemis-accords-surpasses-75-signatories/",
+      "title": "NASA Celebrates as Artemis Accords Surpasses 75 Signatories",
+      "evidence": "L’annonce du 28 septembre 2026 indique que l’Albanie, la Croatie, la Côte d’Ivoire et Saint-Marin ont porté le total à 76 pays, et décrit les accords comme guidant une exploration paisible et responsable."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

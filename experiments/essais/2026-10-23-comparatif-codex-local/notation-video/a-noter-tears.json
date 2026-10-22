@@ -1,0 +1,395 @@
+[
+ {
+  "questionId": "tears-01",
+  "question": "What passions do Thom and Celia have, according to their conversation?",
+  "answers": [
+   {
+    "textId": "7279b128cb",
+    "kind": "observation",
+    "answer": "Thom dit vouloir être « awesome in space » et présente la robotique comme la passion de Celia. Le passage consulté ne montre pas Celia confirmer elle-même cette passion, et la suite de leur conversation est manquante.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les paroles sont issues d’un résumé automatique, potentiellement imprécis."
+    ]
+   },
+   {
+    "textId": "8712fa87f0",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique. L'homme souhaite, quant à lui, exceller dans l'exploration spatiale.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n1",
+  "question": "Au début, de quoi Thom a-t-il avoué faire des cauchemars ?",
+  "answers": [
+   {
+    "textId": "043ccff65e",
+    "kind": "observation",
+    "answer": "Thom avoue faire des cauchemars où il est poursuivi par les énormes griffes robotiques de Celia.",
+    "citations": [
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b9ef479dca",
+    "kind": "observation",
+    "answer": "Thom avoue faire des cauchemars où il est poursuivi par de gigantesques griffes robotiques (moment-5, moment-6). Il mentionne que Celia est effrayée par sa main robotique (moment-5).",
+    "citations": [
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n2",
+  "question": "Au début, qu'est-ce que l'homme à l'œil mécanique observait de près ?",
+  "answers": [
+   {
+    "textId": "3fbffd609d",
+    "kind": "observation",
+    "answer": "Au début, l’homme à l’œil mécanique observait de près une plateforme volante blindée au-dessus d’un bâtiment dans la ville (moment-14, 104000–112000 ms).",
+    "citations": [
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "4354796d93",
+    "kind": "insufficient",
+    "answer": "Les informations disponibles ne permettent pas de répondre à cette question. Les passages analysés montrent un homme utilisant une lunette de précision pour observer l'horizon, mais l'objet de son observation n'est pas précisé.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les extraits vidéo ne décrivent pas le contenu de ce que l'homme observe à travers sa lunette."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "question": "How much time does Barley say they should have?",
+  "answers": [
+   {
+    "textId": "6a9b65ce59",
+    "kind": "insufficient",
+    "answer": "Les informations disponibles ne permettent pas de répondre à cette question. Les passages analysés ne contiennent pas de mention d'une durée ou d'un temps que Barley devrait avoir.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo s'arrête avant que Barley ne s'exprime sur une durée spécifique."
+    ]
+   },
+   {
+    "textId": "f0ffdd05bb",
+    "kind": "insufficient",
+    "answer": "Barley dit qu’ils devraient avoir « minutes » ; le nombre juste avant cette phrase manque dans le passage fourni, donc je ne peux pas déterminer combien de temps il annonce.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le début de la réplique est tronqué : le nombre de minutes n’est pas présent dans l’extrait."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "question": "What advice is Thom given about how to speak to her?",
+  "answers": [
+   {
+    "textId": "5b8ee39964",
+    "kind": "observation",
+    "answer": "On lui conseille d’être tendre et honnête avec elle, puis de lui rappeler ce qu’est l’amour. (moment-31, 240000–248000)",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d013ffae61",
+    "kind": "observation",
+    "answer": "Thom is advised to be tender and honest with her. He is also told to remind her what love is (moment-31).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "question": "What does Celia reproach Thom for?",
+  "answers": [
+   {
+    "textId": "40b2d8fea7",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l’avoir oubliée sur Terre et de lui avoir brisé le cœur. Elle dit qu’elle pourrait le réduire en miettes, mais les paroles apparaissent dans un résumé automatique potentiellement imprécis.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les paroles de ce passage proviennent d’un résumé automatique, pas d’une transcription vérifiée."
+    ]
+   },
+   {
+    "textId": "6cb49f51a6",
+    "kind": "observation",
+    "answer": "Celia reproaches Thom of being afraid of his robotic hand (moment-44). She also mentions having nightmares about being chased by his giant robotic claws (moment-5, moment-6).",
+    "citations": [
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     },
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n3",
+  "question": "Pour se justifier auprès de Celia, comment Thom a-t-il décrit celui qu'il était autrefois ?",
+  "answers": [
+   {
+    "textId": "35e5b698ee",
+    "kind": "observation",
+    "answer": "Pour se justifier, Thom reconnaît qu’il était jeune et qu’il se comportait comme un sale type. (moment-45, 352000–360000 ; moment-46, 360000–368000)",
+    "citations": [
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     },
+     {
+      "id": "moment-46",
+      "startMs": 360000,
+      "endMs": 368000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "7118b9c1e2",
+    "kind": "observation",
+    "answer": "Pour se justifier, Thom déclare à Celia qu'il était jeune et qu'il se comportait comme un « con » (moment-45, moment-46).",
+    "citations": [
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     },
+     {
+      "id": "moment-46",
+      "startMs": 360000,
+      "endMs": 368000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "question": "What is the latest announced state of the memory overwrite?",
+  "answers": [
+   {
+    "textId": "bce21caef0",
+    "kind": "observation",
+    "answer": "La dernière annonce indique que le remplacement de mémoire est terminé : « Memory override complete! » Le passage fourni ne précise pas ce qui a été remplacé ni le résultat exact de l’opération.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La couverture s’arrête à 544000 ms, avant le repère de 552001,8 ms ; la suite éventuelle n’est pas connue."
+    ]
+   },
+   {
+    "textId": "c0099d2e90",
+    "kind": "observation",
+    "answer": "L'état le plus récent annoncé est que le remplacement de la mémoire est terminé (moment-68).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n4",
+  "question": "Juste après l'annonce de la fin de la réécriture de mémoire, que fait le vieux Thom, l'homme aux cheveux gris ?",
+  "answers": [
+   {
+    "textId": "d73376d695",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne montrent pas ce que le vieux Thom fait juste après l’annonce : ils s’arrêtent à 568 000 ms, avant le repère de 576 002 ms. Je ne peux donc pas déterminer son geste sans le passage suivant.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le segment qui suit l’annonce de la fin du remplacement de mémoire est absent des passages disponibles."
+    ]
+   },
+   {
+    "textId": "e84282823a",
+    "kind": "observation",
+    "answer": "Juste après l'annonce de la fin de la réécriture de la mémoire (moment-68), le vieux Thom, vêtu d'un costume en tartan, examine attentivement un robot complexe et endommagé en manipulant ses mains avec précaution (moment-69). Il semble ensuite observer un autre personnage robotique avec une expression de surprise et d'inquiétude (moment-70).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     },
+     {
+      "id": "moment-69",
+      "startMs": 544000,
+      "endMs": 552000
+     },
+     {
+      "id": "moment-70",
+      "startMs": 552000,
+      "endMs": 560000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-n5",
+  "question": "Qu'a dit Thom à Celia juste avant l'annonce de la fin de la réécriture de mémoire ?",
+  "answers": [
+   {
+    "textId": "4830ed13d3",
+    "kind": "observation",
+    "answer": "Juste avant l'annonce de la fin de la réécriture de la mémoire, Thom dit à Celia qu'il doit suivre sa passion, qu'elle a sa robotique et que lui veut simplement être incroyable dans l'espace (moment-40, moment-41). Il lui demande ensuite de ne pas nier qu'elle est effrayée par sa main robotique (moment-44).",
+    "citations": [
+     {
+      "id": "moment-40",
+      "startMs": 312000,
+      "endMs": 320000
+     },
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "59058e55f7",
+    "kind": "observation",
+    "answer": "Juste avant l’annonce « Memory override complete », Thom dit à Celia : « Maybe we can tune… » Le passage s’interrompt là ; je ne peux pas confirmer la suite. (moment-67, 528000–536000 ; moment-68, 536000–544000)",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La transcription du passage est incertaine et semble tronquée après « Maybe we can tune »."
+    ]
+   }
+  ]
+ }
+]

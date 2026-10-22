@@ -1,0 +1,477 @@
+[
+ {
+  "questionId": "cnrs-w1",
+  "question": "Il cite Gemini : quel est aujourd'hui le modèle Gemini le plus récent de Google ?",
+  "answers": [
+   {
+    "textId": "13de2b0092",
+    "kind": "external",
+    "answer": "D'après les informations de la vidéo, l'intervenant mentionne Gemini comme l'un des modèles de grande taille, mais ne précise pas de version spécifique. Selon les pages web consultées, le modèle le plus récent est Gemini 4 Argon, annoncé comme le dernier modèle de frontière pour les tâches complexes (https://ai.google.dev/gemini-api/docs/models/gemini-4-argon).",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/models/gemini-4-argon",
+      "title": "Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon est désormais disponible."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "1f7e0994bb",
+    "kind": "explanation",
+    "answer": "D'après les informations de la vidéo, l'intervenant mentionne Gemini comme l'un des modèles de grande taille, sans toutefois préciser sa version la plus récente. Selon les pages web consultées, le modèle Gemini 4 Argon est présenté comme le dernier modèle de pointe de Google.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/models/gemini-4-argon",
+      "title": "Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon est désormais disponible."
+     },
+     {
+      "url": "https://gemini.google/release-notes/",
+      "title": "‎Mises à jour et améliorations des applications Gemini",
+      "evidence": "Découvrez Gemini 4 Argon, notre modèle de frontière pour les tâches complexes"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "49e3e8107d",
+    "kind": "explanation",
+    "answer": "La vidéo mentionne Gemini comme l'un des modèles de grande taille, mais ne précise pas de version spécifique. Selon les notes de mise à jour de Google, le modèle le plus performant mentionné est Gemini 1.0 Ultra.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://gemini.google/release-notes/",
+      "title": "‎Mises à jour et améliorations des applications Gemini",
+      "evidence": "Essayez Gemini Advanced pour accéder au modèle d'IA le plus performant de Google, 1.0 Ultra"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7457904e49",
+    "kind": "explanation",
+    "answer": "La vidéo mentionne Gemini comme l'un des modèles d'IA de grande taille, mais ne précise pas de version spécifique. Selon les notes de mise à jour de Google, le modèle le plus performant proposé dans Gemini Advanced est le 1.0 Ultra.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://gemini.google/release-notes/",
+      "title": "‎Mises à jour et améliorations des applications Gemini",
+      "evidence": "Essayez Gemini Advanced pour accéder au modèle d'IA le plus performant de Google, 1.0 Ultra"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7933787a85",
+    "kind": "explanation",
+    "answer": "D'après les informations de la vidéo, l'intervenant mentionne Gemini comme l'un des modèles de grande taille, sans préciser de version spécifique. Selon les pages web consultées, le modèle le plus récent est Gemini 4 Argon (gemini-4-argon), présenté comme le dernier modèle de pointe pour les tâches complexes.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/models/gemini-4-argon",
+      "title": "Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon est désormais disponible."
+     },
+     {
+      "url": "https://gemini.google/release-notes/",
+      "title": "‎Mises à jour et améliorations des applications Gemini",
+      "evidence": "À partir d'aujourd'hui, Gemini 4 Argon est déployé dans le monde entier pour les abonnés Google AI Pro et Ultra dans l'application Gemini."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b2387ff8ed",
+    "kind": "explanation",
+    "answer": "D'après les informations de la vidéo, l'intervenant mentionne Gemini comme l'un des modèles de grande taille, sans toutefois préciser sa version la plus récente. Selon les pages web consultées, le modèle Gemini 4 Argon est présenté comme le dernier modèle de pointe disponible.",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/models/gemini-4-argon",
+      "title": "Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon est désormais disponible."
+     },
+     {
+      "url": "https://gemini.google/release-notes/",
+      "title": "‎Mises à jour et améliorations des applications Gemini",
+      "evidence": "À partir d'aujourd'hui, Gemini 4 Argon est déployé dans le monde entier pour les abonnés Google AI Pro et Ultra dans l'application Gemini."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m1",
+  "question": "Combien de neurones a-t-il donnés pour l'éléphant, et combien en compte un cerveau humain ?",
+  "answers": [
+   {
+    "textId": "0836ca4dd6",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas le nombre de neurones pour un éléphant ou un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA à partir d'images de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a5aca9ea6e",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas le nombre de neurones pour un éléphant ni pour un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA avec des exemples de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c3bb5999fe",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas le nombre de neurones pour l'éléphant, ni le nombre de neurones dans un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA à partir d'exemples de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d0e24c41d0",
+    "kind": "observation",
+    "answer": "La vidéo ne mentionne pas le nombre de neurones pour l'éléphant, ni le nombre de neurones dans un cerveau humain. L'intervenant utilise uniquement des exemples de chats et de lapins pour illustrer l'apprentissage des données.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d42ef4511b",
+    "kind": "observation",
+    "answer": "La vidéo ne mentionne pas de nombre de neurones pour un éléphant, ni de nombre de neurones dans un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA à partir d'images de chats et de lapins.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f40148288f",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas le nombre de neurones pour un éléphant ni pour un cerveau humain. Les passages consultés traitent uniquement de l'apprentissage des IA à partir d'images de chats et de lapins.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w2",
+  "question": "Qui a inventé l'expression « modèle de fondation » dont il parle, et quand ?",
+  "answers": [
+   {
+    "textId": "70ec423b4b",
+    "kind": "observation",
+    "answer": "La vidéo mentionne l'existence d'un « modèle de fondation » (moment-76), mais l'orateur ne précise pas qui a inventé cette expression ni à quelle date. Je ne peux donc pas répondre à votre question avec les éléments fournis.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "78ebd842b2",
+    "kind": "observation",
+    "answer": "La vidéo mentionne l'existence d'un « modèle de fondation » (moment-76), mais l'orateur ne précise pas qui a inventé cette expression ni à quelle date. Je ne peux donc pas répondre à l'intégralité de votre question avec les éléments fournis.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "945425585b",
+    "kind": "observation",
+    "answer": "L'expression « modèle de fondation » est utilisée dans la vidéo pour désigner un modèle entraîné lors d'une phase de pré-training coûteuse (moment-76). La vidéo ne précise pas qui a inventé ce terme ni à quelle date précise.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ec5d0ae5da",
+    "kind": "observation",
+    "answer": "La vidéo mentionne l'existence d'un « modèle de fondation » (moment-76), mais l'orateur ne précise pas qui a inventé cette expression ni à quelle date. Je ne dispose pas d'informations complémentaires dans les passages consultés pour répondre à cette question.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "efb5a9d9ef",
+    "kind": "explanation",
+    "answer": "La vidéo mentionne l'existence d'un « modèle de fondation » (moment-76), mais l'orateur ne précise pas qui a inventé cette expression ni à quelle date. Selon Wikipédia, les modèles de fondation ont commencé à se matérialiser à la fin des années 2010 (https://en.wikipedia.org/wiki/Foundation_model).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Foundation_model",
+      "title": "Foundation model - Wikipedia",
+      "evidence": "Foundation models began to materialize as the latest wave of deep learning models in the late 2010s."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f172d87277",
+    "kind": "insufficient",
+    "answer": "La vidéo mentionne l'utilisation du terme « modèle de fondation » pour désigner le pré-entraînement, mais l'orateur ne précise pas qui a inventé cette expression ni quand. Je ne dispose pas d'informations externes dans les pages consultées pour répondre à cette question.",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m2",
+  "question": "Selon lui, quelle a été la force d'OpenAI avec ChatGPT, et par quelle méthode OpenAI a-t-il réalisé cet alignement ?",
+  "answers": [
+   {
+    "textId": "73e1c7e209",
+    "kind": "observation",
+    "answer": "L'orateur affirme que la force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Pour y parvenir, il explique qu'il a fallu apprendre au modèle un savoir-être, incluant des règles éthiques et de conduite, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "baa95a7119",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Cet alignement a été réalisé en apprenant au modèle un savoir-être et un ensemble de règles éthiques, comme par exemple ne pas répondre de manière inappropriée (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d2250094c1",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Cet alignement repose sur l'apprentissage d'un savoir-être et de règles éthiques, comme le fait de répondre avec bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w3",
+  "question": "Il parle des règles éthiques imposées aux IA : où en est aujourd'hui l'AI Act, la loi européenne sur l'IA ?",
+  "answers": [
+   {
+    "textId": "120a158488",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai). Il s'agit du règlement (UE) 2024/1689 qui instaure des règles basées sur le niveau de risque pour les développeurs et les utilisateurs d'IA.",
+    "citations": [
+     {
+      "id": "moment-106",
+      "startMs": 840000,
+      "endMs": 848000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s digital future",
+      "evidence": "The AI Act (Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence) is the first-ever comprehensive legal framework on AI worldwide."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "1b7aa33945",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle, visant à instaurer une IA de confiance en Europe. Il adopte une approche basée sur les risques, classant les systèmes d'IA en quatre niveaux, allant des risques inacceptables (interdits) aux risques minimaux.",
+    "citations": [
+     {
+      "id": "moment-106",
+      "startMs": 840000,
+      "endMs": 848000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s digital future",
+      "evidence": "The AI Act (Regulation (EU) 2024/1689 laying down harmonised rules on artificial intelligence) is the first-ever comprehensive legal framework on AI worldwide."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "2116aa76c3",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai). Il instaure des règles basées sur le niveau de risque pour les développeurs et les utilisateurs afin de favoriser une IA digne de confiance en Europe.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s digital future",
+      "evidence": "The AI Act is the first-ever legal framework on AI, which addresses the risks of AI and positions Europe to play a leading role globally."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "52b8ab81e4",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle, visant à instaurer une IA de confiance en Europe (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai). Il adopte une approche basée sur les risques, allant de l'interdiction des pratiques inacceptables à la régulation des systèmes à haut risque.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s digital future",
+      "evidence": "The AI Act is the first-ever legal framework on AI, which addresses the risks of AI and positions Europe to play a leading role globally."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "5a66282741",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai). Il instaure des règles basées sur le niveau de risque, allant de l'interdiction des pratiques inacceptables à la régulation des systèmes à haut risque.",
+    "citations": [
+     {
+      "id": "external-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s digital future",
+      "evidence": "The AI Act is the first-ever legal framework on AI, which addresses the risks of AI and positions Europe to play a leading role globally."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "67fc2906dd",
+    "kind": "external",
+    "answer": "L'AI Act est le premier cadre juridique complet au monde concernant l'intelligence artificielle (https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai). Il instaure des règles basées sur le niveau de risque, allant de l'interdiction des pratiques menaçantes à une régulation plus légère pour les risques minimes.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+      "title": "AI Act | Shaping Europe’s<0xC2>aster digital future",
+      "evidence": "The AI Act is the first-ever legal framework on AI, which addresses the risks of AI and positions Europe to play a leading role globally."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

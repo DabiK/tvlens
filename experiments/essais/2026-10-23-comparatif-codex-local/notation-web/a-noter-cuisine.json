@@ -1,0 +1,227 @@
+[
+ {
+  "questionId": "cuisine-m1",
+  "question": "Quels morceaux de bœuf prend-il d'habitude, et de quelle partie de l'animal viennent-ils ?",
+  "answers": [
+   {
+    "textId": "8efbdfeb4d",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles montrent seulement des morceaux de viande dans la marinade, sans nommer les morceaux ni dire d’où ils viennent. Je ne peux donc pas établir ce qu’il prend d’habitude ; la partie de la vidéo qui pourrait le préciser manque.",
+    "citations": [
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La couverture s’arrête à 136 000 ms, avant le repère de 144 002 ms."
+    ]
+   },
+   {
+    "textId": "a6bd483874",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf Patrick Dujancourt prend d'habitude. On y voit seulement qu'il prépare une marinade avec des morceaux de viande, des oignons, des carottes et des lardons (moment-13, 88000-104000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w1",
+  "question": "Il n'utilise pas de vin de Bourgogne : avec quel cépage fait-on les bourgognes rouges ?",
+  "answers": [
+   {
+    "textId": "3b5299ac45",
+    "kind": "external",
+    "answer": "Les bourgognes rouges sont généralement faits avec du pinot noir. Certaines appellations régionales font exception et peuvent autoriser d’autres cépages ou assemblages.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.vins-bourgogne.fr/plan-de-site/classification-des-appellations,2314,12208.html",
+      "title": "Comprendre les appellations des vins de Bourgogne",
+      "evidence": "Le site indique qu’à partir de l’appellation Bourgogne et des niveaux supérieurs, le cépage est le pinot noir pour les rouges, avec quelques rares exceptions ; certaines appellations régionales ont des règles plus tolérantes."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d2915ab298",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir, considéré comme le cépage roi. Le Gamay est également utilisé dans la région, représentant environ 11 % de l'encépagement rouge.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne",
+      "evidence": "Le Pinot Noir, cépage roi des vins rouges de Bourgogne [...] Le pourcentage de l’encépagement en rouge : le pinot noir : 36 % le gamay : 11 %"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w2",
+  "question": "Que met-on d'habitude dans un bouquet garni ?",
+  "answers": [
+   {
+    "textId": "76ae94f463",
+    "kind": "explanation",
+    "answer": "Un bouquet garni est traditionnellement composé de thym, de laurier sauce et de persil (lamuseenbouche.fr). Selon d'autres sources, il peut aussi inclure du romarin, de la sarriette, de la sauge, de la coriandre ou de l'origan (fr.wikipedia.org).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi",
+      "title": "Composition bouquet garni : guide pratique, variantes maison et astuces d’utilisation",
+      "evidence": "Composition classique du bouquet garni : thym, laurier, persil"
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, laurier sauce, et romarin. [...] Thym et laurier sauce, et éventuellement persil, sarriette, sauge, romarin, coriandre, origan"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "df9d12ed6a",
+    "kind": "explanation",
+    "answer": "Un bouquet garni contient généralement du thym, du laurier et du persil, souvent ficelés ensemble. Les herbes peuvent varier selon la recette.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-o1",
+  "question": "Avec quoi a-t-il versé l'huile dans la cocotte avant de saisir la viande ?",
+  "answers": [
+   {
+    "textId": "e94a959525",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne montrent pas le moment où l’huile est versée dans la cocotte : il manque notamment la séquence avant 248 000 ms. Je ne peux donc pas dire avec quoi il l’a versée.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages disponibles commencent à 248 000 ms et ne couvrent pas la scène demandée."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-m2",
+  "question": "Pourquoi tient-il à bien saisir la viande, et comment s'appelle la réaction qui forme cette croûte ?",
+  "answers": [
+   {
+    "textId": "7338ec91b7",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à obtenir une couleur brune pour son plat, ce qui se fait naturellement avec la viande et le vin (moment-50 à moment-51). La réaction chimique responsable de la formation de cette croûte et de la couleur brune est la réaction de Maillard (sources: https://bellequipment.fr/reaction-de-maillard-viande/ ; https://www.aventureculinaire.fr/la-reaction-de-maillard/).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://bellequipment.fr/reaction-de-maillard-viande/",
+      "title": "Réaction de Maillard viande : comprendre, maîtriser et sublimer chaque cuisson – Bellequipment.fr",
+      "evidence": "La réaction de Maillard viande est un phénomène culinaire et chimique qui transforme la couleur, l’arôme et le goût des aliments cuits."
+     },
+     {
+      "url": "https://www.aventureculinaire.fr/la-reaction-de-maillard/",
+      "title": "Comprendre la réaction de Maillard pour une viande parfaite - Aventure culinaire",
+      "evidence": "C’est elle qui crée cette complexité et cette profondeur de saveur dans une viande grillée, une croûte de pain, un café torréfié ou même des frites."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "80d758c059",
+    "kind": "explanation",
+    "answer": "Il la saisit pour bien la colorer : cette coloration contribue au goût et à la couleur brune du plat. La croûte se forme par la réaction de Maillard ; les passages fournis ne montrent toutefois pas cette étape de cuisson, donc cette explication est générale.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages fournis concernent l’ajout de la viande dans le liquide, pas sa saisie (moment-49 à moment-52)."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-o2",
+  "question": "Avec quoi a-t-il pris et versé la farine pour singer ?",
+  "answers": [
+   {
+    "textId": "06739ba540",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne montrent pas l’étape où il prend et verse la farine, donc je ne peux pas déterminer avec quoi il l’a fait.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages consultés couvrent 400000–448000 ms ; la portion antérieure n’est pas incluse ici."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w3",
+  "question": "Il a choisi un vin d'Occitanie : comment s'annonce la récolte de vin 2026 dans cette région ?",
+  "answers": [
+   {
+    "textId": "7477633c74",
+    "kind": "external",
+    "answer": "La récolte 2026 en Occitanie s'annonce généreuse, avec une production du bassin Languedoc-Roussillon estimée à la hausse pour atteindre 10,59 Mhl. Malgré des épisodes de forte chaleur et de sécheresse, les rendements régionaux devraient se situer légèrement au-dessus de la moyenne quinquennale.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production totale du bassin Languedoc-Roussillon a été révisée à la hausse par rapport au mois précédent, elle est estimée à 10,59 Mhl en 2026"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8f1ef16e83",
+    "kind": "external",
+    "answer": "Les dernières estimations indiquent une récolte plutôt en hausse en Languedoc-Roussillon : Agreste prévoit des rendements meilleurs qu’anticipé, et une production régionale en hausse de 20 % sur 2025, malgré la sécheresse et des situations contrastées. Pour l’IGP Pays d’Oc, l’attente est de 10 à 11 millions d’hectolitres, proche d’une année normale ; ce sont des estimations publiées en octobre, pas encore un bilan définitif.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://agreste.agriculture.gouv.fr/agreste-web/disaron/IraVit26127/detail/",
+      "title": "Agreste — Viticulture : production 2026 estimée à près de 35 millions d’hectolitres",
+      "evidence": "Agreste indique qu’au 1er octobre 2026 les rendements ont été meilleurs qu’anticipé en Languedoc-Roussillon, avec des disparités entre bassins."
+     },
+     {
+      "url": "https://agronews.com/fr/fr/news/breaking-news/2026-10-12/104689",
+      "title": "Vendanges 2026 : l’IGP Pays d’Oc attend 10 à 11 millions d’hectolitres",
+      "evidence": "L’article rapporte une récolte régionale en hausse de 20 % sur 2025 et une prévision Pays d’Oc de 10 à 11 millions d’hectolitres, proche d’une année normale."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

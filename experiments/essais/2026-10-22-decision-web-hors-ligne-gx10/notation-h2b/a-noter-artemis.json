@@ -1,0 +1,440 @@
+[
+ {
+  "questionId": "artemis-w1",
+  "question": "Pourquoi le décollage a-t-il pris du retard cette nuit-là ?",
+  "answers": [
+   {
+    "textId": "1b33a026e3",
+    "kind": "external",
+    "answer": "Le décollage de la mission Artemis 1 a été retardé par deux problèmes techniques majeurs. Une fuite d'hydrogène liquide sur une valve de la plateforme de lancement a nécessité l'intervention d'une équipe technique, tandis qu'un commutateur Ethernet défectueux dans le système de destruction de la fusée a également causé un contretemps (https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/).",
+    "citations": [
+     {
+      "id": "airandspaceforces.com",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch | Air & Space Forces Magazine",
+      "evidence": "A snag in Space Launch Delta 45’s testing of the Artemis 1 flight termination system contributed to a delay of the very-early-morning launch Nov. 16, one of two last-minute glitches in the final preparations to launch America’s new moon rocket for the first time."
+     },
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis-red-crew-team-helps-enable-successful-launch",
+      "title": "Artemis Red Crew Team Helps Enable Successful Launch - NASA",
+      "evidence": "the red crew effort, communicating with the team and guiding them through the procedure to fix the hydrogen leak at the pad."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "3cda8807fc",
+    "kind": "external",
+    "answer": "Le décollage de la mission Artemis 1 a été retardé par deux problèmes techniques majeurs. Une fuite d'hydrogène liquide sur une valve de la plateforme de lancement a nécessité l'intervention d'une équipe technique, tandis qu'un commutateur Ethernet défectueux dans le système de commande de destruction du lanceur a également causé un contretemps (https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/).",
+    "citations": [
+     {
+      "id": "airandspaceforces_switch",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "nasa_red_crew",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch | Air & Space Forces Magazine",
+      "evidence": "A spokesperson for Space Launch Delta 45 confirmed to Air & Space Forces Magazine that the issue resulted from “a failed ethernet switch in our system at Cape Canaveral Space Force Station”."
+     },
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis-red-crew-team-helps-enable-successful-launch",
+      "title": "Artemis Red Crew Team Helps Enable Successful Launch - NASA",
+      "evidence": "the red crew effort, communicating with the team and guiding them through the procedure to fix the hydrogen leak at the pad."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "50e99d0c79",
+    "kind": "external",
+    "answer": "Le décollage de la mission Artemis 1 a été retardé par deux problèmes majeurs. Une équipe de la NASA a dû intervenir sur la plateforme de lancement pour resserrer des boulons sur une valve qui fuyait, tandis qu'un problème lié au système de terminaison de vol a également perturbé la fenêtre de lancement (https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/).",
+    "citations": [
+     {
+      "id": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch | Air & Space Forces Magazine",
+      "evidence": "A snag in Space Launch Delta 45’s testing of the Artemis 1 flight termination system contributed to a delay of the very-early-morning launch Nov. 16, one of two last-minute glitches in the final preparations to launch America’s new moon rocket for the first time."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "aa5f800ea9",
+    "kind": "external",
+    "answer": "Le décollage de la mission Artemis 1 a été retardé par un problème technique sur la plateforme de lancement. Une fuite d'hydrogène liquide au niveau d'une valve a nécessité l'intervention d'une équipe pour resserrer des boulons juste avant un arrêt planifié de 30 minutes (https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/).",
+    "citations": [
+     {
+      "id": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch | Air & Space Forces Magazine",
+      "evidence": "Three members of a NASA “red crew” had already driven out to the launch pad at Kennedy Space Center in Florida to tighten some bolts on a valve of the Space Launch System rocket’s mobile launcher platform. The valve had been leaking liquid hydrogen propellant."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cf49e67d70",
+    "kind": "external",
+    "answer": "Le décollage de la mission Artemis 1 a été retardé par un problème technique sur la plateforme de lancement. Une fuite d'hydrogène liquide au niveau d'une valve a nécessité l'intervention d'une équipe pour resserrer des boulons (https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/).",
+    "citations": [
+     {
+      "id": "webPage-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch | Air & Space Forces Magazine",
+      "evidence": "Three members of a NASA “red crew” had already driven out to the launch pad at Kennedy Space Center in Florida to tighten some bolts on a valve of the Space Launch System rocket’s mobile launcher platform. The valve had been leaking liquid hydrogen propellant."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d2b001afef",
+    "kind": "external",
+    "answer": "Le décollage de la mission Artemis 1 a été retardé par deux problèmes techniques majeurs. Une équipe est intervenue sur la plateforme pour resserrer des boulons sur une valve qui fuyait de l'hydrogène liquide, et un problème lié au système de destruction en vol a également été signalé par la Space Force (https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/).",
+    "citations": [
+     {
+      "id": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had to-replace-a-faulty-switch/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+      "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch | Air & Space Forces Magazine",
+      "evidence": "A snag in Space Launch Delta 45’s testing of the Artemis 1 flight termination system contributed to a delay of the very-early-morning launch Nov. 16, one of two last-minute glitches in the final preparations to launch America’s new moon rocket for the first time."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m1",
+  "question": "Les employés d'Airbus qu'on a vus applaudir en Allemagne : qu'ont-ils fourni pour cette mission, et à quoi sert cet élément pendant le vol ?",
+  "answers": [
+   {
+    "textId": "174c7193c9",
+    "kind": "insufficient",
+    "answer": "Je ne trouve aucune mention d'employés d'Airbus ou d'un élément spécifique fourni par eux dans les passages vidéo consultés. La vidéo montre principalement l'équipe de contrôle de la NASA et les procédures de lancement de la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "3f2a8d707d",
+    "kind": "insufficient",
+    "answer": "kind=insufficient",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "La vidéo ne montre pas d'employés d'Airbus en Allemagne.",
+     "Les passages consultés ne mentionnent pas de contribution d'Airbus ou d'un élément spécifique fourni par eux pour cette mission."
+    ]
+   },
+   {
+    "textId": "a63a961f1a",
+    "kind": "insufficient",
+    "answer": "Les passages consultés ne mentionnent pas d'employés d'Airbus en Allemagne, ni les éléments qu'ils auraient fournis pour la mission. La vidéo montre uniquement l'équipe de contrôle de la NASA lors du lancement d'Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ec2b243d56",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier d'employés d'Airbus en Allemagne dans les passages consultés. Les extraits montrent uniquement une équipe de contrôle en centre de lancement pour la mission Artemis-1.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f470acd5bf",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier d'employés d'Airbus en Allemagne dans les passages vidéo consultés. Les informations disponibles concernent uniquement l'équipe de contrôle de la mission Artemis-1 et les procédures de lancement.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f5e5320189",
+    "kind": "insufficient",
+    "answer": "Je ne trouve aucune mention d'employés d'Airbus ou d'un événement en Allemagne dans les passages vidéo consultés. Les extraits montrent uniquement l'équipe de contrôle de la mission Artemis-1 dans un centre de commande.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-m2",
+  "question": "Comment s'appelle la directrice de lancement qui a donné le feu vert pour reprendre le compte à rebours, et qu'a-t-elle de particulier dans l'histoire de la NASA ?",
+  "answers": [
+   {
+    "textId": "387de00249",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas le nom de la directrice de lancement ayant donné le feu vert. Les passages consultés montrent uniquement les phases de préparation et le compte à rebours du lanceur Artemis I.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "608e2a7c7d",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas le nom de la directrice de lancement ni son rôle spécifique dans l'histoire de la NASA. Les passages consultés montrent uniquement les étapes de préparation du lanceur Artemis I.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ac7cd25b73",
+    "kind": "insufficient",
+    "answer": "La vidéo ne mentionne pas le nom de la directrice de lancement ni ses particularités historiques. Les passages consultés montrent uniquement les phases de préparation et de compte à rebours du lanceur Artemis I.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b1aad8585e",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas le nom de la directrice de lancement ni son parcours particulier. Les passages consultés montrent uniquement les phases de préparation et de compte à rebours du lanceur Artemis I.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c3ce4b54f9",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est responsable de la planification et de la gestion de l'ensemble des opérations du compte à rebours pour les lancements Artemis, ayant notamment dirigé le lancement d'Artemis I en novembre 2022.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Charlie Blackwell-Thompson serves as NASA’s Artemis launch director, responsible for the overall planning and management of all Artemis Launch Countdown operations."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ee390ad313",
+    "kind": "external",
+    "answer": "La directrice de lancement est Charlie Blackwell-Thompson. Elle est responsable de la planification et de la gestion de l'ensemble des opérations du compte à rebours pour les lancements Artemis.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+      "title": "Charlie Blackwell-Thompson - NASA",
+      "evidence": "Charlie Blackwell-Thompson serves as NASA’s Artemis launch director, responsible for the overall planning and management of all Artemis Launch Countdown operations."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w3",
+  "question": "Depuis ce lancement, où en est aujourd'hui le programme Artemis ?",
+  "answers": [
+   {
+    "textId": "65b7d5d86f",
+    "kind": "external",
+    "answer": "La NASA a annoncé des discussions concernant l'accélération du programme Artemis et l'état d'avancement des prochaines missions lunaires (https://www.nasa.gov/news-release/nasa-to-discuss-artemis-acceleration-status-of-upcoming-moon-missions/). La vidéo montre cependant uniquement le décollage de la mission Artemis I (moment-204, 1624000-1632000).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/news-release/nasa-to-discuss-artemis-acceleration-status-of-upcoming-moon-missions/",
+      "title": "NASA to Discuss Artemis Acceleration, Status of Upcoming Moon Missions - NASA",
+      "evidence": "NASA to Discuss Artemis Acceleration, Status of Upcoming Moon Missions"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "91dea16e61",
+    "kind": "external",
+    "answer": "Le programme Artemis de la NASA vise à ramener des humains sur la Lune et constitue une étape cruciale vers un futur voyage vers Mars (https://www.nasa.gov/humans-in-space/artemis/). La NASA travaille actuellement sur le développement de systèmes d'atterrissage humain avec l'industrie pour atteindre la frontière lunaire (https://www.nasa.gov/humans-in-space/artemis/).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "NASA’s Artemis program aims to return humans to the Moon and is a crucial step toward eventually sending crews on to Mars."
+     },
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "NASA is working with industry to develop the human landing systems, or next-generation \"human landing systems\"."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ae5a8ffd6a",
+    "kind": "explanation",
+    "answer": "Le programme Artemis de la NASA vise à établir une présence humaine durable sur la Lune et à préparer des missions vers Mars. La NASA travaille actuellement sur l'accélération du calendrier de ses prochaines missions lunaires.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "NASA’s Artemis Program aims to establish a long-term human presence on the Moon and prepare for Mars missions."
+     },
+     {
+      "url": "https://www.nasa.gov/news-release/nasa-to-discuss-artemis-acceleration-status-of-upcoming-moon-missions/",
+      "title": "NASA to Discuss Artemis Acceleration, Status of Upcoming Moon Missions - NASA",
+      "evidence": "NASA to Discuss Artemis Acceleration, Status of Upcoming Moon Missions"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d895d50086",
+    "kind": "external",
+    "answer": "Le programme Artemis de la NASA vise à établir une présence durable sur la Lune et à préparer l'exploration de Mars. Les informations disponibles indiquent que la NASA travaille sur l'accélération et le statut des prochaines missions lunaires.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/news-release/nasa-to-discuss-artemis-acceleration-status-of-upcoming-moon-missions/",
+      "title": "NASA to Discuss Artemis Acceleration, Status of Upcoming Moon Missions - NASA",
+      "evidence": "NASA to Discuss Artemis Acceleration, Status of Upcoming Moon Missions"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e9cfbbdddf",
+    "kind": "external",
+    "answer": "Le programme Artemis de la NASA vise à envoyer des équipages vers la Lune et constitue une étape cruciale pour un futur voyage vers Mars (https://www.nasa.gov/humans-in-space/artemis/). La NASA travaille actuellement sur le développement de systèmes d'atterrissage humain avec des partenaires industriels pour atteindre la frontière lunaire.",
+    "citations": [
+     {
+      "id": "nasa_artemis_main",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/humans-in-space/artemis/",
+      "title": "Moon to Mars | NASA's Artemis Program - NASA",
+      "evidence": "NASA’s Artemis program aims to send crews to the Moon and is a crucial step toward eventually sending crews on to Mars."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f189a5d134",
+    "kind": "explanation",
+    "answer": "La vidéo montre le décollage de la mission Artemis I (moment-204, 1624000-1632000), mais ne fournit pas d'informations sur l'état actuel ou l'avancement du programme. Les pages web de la NASA mentionnent le programme Artemis, mais ne détaillent pas de calendrier précis pour les missions à venir dans les extraits consultés.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-w2",
+  "question": "Comment cette mission s'est-elle terminée, et combien de temps a-t-elle duré ?",
+  "answers": [
+   {
+    "textId": "125e1aaab6",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations sur la fin de la mission ou sur sa durée totale. Les passages consultés montrent uniquement une phase de vol où la séparation de la coiffe du module de service et du système d'abandon de l'équipage a eu lieu (moment-229, 1824000-1832000 ; moment-230, 1832000-1840000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "1c0023a966",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations sur la fin de la mission ou sur sa durée totale dans les passages vidéo consultés. Les extraits montrent uniquement une phase de vol de la mission Artemis-1 où la séparation de la coiffe du module de service a eu lieu (moment-229, 1824000-1832000).",
+    "citations": [
+     {
+      "id": "moment-229",
+      "startMs": 1824000,
+      "endMs": 1832000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "79d6af694e",
+    "kind": "insufficient",
+    "answer": "Les passages visionnés ne permettent pas de dire comment la mission s'est terminée, car ils ne montrent que la phase de lancement et de séparation des composants. On y voit notamment la séparation de la coiffe du module de service et des systèmes d'éjection (moment-229, 1824000-1832000 ; moment-230, 1832000-1840000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "9f93f47714",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne permettent pas de dire comment la mission s'est terminée, ni quelle a été sa durée totale. La vidéo montre seulement une phase de vol où la séparation de la coiffe du module de service et du système d'échappement a eu lieu (moment-229, 1824000-1832000 ; moment-230, 1832000-1840000).",
+    "citations": [
+     {
+      "id": "moment-229",
+      "startMs": 1824000,
+      "endMs": 1832000
+     },
+     {
+      "id": "moment-230",
+      "startMs": 1832000,
+      "endMs": 1840000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d51d144343",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne permettent pas de dire comment la mission s'est terminée, ni quelle a été sa durée totale. La vidéo montre seulement une phase de vol où la séparation de la coiffe du module de service et des systèmes d'éjection a été confirmée (moment-229, 1824000-1832000 ; moment-230, 1832000-1840000).",
+    "citations": [
+     {
+      "id": "moment-229",
+      "startMs": 1824000,
+      "endMs": 1832000
+     },
+     {
+      "id": "moment-230",
+      "startMs": 1832000,
+      "endMs": 1840000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

@@ -1,0 +1,420 @@
+[
+ {
+  "questionId": "spring-w1",
+  "question": "Quand ce court métrage a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "4d1b7344f5",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation a été publié en avril 2019.",
+    "citations": [
+     {
+      "id": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia",
+      "evidence": "Le court métrage sort en avril 2019."
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "5319fe84fd",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation intitulé Spring a été publié en 2019. Selon les informations de Wikipédia, sa date de sortie est le 4 avril 2019 pour la version anglaise et le 30 septembre 2019 pour la version française.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 ( 2019-04-04 )"
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia",
+      "evidence": "Date de sortie : 30 septembre 2019"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "5cdced6881",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation a été publié en 2019. Selon les informations de Wikipédia, il est sorti le 4 avril 2019.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia",
+      "evidence": "Le court métrage sort en avril 2019."
+     },
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8310fbec73",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation intitulé Spring est sorti en avril 2019.",
+    "citations": [
+     {
+      "id": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia",
+      "evidence": "Le court métrage sort en avril 2019."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b7b90a13e4",
+    "kind": "external",
+    "answer": "Ce court métrage d'animation a été publié le 4 avril 2019 (https://en.wikipedia.org/wiki/Spring_(2019_film)). Une autre source indique également une date de sortie au 30 septembre 2019 (https://fr.wikipedia.org/wiki/Spring_(film,_2019)).",
+    "citations": [
+     {
+      "id": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Spring_(film,_2019)",
+      "title": "Spring (film, 2019) — Wikipédia",
+      "evidence": "Le court métrage sort en avril 2019"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w2",
+  "question": "Qu'est-ce qui a inspiré l'histoire de ce film à son réalisateur ?",
+  "answers": [
+   {
+    "textId": "7a2fdd323a",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé d'information dans la vidéo ou les sources consultées concernant l'inspiration du réalisateur pour ce film. Les documents disponibles se concentrent sur la distribution, la production et le synopsis de Space Chimps.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages vidéo montrent des scènes d'animation mais ne contiennent pas d'interview ou d'explication sur l'inspiration du réalisateur.",
+     "Les pages Wikipédia et SensCritique fournies ne mentionnent pas l'origine de l'idée du film."
+    ]
+   },
+   {
+    "textId": "7ce1cdca57",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé d'information dans les extraits vidéo ou les pages consultées concernant l'inspiration de l'histoire pour le réalisateur. Les documents disponibles mentionnent uniquement les crédits de l'équipe de création, comme Kirk DeMicco pour le scénario et l'histoire.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "cb75b55eb7",
+    "kind": "external",
+    "answer": "Le réalisateur Bong Joon-ho s'est inspiré de sa propre jeunesse pour écrire le film Parasite (kind=external, source=https://toutelatele.ouest-france.fr/parasite-l-histoire-vraie-qui-a-inspire-le-film-de-bong-joon-ho-sur-arte-187125 : \"Bong Joon-ho s’est inspiré de sa propre jeunesse pour le film.\"). Les images de la vidéo montrent des scènes d'animation et de science-fiction qui ne semblent pas liées à ce film.",
+    "citations": [
+     {
+      "id": "https://toutelatele.ouest-france.fr/parasite-l-histoire-vraie-qui-a-inspire-le-film-de-bong-joon-ho-sur-arte-187125",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://toutelatele.ouest-france.fr/parasite-l-histoire-vraie-qui-a-inspire-le-film-de-bong-joon-ho-sur-arte-187125",
+      "title": "Parasite : l’histoire vraie qui a inspiré le film de Bong Joon-ho sur Arte | Toutelatele",
+      "evidence": "Bong Joon-ho s’est inspiré de sa propre jeunesse pour le film."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cc2c495bd3",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car la vidéo ne mentionne pas le nom du réalisateur ni l'inspiration de son histoire. Les images montrent uniquement des scènes de science-fiction et de fantasy avec une jeune fille et un vaisseau métallique.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ff7737b552",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas trouvé d'information dans les extraits vidéo ou les pages consultées précisant ce qui a inspiré le réalisateur pour l'histoire de ce film. Les sources disponibles se concentrent sur le synopsis, la distribution et la production du film.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w3",
+  "question": "Le Blender Studio, qui présente ce film, a-t-il sorti un film plus récent ? Lequel, et que prépare-t-il aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "0941b3b71f",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti le film Hero en 2018, qui est plus récent que certains de ses projets comme Sintel (2010) ou Big Buck Bunny (2008). Le studio travaille également sur des projets comme Charge (2022) ou Spright Fright (2021).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Hero 2018 A Blender '2D' open movie project, directed by Daniel Martinez Lara."
+     },
+     {
+      "url": "https://studio.blender.org/vault/",
+      "title": "Blender Studio",
+      "evidence": "f a shot from Charge (2022) with sparks FX Source file of a shot from Spright Fright (2021)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "481d782c73",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti des films plus récents que celui présenté, comme Charge en 2022 ou Wing It! en 2023. Le studio prépare actuellement les projets Cowboi et Overgrown, qui sont tous deux en cours de développement.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Film Highlights Cowboi In Development Overgrown In Development Singularity 2026 Wing It! 2023"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4fb18fdbc4",
+    "kind": "explanation",
+    "answer": "Le Blender Studio a sorti le film Charge en 2022. Le studio travaille actuellement sur le projet Storm, comme l'indique la présence de formations sur le rigging facial pour ce projet dans ses ressources.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/vault/",
+      "title": "Blender Studio",
+      "evidence": "In this course, we are going to cover every method and workflow for creating the flexible and expressive facial rigging system for Storm"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "6911d6dd14",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\n\nJe ne peux pas confirmer si le Blender Studio a sorti un film plus récent ou ce qu'il prépare actuellement. Les sources consultées mentionnent l'existence de projets et de films depuis 2006, mais ne précisent pas de titre récent ni de projet en cours de préparation.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c8a390769f",
+    "kind": "external",
+    "answer": "Le Blender Studio a produit plusieurs films, mais la page consultée ne précise pas lequel est le plus récent après celui présenté ici. Le studio prépare actuellement un long-métrage dont la sortie est annoncée pour juillet 2026.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://petitsdelices.fr/blender-studio-open-movies-outils/",
+      "title": "Blender Studio : films, licence et outils du studio",
+      "evidence": "où en est réellement le long-métrage annoncé en juillet 2026."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m1",
+  "question": "Depuis la crête, la fille et son chien regardent la vallée : qu'est-ce qui la remplit, et quel phénomène météo produit ce genre de paysage ?",
+  "answers": [
+   {
+    "textId": "118f0410d6",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages qui enveloppent les montagnes (moment-10). Ce type de paysage est caractéristique d'une mer de nuages, un phénomène météorologique où une couche de nuages recouvre le relief.",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "1d277cfe8f",
+    "kind": "observation",
+    "answer": "La vallée est remplie de brume et de nuages qui enveloppent les montagnes (moment-10). Ce type de paysage, où les nuages semblent couler ou stagner dans les vallées, est souvent associé à une mer de nuages (moment-10).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "5032f765cc",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume ou de nuages qui enveloppent les montagnes (moment-10). Ce type de paysage est souvent le résultat d'un phénomène de mer de nuages, qui se forme lorsque de l'air humide est piégé sous une couche d'inversion thermique.",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "91e8248ce4",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages qui enveloppent les montagnes (moment-10). Ce type de paysage est produit par un phénomène de mer de nuages (moment-10).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "e21bac9862",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages qui enveloppent les montagnes (moment-10). Ce type de paysage, où les nuages semblent s'écouler ou stagner dans les vallées, est souvent associé à une mer de nuages (kind=explanation).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m2",
+  "question": "Cette immense créature lumineuse qui s'approche d'elle, à quoi ressemble-t-elle, et qu'est-ce que c'est selon les créateurs du film ?",
+  "answers": [
+   {
+    "textId": "3c310bf3a7",
+    "kind": "observation",
+    "answer": "La créature ressemble à une masse organique bleue, lumineuse et translucide, qui semble flotter ou être suspendue dans l'eau (moment-23). Les informations disponibles ne précisent pas ce qu'elle est selon les créateurs du film.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "4e8a4b4fd1",
+    "kind": "observation",
+    "answer": "La créature apparaît comme une masse organique bleue, lumineuse et translucide, qui semble flotter dans l'eau (moment-23). Les extraits vidéo ne précisent pas ce qu'elle est selon les créateurs du film.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "73964284eb",
+    "kind": "observation",
+    "answer": "La créature ressemble à une masse organique bleue, lumineuse et translucide, qui semble flotter dans l'eau (moment-23). Les informations fournies ne précisent pas ce qu'elle est selon les créateurs du film.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a867a1b3fc",
+    "kind": "explanation",
+    "answer": "La créature est une masse organique bleue, lumineuse et translucide, qui semble flotter dans l'eau (moment-23). Selon les informations sur le film Avatar : La Voie de l'eau, il s'agit de Payakan, un Tulkun, une créature marine avec laquelle le personnage Lo'ak développe un lien (https://fr.wikipedia.org/wiki/Avatar_:_La_Voie_de_l%27eau).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Avatar_:_La_Voie_de_l%27eau",
+      "title": "Avatar : La Voie de l'eau — Wikipédia",
+      "evidence": "Lo'ak se connecte mentalement à Payakan, et découvre que le comportement violent qui a abouti à sa marginalisation était en fait une réaction de défense contre les baleiniers qui avaient tué sa mère."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f847fc31f1",
+    "kind": "explanation",
+    "answer": "La créature est une masse organique bleue et lumineuse, de forme translucide, qui semble flotter dans l'eau (moment-23). Selon le producteur Jon Landau, il s'agit d'un type de baleine nommé tulkun, conçu pour mesurer environ 91 mètres de long et entretenir une relation spirituelle avec les Metkayina (https://world.dan.org/fr/alert-diver/article/making-avatar-the-way-of-water/).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://world.dan.org/fr/alert-diver/article/making-avatar-the-way-of-water/",
+      "title": "La fabrication d'Avatar : la voie de l'eau - DAN World",
+      "evidence": "we wanted our whale variants, the tulkun, to grow to 300 feet (91 meters) long and have amazing new functionalities and a spiritual relationship with the Metkayina."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

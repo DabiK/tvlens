@@ -1,0 +1,406 @@
+[
+ {
+  "questionId": "spring-01",
+  "question": "Qui accompagne la jeune fille au début ?",
+  "answers": [
+   {
+    "textId": "61c78a2a34",
+    "kind": "observation",
+    "answer": "Les passages observés montrent une jeune fille en rouge interagissant avec un petit chien, mais aucun autre personnage n'est visible à ses côtés. Il n'est pas possible de déterminer si elle est accompagnée ou non.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "dfdb959633",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles ne montrent pas qui accompagne la jeune fille au début. On la voit s’approcher d’un petit chien vers 48 000–64 000 ms, mais il manque le segment 64 000–72 003 ms et les résumés ne permettent pas d’établir un accompagnateur.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le début visible dans les passages disponibles montre un chien, mais aucun accompagnateur clairement identifié."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n1",
+  "question": "D'après le texte affiché au début, quel studio présente ce film ?",
+  "answers": [
+   {
+    "textId": "1f06cd753a",
+    "kind": "observation",
+    "answer": "Les passages analysés ne montrent aucun texte indiquant le nom d'un studio de cinéma. Les premières images présentent des structures organiques et des gouttes d'eau sans aucune mention textuelle.",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "bdb025daa9",
+    "kind": "insufficient",
+    "answer": "Les passages fournis ne montrent pas de texte de présentation du studio au début : le premier décrit une structure dans un liquide sombre, sans mention de studio. Je ne peux donc pas l’identifier à partir des éléments disponibles.",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La couverture s’arrête à 88 000 ms et le passage initial ne rapporte aucun texte affiché."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n2",
+  "question": "Au début de la scène de la forêt sombre, qu'y avait-il posé sur une grosse branche ?",
+  "answers": [
+   {
+    "textId": "170ee3a7c6",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas de grosse branche avec un objet posé dessus. Les images montrent une jeune fille en rouge dans une forêt sombre, mais aucun détail sur ce qui pourrait être posé sur une branche n'est visible.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages analysés s'arrêtent à 152000 ms et ne contiennent pas l'élément recherché."
+    ]
+   },
+   {
+    "textId": "709cbdb249",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles ne montrent pas le début de la scène de forêt sombre : ils la situent vers 104 000 ms, mais ne mentionnent pas d’objet posé sur une grosse branche. Je ne peux donc pas l’identifier avec les éléments fournis.",
+    "citations": [
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le passage ne décrit pas l’objet sur la branche."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "question": "Quel objet tient-elle dans la forêt ?",
+  "answers": [
+   {
+    "textId": "5aef40dbca",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-18, moment-19, moment-20).",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "6f15cc2027",
+    "kind": "observation",
+    "answer": "Elle tient un bâton dans la forêt.",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "question": "Quelle couleur domine la lumière de la grande forme près d'elle ?",
+  "answers": [
+   {
+    "textId": "2872f0a492",
+    "kind": "insufficient",
+    "answer": "Les résumés disponibles ne précisent pas la couleur de la lumière de la grande forme près d’elle. Ils la décrivent comme bleue plus tôt, mais les passages concernés ne permettent pas de confirmer la couleur dominante à sa proximité.",
+    "citations": [
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les passages disponibles après 184000 ms décrivent surtout une structure squelettique et ne couvrent pas les 6001 dernières millisecondes."
+    ]
+   },
+   {
+    "textId": "40529129bd",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est bleue (moment-23). L'ensemble de la scène est baigné dans une lumière bleue et sombre (moment-24).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "question": "Comment apparaît maintenant le haut du bâton ?",
+  "answers": [
+   {
+    "textId": "6f13aab181",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles s’arrêtent à 256 000 ms, avant le repère actuel, et ne montrent pas le haut du bâton. Je ne peux donc pas décrire son apparence maintenant.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Le passage attendu après 256 000 ms est manquant ou encore en attente."
+    ]
+   },
+   {
+    "textId": "ea6bb9d471",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas le haut du bâton. Les informations disponibles décrivent seulement que la jeune fille tient un bâton lumineux dans la forêt (moment-32).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages analysés ne montrent pas le haut du bâton."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n3",
+  "question": "Avant l'arrivée de la grande créature lumineuse, qu'est-ce que le chien et la fille ont trouvé au bout du sentier, dans la forêt ?",
+  "answers": [
+   {
+    "textId": "8bafc3f2f5",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas déterminer ce qu’ils ont trouvé au bout du sentier : les passages fournis ne décrivent pas cette découverte, et la séquence juste avant l’arrivée de la créature n’est pas couverte.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les résumés des passages disponibles ne permettent pas d’identifier ce que la fille et le chien auraient trouvé."
+    ]
+   },
+   {
+    "textId": "a937252b98",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\nJe ne peux pas répondre à cette question car les passages analysés ne montrent pas ce que le chien et la fille ont trouvé au bout du sentier. Les images montrent la jeune fille et le chien dans une forêt sombre, mais l'élément que vous mentionnez n'est pas visible dans les extraits fournis.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages analysés s'arrêtent à 296000 ms et ne montrent pas l'arrivée de la grande créature lumineuse ni la fin du sentier."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n4",
+  "question": "Qu'est-ce que le chien poursuivait quand il s'est éloigné de la fille dans la forêt ?",
+  "answers": [
+   {
+    "textId": "5fd8af4fea",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas déterminer ce que le chien poursuivait à partir des passages fournis : ils ne décrivent pas la scène où il s’éloigne de la fille. La couverture s’arrête à 336 000 ms, avant le repère demandé (344 002 ms).",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les passages disponibles ne couvrent pas la scène autour de 344 002 ms."
+    ]
+   },
+   {
+    "textId": "632967954b",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\nJe ne peux pas répondre à cette question car les passages analysés ne montrent pas de chien qui s'éloigne de la fille pour poursuivre quoi que ce soit. Les extraits montrent un chien qui aboie (moment-6), mais ne décrivent pas de poursuite ou d'objet visé par l'animal.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les extraits vidéo fournis ne contiennent pas la scène de poursuite mentionnée."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "question": "Qu'est-ce qui a changé dans l'aspect du paysage depuis le début ?",
+  "answers": [
+   {
+    "textId": "a77c6292f4",
+    "kind": "observation",
+    "answer": "Au début, on voit une structure organique sombre dans un liquide, puis des gouttes pendantes sur une paroi rocheuse (moment-1, 0–8 000 ms ; moment-2, 8 000–16 000 ms). Vers 336 000–352 000 ms, le décor devient un paysage ouvert : lac et montagnes enneigées sous des nuages, puis prairie verdoyante au milieu des montagnes ; les passages disponibles ne permettent pas de suivre précisément les changements entre ces moments.",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     },
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Les résumés visuels sont espacés et potentiellement imprécis ; plusieurs passages intermédiaires ne décrivent pas d’images.",
+     "Le passage le plus récent est partiel et l’analyse visuelle reste en attente."
+    ]
+   },
+   {
+    "textId": "f08e9a0119",
+    "kind": "observation",
+    "answer": "Le paysage évolue d'un environnement sombre et organique avec des structures immergées (moment-1) et des parois rocheuses humides (moment-2) vers des paysages montagneux et enneigés (moment-43, moment-44). On observe également une transition vers une prairie verdoyante (moment-44) et des scènes de ciel nuageux avec des explosions de lumière (moment-45).",
+    "citations": [
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     },
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-n5",
+  "question": "Au pied de la falaise couverte de grandes plantes, que fait la fille avec son chien ?",
+  "answers": [
+   {
+    "textId": "9a1c9838ab",
+    "kind": "insufficient",
+    "answer": "kind=insufficient\nJe ne peux pas répondre à cette question car les passages analysés ne montrent pas de falaise couverte de grandes plantes. Les extraits montrent un garçon et un chien dans un paysage montagneux verdoyant (moment-50, moment-51), mais ne décrivent pas la scène que vous mentionnez.",
+    "citations": [],
+    "sources": [],
+    "limits": [
+     "Les extraits vidéo fournis ne contiennent pas de scène montrant une falaise couverte de grandes plantes."
+    ]
+   },
+   {
+    "textId": "9e8841b786",
+    "kind": "insufficient",
+    "answer": "Les passages disponibles ne montrent pas une fille avec son chien au pied d’une falaise couverte de grandes plantes. Les scènes récentes décrivent plutôt un garçon avec un chien sur un sentier montagneux, puis avec un écureuil ; je ne peux donc pas dire ce que fait la fille dans la scène que vous évoquez.",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-52",
+      "startMs": 408000,
+      "endMs": 416000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

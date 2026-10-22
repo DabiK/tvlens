@@ -1,0 +1,460 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "question": "Quel ordre de grandeur historique Kennedy utilise-t-il ?",
+  "answers": [
+   {
+    "textId": "0aa1f641f3",
+    "kind": "observation",
+    "answer": "Kennedy évoque une période de cinquante mille ans d'histoire humaine enregistrée (moment-2, 8000-16000 ms). Il compare cet ordre de grandeur à une durée de seulement un demi-siècle (moment-2, 8000-16000 ms).",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f9ed2e6694",
+    "kind": "observation",
+    "answer": "Kennedy ramène les 50 000 ans d’histoire humaine enregistrée à une période d’un demi-siècle. Il s’agit d’un ordre de grandeur rhétorique, tel que le passage le rapporte.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le passage est un résumé automatique, pas une transcription vérifiée."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-n1",
+  "question": "Dans sa chronologie ramenée à 50 ans, qu'a fait l'homme il y a dix ans, puis il y a cinq ans ?",
+  "answers": [
+   {
+    "textId": "30184992bb",
+    "kind": "observation",
+    "answer": "Dans cette chronologie ramenée à 50 ans, il y a dix ans, l’homme a quitté les peaux de bêtes comme vêtement (moment-4, 24000–32000 ms). Il est sorti de ses cavernes pour construire d’autres abris il y a cinq ans (moment-5, 32000–40000 ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "8f20beebf7",
+    "kind": "observation",
+    "answer": "Dans cette chronologie compressée, l'homme a commencé à utiliser des peaux d'animaux pour se couvrir il y a environ dix ans (moment-4, 24000-32000 ms). Il a quitté ses grottes pour construire d'autres types d'abris il y a seulement cinq ans (moment-5, 32000-40000 ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-03",
+  "question": "Que produit cette accélération et que promet l'ouverture de l'espace ?",
+  "answers": [
+   {
+    "textId": "4978be766d",
+    "kind": "observation",
+    "answer": "Cette accélération technologique crée de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes (moment-13, 96000-104000 ms). L'ouverture de l'espace promet des coûts élevés ainsi que de grandes récompenses (moment-14, 104000-112000 ms).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "5d1e5821d0",
+    "kind": "observation",
+    "answer": "Cette accélération, dit Kennedy, fait surgir de nouveaux maux, de l’ignorance, des problèmes et des dangers à mesure qu’elle en écarte d’anciens (moment-13, 96000-104000 ms ; moment-14, 104000-112000 ms). Il dit que l’ouverture de l’espace promet à la fois des coûts et des risques élevés, mais aussi de grandes récompenses (moment-14, 104000-112000 ms ; moment-15, 112000-120000 ms).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La vidéo s’interrompt après « high ships as well as high reward » ; la transcription résumée est potentiellement imprécise."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-n2",
+  "question": "Sur son échelle, qu'aurait-on réussi « avant minuit ce soir », et à quelle condition ?",
+  "answers": [
+   {
+    "textId": "1be9a82bc7",
+    "kind": "observation",
+    "answer": "Dans cette échelle, si le nouveau vaisseau spatial américain réussissait à atteindre Vénus, l’humanité aurait littéralement atteint les étoiles avant minuit ce soir. C’est une condition hypothétique formulée par Kennedy, pas un résultat annoncé comme acquis (moment-11, 80000-88000 ms ; moment-12, 88000-96000 ms).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     },
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "904c3547f3",
+    "kind": "observation",
+    "answer": "Selon John F. Kennedy, l'humanité pourrait littéralement atteindre les étoiles avant minuit ce soir (moment-12, 88000-96000 ms). Cela serait possible si le nouveau vaisseau spatial de l'Amérique réussissait à atteindre Vénus (moment-11, 80000-88000 ms).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     },
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "question": "Que dit-il de l'exploration et du rôle des États-Unis ?",
+  "answers": [
+   {
+    "textId": "2d9afa8222",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est une aventure qui se poursuivra avec ou sans participation de notre part (moment-24, 184000-192000 ms). Il précise qu'aucune nation qui aspire à être un leader ne peut se permettre de rester à la traîne dans cette course à l'espace (moment-25, 192000-200000 ms).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a85437ac5f",
+    "kind": "observation",
+    "answer": "Il dit que l’exploration spatiale avance à grands risques et à grand coût, mais qu’elle promet aussi de fortes récompenses. Il soutient que l’espace continuera d’être exploré, que les États-Unis y prennent part ou non, et qu’un pays qui veut guider les autres ne peut rester à la traîne dans cette course (moment-14, 104000-112000 ms ; moment-24, 184000-192000 ms ; moment-25, 192000-200000 ms ; moment-26, 200000-208000 ms).",
+    "citations": [
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Le passage disponible s’arrête à 208000 ms, avec 8 secondes non couvertes après."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-n3",
+  "question": "Quel personnage historique Kennedy a-t-il cité à propos des grandes actions, et que disait-il ?",
+  "answers": [
+   {
+    "textId": "34f51dc165",
+    "kind": "observation",
+    "answer": "Kennedy cite William Bradford, qui écrivait en 1630 à propos de la fondation de la colonie de Plymouth Bay. Il disait que les grandes actions s’accompagnent de grandes difficultés, qu’il faut entreprendre les deux et les surmonter avec un courage à la mesure de ces épreuves (moment-19, 144000-152000 ms ; moment-20, 152000-160000 ms ; moment-21, 160000-168000 ms ; moment-22, 168000-176000 ms).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "39614e1e8b",
+    "kind": "observation",
+    "answer": "Kennedy a cité William Brown, qui s'exprimait en 1630 au sujet de la fondation de la colonie de Plymouth Bay (moment-19, 144000-152000 ms ; moment-20, 152000-160000 ms). Il a déclaré que de grandes et honorables actions s'accompagnent de grandes difficultés, et que les deux doivent être entreprises avec un courage exemplaire (moment-21, 160000-168000 ms).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "question": "What does Kennedy want space to represent, and what does he reject?",
+  "answers": [
+   {
+    "textId": "5a4aa06435",
+    "kind": "observation",
+    "answer": "Kennedy veut que l’espace soit guidé par la liberté et la paix. Il rejette qu’il soit dominé par un drapeau hostile de conquête (moment-32, 248000–256000 ms ; moment-33, 256000–264000 ms).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "71f9869539",
+    "kind": "observation",
+    "answer": "Kennedy voit l'espace comme une grande aventure qui promet de hautes récompenses (moment-14, 104000-112000 ms). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32, 248000-256000 ms).",
+    "citations": [
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-n4",
+  "question": "Selon Kennedy, quelles « premières vagues » ceux qui l'ont précédé ont-ils fait prendre au pays ?",
+  "answers": [
+   {
+    "textId": "e109090972",
+    "kind": "observation",
+    "answer": "Kennedy affirme que ceux qui l'ont précédé ont fait en sorte que le pays soit à l'avant-garde en traversant les premières vagues de la révolution industrielle, les premières vagues de l'invention moderne et la première vague de l'énergie nucléaire (moment-27, 208000-216000 ms).",
+    "citations": [
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ece41a68c3",
+    "kind": "observation",
+    "answer": "Selon Kennedy, ceux qui l’ont précédé ont fait prendre au pays les premières vagues de la révolution industrielle, de l’invention moderne et de l’énergie nucléaire. (moment-27, 208000–216000 ms)",
+    "citations": [
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "question": "Who determines whether technology serves good or war?",
+  "answers": [
+   {
+    "textId": "d9b5cea1ff",
+    "kind": "observation",
+    "answer": "Selon Kennedy, la technologie n’a pas de conscience propre : c’est l’être humain qui détermine si elle devient une force bénéfique ou nuisible. Il ajoute que le rôle prééminent des États-Unis dans la science et la technologie peut aider à orienter ce choix. (moment-42, 328000-336000 ms ; moment-43, 336000-344000 ms)",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "Passages horodatés fournis ; leur transcription automatique peut être imprécise."
+    ]
+   },
+   {
+    "textId": "ee89665598",
+    "kind": "observation",
+    "answer": "Selon John F. Kennedy, la science et toute technologie n'ont pas de conscience propre (moment-42, 328000-336000 ms). C'est l'homme qui détermine si elles deviennent une force pour le bien ou pour le mal (moment-43, 336000-344000 ms).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-n5",
+  "question": "Selon Kennedy, qu'est-ce qui n'existe pas encore dans l'espace ?",
+  "answers": [
+   {
+    "textId": "07d43790f0",
+    "kind": "observation",
+    "answer": "Selon Kennedy, il n’y a « ni conflit national » dans l’espace « pour l’instant » (moment-49, 384000–392000 ms ; moment-50, 392000–400000 ms).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     },
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "e33daddc74",
+    "kind": "observation",
+    "answer": "Kennedy affirme qu'il n'y a pas encore de conflits nationaux, de préjugés ou de luttes dans l'espace (moment-49, 384000-392000 ms). Il précise que les dangers de l'espace sont hostiles à l'humanité tout entière (moment-50, 392000-400000 ms).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     },
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

@@ -1,0 +1,522 @@
+[
+ {
+  "questionId": "tears-w1",
+  "question": "Quand ce film a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "3fa779d4be",
+    "kind": "external",
+    "answer": "Le film Tears of Steel a été publié en 2012 (https://en.wikipedia.org/wiki/Tears_of_Steel). La vidéo montre également des crédits mentionnant Ian Hubert comme réalisateur (moment-75, 592000-600000).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Tears of Steel (2012)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "75ea0483ef",
+    "kind": "external",
+    "answer": "Le film Tears of Steel a été publié le 26 septembre 2012.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Release date September 26, 2012 (2012-09-26)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7cf20757b7",
+    "kind": "external",
+    "answer": "Le film Tears of Steel a été publié en 2012. Cette information est confirmée par la page Wikipédia du film.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Tears of Steel (2012)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "aba16cbf08",
+    "kind": "external",
+    "answer": "Le film Tears of Steel a été officiellement publié en ligne le 26 septembre 2012.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "It was officially released online for viewing and download on September 26, 2012."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b560a7eb98",
+    "kind": "external",
+    "answer": "Ce film, intitulé Tears of Steel (également connu sous le nom de Project Mango), a été officiellement publié le 26 septembre 2012.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Release date September 26, 2012 (2012-09-26)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ceda3fcb56",
+    "kind": "external",
+    "answer": "Le film Tears of Steel a été publié le 26 septembre 2012.",
+    "citations": [
+     {
+      "id": "wikipedia-tears-of-steel",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Release date September 26, 2012 (2012-09-26)"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-w2",
+  "question": "Avec quelle caméra les scènes en prises de vues réelles de ce film ont-elles été tournées ?",
+  "answers": [
+   {
+    "textId": "941bc844ec",
+    "kind": "insufficient",
+    "answer": "Les informations disponibles ne précisent pas le modèle de caméra utilisé pour les prises de vues réelles de ce film. Les sources mentionnent que le film utilise des données de test haute définition professionnellement filmées, mais ne nomment pas l'équipement spécifique.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "The film is both live-action and CGI; it was made using new enhancements to the visual effects capabilities of Blender, a free and open-source 3D computer graphics app."
+     }
+    ],
+    "limits": [
+     "La recherche dans les pages web ouvertes ne permet pas d'identifier le modèle de caméra utilisé."
+    ]
+   },
+   {
+    "textId": "a33608ddd0",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne précisent pas le modèle de caméra utilisé pour les prises de vues réelles de ce film. La page Wikipédia mentionne seulement que la direction de la photographie a été assurée par Joris Kerbosch.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Cinematography Joris Kerbosch"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c31befdc1d",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne précisent pas le modèle de caméra utilisé pour les prises de vues réelles du film. La page Wikipédia mentionne que le film utilise des données de test haute définition professionnelles, mais ne nomme pas d'appareil spécifique.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "The film is both live-action and CGI; it was made using new enhancements to the visual effects capabilities of Blender, a free and open-source 3D computer graphics app."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ca4f52b0be",
+    "kind": "external",
+    "answer": "Les scènes en prises de vues réelles de ce film ont été filmées avec la caméra Sony F65 CineAlta. Cette information est confirmée par les notes de production du projet.",
+    "citations": [
+     {
+      "id": "webPage-1",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "webPage-2",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Sony F65 CineAlta Camera"
+     },
+     {
+      "url": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/",
+      "title": "4 TB original 4k footage available as cc-by | Tears of Steel",
+      "evidence": "Pictures have been shot using the (4k native sensor) fantastic Sony F65 camera."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d80433a9e2",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne précisent pas le modèle de caméra utilisé pour les prises de vues réelles du film. Les sources mentionnent que le film utilise des éléments de prises de vues réelles et de CGI, mais ne détaillent pas l'équipement de tournage.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "The film is both live-action and CGI; it was made using new enhancements to the visual effects capabilities of Blender, a free and open-source 3D computer graphics app."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ee7fe0d5bb",
+    "kind": "external",
+    "answer": "Les scènes en prises de vues réelles de ce film ont été tournées avec une caméra Sony F65 CineAlta.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Sony F65 CineAlta Camera"
+     },
+     {
+      "url": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/",
+      "title": "4 TB original 4k footage available as cc-by | Tears of Steel",
+      "evidence": "Pictures have been shot using the (4k native sensor) fantastic Sony F65 camera."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-w3",
+  "question": "Ce film a été fait avec Blender : quelle est la dernière version de ce logiciel aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "16991214fe",
+    "kind": "external",
+    "answer": "La dernière version stable de Blender mentionnée est la version 5.2 LTS (https://www.blender.org/releases/5-2/).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.blender.org/releases/5-2/",
+      "title": "Blender 5.2 LTS — Blender",
+      "evidence": "Blender 5.2 LTS — Blender"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8003dc60fa",
+    "kind": "external",
+    "answer": "La page de téléchargement de Blender mentionne la version 5.2 LTS comme étant une version disponible. La page de téléchargement ne précise pas explicitement si elle est la toute dernière version sortie aujourd'hui.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.blender.org/releases/5-2/",
+      "title": "Blender 5.2 LTS — Blender",
+      "evidence": "Blender 5.2 LTS — Blender"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "817d4709fa",
+    "kind": "external",
+    "answer": "La dernière version stable de Blender est la 5.2.3 LTS, sortie le 22 octobre 2026. Une version 5.3 est également prévue pour le 10 novembre 2026.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.blender.org/download/",
+      "title": "Download — Blender",
+      "evidence": "LATEST RELEASE Blender 5.2.3 LTS... Released October 22, 2026"
+     },
+     {
+      "url": "https://www.blender.org/download/",
+      "title": "Download — Blender",
+      "evidence": "UPCOMING RELEASE Blender 5.3... Expected November 10, 2026"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ef43ce3b2e",
+    "kind": "external",
+    "answer": "La dernière version stable de Blender est la 5.2.3 LTS, sortie le 22 octobre 2026. Une version 5.3 est également prévue pour le 10 novembre 2026.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.blender.org/download/",
+      "title": "Download — Blender",
+      "evidence": "LATEST RELEASE Blender 5.2.3 LTS... Released October 22, 2026"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-m1",
+  "question": "Où Thom et Celia se disputent-ils au début, et dans quelle ville le film a-t-il été tourné ?",
+  "answers": [
+   {
+    "textId": "217987c437",
+    "kind": "explanation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain (moment-4). Le film se déroule à Amsterdam (external).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "the short film features a group of warriors and scientists who gather at the Oude Kerk in Amsterdam"
+     },
+     {
+      "url": "https://mango.blender.org/about/",
+      "title": "About | Tears of Steel",
+      "evidence": "Theme: Sci-fi in Amsterdam"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "53814f0295",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain (moment-4, moment-5). La vidéo ne précise pas la ville où le film a été tourné.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     }
+    ],
+    "sources": [],
+    "limits": [
+     "La ville de tournage n'est pas mentionnée dans les passages observés."
+    ]
+   },
+   {
+    "textId": "6604714e87",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur un pont dans un parc urbain (moment-4, 24000-32000). Le film se déroule à Amsterdam (https://en.wikipedia.org/wiki/Tears_of_Steel : \"...gather at the Oude Kerk in Amsterdam...\").",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "the short film features a group of warriors and scientists who gather at the Oude Kerk in Amsterdam"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "aa698d5629",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain (moment-4). Le film a été tourné à Amsterdam (external).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "Forty years later, killer robots created by Celia have taken over a deserted Amsterdam."
+     },
+     {
+      "url": "https://mango.blender.org/about/",
+      "title": "About | Tears of Steel",
+      "evidence": "“Tears of Steel” is a short film made in Amsterdam the Netherlands by the Blender Institute"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b0bb818580",
+    "kind": "observation",
+    "answer": "Thom et Celia se disputent sur une rambarde de pont dans un parc urbain (moment-4, moment-5). La vidéo ne précise pas la ville où le film a été tourné.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "ca1c60203b",
+    "kind": "explanation",
+    "answer": "Thom et Celia se disputent sur la rambarde d'un pont dans un parc urbain (moment-4, 24000-32000). Le film a été tourné à Amsterdam (external, https://en.wikipedia.org/wiki/Tears_of_Steel).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "killer robots created by Celia have taken over a deserted Amsterdam."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-m2",
+  "question": "Où le vieil homme aux cheveux gris est-il descendu au bout d'une corde, et à quel bâtiment réel ce lieu correspond-il ?",
+  "answers": [
+   {
+    "textId": "1ec02ae8a5",
+    "kind": "insufficient",
+    "answer": "L'homme âgé est vu tenant une corde dans un décor sombre et industriel (moment-21, 160000-168000). Les informations fournies ne permettent pas d'identifier le lieu exact ni de faire une correspondance avec un bâtiment réel.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "8a43a82cd0",
+    "kind": "explanation",
+    "answer": "L'homme âgé descend au bout d'une corde dans un décor sombre et industriel (moment-21, 160000-168000). Ce film, Tears of Steel, est basé sur le thème de la science-fiction à Amsterdam et mentionne l'Oude Kerk comme lieu de rassemblement (https://mango.blender.org/about/).",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://mango.blender.org/about/",
+      "title": "About | Tears of Steel",
+      "evidence": "Their funding target was to explore a complete open source pipeline... with as theme 'Science Fiction in Amsterdam'."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b015f03fe0",
+    "kind": "explanation",
+    "answer": "Dans la vidéo, un homme âgé est vu tenant une corde dans un décor sombre et industriel (moment-21, 160000-168000). D'après les informations sur le film Tears of Steel, l'action se déroule dans un Amsterdam futuriste et les personnages se rassemblent à l'Oude Kerk (https://en.wikipedia.org/wiki/Tears_of_Steel).",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "the short film features a group of warriors and scientists who gather at the Oude Kerk in Amsterdam"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f3cb0488f5",
+    "kind": "explanation",
+    "answer": "Dans la vidéo, un homme âgé est vu tenant une corde dans un décor sombre (moment-21, 160000-168000). D'après les informations sur le film Tears of Steel, l'intrigue se déroule à Amsterdam et mentionne que les personnages se rassemblent à l'Oude Kerk (https://mango.blender.org/about/ : \"...who gathered at the “Oude Kerk” in Amsterdam...\").",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://mango.blender.org/about/",
+      "title": "About | Tears of Steel",
+      "evidence": "the film's premise is about a group of warriors and scientists, who gathered at the “Oude Kerk” in Amsterdam"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f5df021c9c",
+    "kind": "observation",
+    "answer": "L'homme âgé est vu tenant une corde dans un décor sombre et industriel (moment-21, 160000-168000). Les passages disponibles ne permettent pas d'identifier le lieu précis où il descendrait au bout de cette corde, ni de faire correspondre cet endroit à un bâtiment réel.",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "fa303e6ce7",
+    "kind": "explanation",
+    "answer": "L'homme âgé descend au bout d'une corde dans un décor sombre et industriel (moment-21, 160000-168000). D'après les informations sur le film Tears of Steel, l'action se déroule dans une Amsterdam déserte, et les personnages se rassemblent à l'Oude Kerk (https://en.wikipedia.org/wiki/Tears_of_Steel).",
+    "citations": [
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+      "title": "Tears of Steel - Wikipedia",
+      "evidence": "the short film features a group of warriors and scientists who gather at the Oude Kerk in Amsterdam"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

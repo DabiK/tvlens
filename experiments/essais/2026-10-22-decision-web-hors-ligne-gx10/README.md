@@ -72,3 +72,21 @@ Réponses (deux passages) :
 - Deux passages d'une même capture ; juges et oracle sont des modèles.
 - Les titres de PT sont ceux des pages YouTube du corpus de test, sauf Kennedy (nom du fichier) : un hôte qui ne
   connaît pas le titre se comporte comme P.
+
+## H2b : fusion des recherches et texte des pages, sur le corpus figé
+
+- Mêmes requêtes, requête du modèle avec titre (H2-PT), 30 W/M, deux exécutions, 22/10 20:01–20:18 UTC
+  ([`scripts/rejouer_h2b.py`](scripts/rejouer_h2b.py), bruts [`bruts-h2b/`](bruts-h2b/), notation
+  [`notation-h2b/`](notation-h2b/)). Avant le rejeu, simulation sans GPU de la présence du fait dans le texte
+  transmis ([`scripts/simuler_fenetres.py`](scripts/simuler_fenetres.py)) : 18/27 avec le début de page, 23/27 avec
+  le début + la meilleure fenêtre.
+
+| Bras | Justes /60 | W /36 | M /24 | Inventions |
+| --- | ---: | ---: | ---: | ---: |
+| FQ : passages des deux recherches fusionnés | 21 | 17 | 4 | 5 |
+| PH : 3 pages, début de 2 500 caractères | 24 | 20 | 4 | 2 |
+| **PW : début de 1 000 + meilleure fenêtre de 1 500 (T315)** | **29** | **22** | **7** | 3 |
+
+Sur le corpus figé, la fenêtre aide et la fusion n'aide pas : T315 est confirmé, le ticket de fusion est abandonné.
+Sur de vraies pages, la fenêtre n'aide plus ([H4](../2026-10-22-web-reel-texte-gx10/)).
+

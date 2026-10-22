@@ -1,0 +1,482 @@
+[
+ {
+  "questionId": "cuisine-m1",
+  "question": "Quels morceaux de bœuf prend-il d'habitude, et de quelle partie de l'animal viennent-ils ?",
+  "answers": [
+   {
+    "textId": "4d438ec682",
+    "kind": "insufficient",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf sont pris habituellement, mentionnant seulement la présence de morceaux de viande dans la préparation. Les informations disponibles ne permettent pas d'identifier une partie spécifique de l'animal pour cette recette.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "633b8b1d37",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf sont utilisés d'habitude. On y voit seulement Patrick Dujancourt préparer une marinade avec des morceaux de viande, des oignons, des carottes et des lardons [moment-13, 96000-104000].",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "63f3d2bb10",
+    "kind": "insufficient",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf sont utilisés d'habitude, mentionnant seulement des morceaux de viande dans une marinade (moment-13, 104000-112000). Il n'est pas non plus fait mention de la partie de l'animal dont ils proviennent.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "e913fc5ecf",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf sont pris d'habitude. On y voit seulement Patrick Dujancourt préparer une marinade avec des morceaux de viande, des oignons, des carottes, des lardons et du bouquet garni (moment-13, 88000-104000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "efb4d87001",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf Patrick Dujancourt utilise d'habitude. On l'observe seulement en train de préparer une marinade avec des morceaux de viande, des oignons, des carottes, des lardons et du bouquet garni (moment-13, 88000-136000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "f71498994c",
+    "kind": "insufficient",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf sont utilisés d'habitude, elle mentionne seulement la présence de morceaux de viande dans la préparation (moment-12 à moment-17). Les passages consultés ne permettent pas de répondre à la question sur l'origine de ces morceaux.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w1",
+  "question": "Il n'utilise pas de vin de Bourgogne : avec quel cépage fait-on les bourgognes rouges ?",
+  "answers": [
+   {
+    "textId": "18ae285b78",
+    "kind": "external",
+    "answer": "Les vins rouges de Bourgogne sont produits à partir des cépages pinot noir et gamay (https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+      "title": "Vignoble de Bourgogne — Wikipédia",
+      "evidence": "La Bourgogne produit des vins rouges, à base des cépages pinot noir et gamay, et des vins blancs, à bases de cépages chardonnay et aligoté."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "2e4135769c",
+    "kind": "external",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir. La page Wikipédia sur le vignoble de Bourgogne mentionne également le Gamay comme l'un des cépages dominants de la région.",
+    "citations": [
+     {
+      "id": "web-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+      "title": "Vignoble de Bourgogne — Wikipédia",
+      "evidence": "Cépages dominants chardonnay B, pinot noir N, gamay N, aligoté B…"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "39c6ee3aed",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir. La page Wikipédia consultée mentionne que le Chardonnay est utilisé pour les vins blancs de la région.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+      "title": "Vignoble de Bourgogne — Wikipédia",
+      "evidence": "Le chardonnay est assez vigoureux ; des essais réalisés en Bourgogne ont montré que la qualité des vins diminuait au-delà d'un rendement de 70 hectolitres par hectare."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "9fca3dfdee",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont produits à partir des cépages pinot noir et gamay. La vidéo montre le chef verser du vin rouge dans un bol, mais ne précise pas l'origine ou le cépage utilisé.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+      "title": "Vignoble de Bourgogne — Wikipédia",
+      "evidence": "La Bourgogne produit des vins rouges, à base des céapes pinot noir et gamay, et des vins blancs, à bases de cépages chardonnay et aligoté."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ef35a92b67",
+    "kind": "external",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir. La page Wikipédia mentionne également le Gamay comme l'un des cépages dominants de la région.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+      "title": "Vignoble de Bourgogne — Wikipédia",
+      "evidence": "Cépages dominants chardonnay B, pinot noir N, gamay N, aligoté B…"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f2fcd11103",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir. La vidéo montre le chef verser du vin rouge dans un bol, mais ne précise pas l'origine ou le cépage utilisé.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w2",
+  "question": "Que met-on d'habitude dans un bouquet garni ?",
+  "answers": [
+   {
+    "textId": "0194b4cf05",
+    "kind": "external",
+    "answer": "Un bouquet garni se compose traditionnellement d'un assortiment de plantes aromatiques comme le thym et le laurier sauce. Selon Wikipédia, on peut également y trouver du persil, de la sarriette, de la sauge, du romarin, de la coriandre ou de l'origan.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Un bouquet garni se compose de : thym ; laurier sauce (laurus nobilis). et éventuellement également entre autres de : vert de poireau ; persil ; sarriette ; sauge ; romarin ; gousse d'ail ; branche de céleri ; tige d'origan."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "13aba793ec",
+    "kind": "external",
+    "answer": "Un bouquet garni est traditionnellement composé d'un assortiment de plantes aromatiques comme le thym, le laurier sauce et le romarin. On peut également y trouver du persil, de la sarriette, de la sauge, de la coriandre ou de l'origan.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, laurier sauce, et romarin."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "73fb06148f",
+    "kind": "external",
+    "answer": "Un bouquet garni est traditionnellement composé de plantes aromatiques comme le thym, le laurier sauce et le romarin. On peut également y trouver du persil, de la sarriette, de la sauge, de la coriandre ou de l'origan.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, laurier sauce, et romarin."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "bf859c3bc0",
+    "kind": "external",
+    "answer": "Un bouquet garni de base se compose généralement de thym et de laurier sauce. On peut également y ajouter du persil, de la sarriette, de la sauge, du romarin, de la coriandre ou de l'origan (https://fr.wikipedia.org/wiki/Bouquet_garni).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Un bouquet garni de base se compose de : thym ; laurier sauce (laurus nobilis). et éventuellement également entre autres de : vert de poireau ; persil ; sarriette ; sauge ; romarin ; gousse d'ail ; branche de céleri ; tige d'origan."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cbfc696102",
+    "kind": "external",
+    "answer": "Un bouquet garni se compose généralement d'un assortiment de plantes aromatiques comme le thym, le laurier sauce et le romarin (https://fr.wikipedia.org/wiki/Bouquet_garni). On peut aussi y trouver du persil, de la sarriette, de la sauge, de la coriandre ou de l'origan.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Un bouquet garni est un assortiment de plantes aromatiques traditionnelles (fraîches, ou séchées) de la cuisine française."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cf20166b54",
+    "kind": "external",
+    "answer": "Un bouquet garni se compose traditionnellement de thym et de laurier sauce, et peut également inclure du persil, de la sarriette, de la sauge, du romarin, de la coriandre ou de l'origan (https://fr.wikipedia.org/wiki/Bouquet_garni). Il s'agit d'un assortiment de plantes aromatiques, fraîches ou séchées, généralement liées ensemble pour parfumer des plats comme le pot-au-feu ou le bœuf bourguignon.",
+    "citations": [
+     {
+      "id": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Un bouquet garni se compose de thym, laurier sauce, et éventuellement également entre autres de : vert de poireau, persil, sarriette, sauge, romarin, coriandre, origan, etc."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-m2",
+  "question": "Pourquoi tient-il à bien saisir la viande, et comment s'appelle la réaction qui forme cette croûte ?",
+  "answers": [
+   {
+    "textId": "4247739e6c",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à obtenir une couleur brune pour son plat en faisant brunir la viande (moment-50, 392000-400000). Cette formation de croûte est due à la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "Les réactions de Maillard, mieux nommées réactions amino-carbonyles, sont des réactions de glycation entre des sucres réducteurs et des composés qui portent un groupe amine."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "61fe6c6eca",
+    "kind": "explanation",
+    "answer": "Le cuisinier souhaite faire brunir la viande pour obtenir une couleur brune pour son plat (moment-50, 392000-400000). Cette réaction chimique, qui contribue à la couleur et aux arômes des aliments chauffés, s'appelle la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "Les réactions de Maillard [...] engendrent des composés qui contribuent à la couleur, à la saveur, à l'odeur."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "6ea39bea00",
+    "kind": "explanation",
+    "answer": "Le cuisinier souhaite que la viande brunisse pour obtenir la couleur brune souhaitée pour le plat (moment-50, 392000-400000). La réaction chimique qui permet la formation de cette croûte s'appelle la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "Réaction de Maillard"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7113b97ddf",
+    "kind": "explanation",
+    "answer": "Le cuisinier souhaite faire brunir la viande pour obtenir une couleur brune pour son plat (moment-50, 392000-400000). La réaction chimique responsable de la formation de cette croûte et de ces arômes est la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "Les réactions de Maillard, mieux nommées réactions amino-carbonyles, sont des réactions de glycation entre des sucres réducteurs et des composés qui portent un groupe amine."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7ecb9910ef",
+    "kind": "explanation",
+    "answer": "Le cuisinier souhaite que la viande brunisse pour obtenir la couleur brune souhaitée pour le plat (moment-50). Cette réaction chimique qui forme la croûte s'appelle la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "Réaction de Maillard"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c1cbe20b80",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à obtenir une couleur brune pour son plat, ce qui se fait naturellement avec la viande et le vin (moment-50 à moment-51). La réaction chimique responsable de ce brunissement des aliments chauffés est la réaction de Maillard (https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+      "title": "Réaction de Maillard — Wikipédia",
+      "evidence": "Les réactions de Maillard [...] engendrent des composés qui contribuent à la couleur, à la saveur, à l'odeur. [...] conduisant à leur brunissement non enzymatique."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w3",
+  "question": "Il a choisi un vin d'Occitanie : comment s'annonce la récolte de vin 2026 dans cette région ?",
+  "answers": [
+   {
+    "textId": "1596af7d92",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations sur la récolte de vin 2026 en Occitanie. Les documents consultés mentionnent des prévisions ou des données datant d'octobre 2026, mais ne fournissent pas de détails sur l'état de la récolte pour cette année-là.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "52a9fd3c31",
+    "kind": "external",
+    "answer": "La production viticole en Occitanie pour 2026 est estimée à la hausse, avec une prévision de 1,92 Mhl pour le Sud-Ouest, soit une augmentation de 11,1 % par rapport à 2025 (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html). Cette hausse s'explique par des rendements meilleurs que prévu dans le bassin Languedoc-Roussillon, malgré des épisodes de forte chaleur et de sécheresse durant l'été (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html).",
+    "citations": [
+     {
+      "id": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production du Sud-Ouest (partie située en Occitanie) est réévaluée à 1,92 Mhl (+ 11,1% par rapport à 2025)."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "704d4e35f2",
+    "kind": "external",
+    "answer": "La production viticole en Occitanie pour 2026 s'annonce en hausse, avec une estimation de 1,92 Mhl pour le Sud-Ouest, soit une augmentation de 11,1 % par rapport à 2025 (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html). Cette progression s'explique par des rendements meilleurs que prévu malgré des épisodes de forte chaleur et de sécheresse durant l'été.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production du Sud-Ouest (partie située en Occitanie) est réévaluée à 1,92 Mhl (+ 11,1% par rapport à 2025)."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8cca87871b",
+    "kind": "external",
+    "answer": "La production viticole en Occitanie pour 2026 est estimée en hausse, avec une prévision de 1,92 Mhl pour le Sud-Ouest, soit une augmentation de 11,1 % par rapport à 2025 (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html). Cette progression s'explique par un bon débourrement printanier et des pluies en août qui ont limité l'impact de la sécheresse (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html).",
+    "citations": [
+     {
+      "id": "draaf-occitanie",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production du Sud-Ouest (partie située en Occitanie) est réévaluée à 1,92 Mhl (+ 11,1% par rapport à 2025)."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "dc607f3410",
+    "kind": "insufficient",
+    "answer": "Je ne dispose pas d'informations suffisantes pour répondre à cette question. Les documents consultés ne contiennent pas de prévisions concernant la récolte de vin 2026 en Occitanie.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "e0d66d1a67",
+    "kind": "external",
+    "answer": "La production viticole en Occitanie pour 2026 devrait augmenter de 18 % par rapport à la récolte de 2025, se situant légèrement au-dessus de la moyenne des cinq dernières années. Cette hausse est portée par une révision à la hausse des estimations pour le bassin Languedoc-Roussillon, malgré des conditions climatiques marquées par la sécheresse et des épisodes de forte chaleur.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La récolte augmenterait de 18 % par rapport à la très faible récolte 2025, et se situerait légèrement au-dessus de la moyenne quinquennale (+ 1,5 %)."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

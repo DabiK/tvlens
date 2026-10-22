@@ -1,0 +1,1144 @@
+{
+ "ce061d9466b9": {
+  "questionId": "kennedy-n1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5689,
+  "tokens": 140,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "63fbe332fb24": {
+  "questionId": "kennedy-01",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5913,
+  "tokens": 105,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "2309e82137f5": {
+  "questionId": "kennedy-03",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6738,
+  "tokens": 225,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "bb07eda2a94d": {
+  "questionId": "kennedy-n2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 10397,
+  "tokens": 202,
+  "turns": 1,
+  "tools": [
+   "web_search"
+  ],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "da4f0edabfb4": {
+  "questionId": "kennedy-06",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4424,
+  "tokens": 123,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "662a828cb62d": {
+  "questionId": "kennedy-05",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6606,
+  "tokens": 243,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "77457132de95": {
+  "questionId": "kennedy-n3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6589,
+  "tokens": 214,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "4ae4724b90eb": {
+  "questionId": "kennedy-n4",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4396,
+  "tokens": 95,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "3fd2e862c2bd": {
+  "questionId": "kennedy-08",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5922,
+  "tokens": 167,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "46a75f10365b": {
+  "questionId": "kennedy-n5",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5459,
+  "tokens": 112,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "6097036fc65a": {
+  "questionId": "spring-01",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5632,
+  "tokens": 149,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "6f9170cf5ca3": {
+  "questionId": "spring-n1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4719,
+  "tokens": 114,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "98ffb4943182": {
+  "questionId": "spring-n2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4950,
+  "tokens": 130,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "e02669552b95": {
+  "questionId": "spring-02",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5611,
+  "tokens": 92,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "381fad70c4b9": {
+  "questionId": "spring-03",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5758,
+  "tokens": 145,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "4a35f5815f44": {
+  "questionId": "spring-04",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6274,
+  "tokens": 87,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": false
+ },
+ "1170ab656ccf": {
+  "questionId": "spring-n3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4721,
+  "tokens": 97,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": false
+ },
+ "d03b41eedbc7": {
+  "questionId": "spring-n4",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4635,
+  "tokens": 106,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": false
+ },
+ "7f3058673c58": {
+  "questionId": "spring-06",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6695,
+  "tokens": 254,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "e845b2726a7e": {
+  "questionId": "spring-n5",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5434,
+  "tokens": 133,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "2aeb6dc3450e": {
+  "questionId": "cnrs-01",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5371,
+  "tokens": 237,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "d3ccfba33108": {
+  "questionId": "cnrs-n1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4597,
+  "tokens": 97,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "bc6948d42a8f": {
+  "questionId": "cnrs-n2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4855,
+  "tokens": 185,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "d847c0c39032": {
+  "questionId": "cnrs-02",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5533,
+  "tokens": 200,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "a3880369b2d0": {
+  "questionId": "cnrs-n3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5050,
+  "tokens": 63,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "6c25202edc1d": {
+  "questionId": "cnrs-04",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 8926,
+  "tokens": 335,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "97bd99dc8ebf": {
+  "questionId": "cnrs-n4",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4999,
+  "tokens": 88,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "d8c0184ada0d": {
+  "questionId": "cnrs-05",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6268,
+  "tokens": 307,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "26482e47826f": {
+  "questionId": "cnrs-06",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6673,
+  "tokens": 275,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "9713651e06a0": {
+  "questionId": "cnrs-n5",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5500,
+  "tokens": 209,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "fa9ce9c5a716": {
+  "questionId": "cuisine-n1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5436,
+  "tokens": 58,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "f460c06265c8": {
+  "questionId": "cuisine-02",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6817,
+  "tokens": 271,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "4c60fcff2e9b": {
+  "questionId": "cuisine-03",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5444,
+  "tokens": 141,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "f2fa60a38525": {
+  "questionId": "cuisine-n2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4581,
+  "tokens": 82,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "b6e7f293022b": {
+  "questionId": "cuisine-n3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5497,
+  "tokens": 109,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "047a85992f9a": {
+  "questionId": "cuisine-n4",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5439,
+  "tokens": 130,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "b50bbe751309": {
+  "questionId": "cuisine-05",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6610,
+  "tokens": 245,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "a41d0584cd7f": {
+  "questionId": "cuisine-06",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4718,
+  "tokens": 122,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "2140587f7ec3": {
+  "questionId": "cuisine-07",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6539,
+  "tokens": 247,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "e7c41105c59f": {
+  "questionId": "tears-n1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4325,
+  "tokens": 91,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "a8e1292d70d9": {
+  "questionId": "cuisine-n5",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5291,
+  "tokens": 151,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "5b9210c01f1b": {
+  "questionId": "tears-01",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5913,
+  "tokens": 111,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "a2fb16d1c620": {
+  "questionId": "tears-n2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4305,
+  "tokens": 87,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "8acb65f79b86": {
+  "questionId": "tears-04",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4950,
+  "tokens": 82,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "13e5e073b826": {
+  "questionId": "tears-03",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5496,
+  "tokens": 106,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "053221a80ad4": {
+  "questionId": "tears-06",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4960,
+  "tokens": 115,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "433053b61d3d": {
+  "questionId": "tears-n3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4987,
+  "tokens": 112,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "ce2716a90d38": {
+  "questionId": "tears-07",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5335,
+  "tokens": 119,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "dc236ece9edc": {
+  "questionId": "tears-n4",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5670,
+  "tokens": 101,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": false
+ },
+ "e8ecce6957a7": {
+  "questionId": "artemis-n1",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5946,
+  "tokens": 87,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "16917773e5d0": {
+  "questionId": "tears-n5",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6112,
+  "tokens": 147,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "3588a52d96f1": {
+  "questionId": "artemis-n2",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4991,
+  "tokens": 124,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "411a379936c4": {
+  "questionId": "artemis-01",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5554,
+  "tokens": 138,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "195fcbea77ef": {
+  "questionId": "artemis-n3",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5300,
+  "tokens": 128,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "b1ca130c2bb8": {
+  "questionId": "artemis-02",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5906,
+  "tokens": 121,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "9f19a88d6577": {
+  "questionId": "artemis-04",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5007,
+  "tokens": 109,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "a119b6b04285": {
+  "questionId": "artemis-n4",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4696,
+  "tokens": 135,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "b13201cf75b2": {
+  "questionId": "artemis-05",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 5486,
+  "tokens": 100,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "86a7d03a0718": {
+  "questionId": "artemis-n5",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 6055,
+  "tokens": 190,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "5074edfd906d": {
+  "questionId": "artemis-07",
+  "source": "Codex",
+  "arm": "codex",
+  "pass": 1,
+  "wallMs": 4770,
+  "tokens": 91,
+  "turns": 1,
+  "tools": [],
+  "category": "v3",
+  "citationsFilled": true
+ },
+ "02f74728654e": {
+  "questionId": "artemis-n1",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 5366.49635500001,
+  "retrieval": null
+ },
+ "fb7bfca94603": {
+  "questionId": "artemis-n2",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 6846.810262000072,
+  "retrieval": null
+ },
+ "377a351687e3": {
+  "questionId": "artemis-01",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 7565.895533999894,
+  "retrieval": null
+ },
+ "a5854781993f": {
+  "questionId": "artemis-n3",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 7143.859479000093,
+  "retrieval": null
+ },
+ "7d8296eb71f9": {
+  "questionId": "artemis-02",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 6577.840867999941,
+  "retrieval": null
+ },
+ "87765a6c1298": {
+  "questionId": "artemis-04",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 7984.886488000164,
+  "retrieval": null
+ },
+ "9ea7a42169bb": {
+  "questionId": "artemis-n4",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 7727.286588000134,
+  "retrieval": null
+ },
+ "f6fcdc8a32d4": {
+  "questionId": "artemis-05",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 7125.2519649998285,
+  "retrieval": null
+ },
+ "40f14bd33665": {
+  "questionId": "artemis-n5",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 7820.21047400008,
+  "retrieval": null
+ },
+ "26110d004d12": {
+  "questionId": "artemis-07",
+  "source": "J6",
+  "arm": "J6-artemis-GPSR60P-1",
+  "wallMs": 7362.133311999962,
+  "retrieval": null
+ },
+ "0c5f3efcee4b": {
+  "questionId": "cuisine-n1",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 5090.297972,
+  "retrieval": null
+ },
+ "2bc0748dea03": {
+  "questionId": "cuisine-02",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 7138.605650999991,
+  "retrieval": null
+ },
+ "f8eaa77b301b": {
+  "questionId": "cuisine-03",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 6204.301651999995,
+  "retrieval": null
+ },
+ "e62266ebff08": {
+  "questionId": "cuisine-n2",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 5255.195935000025,
+  "retrieval": null
+ },
+ "51e62cb0cdd2": {
+  "questionId": "cuisine-n3",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 4418.144952000002,
+  "retrieval": null
+ },
+ "891ee4ac2b1e": {
+  "questionId": "cuisine-05",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 7455.422858999984,
+  "retrieval": null
+ },
+ "9dbb0313cf19": {
+  "questionId": "cuisine-n4",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 5590.584063000046,
+  "retrieval": null
+ },
+ "ecda4026bcb6": {
+  "questionId": "cuisine-06",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 8684.482751999982,
+  "retrieval": null
+ },
+ "aebfe4795eab": {
+  "questionId": "cuisine-07",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 6832.060061000055,
+  "retrieval": null
+ },
+ "4a352dbaf62b": {
+  "questionId": "cuisine-n5",
+  "source": "J6",
+  "arm": "J6-boeuf-bourguignon-GPSR60P-1",
+  "wallMs": 7966.210895999917,
+  "retrieval": null
+ },
+ "b7f9a0b441c4": {
+  "questionId": "cnrs-01",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 7069.796361000001,
+  "retrieval": null
+ },
+ "ad2076f0c577": {
+  "questionId": "cnrs-n1",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 5140.296406999987,
+  "retrieval": null
+ },
+ "46c4c52c8c1b": {
+  "questionId": "cnrs-02",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 6184.40309800001,
+  "retrieval": null
+ },
+ "e3389df3d915": {
+  "questionId": "cnrs-n2",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 7441.695804999967,
+  "retrieval": null
+ },
+ "97364d05cc7a": {
+  "questionId": "cnrs-04",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 10515.924876999983,
+  "retrieval": null
+ },
+ "2c0b868c3989": {
+  "questionId": "cnrs-n3",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 6681.565672999946,
+  "retrieval": null
+ },
+ "22349b80738b": {
+  "questionId": "cnrs-05",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 9814.725111000007,
+  "retrieval": null
+ },
+ "f5887332e93f": {
+  "questionId": "cnrs-n4",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 5911.200871999958,
+  "retrieval": null
+ },
+ "f74a7ed7fa6d": {
+  "questionId": "cnrs-06",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 9167.916140999994,
+  "retrieval": null
+ },
+ "82d399a7310f": {
+  "questionId": "cnrs-n5",
+  "source": "J6",
+  "arm": "J6-cnrs-apprentissage-GPSR60P-1",
+  "wallMs": 7372.156665999908,
+  "retrieval": null
+ },
+ "0ebd6e054643": {
+  "questionId": "kennedy-01",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 4015.4760739999947,
+  "retrieval": null
+ },
+ "c5943b6e6065": {
+  "questionId": "kennedy-n1",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 5065.015652000002,
+  "retrieval": null
+ },
+ "1b05ec749254": {
+  "questionId": "kennedy-03",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 5077.90597800001,
+  "retrieval": null
+ },
+ "9c9abdbb83f9": {
+  "questionId": "kennedy-n2",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 5096.7370200000005,
+  "retrieval": null
+ },
+ "29692d030418": {
+  "questionId": "kennedy-05",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 6143.869134000008,
+  "retrieval": null
+ },
+ "57242584ed70": {
+  "questionId": "kennedy-n3",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 7165.239766000013,
+  "retrieval": null
+ },
+ "76f2fad86118": {
+  "questionId": "kennedy-06",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 6184.131900999986,
+  "retrieval": null
+ },
+ "9ea3e6a5d4a0": {
+  "questionId": "kennedy-n4",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 5206.625095000025,
+  "retrieval": null
+ },
+ "a4dd4778bb4d": {
+  "questionId": "kennedy-08",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 6267.646393999981,
+  "retrieval": null
+ },
+ "fffd81458344": {
+  "questionId": "kennedy-n5",
+  "source": "J6",
+  "arm": "J6-kennedy-GPSR60P-1",
+  "wallMs": 6320.133930000011,
+  "retrieval": null
+ },
+ "e219d2435044": {
+  "questionId": "spring-01",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 4027.404708000002,
+  "retrieval": null
+ },
+ "faad62a236de": {
+  "questionId": "spring-n1",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 4040.9175200000027,
+  "retrieval": null
+ },
+ "25972b685a48": {
+  "questionId": "spring-n2",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 4076.2582519999996,
+  "retrieval": null
+ },
+ "2c234fccc9c7": {
+  "questionId": "spring-02",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 5101.976767999993,
+  "retrieval": null
+ },
+ "3c9c1861a15b": {
+  "questionId": "spring-03",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 5139.13652900001,
+  "retrieval": null
+ },
+ "3c83555ef395": {
+  "questionId": "spring-04",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 5161.022132000013,
+  "retrieval": null
+ },
+ "ad7412a84bfd": {
+  "questionId": "spring-n3",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 5189.8219350000145,
+  "retrieval": null
+ },
+ "da118fd6bd76": {
+  "questionId": "spring-n4",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 4224.270350999956,
+  "retrieval": null
+ },
+ "43f5f0c86e42": {
+  "questionId": "spring-06",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 9265.750505000004,
+  "retrieval": null
+ },
+ "eaa97230b62e": {
+  "questionId": "spring-n5",
+  "source": "J6",
+  "arm": "J6-spring-GPSR60P-1",
+  "wallMs": 5338.602649000008,
+  "retrieval": null
+ },
+ "a149d619c2d0": {
+  "questionId": "tears-01",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 3025.0347729999994,
+  "retrieval": null
+ },
+ "77439a29beab": {
+  "questionId": "tears-n1",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 4054.6236479999934,
+  "retrieval": null
+ },
+ "4d3e9fa1d24e": {
+  "questionId": "tears-n2",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 4083.6917390000017,
+  "retrieval": null
+ },
+ "88ff2e7833dc": {
+  "questionId": "tears-03",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 4142.2465240000165,
+  "retrieval": null
+ },
+ "36e96dbde64b": {
+  "questionId": "tears-04",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 4172.471569999994,
+  "retrieval": null
+ },
+ "05d923f1a469": {
+  "questionId": "tears-06",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 6302.284998999967,
+  "retrieval": null
+ },
+ "f1bf53827fcf": {
+  "questionId": "tears-n3",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 5366.070603,
+  "retrieval": null
+ },
+ "045f4e34fc50": {
+  "questionId": "tears-07",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 4581.4895979999565,
+  "retrieval": null
+ },
+ "fcb335ab5f74": {
+  "questionId": "tears-n4",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 7671.323632000014,
+  "retrieval": null
+ },
+ "80e8833d0c12": {
+  "questionId": "tears-n5",
+  "source": "J6",
+  "arm": "J6-tears-of-steel-GPSR60P-1",
+  "wallMs": 7744.331673000008,
+  "retrieval": null
+ }
+}

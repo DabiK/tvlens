@@ -1,0 +1,632 @@
+[
+ {
+  "questionId": "cnrs-w1",
+  "question": "Il cite Gemini : quel est aujourd'hui le modèle Gemini le plus récent de Google ?",
+  "answers": [
+   {
+    "textId": "46f2552dcd",
+    "kind": "external",
+    "answer": "Selon les informations du web, le modèle Gemini le plus récent mentionné est Gemini 3, présenté comme le meilleur modèle au monde pour la compréhension multimodale (https://blog.google/intl/fr-fr/nouveautes-produits/gemini-3/). Un autre article évoque l'existence de Gemini 4, bien que son accès soit restreint à certains experts (https://www.lesnumeriques.com/intelligence-artificielle/gemini-4-est-enfin-la-mais-google-le-juge-trop-puissant-pour-vous-le-confier-tout-de-suite-n262576.html).",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://blog.google/intl/fr-fr/nouveautes-produits/gemini-3/",
+      "title": "Gemini 3: Introducing the latest Gemini AI model from Google",
+      "evidence": "Aujourd'hui, nous franchissons une nouvelle étape importante sur la voie de l'IAG (Intelligence Artificielle Générale) en lançant Gemini 3."
+     },
+     {
+      "url": "https://www.lesnumeriques.com/intelligence-artificielle/gemini-4-est-enfin-la-mais-google-le-juge-trop-puissant-pour-vous-le-confier-tout-de-suite-n262576.html",
+      "title": "Gemini 4 est enfin là, mais Google le juge trop puissant pour vous le confier tout de suite - Les Numériques",
+      "evidence": "Gemini 4 Argon, le nouveau modèle d'IA le plus avancé de Google, dévoilé le 30 septembre 2026."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "60f58e875d",
+    "kind": "external",
+    "answer": "Selon les informations de Google, le modèle Gemini le plus récent est Gemini 4 Argon (kind=external, sources=[\"https://gemini.google/fr/release-notes/?hl=fr\"]). Il est décrit comme le dernier modèle de frontière conçu pour les tâches complexes (kind=external, sources=[\"https://ai.google.dev/gemini-api/docs/latest-model?hl=fr\"]).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://gemini.google/fr/release-notes/?hl=fr",
+      "title": "‎Mises à jour et améliorations des applications Gemini",
+      "evidence": "À partir d'aujourd'hui, Gemini 4 Argon est déployé dans le monde entier pour les abonnés Google AI Pro et Ultra dans l'application Gemini."
+     },
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/latest-model?hl=fr",
+      "title": "Nouveautés de Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon ( gemini-4-argon ) est notre modèle le plus récent et le plus performant."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ad1f1a1a97",
+    "kind": "explanation",
+    "answer": "Selon les informations de la vidéo, l'intervenant mentionne Gemini comme l'un des modèles de grande taille, aux côtés de ChatGPT (moment-6, 40000-48000). D'après les pages web consultées, le modèle le plus récent de Google est Gemini 4 Argon (https://ai.google.dev/gemini-api/docs/latest-model?hl=fr, \"Gemini 4 Argon est notre modèle le plus récent et le plus performant.\").",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/latest-model?hl=fr",
+      "title": "Nouveautés de Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon est notre modèle le plus récent et le plus performant."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d6f5eddb3f",
+    "kind": "explanation",
+    "answer": "D'après les informations disponibles, le modèle Gemini le plus récent de Google est Gemini 4 Argon (kind=external). La vidéo mentionne simplement l'existence de Gemini sans préciser sa version actuelle (kind=observation).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/latest-model?hl=fr",
+      "title": "Nouveautés de Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon ( gemini-4-argon ) est notre modèle le plus récent et le plus performant."
+     },
+     {
+      "url": "https://gemini.google/fr/release-notes/?hl=fr",
+      "title": "‎Mises à jour et améliorations des applications Gemini",
+      "evidence": "Découvrez Gemini 4 Argon, notre modèle de frontière pour les tâches complexes"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "eccb86c079",
+    "kind": "external",
+    "answer": "D'après les informations disponibles, le modèle Gemini le plus récent de Google est Gemini 4 Argon (https://ai.google.dev/gemini-api/docs/latest-model?hl=fr : \"Gemini 4 Argon est désormais disponible. [...] notre modèle le plus récent et le plus performant.\"). La vidéo mentionne également l'existence de Gemini dans une discussion sur l'évolution des modèles d'IA (moment-6, 40000-48000).",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://ai.google.dev/gemini-api/docs/latest-model?hl=fr",
+      "title": "Nouveautés de Gemini 4 Argon | Gemini API | Google AI for Developers",
+      "evidence": "Gemini 4 Argon est désormais disponible. [...] notre modèle le plus récent et le plus performant."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m1",
+  "question": "Combien de neurones a-t-il donnés pour l'éléphant, et combien en compte un cerveau humain ?",
+  "answers": [
+   {
+    "textId": "41e9b7773f",
+    "kind": "explanation",
+    "answer": "Le cerveau d'un éléphant d'Afrique contient environ 11 milliards de neurones, tandis qu'un cerveau humain en compte environ 21 milliards. Ces chiffres proviennent de données externes et ne sont pas mentionnés dans la vidéo.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Liste_d%27animaux_par_le_nombre_de_neurones",
+      "title": "Liste d'animaux par le nombre de neurones — Wikipédia",
+      "evidence": "Éléphant d'Afrique 11 000 000 000 [...] Humain 21 000 000 000"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "47c9ee113a",
+    "kind": "external",
+    "answer": "L'éléphant d'Afrique possède environ 11 milliards de neurones dans son cortex cérébral, tandis qu'un cerveau humain en compte environ 21 milliards. Ces chiffres correspondent aux estimations du nombre de neurones dans le cortex cérébral pour ces espèces.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Liste_d%27animaux_par_le_nombre_de_neurones",
+      "title": "Liste d'animaux par le nombre de neurones — Wikipédia",
+      "evidence": "Éléphant d'Afrique 11 000 000 000 [...] Humain 21 000 000 000"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "75d740565a",
+    "kind": "external",
+    "answer": "Le cerveau d'un éléphant contient 257 milliards de neurones. Pour le cerveau humain, la vidéo ne fournit pas cette information, mais les sources externes indiquent que le cerveau d'un humain pèse environ 1,4 kg.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Cognition_des_%C3%A9l%C3%A9phants",
+      "title": "Cognition des éléphants — Wikipédia",
+      "evidence": "Le cerveau d'un éléphant contient 257 milliards de neurones"
+     },
+     {
+      "url": "https://fr.wikibooks.org/wiki/Neurosciences/Le_cerveau_dans_le_r%C3%A8gne_animal",
+      "title": "Neurosciences/Le cerveau dans le règne animal — Wikilivres",
+      "evidence": "celui d'un humain pèse 1,4kg"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7a65ecffe9",
+    "kind": "explanation",
+    "answer": "La vidéo ne mentionne pas le nombre de neurones pour l'éléphant. En revanche, selon Wikipédia, un cerveau humain contient environ 21 milliards de neurones dans l'ensemble de son système nerveux.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Liste_d%27animaux_par_le_nombre_de_neurones",
+      "title": "Liste d'animaux par le nombre de neurones — Wikipédia",
+      "evidence": "Humain 21 000 000 000 Pour un adulte moyen"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8700c20ec2",
+    "kind": "external",
+    "answer": "L'éléphant d'Afrique possède environ 11 milliards de neurones dans son cortex cérébral. Le cerveau humain en compte entre 19 et 23 milliards dans le néocortex.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Liste_d%27animaux_par_le_nombre_de_neurones",
+      "title": "Liste d'animaux par le nombre de neurones — Wikipédia",
+      "evidence": "Éléphant d'Afrique 11 000 000 000 [...] Humain 21 000 000 000"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w2",
+  "question": "Qui a inventé l'expression « modèle de fondation » dont il parle, et quand ?",
+  "answers": [
+   {
+    "textId": "66f0ec2d0c",
+    "kind": "external",
+    "answer": "L'expression « modèle de fondation » a été inventée par le Centre de recherche sur les modèles de fondation (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI) en 2021.",
+    "citations": [
+     {
+      "id": "wikipedia-foundation-model",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "wikiprompt-foundation-model",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Mod%C3%A8le_de_fondation",
+      "title": "Modèle de fondation — Wikipédia",
+      "evidence": "Le terme a été popularisé par le centre de recherche sur les modèles de fondation (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI)."
+     },
+     {
+      "url": "https://www.wikiprompt.org/fr/wiki/foundation-model",
+      "title": "Modèle de fondation - AI Wiki | Wikiprompt",
+      "evidence": "Le terme a été inventé dans un rapport de 2021 du Centre de recherche sur les modèles de fondation (CRFM) de Stanford."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7159471546",
+    "kind": "external",
+    "answer": "L'expression « modèle de fondation » a été inventée par le Centre de recherche sur les modèles de fondation (CRFM) de l'Université de Stanford en 2021.",
+    "citations": [
+     {
+      "id": "blent-ai-lexique",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "wikipedia-modele-de-fondation",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "wikiprompt-foundation-model",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://blent.ai/lexique/modele-de-fondation",
+      "title": "Modèle de fondation : définition, exemples et enjeux | Blent.ai",
+      "evidence": "Origine du terme Stanford (CRFM), 2021"
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Mod%C3%A8le_de_fondation",
+      "title": "Modèle de fondation — Wikipédia",
+      "evidence": "Le centre de recherche sur les modèles de fondation (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI) a inventé le terme de modèle de fondation"
+     },
+     {
+      "url": "https://www.wikiprompt.org/fr/wiki/foundation-model",
+      "title": "Modèle de fondation - AI Wiki | Wikiprompt",
+      "evidence": "Le terme a été inventé dans un rapport de 2021 du Centre de recherche sur les modèles de fondation (CRFM) de Stanford"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "761bebb929",
+    "kind": "explanation",
+    "answer": "Le terme « modèle de fondation » a été inventé par des chercheurs du Stanford Institute for Human-Centered Artificial Intelligence (HAI), plus précisément au sein de leur centre de recherche CRFM (kind=external). Selon les sources consultées, ce terme a été proposé en 2021 (kind=external).",
+    "citations": [
+     {
+      "id": "webPage-1",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "webPage-2",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Mod%C3%A8le_de_fondation",
+      "title": "Modèle de fondation — Wikipédia",
+      "evidence": "Ce terme a été popularisé par le centre de recherche sur les modèles de fondation (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI)."
+     },
+     {
+      "url": "https://blent.ai/lexique/modele-de-fondation",
+      "title": "Modèle de fondation : définition, exemples et enjeux | Blent.ai",
+      "evidence": "Origine du terme Stanford (CRFM), 2021"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "afadb11c3f",
+    "kind": "external",
+    "answer": "Le terme « modèle de fondation » a été inventé par le centre de recherche sur les modèles de fondation (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI). Les sources indiquent que ce terme a été popularisé par ce centre, avec une mention de l'année 2021 pour son origine.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Mod%C3%A8le_de_fondation",
+      "title": "Modèle de fondation — Wikipédia",
+      "evidence": "Ce terme a été popularisé par le centre de recherche sur les modèles de fondation (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI)."
+     },
+     {
+      "url": "https://blent.ai/lexique/modele-de-fondation",
+      "title": "Modèle de fondation : définition, exemples et enjeux | Blent.ai",
+      "evidence": "Origine du terme Stanford (CRFM), 2021"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d0bfc42c76",
+    "kind": "external",
+    "answer": "L'expression « modèle de fondation » a été proposée par des chercheurs de l'Université de Stanford en 2021.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://blent.ai/lexique/mode#mod%C3%A8le-de-fondation",
+      "title": "Modèle de fondation : définition, exemples et enjeux | Blent.ai",
+      "evidence": "Origine du terme Stanford (CRFM), 2021"
+     },
+     {
+      "url": "https://www.wikiprompt.org/fr/wiki/foundation-model",
+      "title": "Modèle de fondation - AI Wiki | Wikiprompt",
+      "evidence": "un terme inventé par des chercheurs de Stanford en 2021."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-m2",
+  "question": "Selon lui, quelle a été la force d'OpenAI avec ChatGPT, et par quelle méthode OpenAI a-t-il réalisé cet alignement ?",
+  "answers": [
+   {
+    "textId": "0099ba8406",
+    "kind": "observation",
+    "answer": "L'orateur affirme que la force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Pour y parvenir, il explique qu'il faut apprendre au modèle un savoir-être et un ensemble de règles éthiques, comme lui apprendre à répondre avec bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "0c7cc8d85d",
+    "kind": "observation",
+    "answer": "L'orateur affirme que la force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Pour y parvenir, il explique qu'il faut apprendre au modèle un savoir-être et des règles éthiques, comme lui apprendre à répondre avec bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "0e14bdad69",
+    "kind": "observation",
+    "answer": "La force d'OpenAI avec ChatGPT a été de réussir un alignement qui soit robuste et difficile à briser (moment-96, moment-97). Cet alignement repose sur l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b0e7311838",
+    "kind": "observation",
+    "answer": "La force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Pour y parvenir, l'entreprise a mis en place un ensemble de règles éthiques et de comportements à adopter, comme répondre avec bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "c8134daa2b",
+    "kind": "observation",
+    "answer": "L'orateur affirme que la force d'OpenAI a été de réussir un alignement qui soit robuste et difficile à contourner (moment-96, moment-97). Il explique que cet alignement consiste à apprendre au modèle un savoir-être et des règles éthiques, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     },
+     {
+      "id": "moment-97",
+      "startMs": 768000,
+      "endMs": 776000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-w3",
+  "question": "Il parle des règles éthiques imposées aux IA : où en est aujourd'hui l'AI Act, la loi européenne sur l'IA ?",
+  "answers": [
+   {
+    "textId": "1f6214ced2",
+    "kind": "external",
+    "answer": "Le règlement européen sur l'intelligence artificielle, ou AI Act, est entré en vigueur le 1er août 2024 (CNIL, Regulation AI). Son application est progressive, avec des interdictions de certains usages dangereux effectives depuis février 2025 et des obligations pour les modèles à haut risque prévues pour 2027 ou 2028 (Regulation AI, Touteleurope.eu).",
+    "citations": [
+     {
+      "id": "CNIL",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "Regulation AI",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "Touteleurope.eu",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil",
+      "title": "Entrée en vigueur du règlement européen sur l’IA : les premières questions-réponses de la CNIL | CNIL",
+      "evidence": "Le règlement européen sur l’IA (ou AI Act) a été publié au Journal officiel de l’Union européenne (JOUE) le 12 juillet 2024 et est progressivement en application depuis le 1 er août 2024."
+     },
+     {
+      "url": "https://www.regulation-ai.eu/fr/ai-act/",
+      "title": "AI Act 2026 : ce qui s'applique, ce qui est reporté | Regulation AI",
+      "evidence": "Il est entré en vigueur le 1er août 2024 et s'applique progressivement selon quatre niveaux de risque."
+     },
+     {
+      "url": "https://www.touteleurope.eu/economie-et-social/intelligence-artificielle-ce-qui-change-vraiment-le-2-aout-2026-avec-le-reglement-europeen/",
+      "title": "Intelligence artificielle : ce qui a vraiment changé le 2 août 2026 avec le règlement européen - Touteleurope.eu",
+      "evidence": "Depuis le 2 février 2025, l'Union européenne interdit notamment certains usages jugés trop dangereux pour les droits fondamentaux."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "23b7bf4fc3",
+    "kind": "external",
+    "answer": "Le règlement européen sur l'intelligence artificielle, ou AI Act, est entré en vigueur le 1er août 2024 (CNIL, Entreprises.gouv.fr). Son application est progressive, avec des règles sur la transparence déjà effectives depuis le 2 août 2024 (Service-public.gouv.fr) et des interdictions de certaines pratiques prévues pour février 2025 (Regulation AI).",
+    "citations": [
+     {
+      "id": "CNIL",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "Entreprises.gouv.fr",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "Service-public.gouv.fr",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "Regulation AI",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil",
+      "title": "Entrée en vigueur du règlement européen sur l’IA : les premières questions-réponses de la CNIL | CNIL",
+      "evidence": "Le règlement européen sur l’IA (ou AI Act) a été publié au Journal officiel de l’Union européenne (JOUE) le 12 juillet 202<0xC2>4 et est progressivement en application depuis le 1 er août 2024."
+     },
+     {
+      "url": "https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes",
+      "title": "Le Règlement européen sur l'intelligence artificielle : publics concernés, dates clés, conséquences pour les entreprises | Direction générale des Entreprises",
+      "evidence": "Le 1ᵉʳ août 2024, le règlement européen sur l'intelligence artificielle (IA) est entré en vigueur."
+     },
+     {
+      "url": "https://www.service-public.gouv.fr/particuliers/actualites/A19029",
+      "title": "AI Act -Généré par l’intelligence artificielle : comment s’y retrouver ? | Service Public",
+      "evidence": "Depuis le 2 août, de nouvelles règles sur la transparence des systèmes d’IA sont entrées en vigueur."
+     },
+     {
+      "url": "https://www.regulation-ai.eu/fr/ai-act/",
+      "title": "AI Act 2026 : ce qui s'applique, ce qui est reporté | Regulation AI",
+      "evidence": "Il s'applique par paliers : pratiques interdites depuis février 2025, règles GPAI depuis août 2025..."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8bb9cbc7db",
+    "kind": "external",
+    "answer": "L'AI Act est entré en vigueur le 1er août 2024 et s'applique progressivement (kind=external, source=https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil). Ce règlement européen établit un cadre pour encadrer le développement et l'utilisation de l'IA selon une approche basée sur les risques (kind=external, source=https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes).",
+    "citations": [
+     {
+      "id": "cnil_source",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "dge_source",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil",
+      "title": "Entrée en vigueur du règlement européen sur l’IA : les premières questions-réponses de la CNIL | CNIL",
+      "evidence": "Le règlement européen sur l’IA (ou AI Act) a été publié au Journal officiel de l’Union européenne (JOUE) le 12 juillet 2024 et est progressivement en application depuis le 1er août 2024."
+     },
+     {
+      "url": "https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes",
+      "title": "Le Règlement européen sur l'intelligence artificielle : publics concernés, dates clés, conséquences pour les entreprises | Direction générale des Entreprises",
+      "evidence": "Ce règlement vise à garantir que le développement et l'utilisation des produits et productions de l'IA respectent les droits fondamentaux et les valeurs européennes."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b35903748a",
+    "kind": "external",
+    "answer": "L'AI Act est entré en vigueur le 1er août 2024 et s'applique progressivement selon une approche basée sur les risques (https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes). Certaines règles, comme l'interdiction de pratiques manipulatrices, sont déjà effectives, tandis que les obligations pour les modèles d'IA à usage général sont prévues pour le 2 août 2025 (https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil).",
+    "citations": [
+     {
+      "id": "https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.entreprises.gouv.fr/decryptages-de-nos-experts/le-reglement-europeen-sur-lintelligence-artificielle-publics-concernes",
+      "title": "Le Règlement européen sur l'intelligence artificielle : publics concernés, dates clés, conséquences pour les entreprises | Direction générale des Entreprises",
+      "evidence": "Le 1ᵉʳ août 2024, le règlement européen sur l'intelligence artificielle (IA) est entré en vigueur."
+     },
+     {
+      "url": "https://www.cnil.fr/fr/entree-en-vigueur-du-reglement-europeen-sur-lia-les-premieres-questions-reponses-de-la-cnil",
+      "title": "Entrée en vigueur du règlement européen sur l’IA : les premières questions-réponses de la CNIL | CNIL",
+      "evidence": "Le règlement européen sur l’IA (ou AI Act) a été publié au Journal officiel de l’Union européenne (JOUE) le 12 juillet 2024 et est progressivement en application depuis le 1 er août 2024."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "de0ae763ff",
+    "kind": "external",
+    "answer": "L'AI Act est entré en vigueur le 1er août 2024 et s'applique progressivement selon une approche par les risques (external, https://www.regulation-ai.eu/fr/ai-act/). Les pratiques interdites sont applicables depuis le 2 février 2025, tandis que les règles pour les modèles d'IA à usage général sont prévues pour août 2025 (external, https://www.regulation-ai.eu/fr/ai-act/).",
+    "citations": [
+     {
+      "id": "external-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.regulation-ai.eu/fr/ai-act/",
+      "title": "AI Act 2026 : ce qui s'applique, ce qui est reporté | Regulation AI",
+      "evidence": "Le règlement européen sur l'intelligence artificielle (IA) est entré en vigueur le 1er août 2024 et s'applique progressivement selon quatre niveaux de risque."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

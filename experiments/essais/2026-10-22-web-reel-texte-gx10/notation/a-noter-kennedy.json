@@ -1,0 +1,475 @@
+[
+ {
+  "questionId": "kennedy-w1",
+  "question": "Le vaisseau américain qui devait atteindre Vénus, dont parle Kennedy : comment s'appelait-il, et y est-il parvenu ?",
+  "answers": [
+   {
+    "textId": "1699ecc339",
+    "kind": "explanation",
+    "answer": "Dans la vidéo, Kennedy mentionne un nouveau vaisseau spatial américain qui pourrait atteindre Vénus (moment-11, 80000-88000ms), mais il ne précise pas son nom. Selon les sources externes, la mission Mariner 2 a réussi un premier survol de la planète en 1962 (https://fr.wikipedia.org/wiki/Exploration_de_V%C3%A9nus).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Exploration_de_V%C3%A9nus",
+      "title": "Exploration de Vénus — Wikipédia",
+      "evidence": "La NASA réussit un premier survol en 1962 avec la mission américaine Mariner 2 qui dévoile un monde particulièrement hostile"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "aa5922f98f",
+    "kind": "observation",
+    "answer": "Dans son discours, John F. Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). Les documents fournis ne précisent pas le nom de ce vaisseau ni s'il est parvenu à sa destination.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b0d496c57a",
+    "kind": "insufficient",
+    "answer": "Dans la vidéo, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). Cependant, les sources fournies ne précisent pas le nom de ce vaisseau ni s'il est parvenu à sa destination.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "b1bbc5c3bc",
+    "kind": "explanation",
+    "answer": "Dans son discours, John F. Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait atteindre Vénus (moment-11, 80000-88000ms). Les sources externes ne précisent pas le nom de ce vaisseau spécifique dans ce contexte, mais mentionnent la sonde Mariner 2 qui a survolé la planète en 1962 (https://www.aeronomie.be/fr/encyclopedie/missions-dexploration-venus-chronologie).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.aeronomie.be/fr/encyclopedie/missions-dexploration-venus-chronologie",
+      "title": "Missions d'exploration de Vénus, chronologie | Institut royal d'Aéronomie Spatiale de Belgique",
+      "evidence": "En 1962, la sonde américaine Mariner 2 survole Vénus pour la première fois à 35 000 km"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e6f7159b2b",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy mentionne qu'un nouveau vaisseau spatial américain pourrait réussir à atteindre Vénus (moment-11, 80000-88000ms). Les sources fournies ne précisent pas le nom de ce vaisseau spécifique, mais mentionnent la sonde américaine Mariner 5 qui a survolé Vénus en 1967 (https://fr.wikipedia.org/wiki/Exploration_de_V%C3%A9nus).",
+    "citations": [
+     {
+      "id": "moment-11",
+      "startMs": 80000,
+      "endMs": 88000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Exploration_de_V%C3%A9nus",
+      "title": "Exploration de Vénus — Wikipédia",
+      "evidence": "La sonde spatiale américaine Mariner 5 est lancée le 14 juin 1967 [...] elle survole avec succès Vénus"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m1",
+  "question": "Dans quelle ville Kennedy dit-il se trouver, et dans quel lieu précis et à quelle date a-t-il prononcé ce discours ?",
+  "answers": [
+   {
+    "textId": "0bd6621b2e",
+    "kind": "explanation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Selon les informations de Wikipédia, ce discours a été prononcé le 12 septembre 1962 au Rice Stadium (https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy",
+      "title": "Discours de John Fitzgerald Kennedy — Wikipédia",
+      "evidence": "Kennedy durant son discours du 12 septembre 1962. Le discours est prononcé à l' université Rice , à Houston"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "38f2744e09",
+    "kind": "explanation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Ce discours a été prononcé le 12 septembre 1962 au Rice Stadium (https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy",
+      "title": "Discours de John Fitzgerald Kennedy — Wikipédia",
+      "evidence": "Ce discours a lieu dans le Rice Stadium (le stade de football américain de l'université Rice), à Houston, alors que les Soviétiques et les Américains se sont engagés dans la \" course à l'espace \" et que... le 12 septembre 1962"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7bcb9b79b3",
+    "kind": "observation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). La vidéo ne précise pas la date exacte de ce discours, bien qu'il évoque les avancées technologiques et l'espace.",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "afc3083d18",
+    "kind": "observation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Ce discours a été prononcé au Rice Stadium le 12 septembre 1962 (https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy",
+      "title": "Discours de John Fitzgerald Kennedy — Wikipédia",
+      "evidence": "Nous avons décidé d'aller sur la Lune ( 12 septembre 1962 ) [...] Ce discours est prononcé à l' université Rice , à Houston"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cd411168dd",
+    "kind": "observation",
+    "answer": "Kennedy mentionne qu'il se trouve à Houston, dans l'État du Texas (moment-16, 120000-128000ms). Ce discours a été prononcé au Rice Stadium le 12 septembre 1962 (https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy).",
+    "citations": [
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Discours_de_John_Fitzgerald_Kennedy",
+      "title": "Discours de John Fitzgerald Kennedy — Wikipédia",
+      "evidence": "Kennedy durant son discours du 12 septembre 1962. Le discours est prononcé à l' université Rice , à Houston"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-m2",
+  "question": "Sur son échelle, quand Kennedy situe-t-il la pénicilline, et en réalité, qui l'a découverte et en quelle année ?",
+  "answers": [
+   {
+    "textId": "08aa0437e6",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas d'information mentionnant la pénicilline ou l'échelle de temps de Kennedy à ce sujet. En réalité, la découverte de la pénicilline est attribuée au scientifique britannique Alexander Fleming en 1928.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline",
+      "title": "Découverte de la pénicilline — Wikipédia",
+      "evidence": "La découverte de la pénicilline est attribuée au médecin et scientifique britannique Alexander Fleming, qui est le premier à démontrer que la moisissure Penicillium notatum produit une substance antibactérienne."
+     },
+     {
+      "url": "https://www.worldhistory.org/trans/fr/2-2490/decouverte-de-la-penicilline/",
+      "title": "Découverte de la Pénicilline - Encyclopédie de l'Histoire du Monde",
+      "evidence": "L'ère des antibiotiques commença en septembre 1928, avec la découverte de la pénicilline par Alexander Fleming."
+     }
+    ],
+    "limits": [
+     "La vidéo ne mentionne pas la pénicilline."
+    ]
+   },
+   {
+    "textId": "2679e0b194",
+    "kind": "explanation",
+    "answer": "La vidéo ne mentionne pas de moment où Kennedy situe la découverte de la pénicilline sur son échelle. En réalité, la pénicilline a été découverte par Alexander Fleming en 1928 (https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline",
+      "title": "Découverte de la pénicilline — Wikipédia",
+      "evidence": "La découverte de la pénicilline est attribuée au médecin et scientifique britannique Alexander Fleming, qui est le premier à démontrer que la moisissure Penicillium notatum produit une substance antibactérienne."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7a6ff5dd28",
+    "kind": "insufficient",
+    "answer": "La vidéo ne contient pas d'information mentionnant la position de la pénicilline sur l'échelle de Kennedy. En réalité, la découverte de la pénicilline est attribuée à Alexander Fleming en 1928 (https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline",
+      "title": "Découverte de la pénicilline — Wikipédia",
+      "evidence": "La découverte de la pénicilline est attribuée au médecin et scientifique britannique Alexander Fleming, qui est le premier à démontrer que la moisissure Penicillium notatum produit une substance antibactérienne."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "82fb9a6e66",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas d'information sur la position de la pénicilline sur l'échelle de Kennedy. En réalité, Alexander Fleming a découvert la pénicilline en 1928 (sante-orientation.fr).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.sante-orientation.fr/articles/fleming-penicilline-antibiotiques-revolution-infectiologie",
+      "title": "Alexander Fleming : la pénicilline, découverte par accident, qui a sauvé des millions de vies — santé·orientation",
+      "evidence": "Alexander Fleming (1881-1955) a découvert la pénicilline en 1928, fondant l'ère des antibiotiques et révolutionnant le traitement des infections bactériennes pour toujours."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "8d75080f6b",
+    "kind": "explanation",
+    "answer": "La vidéo ne contient pas d'information sur la position de la pénicilline sur l'échelle de Kennedy. En réalité, la pénicilline a été découverte par Alexander Fleming en 1928 (https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/D%C3%A9couverte_de_la_p%C3%A9nicilline",
+      "title": "Découverte de la pénicilline — Wikipédia",
+      "evidence": "En 1928, Alexander Fleming, revient de vacances et reprend ses activités dans son laboratoire du Saint-Mary's Hospital à Londres. Il constate que parmi les milieux de culture où il fait pousser des cultures de staphylocoques, plusieurs colonies de champignons se sont développées et ont empêché la présence de ses staphylocoques."
+     }
+    ],
+    "limits": [
+     "La vidéo ne mentionne pas la pénicilline dans les passages analysés."
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w2",
+  "question": "Qui était ce William Bradford que Kennedy cite ?",
+  "answers": [
+   {
+    "textId": "0c26f8455f",
+    "kind": "external",
+    "answer": "William Bradford était un pionnier anglais et le gouverneur de la colonie de Plymouth, arrivé en Amérique en 1620 à bord du Mayflower. Il est reconnu comme l'un des chefs des Pères pèlerins et a dirigé la colonie pendant plusieurs décennies.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governor) - Wikipedia",
+      "evidence": "William Bradford ( c. 19 March 1590 – 9 May 1657) was an English Pilgrim Separtist and Governor of Plymouth Colony"
+     },
+     {
+      "url": "https://www.worldhistory.org/trans/fr/1-19260/william-bradford/",
+      "title": "William Bradford - Encyclopédie de l'Histoire du Monde",
+      "evidence": "William Bradford (1590-1657) était l'un des principaux membres de la congrégation des pèlerins venus en Amérique du Nord à bord du Mayflower"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "0c4762e0ed",
+    "kind": "external",
+    "answer": "William Bradford était un gouverneur de la colonie de Plymouth qui a servi pendant environ 30 ans entre 1621 et 1657 (https://en.wikipedia.org/wiki/William_Bradford_(governor)). Il est également connu comme l'auteur du journal Of Plymouth Plantation (https://en.wikipedia.org/wiki/William_Bradford_(governor)).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+      "title": "William Bradford (governor) - Wikipedia",
+      "evidence": "He served as Governor of Plymouth Colony intermittently for about 30 years between 1621 and 1657."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "a0cc9c34f8",
+    "kind": "external",
+    "answer": "William Bradford était un leader séparatiste et le deuxième gouverneur de la colonie de Plymouth en Amérique du Nord (worldhistory.org). Il a fait partie des pèlerins arrivés à bord du Mayflower en 1620 et a écrit l'ouvrage classique Of Plymouth Plantation (worldhistory.org).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.worldhistory.org/trans/fr/1-19260/william-bradford/",
+      "title": "William Bradford - Encyclopédie de l'Histoire du Monde",
+      "evidence": "William Bradford (1590-1657) était l'un des principaux membres de la congrégation des pèlerins venus en Amérique du Nord à bord du Mayflower"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "b4ba40510f",
+    "kind": "external",
+    "answer": "William Bradford était un membre important de la congrégation des pèlerins qui a voyagé vers l'Amérique du Nord à bord du Mayflower. Il a été le deuxième gouverneur de la colonie de Plymouth, occupant ce poste pendant environ trente ans (worldhistory.org).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.worldhistory.org/trans/fr/1-19260/william-bradford/",
+      "title": "William Bradford - Encyclopédie de l'Histoire du Monde",
+      "evidence": "William Bradford (1590-1657) était l'un des principaux membres de la congrégation des pèlerins venus en Amérique du Nord à bord du Mayflower [...] et le deuxième gouverneur de la colonie de Plymouth"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c9675c2c99",
+    "kind": "external",
+    "answer": "William Bradford était un leader des Pères pèlerins et le gouverneur de la colonie de Plymouth en Amérique du Nord (https://fr.wikipedia.org/wiki/William_Bradford). Il a joué un rôle déterminant dans l'établissement de cette colonie après la traversée du Mayflower en 1620 (https://www.worldhistory.org/trans/fr/1-19260/william_bradford/).",
+    "citations": [
+     {
+      "id": "https://fr.wikipedia.org/wiki/William_Bradford",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://www.worldhistory.org/trans/fr/1-19260/william_bradford/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/William_Bradford",
+      "title": "William Bradford — Wikipédia",
+      "evidence": "William Bradford... est un protestant anglais dissident, un des chefs du groupe des Pèlerins pèlerins (Pilgrim fathers) qui, en 1620, fait sur le Mayflower la traversée d'Angleterre vers l'Amérique, puis fonde la colonie de New Plymouth"
+     },
+     {
+      "url": "https://www.worldhistory.org/trans/fr/1-19260/william_bradford/",
+      "title": "William Bradford - Encyclopédie de l'Histoire du Monde",
+      "evidence": "William Bradford (1590-1657) était l'un des principaux membres de la congrégation des pèlerins venus en Amérique du Nord à bord du Mayflower"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-w3",
+  "question": "Kennedy dit qu'il n'y a encore aucun conflit dans l'espace. Aujourd'hui, combien de pays ont signé les accords Artemis, le cadre de la NASA pour une exploration pacifique ?",
+  "answers": [
+   {
+    "textId": "369c53d6a6",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, le nombre de signataires varie selon la source : Wikipédia mentionne 75 parties (https://fr.wikipedia.org/wiki/Accords_Artemis), tandis que le site de la NASA indique que l'Ouzbékistan est devenu la 77ème nation signataire le 19 octobre 2026 (https://www.nasa.gov/artemis-accodes/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Accords_Artemis",
+      "title": "Accords Artemis — Wikipédia",
+      "evidence": "Signataires 75 Parties"
+     },
+     {
+      "url": "https://www.nasa.gov/artemis-accords/",
+      "title": "Artemis Accords - NASA",
+      "evidence": "On October 19, 2026, Uzbekistan became the 77th nation to sign the accords."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "3df5c78c74",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, le nombre de pays signataires varie selon les sources : une page indique 76 pays participants (nouvelles-du-monde.com), tandis qu'une autre mentionne une soixante de signataires (rfi.fr).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nouvelles-du-monde.com/accords-artemis-de-la-nasa-76-pays-signataires-apres-de-nouvelles-adhesions/",
+      "title": "Accords Artemis de la NASA : 76 pays signataires après de nouvelles adhésions - Nouvelles Du Monde",
+      "evidence": "Le programme des accords Artemis de la NASA compte désormais 76 pays participants, après l’adhésion récente de l’Albanie, de la Croatie, de la Côte d’Ivoire et de Saint-Marin."
+     },
+     {
+      "url": "https://www.rfi.fr/fr/am%C3%A9riques/20260330-de-kennedy-%C3%A0-artemis-la-coop%C3%A9ration-spatiale-et-la-question-de-ses-fronti%C3%A8res-lune-espace-spacex-nasa",
+      "title": "De Kennedy à Artemis: la coopération spatiale et la question de ses frontières - RFI",
+      "evidence": "Ils sont aujourd'hui une soixantaine."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "58b9b98ac0",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, le nombre de signataires varie selon les sources : la NASA indique que l'Ouzbékistan est devenu la 77ème nation signataire le 19 octobre 2026 (https://www.nasa.gov/artemis-accords/), tandis qu'une autre source mentionne 56 nations au 8 août 2025 (https://www.agences-spatiales.fr/accords-artemis/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/artemis-accords/",
+      "title": "Artemis Accords - NASA",
+      "evidence": "On October 19, 2026, Uzbekistan became the 75th nation to sign the accords."
+     },
+     {
+      "url": "https://www.agences-spatiales.fr/accords-artemis/",
+      "title": "Les Accords Artemis : présentation, enjeux, et utilité réelle",
+      "evidence": "Les Accords Artemis sont des engagements politiques non contraignants, signés aujourd’hui par 56 pays au 8 août 2025."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e57852c5d7",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit dans l'espace (moment-49, 384000-392000ms). Selon les informations disponibles, 56 nations ont rejoint les Accords Artemis pour une exploration pacifique (https://www.agences-spatiales.fr/accords-artemis/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.agences-spatiales.fr/accords-artemis/",
+      "title": "Les Accords Artemis : présentation, enjeux, et utilité réelle",
+      "evidence": "Les 56 nations ayant rejoint les Accords Artemis, unies pour une exploration pacifique de l’espace lointain."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "fbca701635",
+    "kind": "explanation",
+    "answer": "Dans son discours, Kennedy affirme qu'il n'y a pas encore de conflit national dans l'espace (moment-49, 384000-392000ms). Concernant les accords Artemis, le nombre de pays signataires est passé à 76 après les adhésions récentes de l'Albanie, de la Croatie, de la Côte d'Ivoire et de Saint-Marin (https://www.nasa.gov/news-release/nasa-celebrates-as-artemis-accords-surpasses-75-signatories/).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.nasa.gov/news-release/nasa-celebrates-as-artemis-accords-surpasses-75-signatories/",
+      "title": "NASA Celebrates as Artemis Accords Surpasses 75 Signatories - NASA",
+      "evidence": "bringing total participation to 76 countries."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]

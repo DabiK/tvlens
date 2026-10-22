@@ -1,0 +1,610 @@
+[
+ {
+  "questionId": "spring-w1",
+  "question": "Quand ce court métrage a-t-il été publié ?",
+  "answers": [
+   {
+    "textId": "093f4f6671",
+    "kind": "external",
+    "answer": "Ce court métrage a été publié le 4 avril 2019, comme l'indiquent les informations de Wikipédia et de BlenderNation.",
+    "citations": [
+     {
+      "id": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     },
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNation",
+      "evidence": "4 April 2019"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "1c75b2971a",
+    "kind": "external",
+    "answer": "Ce court métrage a été publié le 4 avril 2019.",
+    "citations": [
+     {
+      "id": "wikipedia-spring-2019-film",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "blendernation-watch-spring",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     },
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNation",
+      "evidence": "4 April 2019"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "47b9c1b645",
+    "kind": "external",
+    "answer": "Ce court métrage, intitulé Spring, a été publié le 4 avril 2019 (https://en.wikipedia.org/wiki/Spring_(2019_film)).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "5439a467cc",
+    "kind": "external",
+    "answer": "Ce court métrage, intitulé « Spring », a été publié le 4 avril 2019.",
+    "citations": [
+     {
+      "id": "wikipedia-spring-2019",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "blendernation-spring",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     },
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNation",
+      "evidence": "2019 at 17:56"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "e65b8865f7",
+    "kind": "external",
+    "answer": "Ce court métrage, intitulé « Spring », a été publié en avril 2019.",
+    "citations": [
+     {
+      "id": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Goda, Satish (2019-04-09). \"Spring : Blender Open Movie\"."
+     },
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNation",
+      "evidence": "L'article date du 4 avril 2019."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f7c8b01230",
+    "kind": "external",
+    "answer": "Ce court métrage a été publié le 4 avril 2019 (https://en.wikipedia.org/wiki/Spring_(2019_film)).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "Release date April 4, 2019 (2019-04-04)"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w2",
+  "question": "Qu'est-ce qui a inspiré l'histoire de ce film à son réalisateur ?",
+  "answers": [
+   {
+    "textId": "398424e776",
+    "kind": "external",
+    "answer": "L'histoire du court-métrage Spring a été inspirée par l'enfance du réalisateur, Andy Goralczyk, passée dans les montagnes d'Allemagne.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/projects/spring/pages/about/",
+      "title": "About - Spring - Blender Studio",
+      "evidence": "This poetic and visually stunning short film was written and directed by Andy Goralczyk, inspired by his childhood in the mountains of Germany."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4182043771",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne précisent pas l'inspiration du réalisateur pour l'histoire de ce film. La vidéo montre des scènes d'un court-métrage intitulé « Spring », mais les éléments consultés ne mentionnent pas l'origine de son scénario.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "6b9708f901",
+    "kind": "external",
+    "answer": "L'histoire du court-métrage Tears of Steel s'est inspirée du thème de la science-fiction située à Amsterdam. Le film a été écrit et réalisé par Ian Hubert, avec pour objectif d'explorer un pipeline de production open source complet.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://mango.blender.org/about/",
+      "title": "About | Tears of Steel",
+      "evidence": "For “Tears of Steel” the funding target was to explore a complete open source pipeline for producing a high quality visual effect film, with as theme “Science Fiction in Amsterdam”."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "a99b29a5fa",
+    "kind": "insufficient",
+    "answer": "Les informations disponibles ne précisent pas ce qui a inspiré le réalisateur pour l'histoire de ce film. La vidéo montre des scènes de fantasy et de science-fiction, mais ne contient pas de propos sur la création du scénario.",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "e37bffcf41",
+    "kind": "insufficient",
+    "answer": "Les informations fournies ne précisent pas ce qui a inspiré le réalisateur Andy Goralczyk pour l'histoire de ce film. La page de BlenderNation mentionne seulement que le court-métrage Spring met en scène une bergère et son chien affrontant des esprits anciens pour maintenir le cycle de la vie.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNationLight modeDark modeSystem mode",
+      "evidence": "A shepherd girl and her loyal dog have to face ancient spirits in order to continue the cycle of life."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "f469175d71",
+    "kind": "external",
+    "answer": "Le réalisateur du court-métrage Spring, Andy Goralczyk, s'est inspiré de son enfance passée dans les montagnes d'Allemagne pour créer cette histoire.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/projects/spring/pages/about/",
+      "title": "About - Spring - Blender Studio",
+      "evidence": "This poetic and visually stunning short film was written and directed by Andy Goralczyk, inspired by his childhood in the mountains of Germany."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-w3",
+  "question": "Le Blender Studio, qui présente ce film, a-t-il sorti un film plus récent ? Lequel, et que prépare-t-il aujourd'hui ?",
+  "answers": [
+   {
+    "textId": "1dd38175e2",
+    "kind": "explanation",
+    "answer": "Le Blender Studio a sorti d'autres films comme Sintel (2010), Big Buck Bunny (2008) et Elephants Dream (2006). Les informations disponibles ne précisent pas quel est leur projet le plus récent ni ce qu'ils préparent aujourd'hui.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Sintel 2010, Big Buck Bunny 2008, Elephants Dream 2006."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4df1c6c64c",
+    "kind": "explanation",
+    "answer": "Le Blender Studio a sorti d'autres films comme Sintel (2010), Big Buck Bunny (2008) et Elephants Dream (2006). La vidéo analysée ne mentionne pas de projet plus récent ou de production en cours.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Sintel 2010, Big Buck Bunny 2008, Elephants Dream 2006"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "9bd41afffa",
+    "kind": "explanation",
+    "answer": "Le Blender Studio a sorti plusieurs films après celui-ci, comme Wing It! en 2023 ou Charge en 2022. Actuellement, les projets Cowboi et Overgrown sont en cours de développement.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Cowboi In Development, Overgrown In Development, Wing It! 2023, Charge 2022"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d46cfd50d0",
+    "kind": "explanation",
+    "answer": "Le Blender Studio a sorti le film Spring en 2019 (https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/). Actuellement, le studio prépare les films Cowboi et Overgrown, qui sont indiqués comme étant en cours de développement (https://studio.blender.org/films/).",
+    "citations": [
+     {
+      "id": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://studio.blender.org/films/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNationLight modeDark modeSystem mode",
+      "evidence": "Spring is the latest short film produced by Blender Animation Studio."
+     },
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Cowboi In Development Overgrown In Development"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d4bf9f3a95",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti plusieurs films après celui-ci, comme Wing It! en 2023 ou Charge en 2022. Actuellement, le studio prépare les projets Cowboi et Overgrown, qui sont indiqués comme étant en cours de développement.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Cowboi In Development, Overgrown In Development, Wing It! 2023, Charge 2022"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "dd586a3a63",
+    "kind": "external",
+    "answer": "Le Blender Studio a sorti plusieurs films après celui-ci, comme le court-métrage Spring en 2019 (https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/). Actuellement, le studio travaille sur de nouveaux projets en développement, notamment Cowboi et Overgrown (https://studio.blender.org/films/).",
+    "citations": [
+     {
+      "id": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://studio.blender.org/films/",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+      "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie - BlenderNationLight modeDark modeSystem mode",
+      "evidence": "Spring is the latest short film produced by Blender Animation Studio."
+     },
+     {
+      "url": "https://studio.blender.org/films/",
+      "title": "Films - Blender Studio",
+      "evidence": "Cowboi In Development Overgrown In Development"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m1",
+  "question": "Depuis la crête, la fille et son chien regardent la vallée : qu'est-ce qui la remplit, et quel phénomène météo produit ce genre de paysage ?",
+  "answers": [
+   {
+    "textId": "0af92e36a3",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages, comme on peut l'observer sur la crête (moment-10). Ce paysage est typique d'une mer de nuages, un phénomène qui se forme souvent lors de conditions anticycloniques d'hiver lorsque de la vapeur d'eau se condense en stratus bas dans les vallées (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "2895409c73",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages, comme on peut l'observer sur la crête (moment-10). Ce paysage est typique d'une mer de nuages, un phénomène qui se forme souvent lors de conditions anticycloniques d'hiver lorsque de la vapeur d'eau se condense en couche de stratus dans les vallées (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualities-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "3b4f2883bb",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages qui enveloppent les montagnes (moment-10). Ce paysage peut être le résultat d'une mer de nuages, un phénomène où une couche de stratus bas s'installe dans les vallées, souvent lors de conditions anticycloniques d'hiver (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages). Ce phénomène est lié à l'inversion de température, où l'air froid et lourd reste coincé près du sol (https://meteofrance.com/actualites-et-dossiers/actualites/climat/relief-des-temperatures-minimales-plus-froides-dans-les-vallees).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     },
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/actualites/climat/relief-des-temperatures-minimales-plus-froides-dans-les-vallees",
+      "title": "Relief : des températures minimales plus froides dans les vallées qu’en altitude | Météo-France",
+      "evidence": "L’air près du sol est alors plus froid et donc plus lourd que l’air chaud au-dessus et reste coincé près [du sol]."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "572705ea88",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages (moment-10). Ce paysage est caractéristique d'une mer de nuages, un phénomène qui se forme souvent lors de conditions anticycloniques d'hiver lorsque des nuages bas s'accumulent dans les vallées (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     },
+     {
+      "id": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c471389f1d",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume ou de nuages, comme on peut l'observer sur la crête avec la jeune fille et son chien (moment-10). Ce paysage est caractéristique d'une mer de nuages, un phénomène qui se forme souvent lors de conditions anticycloniques d'hiver (https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "cf17fef557",
+    "kind": "explanation",
+    "answer": "La vallée est remplie de brume et de nuages, formant une étendue qui ressemble à une mer de nuages (moment-10). Ce paysage est produit par un phénomène de mer de nuages, une couche de nuages bas qui s'accumule dans les vallées, souvent lors de conditions anticycloniques d'hiver (Météo-France). Ce phénomène est lié à l'inversion de température, où l'air froid et lourd reste coincé au fond des vallées sous une couche d'air plus doux (Météo-France).",
+    "citations": [
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+      "title": "La mer de nuages | Météo-France",
+      "evidence": "Une mer de nuages est une couche de nuages bas, constituée de stratus, qui peut se former dans les vallées, le plus souvent lors de conditions anticycloniques d’hiver."
+     },
+     {
+      "url": "https://meteofrance.com/actualites-et-dossiers/actualites/climat/relief-des-temperatures-minimales-plus-froides-dans-les-vallees",
+      "title": "Relief : des températures minimales plus froides dans les vallées qu’en altitude | Météo-France",
+      "evidence": "L’air près du sol est alors plus froid et donc plus lourd que l’air chaud au-dessus et reste coincé près du sol. On appelle ce phénomène « inversion de température »."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-m2",
+  "question": "Cette immense créature lumineuse qui s'approche d'elle, à quoi ressemble-t-elle, et qu'est-ce que c'est selon les créateurs du film ?",
+  "answers": [
+   {
+    "textId": "0940b2df20",
+    "kind": "observation",
+    "answer": "La créature est une masse organique bleue, lumineuse et translucide, qui semble pulser et flotter dans l'eau sombre (moment-22, moment-23). Les informations disponibles ne précisent pas ce qu'elle est selon les créateurs du film.",
+    "citations": [
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "29849e39f4",
+    "kind": "observation",
+    "answer": "La créature est une masse organique bleue, lumineuse et translucide, qui semble flotter dans l'eau (moment-23). Selon la description du film Spring, il s'agit d'un esprit ancien qui prend la forme de créatures anthropomorphes avec quatre pattes d'arbres (https://en.wikipedia.org/wiki/Spring_(2019_film)).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "the clouds causing this surround the heads of ancient spirits that have been freezing the forest, who take the form of anthropomorphic creatures bearing four tree-legs."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "40f83f1d72",
+    "kind": "explanation",
+    "answer": "La créature est une masse organique bleue, lumineuse et translucide, qui semble flotter dans l'eau (moment-23). Selon la page Wikipédia sur le film Spring, il s'agit d'un esprit ancien que la jeune bergère doit affronter pour faire changer les saisons (https://en.wikipedia.org/wiki/Spring_(2019_film)).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "The film is about a young shepherd and her dog confronting ancient spirits in order to bring about the change of seasons."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "44b2b77f4c",
+    "kind": "observation",
+    "answer": "La créature est une masse organique bleue, lumineuse et translucide, qui semble flotter dans l'eau sombre (moment-23). Selon la description du film, il s'agit d'un esprit ancien prenant la forme d'une créature anthropomorphe dotée de quatre pattes d'arbre (Wikipedia).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "the clouds causing this surround the heads of ancient spirits that have been freezing the forest, who take the form of anthropomorphic creatures bearing four tree-legs."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7d1261e233",
+    "kind": "explanation",
+    "answer": "La créature est une masse organique bleue, lumineuse et translucide, qui semble flotter dans l'eau (moment-23). Selon la page Wikipédia du film Spring, il s'agit d'un esprit ancien que la jeune fille doit affronter pour apporter le changement de saison (https://en.wikipedia.org/wiki/Spring_(2019_film)).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+      "title": "Spring (2019 film) - Wikipedia",
+      "evidence": "The film is about a young shepherd and her dog confronting ancient spirits in order to bring about the change of seasons."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7de436dd94",
+    "kind": "observation",
+    "answer": "La créature ressemble à une masse organique bleue, lumineuse et translucide, qui semble pulser dans l'eau sombre (moment-23). Les passages analysés ne précisent pas ce qu'elle est selon les créateurs du film.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ }
+]

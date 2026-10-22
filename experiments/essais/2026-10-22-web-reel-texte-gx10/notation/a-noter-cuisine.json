@@ -1,0 +1,583 @@
+[
+ {
+  "questionId": "cuisine-m1",
+  "question": "Quels morceaux de bœuf prend-il d'habitude, et de quelle partie de l'animal viennent-ils ?",
+  "answers": [
+   {
+    "textId": "3e197360b9",
+    "kind": "explanation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf Patrick Dujancourt prend d'habitude, elle montre seulement qu'il prépare une marinade avec des morceaux de viande, des oignons, des carottes et des lardons (moment-13, moment-14). Les sources externes indiquent que les morceaux nobles comme le filet ou l'entrecôte proviennent du dos ou de la colonne vertébrale, tandis que des morceaux comme la hampe ou l'onglet viennent du ventre (la popottedannecharlotte.com, xn--buf-fya.com).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.lapopottedannecharlotte.com/les-noms-des-morceaux-de-boeuf-les-plus-apprecies-en-cuisine/",
+      "title": "Les noms des morceaux de bœuf les plus appréciés en cuisine – La Popotte d'Anne Charlotte",
+      "evidence": "La hampe et l’onglet sont situés dans le ventre du bœuf."
+     },
+     {
+      "url": "https://xn--buf-fya.com/guidemorceaux.html",
+      "title": "Guide complet des 22 morceaux de bœuf — Cuisson, prix, terroir | SiteBoeuf",
+      "evidence": "Les entrecôtes sont situées dans la partie supérieure de la colonne vertébrale, juste derrière les côtes."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "a6bd483874",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf Patrick Dujancourt prend d'habitude. On y voit seulement qu'il prépare une marinade avec des morceaux de viande, des oignons, des carottes et des lardons (moment-13, 88000-104000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "a9fdc9ec26",
+    "kind": "explanation",
+    "answer": "La vidéo montre Patrick Dujancourt préparant une marinade avec des morceaux de viande, mais il ne précise pas de quels morceaux de bœuf il s'agit habituellement. Les sources web indiquent que les morceaux nobles comme l'entrecôte ou le faux-filet proviennent de l'arrière de l'animal, tandis que d'autres comme les basses côtes se situent dans la partie inférieure de la cage thoracique.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://aveyron-dans-votre-assiette.fr/content/6-les-morceaux-de-boeuf-tout-savoir-pour-mieux-acheter-et-les-consommer",
+      "title": "Les morceaux de bœuf : tout savoir pour mieux acheter et les consommer",
+      "evidence": "Ils sont souvent issus de l'arrière de l'animal et se prêtent à des cuissons rapides: grillades, poêle, barbecue."
+     },
+     {
+      "url": "https://www.lapopottedannecharlotte.com/les-noms-des-morceaux-de-boeuf-les-plus-apprecies-en-cuisine/",
+      "title": "Les noms des morceaux de bœuf les plus appréciés en cuisine – La Popotte d'Anne Charlotte",
+      "evidence": "Les basses côtes sont situées dans la partie inférieure de la cage thoracique du bœuf."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d34f0b1cf7",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf Patrick Dujancourt utilise d'habitude. On l'observe seulement en train de préparer une marinade avec des morceaux de viande, des oignons, des carottes et des lardons (moment-13, 88000-104000).",
+    "citations": [],
+    "sources": [],
+    "limits": []
+   },
+   {
+    "textId": "d837bae2ec",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas quels morceaux de bœuf l'individu prend d'habitude. On y voit seulement Patrick Dujancourt préparer une marinade avec des morceaux de viande, des oignons, des carottes et des lardons (moment-12 à moment-17).",
+    "citations": [
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     },
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     },
+     {
+      "id": "moment-16",
+      "startMs": 120000,
+      "endMs": 128000
+     },
+     {
+      "id": "moment-17",
+      "startMs": 128000,
+      "endMs": 136000
+     }
+    ],
+    "sources": [],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w1",
+  "question": "Il n'utilise pas de vin de Bourgogne : avec quel cépage fait-on les bourgognes rouges ?",
+  "answers": [
+   {
+    "textId": "0bf6efbbe5",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir, qui est considéré comme le cépage roi de la région. Le Gamay est également utilisé, notamment dans le Mâconnais, bien qu'il représente une part plus faible du vignoble.",
+    "citations": [
+     {
+      "id": "vins-bourgogne.fr",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "lemarcheduvin.fr",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.vins-bourgogne.fr/vins-et-terroirs/nos-cepages-nos-couleurs/des-cepages-rois-pour-la-bourgogne,2392,9184.html",
+      "title": "Les cépages et couleurs du vignoble de Bourgogne - Vins de Bourgogne",
+      "evidence": "Le Pinot Noir fait la renommée de tous les grands vins rouges de la région."
+     },
+     {
+      "url": "https://lemarcheduvin.fr/blog/quel-cepage-bourgogne-guide-complet/",
+      "title": "Quel cépage pour le Bourgogne : guide complet - Le Marche Du Vin",
+      "evidence": "Le Pinot Noir (39,5% du vignoble) : cépage rouge roi de la Côte de Nuits."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "2d310669a8",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir, qui est considéré comme le cépage emblématique de la région. Le Gamay est également utilisé, notamment dans certaines appellations comme le Mâcon ou les Coteaux Bourguignons.",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://www.vins-bourgogne.fr/vins-et-terroirs/nos-cepages-nos-couleurs/des-cepages-rois-pour-la-bourgogne,2392,9184.html",
+      "title": "Les cépages et couleurs du vignoble de Bourgogne - Vins de Bourgogne",
+      "evidence": "Le Pinot Noir fait la renommée de tous les grands vins rouges de la région."
+     },
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne",
+      "evidence": "Le Pinot Noir, cépage roi des vins rouges de Bourgogne."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4cd3a4e126",
+    "kind": "explanation",
+    "answer": "Le Pinot Noir est le cépage roi utilisé pour l'élaboration des vins rouges de Bourgogne (https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/). La vidéo montre le chef verser du vin rouge dans un bol, mais ne précise pas sa provenance (moment-20, 152000-160000).",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne",
+      "evidence": "Le Pinot Noir, cépage roi des vins rouges de Bourgogne"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "613c02cf68",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir, considéré comme le cépage roi de la région. Le Gamay est également utilisé, bien qu'en proportion bien moindre.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne",
+      "evidence": "Le Pinot Noir, cépage roi des vins rouges d\n[…]\nComme vous le savez le grand cépage de la Bourgogne utilisé lors de l’élaboration du vin rouge est le pinot noir ."
+     },
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne",
+      "evidence": "Le pourcentage de l’ e ncépagement en rouge : le pinot noir : 36 % le gamay : 11 %"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "d2915ab298",
+    "kind": "explanation",
+    "answer": "Les vins rouges de Bourgogne sont principalement élaborés à partir du cépage Pinot Noir, considéré comme le cépage roi. Le Gamay est également utilisé dans la région, représentant environ 11 % de l'encépagement rouge.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://blog.le-bourguignon.fr/les-cepages-rouges-en-bourgogne/",
+      "title": "Les Cépages Rouges En Bourgogne",
+      "evidence": "Le Pinot Noir, cépage roi des vins rouges de Bourgogne [...] Le pourcentage de l’encépagement en rouge : le pinot noir : 36 % le gamay : 11 %"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w2",
+  "question": "Que met-on d'habitude dans un bouquet garni ?",
+  "answers": [
+   {
+    "textId": "76ae94f463",
+    "kind": "explanation",
+    "answer": "Un bouquet garni est traditionnellement composé de thym, de laurier sauce et de persil (lamuseenbouche.fr). Selon d'autres sources, il peut aussi inclure du romarin, de la sarriette, de la sauge, de la coriandre ou de l'origan (fr.wikipedia.org).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi",
+      "title": "Composition bouquet garni : guide pratique, variantes maison et astuces d’utilisation",
+      "evidence": "Composition classique du bouquet garni : thym, laurier, persil"
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym, laurier sauce, et romarin. [...] Thym et laurier sauce, et éventuellement persil, sarriette, sauge, romarin, coriandre, origan"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "84cf7a6de1",
+    "kind": "explanation",
+    "answer": "Un bouquet garni est traditionnellement composé de thym, de laurier sauce et de persil (lamuseenbouche.fr). Selon Wikipédia, il peut également inclure de la sarriette, de la sauge, du romarin, de la coriandre ou de l'origan (fr.wikipedia.org).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi",
+      "title": "Composition bouquet garni : guide pratique, variantes maison et astuces d’utilisation",
+      "evidence": "Composition classique du bouquet garni : thym, laurier, persil"
+     },
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym , laurier sauce , et romar [...] Ingrédients Thym et laurier sauce , et éventuellement persil , sarriette , sauge , romarin , coriandre , origan"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "c4d7644ff6",
+    "kind": "explanation",
+    "answer": "Un bouquet garni est traditionnellement composé de thym, de laurier sauce et de persil. Selon les recettes, on peut aussi y ajouter du romarin, de la sarriette, de la sauge, de la coriandre ou de l'origan.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Exemple de bouquet garni de thym , laurier sauce , et romarin ."
+     },
+     {
+      "url": "https://www.jardiner-malin.fr/fiche/bouquet-garni.html",
+      "title": "Bouquet garni : ingrédients et composition",
+      "evidence": "Le thym et le laurier sauce constituent la base la plus classique, souvent accompagnée de persil."
+     },
+     {
+      "url": "https://yummy-marie.com/bouquet-garni/",
+      "title": "Qu'est ce que le bouquet garni et comment l'utiliser ?",
+      "evidence": "Bien que traditionnellement composé de thym, de persil et de laurier, le bouquet garn"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "dee624ea01",
+    "kind": "external",
+    "answer": "Un bouquet garni est traditionnellement composé de thym et de laurier sauce, parfois accompagnés de persil (https://fr.wikipedia.org/wiki/Bouquet_garni). Selon d'autres sources, on peut aussi y ajouter de la sarriette, de la sauge, du romarin, de la coriandre ou de l'origan (https://fr.wikipedia.org/wiki/Bouquet_garni).",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+      "title": "Bouquet garni — Wikipédia",
+      "evidence": "Un bouquet garni de base se compose de : Corbeille d' herbes de Provence ( thym , romarin , basilic , persil , coriandre ) thym ; laurier sauce ( laurus nobilis )."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "fc5904b8ea",
+    "kind": "explanation",
+    "answer": "Le bouquet garni classique se compose généralement d'un trio de base : du thym, du laurier-sauce et du persil. Selon les recettes, on peut y ajouter d'autres aromates comme du romarin, de la sauge ou du céleri.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://herberiedelatille.fr/blog/potager/carre-des-aromates/que-met-on-dans-un-bouquet-garni-et-comment-le-faire/",
+      "title": "Que met on dans un bouquet garni (et comment le faire) ?",
+      "evidence": "Le bouquet garni classique se compose de trois éléments : 2-3 branches de thym, 1 à 2 feuilles de laurier-sauce et quelques queues de persil, ficelés ensemble et plongés dans le plat en début de cuisson, puis retirés avant de servir."
+     },
+     {
+      "url": "https://lamuseenbouche.fr/recettes-express/composition-bouquet-garni-recettes-variantes-mode-demploi",
+      "title": "Composition bouquet garni : guide pratique, variantes maison et astuces d’utilisation",
+      "evidence": "Composition classique du bouquet garni : thym, laurier, persil"
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-m2",
+  "question": "Pourquoi tient-il à bien saisir la viande, et comment s'appelle la réaction qui forme cette croûte ?",
+  "answers": [
+   {
+    "textId": "1cffa05393",
+    "kind": "explanation",
+    "answer": "La réaction chimique qui forme cette croûte dorée s'appelle la réaction de Maillard. Saisir la viande permet de développer des arômes complexes et une couleur brune appétissante grâce à cette transformation des protéines et des sucres.",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://boucherie-dariboumediene.com/conseils-techniques/comment-saisir-une-viande/",
+      "title": "Comment saisir une viande : technique pour croûte dorée | Boucherie Dariboumediene",
+      "evidence": "Cette transformation porte un nom : la réaction de Maillard."
+     },
+     {
+      "url": "https://plancha-des-halles.fr/blog/reaction-de-maillard",
+      "title": "Réaction de Maillard : la science de la croûte dorée",
+      "evidence": "La réaction de Maillard est la transformation chimique qui se produit entre les protéines et les sucres d’un aliment lorsqu’on le chauffe à sec au-delà d’environ 140 °C."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "4286b359df",
+    "kind": "explanation",
+    "answer": "Saisir la viande permet de développer davantage de saveurs, une texture plus agréable et une belle couleur brune (https://manulab.ca/ateliers-culinaires/comprendre-la-cuisine/les-viandes-pourquoi-faut-il-saisir-une-viande/). Cette formation de croûte est le résultat de la réaction de Maillard (https://belleequipment.fr/reaction-de-maillard-viande/).",
+    "citations": [
+     {
+      "id": "external",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://manulab.ca/ateliers-culinaires/comprendre-la-cuisine/les-viandes-pourquoi-faut-il-saisir-une-viande/",
+      "title": "Les viandes — Pourquoi faut-il saisir une viande? – Plateforme Éducative",
+      "evidence": "Une viande bien saisie développe : davantage de saveurs; une texture plus agréable; une belle couleur."
+     },
+     {
+      "url": "https://belleequipment.fr/reaction-de-maillard-viande/",
+      "title": "Réaction de Maillard viande : comprendre, maîtriser et sublimer chaque cuisson – Belleequipment.fr",
+      "evidence": "La réaction de Maillard viande est un phénomène culinaire et chimique qui transforme la couleur, l’arôme et le goût des aliments cuits."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "42e9b1378a",
+    "kind": "explanation",
+    "answer": "Le cuisinier souhaite que la viande brunisse pour obtenir une couleur brune caractéristique du plat (moment-50 à moment-51). Cette croûte est le résultat de la réaction de Maillard, un processus chimique entre les protéines et les sucres sous l'effet de la chaleur (sources: https://bellequipment.fr/reaction-de-maillard-viande/, https://www.aventureculinaire.fr/la-reaction-de-maillard/).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://bellequipment.fr/reaction-de-maillard-viande/",
+      "title": "Réaction de Maillard viande : comprendre, maîtriser et sublimer chaque cuisson – Bellequipment.fr",
+      "evidence": "La réaction de Maillard viande est un phénomène culinaire et chimique qui transforme la couleur, l’arôme et le goût des aliments cuits."
+     },
+     {
+      "url": "https://www.aventureculinaire.fr/la-reaction-de-maillard/",
+      "title": "Comprendre la réaction de Maillard pour une viande parfaite - Aventure culinaire",
+      "evidence": "Il s’agit d’une interaction entre les sucres et les protéines d’un aliment sous l’effet de la chaleur."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "6dae7ab29b",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à obtenir une couleur brune pour son plat (moment-50 à moment-51). Cette croûte savoureuse est le résultat de la réaction de Maillard, un processus chimique entre les protéines et les sucres sous l'effet de la chaleur (sources: https://plancha-des-halles.fr/blog/reaction-de-maillard, https://www.barbecue-pratique.fr/recettes-plancha/pourquoi-saisir-avant-de-mijoter-explications-et-conseils-pratiques-30042).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://plancha-des-halles.fr/blog/reaction-de-maillard",
+      "title": "Réaction de Maillard : la science de la croûte dorée",
+      "evidence": "C’est ce phénomène qui dore la croûte du pain, colore un café torréfié, brunit un oignon qui compote longuement et forme cette pellicule ambrée et savoureuse à la surface d’une pièce de viande bien saisie."
+     },
+     {
+      "url": "https://www.barbecue-pratique.fr/recettes-plancha/pourquoi-saisir-avant-de-mijoter-explications-et-conseils-pratiques-30042",
+      "title": "Pourquoi saisir avant de mijoter : explications et conseils pratiques | barbecue-pratique.fr",
+      "evidence": "Saisir une viande, c’est la placer sur une source de chaleur vive pour la colorer rapidement en surface. Cette opération déclenche ce que l’on appelle la réaction de Maillard"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7338ec91b7",
+    "kind": "explanation",
+    "answer": "Le cuisinier cherche à obtenir une couleur brune pour son plat, ce qui se fait naturellement avec la viande et le vin (moment-50 à moment-51). La réaction chimique responsable de la formation de cette croûte et de la couleur brune est la réaction de Maillard (sources: https://bellequipment.fr/reaction-de-maillard-viande/ ; https://www.aventureculinaire.fr/la-reaction-de-maillard/).",
+    "citations": [
+     {
+      "id": "moment-50",
+      "startMs": 392000,
+      "endMs": 400000
+     },
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://bellequipment.fr/reaction-de-maillard-viande/",
+      "title": "Réaction de Maillard viande : comprendre, maîtriser et sublimer chaque cuisson – Bellequipment.fr",
+      "evidence": "La réaction de Maillard viande est un phénomène culinaire et chimique qui transforme la couleur, l’arôme et le goût des aliments cuits."
+     },
+     {
+      "url": "https://www.aventureculinaire.fr/la-reaction-de-maillard/",
+      "title": "Comprendre la réaction de Maillard pour une viande parfaite - Aventure culinaire",
+      "evidence": "C’est elle qui crée cette complexité et cette profondeur de saveur dans une viande grillée, une croûte de pain, un café torréfié ou même des frites."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-w3",
+  "question": "Il a choisi un vin d'Occitanie : comment s'annonce la récolte de vin 2026 dans cette région ?",
+  "answers": [
+   {
+    "textId": "235ef6436b",
+    "kind": "external",
+    "answer": "La récolte 2026 en Occitanie s'annonce généreuse, avec une production du bassin Languedoc-Roussillon réévaluée à la hausse pour atteindre 10,59 Mhl. Malgré des épisodes de chaleur et de sécheresse, les rendements devraient être légèrement supérieurs à la moyenne quinquennale.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production totale du bassin Languedoc-Roussillon a été révisée à la hausse par rapport au mois précédent, elle est estimée à 10,59 Mhl en 2026"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "7477633c74",
+    "kind": "external",
+    "answer": "La récolte 2026 en Occitanie s'annonce généreuse, avec une production du bassin Languedoc-Roussillon estimée à la hausse pour atteindre 10,59 Mhl. Malgré des épisodes de forte chaleur et de sécheresse, les rendements régionaux devraient se situer légèrement au-dessus de la moyenne quinquennale.",
+    "citations": [],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production totale du bassin Languedoc-Roussillon a été révisée à la hausse par rapport au mois précédent, elle est estimée à 10,59 Mhl en 2026"
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ce62df9972",
+    "kind": "external",
+    "answer": "La récolte de vin 2026 en Occitanie s'annonce avec une production en hausse. Pour le bassin Languedoc-Roussillon, les prévisions au 1er octobre 2026 estiment la production à 10,59 Mhl, soit une augmentation de 19,6 % par rapport à 2025 (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html).",
+    "citations": [
+     {
+      "id": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "Au 1er octobre, la production totale du bassin Languedoc-Roussillon a été révisée à la hausse par rapport au mois précédent, elle est estimée à 10,59 Mhl en 2026 soit +19,6% par rapport à 2025."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "edb94fd4db",
+    "kind": "external",
+    "answer": "La récolte 2026 en Occitanie s'annonce globalement favorable avec une hausse des rendements par rapport à 2025. Pour le bassin Languedoc-Roussillon, la production totale est estimée à 10,59 Mhl, soit une augmentation de 19,6 % par rapport à l'année précédente (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html).",
+    "citations": [
+     {
+      "id": "draaf-occitanie-1",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+      "title": "Prévisions de récolte viticole - au 1er octobre 2026 | DRAAF Occitanie",
+      "evidence": "La production totale du bassin Languedoc-Roussillon a été révisée à la hausse par rapport au mois précédent, elle est estimée à 10,59 Mhl en 2026 soit +19,6% par rapport à 2025."
+     }
+    ],
+    "limits": []
+   },
+   {
+    "textId": "ef7f6bb732",
+    "kind": "external",
+    "answer": "La récolte 2026 en Occitanie s'annonce avec des volumes globalement stables, malgré des conditions climatiques extrêmes. Les vignes ont dû faire face à une forte chaleur et à une sécheresse croissante entre juin et septembre (https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-septembre-2026-a10118.html). Pour le Pays d'Oc, la qualité du raisin est jugée prometteuse malgré une précocité record des vendanges (https://echo-des-tribunes.com/herault-tribune/articles/vendanges-un-millesime-historiquement-precoce-et-prometteur-pour-les-vins-du-pays-doc).",
+    "citations": [
+     {
+      "id": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-septembre-2026-a10118.html",
+      "startMs": 0,
+      "endMs": 0
+     },
+     {
+      "id": "https://echo-des-tribunes.com/herault-tribune/articles/vendanges-un-millesime-historiquement-precoce-et-prometteur-pour-les-vins-du-pays-doc",
+      "startMs": 0,
+      "endMs": 0
+     }
+    ],
+    "sources": [
+     {
+      "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-septembre-2026-a10118.html",
+      "title": "Prévisions de récolte viticole - au 1er septembre 2026 | DRAAF Occitanie",
+      "evidence": "Entre fin juin et début septembre, 4 épisodes caniculaires se succèdent et la sécheresse des sols s’amplifie semaine après semaine."
+     },
+     {
+      "url": "https://echo-des-tribunes.com/herault-tribune/articles/vendanges-un-millesime-historiquement-precoce-et-prometteur-pour-les-vins-du-pays-doc",
+      "title": "Vendanges : un millésime historiquement précoce et prometteur pour les vins du Pays d’Oc | Hérault Tribune",
+      "evidence": "Malgré ces conditions climatiques extrêmes, la récolte est estimée à 5 millions d’hectolitres, avec des volumes globalement stables et une qualité qui s’annonce prometteuse."
+     }
+    ],
+    "limits": []
+   }
+  ]
+ }
+]
