@@ -1,0 +1,237 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "24ae02d7b1",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite exceller dans l'exploration spatiale. Ces détails sont rapportés dans le passage moment-4 (24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "8f6ae133bc",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique. Thom, quant à lui, souhaite exceller dans l'exploration spatiale.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "288a8155d4",
+    "kind": "observation",
+    "answer": "Selon la conversation, Celia est passionnée par la robotique. Thom, quant à lui, exprime le désir d'être exceptionnel dans le domaine de l'espace.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "c2b56df2ef",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite exceller dans l'exploration spatiale. Ces intérêts sont mentionnés lors de leur échange sur un pont (moment-4, 24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "47753293b9",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne mentionnent pas de durée ou de temps que Barley devrait avoir. La vidéo s'arrête avant que Barley ne donne une réponse sur ce sujet.",
+    "citations": []
+   },
+   {
+    "textId": "5e033570a8",
+    "kind": "observation",
+    "answer": "Barley ne mentionne pas de durée précise dans ce passage. Il indique seulement que tout est prêt et qu'il ne manque qu'une minute.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "4b3ef24c04",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les paroles de Barley concernant la durée nécessaire ne sont pas présentes dans les passages consultés. Les extraits s'arrêtent avant qu'il ne donne cette information.",
+    "citations": []
+   },
+   {
+    "textId": "22e4b81098",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo disponibles ne contiennent pas de réponse de Barley sur la durée restante. Le dernier segment montre Barley mentionnant des minutes, mais la phrase est incomplète.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "5652f9f3b5",
+    "kind": "observation",
+    "answer": "Thom is advised to be tender and honest with her. He is also told to remind her what love is (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "d1a3351055",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête envers elle. On lui dit également de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "4eb494e223",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête envers elle, et de lui rappeler ce qu'est l'amour. Ces instructions sont données par un homme présentant des cicatrices et un œil synthétique moment-31.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "14aacbd787",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre. Elle exprime également une envie de l'écraser dans ce passage.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "24decff0c2",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre (moment-49). Elle exprime sa douleur en disant qu'elle a eu le cœur brisé (moment-49).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "fe33fbac94",
+    "kind": "observation",
+    "answer": "Celia reproaches Thom of being freaked out by her robot hand (moment-5, 32000-40000). She also mentions having nightmares about being chased by his giant robotic claws (moment-6, 40000-48000).",
+    "citations": [
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     }
+    ]
+   },
+   {
+    "textId": "9e2d523500",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre (moment-49, 384000-392000). Elle exprime sa douleur en disant qu'elle a eu le cœur brisé.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "4bffd8bea3",
+    "kind": "observation",
+    "answer": "La vidéo indique que l'écrasement de la mémoire est terminé. Cette information est rapportée par une voix au moment 536000-544000.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "7197412c8b",
+    "kind": "observation",
+    "answer": "L'écrasement de la mémoire est annoncé comme étant terminé (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "563b29fa71",
+    "kind": "observation",
+    "answer": "The memory override is currently reported as complete (moment-68, 536000-544000). This follows a previous state where the override was noted as being in progress (moment-38, 296000-304000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "00e508abf1",
+    "kind": "observation",
+    "answer": "L'état annoncé est que l'écrasement de la mémoire est terminé. Cette information est rapportée dans le passage moment-68 entre 536000 et 544000 ms.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

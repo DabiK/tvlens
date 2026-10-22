@@ -1,0 +1,432 @@
+[
+ {
+  "questionId": "cuisine-02",
+  "answers": [
+   {
+    "textId": "c4da1c1f01",
+    "kind": "observation",
+    "answer": "Le chef mélange des morceaux de viande, des oignons hachés et des carottes en dés avec du vin rouge dans un bol (moment-19 à moment-21). Il laisse ensuite la préparation reposer au frais, idéalement toute la nuit (moment-23 à moment-24).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "d774afed9b",
+    "kind": "observation",
+    "answer": "Il mélange des oignons, des carottes en dés, du sel, du poivre, des lardons et un bouquet garni avec du vin rouge (moment-19 à moment-22). La marinade doit reposer au moins une nuit à température fraîche (moment-23 à moment-24).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-22",
+      "startMs": 168000,
+      "endMs": 176000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "c1066863bc",
+    "kind": "observation",
+    "answer": "Le chef mélange de la viande, des oignons hachés et des carottes en dés avec du vin rouge (moment-19 à moment-21). Il laisse ensuite la préparation reposer au frais, idéalement toute la nuit (moment-23 à moment-24).",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "03a0ab1a1c",
+    "kind": "observation",
+    "answer": "Le chef place de la viande parée, des oignons, des carottes, des lardons, du bouquet garni, du poivre et du vin dans un plat en plastique (moment-13, moment-14). Il conseille de laisser reposer la marinade au moins une nuit à une température fraîche (moment-23).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-03",
+  "answers": [
+   {
+    "textId": "91c621b86f",
+    "kind": "observation",
+    "answer": "Après la marinade, le chef sépare les éléments en trois parties. La première est la viande bien égouttée, la deuxième comprend la garniture (carottes, oignons, bouquet garni et lardons) avec son jus, et la troisième est le jus de marinade composé du vin (moment-26, moment-27).",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "b406352d4e",
+    "kind": "observation",
+    "answer": "La première partie est la viande bien égouttée. La deuxième comprend la garniture de carottes au jus, le bouquet garni et les petits lardons. La troisième partie est le jus de marinade, à savoir le vin.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 210000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "2888296232",
+    "kind": "observation",
+    "answer": "Après avoir séparé la marinade, le chef distingue trois parties. La première est la viande bien égouttée, la deuxième comprend la garniture de carottes et le jus, et la troisième est composée du bouquet garni et des petits lardons, ainsi que du jus de marinade contenant le vin.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "133120715c",
+    "kind": "observation",
+    "answer": "Après la marinade, le chef sépare la préparation en trois parties. La première est la viande bien égouttée, la deuxième comprend la garniture de carottes au jus ainsi que le bouquet garni et les petits lardons, et la troisième est le jus de marinade composé de vin (moment-25 à moment-27).",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-05",
+  "answers": [
+   {
+    "textId": "ec31104c36",
+    "kind": "observation",
+    "answer": "Le cuisinier ne précise pas d'action pour épaissir la préparation, mais il explique que le vin et la viande vont naturellement intensifier la couleur brune (moment-51). Pour mouiller, il verse le jus de la marinade dans la casserole contenant la viande (moment-53). Cette action permet de déglacer le fond de la casserole (moment-54).",
+    "citations": [
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ]
+   },
+   {
+    "textId": "a791570b72",
+    "kind": "observation",
+    "answer": "Pour épaissir la préparation, le chef utilise la technique du \"singer\" en ajoutant environ 75 grammes de farine (moment-45, moment-47). Pour mouiller, il verse le jus de la marinade dans la casserole (moment-53).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     }
+    ]
+   },
+   {
+    "textId": "a008f98b87",
+    "kind": "observation",
+    "answer": "Pour épaissir la préparation, l'homme laisse cuire le contenu du pot en remuant avec une cuillère en bois (moment-51 à moment-52). Pour la mouiller, il verse du jus à l'intérieur du pot (moment-53). Cette action permet de déglacer le fond de la casserole (moment-54).",
+    "citations": [
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     },
+     {
+      "id": "moment-52",
+      "startMs": 408000,
+      "endMs": 416000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ]
+   },
+   {
+    "textId": "cdb95eadf7",
+    "kind": "observation",
+    "answer": "Le cuisinier ne précise pas d'action pour épaissir la préparation, mais il explique que le vin et la viande apporteront naturellement de la couleur. Pour mouiller, il verse le jus de la marinade dans la casserole contenant la viande (moment-53 à moment-54).",
+    "citations": [
+     {
+      "id": "moment-51",
+      "startMs": 400000,
+      "endMs": 408000
+     },
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-06",
+  "answers": [
+   {
+    "textId": "b5c7d80022",
+    "kind": "observation",
+    "answer": "Le cuisinier recommande une cuisson à feu moyen (moment-68). Il précise que la sauce doit frémir sans bouillir (moment-67) pendant une durée de deux à trois heures (moment-67 à moment-68).",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "4d8d1c2bfb",
+    "kind": "observation",
+    "answer": "Le chef recommande de faire saisir la viande à feu très vif (moment-29). Il précise ensuite qu'il ne faut pas que la préparation bouille, mais qu'elle doit seulement frémir (moment-67).",
+    "citations": [
+     {
+      "id": "moment-29",
+      "startMs": 224000,
+      "endMs": 232000
+     },
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     }
+    ]
+   },
+   {
+    "textId": "4ce3f0c3fa",
+    "kind": "observation",
+    "answer": "Le cuisinier recommande une cuisson à feu moyen (moment-68). Il précise qu'il ne faut pas que la sauce bouille, mais qu'elle doit frémir (moment-67) pendant deux heures (moment-67).",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "8568d44508",
+    "kind": "observation",
+    "answer": "Le cuisinier recommande une cuisson de deux heures à feu moyen (moment-67 à moment-68). Il précise qu'il ne faut pas que le contenu bouille, mais qu'il doit frémir (moment-67).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-07",
+  "answers": [
+   {
+    "textId": "2c07bdfa0b",
+    "kind": "observation",
+    "answer": "L'homme ajoute les petits oignons une fois que les champignons sont à température du plat (moment-77). Il précise ensuite qu'il faut mélanger la préparation de façon extrêmement douce pour ne pas abîmer la viande (moment-79) ni casser les petits oignons (moment-80).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-79",
+      "startMs": 624000,
+      "endMs": 632000
+     },
+     {
+      "id": "moment-80",
+      "startMs": 632000,
+      "endMs": 640000
+     }
+    ]
+   },
+   {
+    "textId": "548ee0e7cb",
+    "kind": "observation",
+    "answer": "Le chef ajoute d'abord les champignons préalablement cuits à blanc (moment-72). Il termine ensuite en ajoutant délicatement les petits oignons une fois que les champignons sont à température (moment-77).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     }
+    ]
+   },
+   {
+    "textId": "37cfbe478b",
+    "kind": "observation",
+    "answer": "Le cuisinier ajoute d'abord les champignons à la sauce, puis il y incorpore délicatement les petits oignons (moment-77). Il termine en laissant la préparation réchauffer quelques minutes (moment-81).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-81",
+      "startMs": 640000,
+      "endMs": 648000
+     }
+    ]
+   },
+   {
+    "textId": "9f18cbaba4",
+    "kind": "observation",
+    "answer": "Le cuisinier ajoute d'abord les champignons à la sauce, puis il y incorpore délicatement les petits oignons (moment-77). Il termine en laissant la préparation chauffer quelques minutes (moment-81).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-81",
+      "startMs": 640000,
+      "endMs": 648000
+     }
+    ]
+   }
+  ]
+ }
+]

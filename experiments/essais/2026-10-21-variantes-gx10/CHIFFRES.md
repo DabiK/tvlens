@@ -65,10 +65,14 @@ obtient 20/30 puis 19/30, soit une réponse d'écart d'un paquet à l'autre.
 | **N2 : vision sans `topicSummary`** | **21/30** | **21** | **4** | **5,7 s** | **0** | 2/6 · 19/24 |
 | N3 : journal mémoire seul | 21/30 | 18 | 4 | 9,1 s | 0 à 25 | **4/6** · 17/24 |
 | N4 : questions `qwen3.6:35b-a3b-mtp` | 18/30 | 17 | 7 | 6,1 s | 0 à 16 | 1/6 · 17/24 |
+| N5 : N2 + journal mémoire | 22/30 | 22 | 4 | 6,8 s | 0 | 4/6 · 18/24 |
+| N6 : N2 rejoué à l'identique | 22/30 | 22 | 5 | 5,2 s | 0 | 3/6 · 19/24 |
+
+N1 à N4 sont notés dans un premier paquet ; N5 et N6 dans un second, avec GPS et N2, qui y obtiennent 21/30 chacun.
 
 | Chiffre | Valeur | Source |
 | --- | --- | --- |
-| **Variabilité d'un passage à l'autre (GPS rejoué)** | 8 questions sur 30 basculent ; 21 puis 17 pertinentes | [nuit](../2026-10-22-variantes-nuit-gx10/) |
+| **Variabilité d'un passage à l'autre** | GPS rejoué : 8 questions sur 30 basculent (21 puis 17) ; N2 rejoué : 7 (21 puis 22) | [nuit](../2026-10-22-variantes-nuit-gx10/) |
 | Vision `gemma3:4b` sans `topicSummary`, dans le flux | 4,9–5,4 s par bloc ; 1 bloc sur 667 au-delà de 8 s | nuit, N2 |
 | N2 plus rapide que GPS, question par question | 25 sur 30 (test des signes, p ≈ 0,0003) ; que N1 : 26 sur 30 | nuit, N2 |
 | Condition pour le produit | `topicSummary` sert aux cartes de la frise TV et au contexte de la vision suivante : le calculer hors du chemin critique (changement de sujet, tous les N blocs, hors pause) plutôt que le supprimer | code, `docs/lg-timeline.md` |

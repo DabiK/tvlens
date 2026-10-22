@@ -11,3 +11,5 @@ est appliqué ou écarté dans les dossiers d'essais.
   précédente, puis demande à Astra : dérive ou insistance sur un goulot secondaire, arrêter / continuer / commencer,
   file GX10, suivi de la revue précédente, au plus une décision humaine. Chaque revue est archivée ici avec sa
   consigne (`periodique-<horodatage>-*`).
+- La même tâche rappelle aussi la règle de fin de phase demandée le 22/10 : toute phase close est committée (bruts
+  compressés, fichiers de la session seulement) et poussée sur main.

@@ -90,6 +90,32 @@ Questions qui basculent face à GPS :
   main à 06:04 UTC (souris ou clavier USB branché à 06:03, arrêt par le menu de session GNOME). N5 s'est arrêté après
   Kennedy, Spring et CNRS, et N6 n'a pas démarré. Leurs plans sont dans [`plans/`](plans/).
 
+## Suite du 22 octobre : N5 et N6
+
+- **N5** : N2 avec le journal mémoire (`--rewrite vlm=no-topic-summary`, `questions=journal`). Kennedy, Spring et CNRS
+  ont été joués de 05:25 à 05:55 UTC. Bœuf, coupé par le redémarrage, a été rejoué avec Tears et Artemis de 07:59 à
+  09:00 UTC (N5b, après relance d'Ollama avec ses réglages d'origine). La partie interrompue n'a pas de sceau : ses
+  empreintes ont été relevées à la main.
+- **N6** : N2 rejoué à l'identique, de 09:00 à 10:30 UTC.
+- Notation à l'aveugle de GPS, N2, N5 et N6 dans un même paquet (120 réponses, 119 textes distincts, 5 arbitrages) :
+  [`notation-n5-n6/`](notation-n5-n6/).
+
+| Variante | Pertinentes /30 | dont sous 15 s | Inventions | Abst. injustifiées | Délai médian | Blocs perdus | Hors fenêtre /6 · fenêtre /24 |
+| --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| GPS (renotée) | 21 | 20 | 5 | 3 | 7,1 s | 1 à 14 par vidéo | 2 · 19 |
+| N2 (renotée) | 21 | 21 | 5 | 3 | 5,7 s | 0 | 3 · 18 |
+| **N5 : N2 + journal** | **22** | **22** | **4** | 3 | 6,8 s | 0 | **4** · 18 |
+| **N6 : N2 rejoué** | **22** | **22** | 5 | 1 | **5,2 s** | 0 | 3 · 19 |
+
+Lecture :
+- Les quatre configurations sont à égalité à une réponse près. Rejouer N2 fait basculer 7 questions (+4 / −3), comme
+  N1 pour GPS (8) : sur 30 questions, ces écarts restent du bruit.
+- Les notes tiennent d'un paquet à l'autre : GPS obtient 21/30 pour la troisième fois et N2 21/30 pour la deuxième.
+- La vitesse de N2 se reproduit (5,2 s et 5,7 s de médiane, 30/30 sous 15 s, aucun bloc perdu).
+- N5 garde la vitesse (6,8 s, 30/30 sous 15 s) : retirer `topicSummary` compense le coût du journal. Son avantage
+  sur la mémoire (4/6 contre 3/6) est trop petit pour conclure. Seules 6 questions sur 30 en dépendent, d'où la
+  comparaison sur 60 questions (J2 sans journal, J3 avec), dont 27 dépendent de la mémoire.
+
 ## Limites et incidents
 
 - Un passage par variante. La variabilité mesurée par N1 interdit de départager N2, N3 et GPS en pertinence.

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAtUtc": "2026-10-22T05:40:00Z",
+  "updatedAtUtc": "2026-10-22T11:05:00Z",
   "note": "Pertinence notée par oracle v2 et juges automatiques (modèles), sans relecture humaine. gardee = pertinente (>= 2/3, sans invention) et citations remplies.",
   "reference": {
     "configuration": {
@@ -791,6 +791,45 @@
         },
         "pertinentesFaitHorsFenetreSur6": 1,
         "pertinentesDansFenetreSur24": 17
+      },
+      "N5": {
+        "change": "N2 + journal mémoire (proxy)",
+        "pertinentes": 22,
+        "pertinentesSous15s": 22,
+        "inventions": 4,
+        "abstentionsInjustifiees": 3,
+        "noteMoyenne": 2.23,
+        "delaiMedianS": 6.8,
+        "reponsesSous15s": 30,
+        "blocsPerdusParVideo": [
+          0,
+          0
+        ],
+        "pertinentesFaitHorsFenetreSur6": 4,
+        "pertinentesDansFenetreSur24": 18,
+        "paquet": "notation-n5-n6",
+        "incident": "GX10 redémarrée à la main à 06:04 UTC ; Bœuf, Tears et Artemis repris à 07:59 UTC"
+      },
+      "N6": {
+        "change": "N2 rejoué à l'identique",
+        "pertinentes": 22,
+        "pertinentesSous15s": 22,
+        "inventions": 5,
+        "abstentionsInjustifiees": 1,
+        "noteMoyenne": 2.23,
+        "delaiMedianS": 5.2,
+        "reponsesSous15s": 30,
+        "blocsPerdusParVideo": [
+          0,
+          0
+        ],
+        "pertinentesFaitHorsFenetreSur6": 3,
+        "pertinentesDansFenetreSur24": 19,
+        "paquet": "notation-n5-n6",
+        "questionsBasculeesFaceAN2": {
+          "gagnees": 4,
+          "perdues": 3
+        }
       }
     },
     "parVideoPertinentes": {
@@ -843,7 +882,7 @@
         5
       ]
     },
-    "variabilitePassage": "GPS rejoué à l'identique : 8 questions sur 30 basculent (21 puis 17 pertinentes)",
+    "variabilitePassage": "GPS rejoué : 8 questions sur 30 basculent (21 puis 17) ; N2 rejoué : 7 (21 puis 22)",
     "suite": [
       "N5 : N2 + journal mémoire",
       "N6 : N2 rejoué à l'identique"
@@ -854,6 +893,12 @@
       "entierement": 0,
       "dansLaFenetre": 24
     },
-    "correction20261022": "règle simple (pose − début du premier fait > 48 s, 12 questions) remplacée par la règle des blocs, après remarque de Codex Astra"
+    "correction20261022": "règle simple (pose − début du premier fait > 48 s, 12 questions) remplacée par la règle des blocs, après remarque de Codex Astra",
+    "paquetN5N6": {
+      "reponsesNotees": 120,
+      "arbitrages": 5,
+      "gpsRenotee": 21,
+      "n2Renotee": 21
+    }
   }
 }

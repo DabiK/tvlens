@@ -1,0 +1,395 @@
+[
+ {
+  "questionId": "cnrs-01",
+  "answers": [
+   {
+    "textId": "c4e253c06f",
+    "kind": "observation",
+    "answer": "La distinction repose sur le nombre de paramètres et la capacité de calcul. Les petites IA possèdent quelques millions à quelques centaines de milliers de paramètres et peuvent tourner sur un ordinateur portable, tandis que les grandes IA, comme les LLM, atteignent environ mille milliards de paramètres (moment-6, moment-8, moment-9).",
+    "citations": [
+     {
+      "id": "moment-6",
+      "startMs": 40000,
+      "endMs": 48000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     }
+    ]
+   },
+   {
+    "textId": "f9ed3a6455",
+    "kind": "observation",
+    "answer": "La distinction repose sur le nombre de neurones et de paramètres. Les petites IA possèdent peu de neurones et quelques millions de paramètres, ce qui permet de les faire tourner sur un ordinateur portable (moment-7, moment-8). À l'inverse, les grandes IA, comme les LLM, peuvent atteindre des ordres de grandeur de mille milliards de paramètres (moment-9, moment-10).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   },
+   {
+    "textId": "fe03166728",
+    "kind": "observation",
+    "answer": "La distinction repose sur le nombre de paramètres et la complexité des tâches. Les petites IA utilisent quelques millions de paramètres et peuvent fonctionner sur un ordinateur portable, tandis que les grandes IA, comme les LLM, atteignent des ordres de grandeur de mille milliards de paramètres (moment-7, moment-8, moment-9, moment-10).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   },
+   {
+    "textId": "8d20e05c61",
+    "kind": "observation",
+    "answer": "La distinction repose sur le nombre de paramètres et l'échelle de grandeur. Les petites IA possèdent quelques millions à quelques centaines de milliers de paramètres et peuvent fonctionner sur un ordinateur portable, tandis que les grandes IA, comme les LLM, atteignent environ mille milliards de paramètres (moment-7, moment-8, moment-9, moment-10).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-02",
+  "answers": [
+   {
+    "textId": "a2523205ed",
+    "kind": "observation",
+    "answer": "La séparation permet de garder une partie des données de côté pour tester le modèle, comme un professeur qui réserve des exercices pour une évaluation finale (moment-24, moment-25). L'idée est d'utiliser une partie des données pour l'apprentissage et une autre, non utilisée durant l'entraînement, pour vérifier si l'apprentissage a bien fonctionné (moment-25).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "b7c9d6fd07",
+    "kind": "observation",
+    "answer": "Pour l'apprentissage, on utilise une grande partie des données, par exemple 80% (moment-23, moment-25). On met de côté une part plus petite, environ 20%, pour l'évaluation afin de vérifier si l'apprentissage s'est bien déroulé (moment-24, moment-25). L'intervenant compare cela à un professeur qui garde quelques exercices de côté pour une interrogation finale (moment-23, moment-24).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "f92908d2b6",
+    "kind": "observation",
+    "answer": "La séparation permet de garder des données de côté pour une évaluation finale, comme une interrogation en classe, afin de vérifier si l'apprentissage a réussi (moment-25). L'idée est de ne pas utiliser les mêmes éléments pour l'entraînement et le test, afin de s'assurer que le modèle peut répondre à de nouveaux exemples (moment-24).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "5948e7058a",
+    "kind": "observation",
+    "answer": "La séparation permet de garder une partie des données de côté pour tester si l'apprentissage a bien fonctionné, comme une interrogation en fin de cours (moment-25). L'idée est de ne pas utiliser les mêmes exemples pour l'entraînement et pour l'évaluation afin de vérifier la capacité du modèle à répondre à de nouvelles données (moment-24).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-04",
+  "answers": [
+   {
+    "textId": "cdd42eaf32",
+    "kind": "observation",
+    "answer": "Le cours explique que le surapprentissage se manifeste par une dégradation des performances visible sur une courbe d'apprentissage (moment-53, moment-54). L'objectif est d'utiliser l'évaluation pour détecter ce moment où la progression s'arrête et de savoir s'arrêter avant d'entrer dans cette phase de régression (moment-55, moment-57).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "id": "moment-57",
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   },
+   {
+    "textId": "c0e593e03f",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "1eb559889f",
+    "kind": "observation",
+    "answer": "Le cours explique que le surapprentissage survient lorsqu'on apprend trop intensément, au point de finir par apprendre les exercices par cœur (moment-46, moment-51). Cela provoque une régression de la performance lors de l'évaluation sur de nouvelles données (moment-52, moment-53). L'enjeu est alors de savoir s'arrêter au moment optimal, avant que la qualité de l'apprentissage ne se dégrade (moment-55).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   },
+   {
+    "textId": "4f3c7c03c0",
+    "kind": "observation",
+    "answer": "Le cours explique que le surapprentissage se manifeste par une régression de la performance après une phase de progression initiale (moment-53, moment-54). L'orateur souligne que l'enjeu est de savoir s'arrêter au moment optimal pour éviter que la qualité de l'apprentissage ne se dégrade (moment-55). Pour surveiller ce risque, le processus utilise des données de validation en complément des données d'entraînement (moment-57).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "id": "moment-57",
+      "startMs": 448000,
+      "endMs": 456000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-05",
+  "answers": [
+   {
+    "textId": "c276b2551f",
+    "kind": "observation",
+    "answer": "Pendant le pré-entraînement, le modèle est entraîné à compléter des phrases en identifiant les mots manquants (moment-75, moment-76). Ce processus vise à améliorer sa capacité à générer un langage cohérent et précis (moment-75).",
+    "citations": [
+     {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000
+     },
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     }
+    ]
+   },
+   {
+    "textId": "62780320b6",
+    "kind": "observation",
+    "answer": "Le pré-entraînement, ou phase de création d'un modèle de fondation, consiste à récupérer un maximum d'informations, notamment à partir des données d'internet (moment-67). L'objectif est que le modèle apprenne à maîtriser le langage, par exemple en apprenant à aligner des mots et à compléter des phrases (moment-69, moment-72). Cette phase est décrite comme étant extrêmement longue et coûteuse en puissance de calcul (moment-74, moment-77).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     }
+    ]
+   },
+   {
+    "textId": "b89c644dea",
+    "kind": "observation",
+    "answer": "Le pré-entraînement est décrit comme la phase de création d'un modèle de fondation, un processus extrêmement coûteux nécessitant des quantités de calcul monstrueuses (moment-76, moment-77). La vidéo ne précise pas explicitement le contenu exact de ce que le modèle apprend durant cette phase précise, mais elle mentionne l'apprentissage des langues et la construction de phrases (moment-75, moment-76).",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     }
+    ]
+   },
+   {
+    "textId": "a7981bae0c",
+    "kind": "observation",
+    "answer": "Le pré-entraînement est décrit comme la phase de création d'un modèle de fondation (moment-76). Bien que l'orateur ne détaille pas précisément le contenu de cet apprentissage, il mentionne que cette étape nécessite des quantités de calcul monstrueuses (moment-77).",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-06",
+  "answers": [
+   {
+    "textId": "f4d0fb0a96",
+    "kind": "observation",
+    "answer": "Le fine-tuning est présenté comme une étape de spécialisation visant à adapter le modèle à des tâches spécifiques et à renforcer sa cohérence linguistique (moment-94). L'alignement, quant à lui, consiste à enseigner au modèle un savoir-être et un ensemble de règles éthiques et professionnelles, comme la bienveillance (moment-95, moment-96).",
+    "citations": [
+     {
+      "id": "moment-94",
+      "startMs": 744000,
+      "endMs": 752000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   },
+   {
+    "textId": "6e2e2f7cb1",
+    "kind": "observation",
+    "answer": "Le cours définit l'alignement comme l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96). La vidéo ne mentionne pas explicitement la définition du fine-tuning pour établir une comparaison directe.",
+    "citations": [
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   },
+   {
+    "textId": "ad22d1605e",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "29b2a8d355",
+    "kind": "observation",
+    "answer": "Le cours présente l'alignement comme l'apprentissage d'un savoir-être et de règles éthiques, comme la bienveillance (moment-95, moment-96). Le fine-tuning n'est pas explicitement défini par opposition dans ces passages, mais l'orateur évoque l'acquisition de compétences préalables à l'application de ces règles (moment-94).",
+    "citations": [
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     },
+     {
+      "id": "moment-96",
+      "startMs": 760000,
+      "endMs": 768000
+     }
+    ]
+   }
+  ]
+ }
+]

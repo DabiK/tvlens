@@ -1,0 +1,353 @@
+[
+ {
+  "questionId": "spring-01",
+  "answers": [
+   {
+    "textId": "6a17a40c2c",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "30e3b040d9",
+    "kind": "observation",
+    "answer": "Au début de la vidéo, une jeune fille vêtue de rouge s'approche d'un petit chien. Aucun autre personnage n'est visible pour l'accompagner dans les passages observés.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "2583e7feb4",
+    "kind": "observation",
+    "answer": "Au début de la séquence, la jeune fille semble être seule avec le petit chien. Les images montrent qu'elle s'approche de l'animal et lui tend une biscotte, mais personne d'autre n'est visible.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   },
+   {
+    "textId": "b42ac79162",
+    "kind": "observation",
+    "answer": "kind=observation\nLes passages observés montrent une jeune fille en rouge interagissant avec un petit chien, mais aucun autre personnage n'est visible pour l'accompagner au début de la séquence.",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "answers": [
+   {
+    "textId": "1e2d6658fe",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-18 à moment-20).",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "f78fbff60b",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans ses mains (moment-18, 136000-144000). Elle est également vue avec cet objet dans une forêt sombre et brumeuse (moment-19, 144000-152000).",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   },
+   {
+    "textId": "4729bc39d6",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt (moment-10, moment-13, moment-14, moment-18, moment-19, moment-20).",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "99cd1f1c46",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt. Elle est observée avec cet objet dans plusieurs passages.",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "answers": [
+   {
+    "textId": "a9c77629cb",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est bleue (moment-23). L'ensemble de la scène est baigné d'une lumière bleue et sombre (moment-24).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "41f5297ca3",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est de couleur bleue (moment-23, 176000-184000). Cette masse est décrite comme étant bleue et lumineuse dans un environnement aquatique sombre.",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   },
+   {
+    "textId": "2b28721b7e",
+    "kind": "observation",
+    "answer": "La lumière de la grande forme translucide est de couleur bleutée. Cette luminosité baigne la scène sous-marine sombre où se trouve la jeune fille.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "a737d2d7ba",
+    "kind": "observation",
+    "answer": "La lumière de la grande masse organique est bleue (moment-23). Cette masse est décrite comme étant bleue et lumineuse (moment-23).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "answers": [
+   {
+    "textId": "e1799abe2a",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages analysés ne montrent pas le haut du bâton. Les informations disponibles décrivent seulement que la jeune fille tient un bâton lumineux (moment-30 à moment-32).",
+    "citations": []
+   },
+   {
+    "textId": "90e4576c38",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages consultés ne montrent pas le haut du bâton de manière assez précise pour l'identifier. Les résumés mentionnent que la jeune fille tient un bâton, mais l'image du haut de l'objet n'est pas visible dans les segments disponibles.",
+    "citations": []
+   },
+   {
+    "textId": "4d7f6e5109",
+    "kind": "observation",
+    "answer": "Le haut du bâton émet une lumière chaude (moment-30). Dans les passages suivants, il est décrit comme un bâton lumineux qui éclaire le chemin (moment-32).",
+    "citations": [
+     {
+      "id": "moment-30",
+      "startMs": 232000,
+      "endMs": 240000
+     },
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     }
+    ]
+   },
+   {
+    "textId": "924bb6b591",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas le haut du bâton. Les images montrent la jeune fille tenant un bâton lumineux, mais le sommet de l'objet n'est pas visible dans les extraits fournis.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "answers": [
+   {
+    "textId": "df220d8d34",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement de montagnes enneigées et de lacs bleus (moment-4) à des zones de forêts sombres, humides et brumeuses (moment-11, moment-13). À la fin de la séquence, on observe également l'apparition d'une créature marine massive dans une eau trouble (moment-42) et d'un vaisseau métallique flottant au-dessus des nuages (moment-43).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "2e2b62fb79",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement sombre et brumeux avec une main géante (moment-41) à une vue aérienne de montagnes enneigées et d'un lac (moment-43). On observe ensuite une transition vers une prairie verdoyante (moment-44) avant que le personnage ne se retrouve au sommet d'une colline (moment-45).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     },
+     {
+      "id": "moment-45",
+      "startMs": 352000,
+      "endMs": 360000
+     }
+    ]
+   },
+   {
+    "textId": "ef201e3368",
+    "kind": "observation",
+    "answer": "Le paysage passe d'une scène avec une pierre et un petit chien (moment-41) à un environnement montagneux enneigé et brumeux (moment-43). On observe également une transition vers un chemin de terre traversant un champ verdoyant (moment-44).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   },
+   {
+    "textId": "f3564f8afc",
+    "kind": "observation",
+    "answer": "Le paysage passe d'un environnement sombre et brumeux avec une créature marine (moment-41, 320000-336000) à une vue aérienne de montagnes enneigées et d'un lac (moment-43, 336000-344000). On observe ensuite une prairie verdoyante entourée de montagnes (moment-44, 344000-352000).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   }
+  ]
+ }
+]
