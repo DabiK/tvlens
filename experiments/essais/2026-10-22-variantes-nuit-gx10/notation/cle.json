@@ -1,0 +1,902 @@
+{
+ "442d4cca34da": {
+  "questionId": "cnrs-01",
+  "source": "GPS",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 7049.393920000002
+ },
+ "67ca80fe2e7e": {
+  "questionId": "cnrs-02",
+  "source": "GPS",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 6159.535330999992
+ },
+ "7187e60e1be7": {
+  "questionId": "cnrs-04",
+  "source": "GPS",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 14521.165891000011
+ },
+ "6ab62e16cb27": {
+  "questionId": "cnrs-05",
+  "source": "GPS",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 7904.422222999972
+ },
+ "5468846b3a27": {
+  "questionId": "cnrs-06",
+  "source": "GPS",
+  "arm": "E4-cnrs-apprentissage-GPS-1",
+  "wallMs": 8416.765920999926
+ },
+ "ac2468e4310a": {
+  "questionId": "kennedy-01",
+  "source": "GPS",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 5011.044240000003
+ },
+ "46414ac608fc": {
+  "questionId": "kennedy-03",
+  "source": "GPS",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 12101.210101999997
+ },
+ "94f32bf27717": {
+  "questionId": "kennedy-05",
+  "source": "GPS",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 11172.174317999976
+ },
+ "6029ebffe3a3": {
+  "questionId": "kennedy-06",
+  "source": "GPS",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 7215.40407400002
+ },
+ "9099a43130dc": {
+  "questionId": "kennedy-08",
+  "source": "GPS",
+  "arm": "E4-kennedy-GPS-1",
+  "wallMs": 9360.274121000024
+ },
+ "b409a5252cf2": {
+  "questionId": "spring-01",
+  "source": "GPS",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 4033.720591000005
+ },
+ "93d1aa989580": {
+  "questionId": "spring-02",
+  "source": "GPS",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 6117.0225230000215
+ },
+ "7420826e4646": {
+  "questionId": "spring-03",
+  "source": "GPS",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 5162.183882000012
+ },
+ "445cbecfd280": {
+  "questionId": "spring-04",
+  "source": "GPS",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 4192.808542000013
+ },
+ "89b78bb9b3a8": {
+  "questionId": "spring-06",
+  "source": "GPS",
+  "arm": "E4-spring-GPS-1",
+  "wallMs": 6304.105909999984
+ },
+ "e121d916a006": {
+  "questionId": "artemis-01",
+  "source": "GPS",
+  "arm": "E5-artemis-GPS-1",
+  "wallMs": 15086.97191000008
+ },
+ "abe364f72695": {
+  "questionId": "artemis-02",
+  "source": "GPS",
+  "arm": "E5-artemis-GPS-1",
+  "wallMs": 6813.984584999969
+ },
+ "124858d054d5": {
+  "questionId": "artemis-04",
+  "source": "GPS",
+  "arm": "E5-artemis-GPS-1",
+  "wallMs": 5933.730309999781
+ },
+ "a385ed60bc74": {
+  "questionId": "artemis-05",
+  "source": "GPS",
+  "arm": "E5-artemis-GPS-1",
+  "wallMs": 6949.001407000003
+ },
+ "5e3c441efeac": {
+  "questionId": "artemis-07",
+  "source": "GPS",
+  "arm": "E5-artemis-GPS-1",
+  "wallMs": 7138.095279000234
+ },
+ "88e174d362ff": {
+  "questionId": "cuisine-02",
+  "source": "GPS",
+  "arm": "E5-boeuf-bourguignon-GPS-1",
+  "wallMs": 16151.562371999986
+ },
+ "51414fa88308": {
+  "questionId": "cuisine-03",
+  "source": "GPS",
+  "arm": "E5-boeuf-bourguignon-GPS-1",
+  "wallMs": 8191.783667999989
+ },
+ "aecec4d20e92": {
+  "questionId": "cuisine-05",
+  "source": "GPS",
+  "arm": "E5-boeuf-bourguignon-GPS-1",
+  "wallMs": 11487.725804999995
+ },
+ "8532c966df97": {
+  "questionId": "cuisine-06",
+  "source": "GPS",
+  "arm": "E5-boeuf-bourguignon-GPS-1",
+  "wallMs": 9665.475083000027
+ },
+ "42b37375be2f": {
+  "questionId": "cuisine-07",
+  "source": "GPS",
+  "arm": "E5-boeuf-bourguignon-GPS-1",
+  "wallMs": 8089.506514000008
+ },
+ "6acc8f5ed62a": {
+  "questionId": "tears-01",
+  "source": "GPS",
+  "arm": "E5-tears-of-steel-GPS-1",
+  "wallMs": 4032.9194609999977
+ },
+ "e67866015bd1": {
+  "questionId": "tears-03",
+  "source": "GPS",
+  "arm": "E5-tears-of-steel-GPS-1",
+  "wallMs": 6199.999898999988
+ },
+ "566291c1449c": {
+  "questionId": "tears-04",
+  "source": "GPS",
+  "arm": "E5-tears-of-steel-GPS-1",
+  "wallMs": 4236.497805999999
+ },
+ "8d073b080395": {
+  "questionId": "tears-06",
+  "source": "GPS",
+  "arm": "E5-tears-of-steel-GPS-1",
+  "wallMs": 4385.842492999975
+ },
+ "86bdfa985bf4": {
+  "questionId": "tears-07",
+  "source": "GPS",
+  "arm": "E5-tears-of-steel-GPS-1",
+  "wallMs": 7731.371999999974
+ },
+ "066a2338dae7": {
+  "questionId": "artemis-01",
+  "source": "N1",
+  "arm": "N1-artemis-GPS-1",
+  "wallMs": 12458.52995700005
+ },
+ "b0a309ddc1ba": {
+  "questionId": "artemis-02",
+  "source": "N1",
+  "arm": "N1-artemis-GPS-1",
+  "wallMs": 10489.37066600006
+ },
+ "d134563d3b3b": {
+  "questionId": "artemis-04",
+  "source": "N1",
+  "arm": "N1-artemis-GPS-1",
+  "wallMs": 8648.766429000068
+ },
+ "e7e4c277de28": {
+  "questionId": "artemis-05",
+  "source": "N1",
+  "arm": "N1-artemis-GPS-1",
+  "wallMs": 4905.430368999951
+ },
+ "c2cadbc6b6a7": {
+  "questionId": "artemis-07",
+  "source": "N1",
+  "arm": "N1-artemis-GPS-1",
+  "wallMs": 9024.245133999735
+ },
+ "96b46083e4b2": {
+  "questionId": "cuisine-02",
+  "source": "N1",
+  "arm": "N1-boeuf-bourguignon-GPS-1",
+  "wallMs": 15210.008266000019
+ },
+ "0b57310e38c3": {
+  "questionId": "cuisine-03",
+  "source": "N1",
+  "arm": "N1-boeuf-bourguignon-GPS-1",
+  "wallMs": 8267.643313000008
+ },
+ "6cc18b162417": {
+  "questionId": "cuisine-05",
+  "source": "N1",
+  "arm": "N1-boeuf-bourguignon-GPS-1",
+  "wallMs": 6571.010309999983
+ },
+ "fdc676d0eadc": {
+  "questionId": "cuisine-06",
+  "source": "N1",
+  "arm": "N1-boeuf-bourguignon-GPS-1",
+  "wallMs": 9784.99884799996
+ },
+ "980d7e1f34e7": {
+  "questionId": "cuisine-07",
+  "source": "N1",
+  "arm": "N1-boeuf-bourguignon-GPS-1",
+  "wallMs": 10044.001556999981
+ },
+ "b71241e2c50b": {
+  "questionId": "cnrs-01",
+  "source": "N1",
+  "arm": "N1-cnrs-apprentissage-GPS-1",
+  "wallMs": 8055.1142189999955
+ },
+ "3d64e36ab6f1": {
+  "questionId": "cnrs-02",
+  "source": "N1",
+  "arm": "N1-cnrs-apprentissage-GPS-1",
+  "wallMs": 6187.190645000024
+ },
+ "52c2228b2e18": {
+  "questionId": "cnrs-04",
+  "source": "N1",
+  "arm": "N1-cnrs-apprentissage-GPS-1",
+  "wallMs": 13458.91322799999
+ },
+ "bcdf80860287": {
+  "questionId": "cnrs-05",
+  "source": "N1",
+  "arm": "N1-cnrs-apprentissage-GPS-1",
+  "wallMs": 7778.054967000033
+ },
+ "f47d2eb5749d": {
+  "questionId": "cnrs-06",
+  "source": "N1",
+  "arm": "N1-cnrs-apprentissage-GPS-1",
+  "wallMs": 8305.817513999995
+ },
+ "935ae1990b88": {
+  "questionId": "kennedy-01",
+  "source": "N1",
+  "arm": "N1-kennedy-GPS-1",
+  "wallMs": 4010.7617229999996
+ },
+ "6b31df31cb05": {
+  "questionId": "kennedy-03",
+  "source": "N1",
+  "arm": "N1-kennedy-GPS-1",
+  "wallMs": 10082.809773999994
+ },
+ "a79aeeddd6a6": {
+  "questionId": "kennedy-05",
+  "source": "N1",
+  "arm": "N1-kennedy-GPS-1",
+  "wallMs": 11181.23014900001
+ },
+ "b991ef29445d": {
+  "questionId": "kennedy-06",
+  "source": "N1",
+  "arm": "N1-kennedy-GPS-1",
+  "wallMs": 10242.039206999994
+ },
+ "0e2c20ff368b": {
+  "questionId": "kennedy-08",
+  "source": "N1",
+  "arm": "N1-kennedy-GPS-1",
+  "wallMs": 12341.474386000016
+ },
+ "606a94617caa": {
+  "questionId": "spring-01",
+  "source": "N1",
+  "arm": "N1-spring-GPS-1",
+  "wallMs": 10036.867731999999
+ },
+ "bc982d9bec54": {
+  "questionId": "spring-02",
+  "source": "N1",
+  "arm": "N1-spring-GPS-1",
+  "wallMs": 5116.379374000011
+ },
+ "32e553cb4157": {
+  "questionId": "spring-03",
+  "source": "N1",
+  "arm": "N1-spring-GPS-1",
+  "wallMs": 5163.761457000015
+ },
+ "c67c162cefa5": {
+  "questionId": "spring-04",
+  "source": "N1",
+  "arm": "N1-spring-GPS-1",
+  "wallMs": 9199.877707000007
+ },
+ "5500dede8dbe": {
+  "questionId": "spring-06",
+  "source": "N1",
+  "arm": "N1-spring-GPS-1",
+  "wallMs": 11314.388363000005
+ },
+ "b7cfc8cb8d37": {
+  "questionId": "tears-01",
+  "source": "N1",
+  "arm": "N1-tears-of-steel-GPS-1",
+  "wallMs": 4022.5558789999995
+ },
+ "72bce46af521": {
+  "questionId": "tears-03",
+  "source": "N1",
+  "arm": "N1-tears-of-steel-GPS-1",
+  "wallMs": 6176.183543000021
+ },
+ "1c5b42d23725": {
+  "questionId": "tears-04",
+  "source": "N1",
+  "arm": "N1-tears-of-steel-GPS-1",
+  "wallMs": 4229.576371999981
+ },
+ "c5443f5da139": {
+  "questionId": "tears-06",
+  "source": "N1",
+  "arm": "N1-tears-of-steel-GPS-1",
+  "wallMs": 6379.709304000018
+ },
+ "22f21527fd5e": {
+  "questionId": "tears-07",
+  "source": "N1",
+  "arm": "N1-tears-of-steel-GPS-1",
+  "wallMs": 3632.6442119999556
+ },
+ "768c54b24de2": {
+  "questionId": "artemis-01",
+  "source": "N2",
+  "arm": "N2-artemis-GPSR-1",
+  "wallMs": 12470.636761999922
+ },
+ "0606f186ec49": {
+  "questionId": "artemis-02",
+  "source": "N2",
+  "arm": "N2-artemis-GPSR-1",
+  "wallMs": 5445.716492000036
+ },
+ "7940c66e84ad": {
+  "questionId": "artemis-04",
+  "source": "N2",
+  "arm": "N2-artemis-GPSR-1",
+  "wallMs": 5651.95936800004
+ },
+ "537868de913c": {
+  "questionId": "artemis-05",
+  "source": "N2",
+  "arm": "N2-artemis-GPSR-1",
+  "wallMs": 5351.646674999967
+ },
+ "0f735b6d62e5": {
+  "questionId": "artemis-07",
+  "source": "N2",
+  "arm": "N2-artemis-GPSR-1",
+  "wallMs": 6272.726242000004
+ },
+ "6fc4bfe6ed52": {
+  "questionId": "cuisine-02",
+  "source": "N2",
+  "arm": "N2-boeuf-bourguignon-GPSR-1",
+  "wallMs": 8137.756755999988
+ },
+ "d1fa8e5a1507": {
+  "questionId": "cuisine-03",
+  "source": "N2",
+  "arm": "N2-boeuf-bourguignon-GPSR-1",
+  "wallMs": 6168.367543999979
+ },
+ "9f8d26311b21": {
+  "questionId": "cuisine-05",
+  "source": "N2",
+  "arm": "N2-boeuf-bourguignon-GPSR-1",
+  "wallMs": 6398.97695099999
+ },
+ "aa995db4454e": {
+  "questionId": "cuisine-06",
+  "source": "N2",
+  "arm": "N2-boeuf-bourguignon-GPSR-1",
+  "wallMs": 6528.640582000022
+ },
+ "6d07fb3b377d": {
+  "questionId": "cuisine-07",
+  "source": "N2",
+  "arm": "N2-boeuf-bourguignon-GPSR-1",
+  "wallMs": 4735.631837000023
+ },
+ "ec433803a72b": {
+  "questionId": "cnrs-01",
+  "source": "N2",
+  "arm": "N2-cnrs-apprentissage-GPSR-1",
+  "wallMs": 7057.806966999997
+ },
+ "26a9fd43cd68": {
+  "questionId": "cnrs-02",
+  "source": "N2",
+  "arm": "N2-cnrs-apprentissage-GPSR-1",
+  "wallMs": 6160.877630999981
+ },
+ "94b0820a0585": {
+  "questionId": "cnrs-04",
+  "source": "N2",
+  "arm": "N2-cnrs-apprentissage-GPSR-1",
+  "wallMs": 8403.781874000037
+ },
+ "1e4f5d4bf256": {
+  "questionId": "cnrs-05",
+  "source": "N2",
+  "arm": "N2-cnrs-apprentissage-GPSR-1",
+  "wallMs": 5765.118450000067
+ },
+ "4e3d97a38c37": {
+  "questionId": "cnrs-06",
+  "source": "N2",
+  "arm": "N2-cnrs-apprentissage-GPSR-1",
+  "wallMs": 5993.373036999954
+ },
+ "838d39a5f368": {
+  "questionId": "kennedy-01",
+  "source": "N2",
+  "arm": "N2-kennedy-GPSR-1",
+  "wallMs": 5009.877394999996
+ },
+ "bcc0e63fa2e1": {
+  "questionId": "kennedy-03",
+  "source": "N2",
+  "arm": "N2-kennedy-GPSR-1",
+  "wallMs": 6078.008064000009
+ },
+ "6fbd740c89b6": {
+  "questionId": "kennedy-05",
+  "source": "N2",
+  "arm": "N2-kennedy-GPSR-1",
+  "wallMs": 6145.883665000001
+ },
+ "07e7eb1acc2c": {
+  "questionId": "kennedy-06",
+  "source": "N2",
+  "arm": "N2-kennedy-GPSR-1",
+  "wallMs": 5200.592820999969
+ },
+ "e057e6675c20": {
+  "questionId": "kennedy-08",
+  "source": "N2",
+  "arm": "N2-kennedy-GPSR-1",
+  "wallMs": 5278.381521000003
+ },
+ "1ca06593533b": {
+  "questionId": "spring-01",
+  "source": "N2",
+  "arm": "N2-spring-GPSR-1",
+  "wallMs": 5029.626871999993
+ },
+ "85d0c59ccbc7": {
+  "questionId": "spring-02",
+  "source": "N2",
+  "arm": "N2-spring-GPSR-1",
+  "wallMs": 5103.512650000019
+ },
+ "6e801d7a603b": {
+  "questionId": "spring-03",
+  "source": "N2",
+  "arm": "N2-spring-GPSR-1",
+  "wallMs": 4121.156149000017
+ },
+ "01022d837687": {
+  "questionId": "spring-04",
+  "source": "N2",
+  "arm": "N2-spring-GPSR-1",
+  "wallMs": 6156.9577450000215
+ },
+ "6b67026dbc3a": {
+  "questionId": "spring-06",
+  "source": "N2",
+  "arm": "N2-spring-GPSR-1",
+  "wallMs": 10286.682949000038
+ },
+ "02166e463486": {
+  "questionId": "tears-01",
+  "source": "N2",
+  "arm": "N2-tears-of-steel-GPSR-1",
+  "wallMs": 4020.278542
+ },
+ "0b9ded4fa905": {
+  "questionId": "tears-03",
+  "source": "N2",
+  "arm": "N2-tears-of-steel-GPSR-1",
+  "wallMs": 4159.6921540000185
+ },
+ "b3fa6451d19a": {
+  "questionId": "tears-04",
+  "source": "N2",
+  "arm": "N2-tears-of-steel-GPSR-1",
+  "wallMs": 4192.573032999993
+ },
+ "91becf1ec8b0": {
+  "questionId": "tears-06",
+  "source": "N2",
+  "arm": "N2-tears-of-steel-GPSR-1",
+  "wallMs": 4344.299398000003
+ },
+ "56f9918d1c86": {
+  "questionId": "tears-07",
+  "source": "N2",
+  "arm": "N2-tears-of-steel-GPSR-1",
+  "wallMs": 4605.5186410000315
+ },
+ "183ef053f51a": {
+  "questionId": "artemis-01",
+  "source": "N3",
+  "arm": "N3-artemis-GPSJ-1",
+  "wallMs": 16526.329972999985
+ },
+ "54fdd5fdbfb6": {
+  "questionId": "artemis-02",
+  "source": "N3",
+  "arm": "N3-artemis-GPSJ-1",
+  "wallMs": 11420.445565999951
+ },
+ "39ac8028e9a8": {
+  "questionId": "artemis-04",
+  "source": "N3",
+  "arm": "N3-artemis-GPSJ-1",
+  "wallMs": 8983.142250000034
+ },
+ "46079bb24c19": {
+  "questionId": "artemis-05",
+  "source": "N3",
+  "arm": "N3-artemis-GPSJ-1",
+  "wallMs": 8600.2299850001
+ },
+ "aa9335822c93": {
+  "questionId": "artemis-07",
+  "source": "N3",
+  "arm": "N3-artemis-GPSJ-1",
+  "wallMs": 10121.79160100012
+ },
+ "2ac329995e04": {
+  "questionId": "cuisine-02",
+  "source": "N3",
+  "arm": "N3-boeuf-bourguignon-GPSJ-1",
+  "wallMs": 17202.58047699998
+ },
+ "5cf6d408e26a": {
+  "questionId": "cuisine-03",
+  "source": "N3",
+  "arm": "N3-boeuf-bourguignon-GPSJ-1",
+  "wallMs": 13245.40952799999
+ },
+ "d6a5e7d14f15": {
+  "questionId": "cuisine-05",
+  "source": "N3",
+  "arm": "N3-boeuf-bourguignon-GPSJ-1",
+  "wallMs": 7476.630232999974
+ },
+ "46b0114601f0": {
+  "questionId": "cuisine-06",
+  "source": "N3",
+  "arm": "N3-boeuf-bourguignon-GPSJ-1",
+  "wallMs": 13644.038747000042
+ },
+ "a81b36acfc02": {
+  "questionId": "cuisine-07",
+  "source": "N3",
+  "arm": "N3-boeuf-bourguignon-GPSJ-1",
+  "wallMs": 9915.122514999937
+ },
+ "3f4f879555b3": {
+  "questionId": "cnrs-01",
+  "source": "N3",
+  "arm": "N3-cnrs-apprentissage-GPSJ-1",
+  "wallMs": 9063.608838
+ },
+ "84022f0322bd": {
+  "questionId": "cnrs-02",
+  "source": "N3",
+  "arm": "N3-cnrs-apprentissage-GPSJ-1",
+  "wallMs": 7205.699412999995
+ },
+ "c06a8eb62b51": {
+  "questionId": "cnrs-04",
+  "source": "N3",
+  "arm": "N3-cnrs-apprentissage-GPSJ-1",
+  "wallMs": 17548.332915999985
+ },
+ "b742af3454b0": {
+  "questionId": "cnrs-05",
+  "source": "N3",
+  "arm": "N3-cnrs-apprentissage-GPSJ-1",
+  "wallMs": 14993.652165999985
+ },
+ "9bc729c780e7": {
+  "questionId": "cnrs-06",
+  "source": "N3",
+  "arm": "N3-cnrs-apprentissage-GPSJ-1",
+  "wallMs": 16568.06874899997
+ },
+ "c9a4269448d5": {
+  "questionId": "kennedy-01",
+  "source": "N3",
+  "arm": "N3-kennedy-GPSJ-1",
+  "wallMs": 5010.385082000004
+ },
+ "3dfdf79e7eb2": {
+  "questionId": "kennedy-03",
+  "source": "N3",
+  "arm": "N3-kennedy-GPSJ-1",
+  "wallMs": 9065.797950999986
+ },
+ "14d832159d49": {
+  "questionId": "kennedy-05",
+  "source": "N3",
+  "arm": "N3-kennedy-GPSJ-1",
+  "wallMs": 22170.620351999998
+ },
+ "70b4addd6eaa": {
+  "questionId": "kennedy-06",
+  "source": "N3",
+  "arm": "N3-kennedy-GPSJ-1",
+  "wallMs": 13213.746372999973
+ },
+ "2dd94630c350": {
+  "questionId": "kennedy-08",
+  "source": "N3",
+  "arm": "N3-kennedy-GPSJ-1",
+  "wallMs": 6278.426284999994
+ },
+ "c69a2d44ce29": {
+  "questionId": "spring-01",
+  "source": "N3",
+  "arm": "N3-spring-GPSJ-1",
+  "wallMs": 9043.056587
+ },
+ "e87a25977517": {
+  "questionId": "spring-02",
+  "source": "N3",
+  "arm": "N3-spring-GPSJ-1",
+  "wallMs": 8142.23474699998
+ },
+ "88d7a5cbe2bf": {
+  "questionId": "spring-03",
+  "source": "N3",
+  "arm": "N3-spring-GPSJ-1",
+  "wallMs": 8173.178304999979
+ },
+ "df38bf6eddfe": {
+  "questionId": "spring-04",
+  "source": "N3",
+  "arm": "N3-spring-GPSJ-1",
+  "wallMs": 9219.265330000024
+ },
+ "65e1bfc9a935": {
+  "questionId": "spring-06",
+  "source": "N3",
+  "arm": "N3-spring-GPSJ-1",
+  "wallMs": 11314.80896699999
+ },
+ "7008d96caef6": {
+  "questionId": "tears-01",
+  "source": "N3",
+  "arm": "N3-tears-of-steel-GPSJ-1",
+  "wallMs": 4012.696833000002
+ },
+ "84911377760e": {
+  "questionId": "tears-03",
+  "source": "N3",
+  "arm": "N3-tears-of-steel-GPSJ-1",
+  "wallMs": 7169.665878
+ },
+ "a3270b2d532c": {
+  "questionId": "tears-04",
+  "source": "N3",
+  "arm": "N3-tears-of-steel-GPSJ-1",
+  "wallMs": 9215.676619000034
+ },
+ "a573c7ded682": {
+  "questionId": "tears-06",
+  "source": "N3",
+  "arm": "N3-tears-of-steel-GPSJ-1",
+  "wallMs": 5399.918219999992
+ },
+ "037301f15a4e": {
+  "questionId": "tears-07",
+  "source": "N3",
+  "arm": "N3-tears-of-steel-GPSJ-1",
+  "wallMs": 5623.342816999997
+ },
+ "ce57defafa22": {
+  "questionId": "artemis-01",
+  "source": "N4",
+  "arm": "N4-artemis-QPS-1",
+  "wallMs": 12327.259027999942
+ },
+ "aab1787e6d86": {
+  "questionId": "artemis-02",
+  "source": "N4",
+  "arm": "N4-artemis-QPS-1",
+  "wallMs": 8076.6876540000085
+ },
+ "8faf3ba2528a": {
+  "questionId": "artemis-04",
+  "source": "N4",
+  "arm": "N4-artemis-QPS-1",
+  "wallMs": 8114.442685999908
+ },
+ "d5b0dfdd13ba": {
+  "questionId": "artemis-05",
+  "source": "N4",
+  "arm": "N4-artemis-QPS-1",
+  "wallMs": 6698.501140000066
+ },
+ "d2e3aee2cb00": {
+  "questionId": "artemis-07",
+  "source": "N4",
+  "arm": "N4-artemis-QPS-1",
+  "wallMs": 3945.1288089999
+ },
+ "251e42f846d0": {
+  "questionId": "cuisine-02",
+  "source": "N4",
+  "arm": "N4-boeuf-bourguignon-QPS-1",
+  "wallMs": 9170.957205999992
+ },
+ "e22b475ade01": {
+  "questionId": "cuisine-03",
+  "source": "N4",
+  "arm": "N4-boeuf-bourguignon-QPS-1",
+  "wallMs": 5225.237284999981
+ },
+ "cff0190bb061": {
+  "questionId": "cuisine-05",
+  "source": "N4",
+  "arm": "N4-boeuf-bourguignon-QPS-1",
+  "wallMs": 5490.912468000024
+ },
+ "62663ccb52d6": {
+  "questionId": "cuisine-06",
+  "source": "N4",
+  "arm": "N4-boeuf-bourguignon-QPS-1",
+  "wallMs": 6671.748399000033
+ },
+ "a36127037f3b": {
+  "questionId": "cuisine-07",
+  "source": "N4",
+  "arm": "N4-boeuf-bourguignon-QPS-1",
+  "wallMs": 4854.888433999964
+ },
+ "593e2f70159e": {
+  "questionId": "cnrs-01",
+  "source": "N4",
+  "arm": "N4-cnrs-apprentissage-QPS-1",
+  "wallMs": 6053.715047000005
+ },
+ "07e984eb6c48": {
+  "questionId": "cnrs-02",
+  "source": "N4",
+  "arm": "N4-cnrs-apprentissage-QPS-1",
+  "wallMs": 4198.091780000017
+ },
+ "c9108f4e676a": {
+  "questionId": "cnrs-04",
+  "source": "N4",
+  "arm": "N4-cnrs-apprentissage-QPS-1",
+  "wallMs": 10510.14367000002
+ },
+ "5e6943b48c8f": {
+  "questionId": "cnrs-05",
+  "source": "N4",
+  "arm": "N4-cnrs-apprentissage-QPS-1",
+  "wallMs": 3890.7356019999133
+ },
+ "bbcec0d8e21e": {
+  "questionId": "cnrs-06",
+  "source": "N4",
+  "arm": "N4-cnrs-apprentissage-QPS-1",
+  "wallMs": 8470.355050000013
+ },
+ "0084d18f1097": {
+  "questionId": "kennedy-01",
+  "source": "N4",
+  "arm": "N4-kennedy-QPS-1",
+  "wallMs": 18009.848802
+ },
+ "dfa9ec791489": {
+  "questionId": "kennedy-03",
+  "source": "N4",
+  "arm": "N4-kennedy-QPS-1",
+  "wallMs": 7094.777310999998
+ },
+ "9783667da757": {
+  "questionId": "kennedy-05",
+  "source": "N4",
+  "arm": "N4-kennedy-QPS-1",
+  "wallMs": 8202.880456999992
+ },
+ "2243b14361e3": {
+  "questionId": "kennedy-06",
+  "source": "N4",
+  "arm": "N4-kennedy-QPS-1",
+  "wallMs": 7241.497603000025
+ },
+ "48e32cddec8d": {
+  "questionId": "kennedy-08",
+  "source": "N4",
+  "arm": "N4-kennedy-QPS-1",
+  "wallMs": 5357.9611960000475
+ },
+ "a1098d483ac4": {
+  "questionId": "spring-01",
+  "source": "N4",
+  "arm": "N4-spring-QPS-1",
+  "wallMs": 7036.819023999997
+ },
+ "5095265d006b": {
+  "questionId": "spring-02",
+  "source": "N4",
+  "arm": "N4-spring-QPS-1",
+  "wallMs": 4122.730767000001
+ },
+ "1522bc00716a": {
+  "questionId": "spring-03",
+  "source": "N4",
+  "arm": "N4-spring-QPS-1",
+  "wallMs": 5177.0326400000195
+ },
+ "2ff2a83da3d3": {
+  "questionId": "spring-04",
+  "source": "N4",
+  "arm": "N4-spring-QPS-1",
+  "wallMs": 6210.764041999995
+ },
+ "4b5e5e6d537d": {
+  "questionId": "spring-06",
+  "source": "N4",
+  "arm": "N4-spring-QPS-1",
+  "wallMs": 6273.326832999999
+ },
+ "45ca81f2db18": {
+  "questionId": "tears-01",
+  "source": "N4",
+  "arm": "N4-tears-of-steel-QPS-1",
+  "wallMs": 4018.0544900000023
+ },
+ "7f67d08cf92e": {
+  "questionId": "tears-03",
+  "source": "N4",
+  "arm": "N4-tears-of-steel-QPS-1",
+  "wallMs": 4169.193425000005
+ },
+ "81bcff0c71fc": {
+  "questionId": "tears-04",
+  "source": "N4",
+  "arm": "N4-tears-of-steel-QPS-1",
+  "wallMs": 3238.796233000001
+ },
+ "3f90482e30b1": {
+  "questionId": "tears-06",
+  "source": "N4",
+  "arm": "N4-tears-of-steel-QPS-1",
+  "wallMs": 4407.463453000004
+ },
+ "58e591cf202f": {
+  "questionId": "tears-07",
+  "source": "N4",
+  "arm": "N4-tears-of-steel-QPS-1",
+  "wallMs": 2670.7680679999758
+ }
+}

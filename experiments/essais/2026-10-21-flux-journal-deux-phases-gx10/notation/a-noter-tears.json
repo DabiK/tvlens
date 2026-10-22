@@ -1,0 +1,134 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "3ecc3ed573",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "05a64fb298",
+    "kind": "observation",
+    "answer": "According to the conversation, Celia is interested in robotics and Thom wants to be awesome in space. This is mentioned during their walk on a bridge (moment-4, 24000-32000ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "7d766f044e",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas obtenu de preuve suffisante pour répondre.",
+    "citations": []
+   },
+   {
+    "textId": "0a7c7b6253",
+    "kind": "observation",
+    "answer": "Je ne peux pas répondre à cette question car Barley ne mentionne pas de durée spécifique dans les passages consultés. Il indique seulement que tout est prêt et qu'il ne reste qu'une minute.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "15ff03d110",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête avec elle. On lui demande également de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "91db8597ac",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas obtenu de preuve suffisante pour répondre.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "896b254480",
+    "kind": "observation",
+    "answer": "Celia expresses that she is having nightmares about being chased by Thom's giant robotic claws (moment-4 to moment-6). She also admits to being freaked out by his robot hand (moment-5).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     },
+     {
+      "id": "moment-5",
+      "startMs": 32000,
+      "endMs": 40000
+     }
+    ]
+   },
+   {
+    "textId": "8d973bfa36",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oublié sur Terre (moment-49, 384000-392000ms). Elle exprime également une grande détresse en disant qu'il lui a brisé le cœur (moment-49, 384000-392000ms).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "089892a739",
+    "kind": "observation",
+    "answer": "The memory override has been announced as complete (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "6fc5d59c44",
+    "kind": "observation",
+    "answer": "La vidéo indique que l'écrasement de la mémoire est terminé (moment-68, 536000-544000ms).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

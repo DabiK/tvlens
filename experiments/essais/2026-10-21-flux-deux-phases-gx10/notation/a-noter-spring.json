@@ -1,0 +1,104 @@
+[
+ {
+  "questionId": "spring-01",
+  "answers": [
+   {
+    "textId": "37a9aaf2ff",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas obtenu de preuve suffisante pour répondre.",
+    "citations": []
+   },
+   {
+    "textId": "27276c9aef",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas le début de la scène. On voit une jeune fille en rouge avec un animal à la fin de la séquence, mais son accompagnateur n'est pas identifié.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "answers": [
+   {
+    "textId": "e96a06a4d5",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier de scène dans la forêt avec une femme tenant un objet. Les passages consultés ne montrent que des sons de coups de feu ou de musique mystérieuse.",
+    "citations": []
+   },
+   {
+    "textId": "0bc169e8db",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton noueux dans ses mains. On l'observe en train de manipuler cet objet dans une forêt sombre et brumeuse.",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "answers": [
+   {
+    "textId": "7235ec1810",
+    "kind": "observation",
+    "answer": "La lumière émanant de la forme centrale semble être de couleur bleutée. Ce passage montre un environnement baigné dans une brume bleue et sombre (moment-24, 184000-192000).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "f85dbe8064",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier de grande forme ou de couleur de lumière dans les passages consultés. Les segments disponibles ne montrent que de la musique tendue.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "answers": [
+   {
+    "textId": "69e6e75669",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas l'instant où le haut du bâton apparaît. Les extraits consultés montrent le personnage tenant déjà le bâton lumineux.",
+    "citations": []
+   },
+   {
+    "textId": "df4ca38d63",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas pu identifier de scène montrant le haut du bâton dans les passages consultés. Les segments disponibles ne montrent que de la musique, des cris, ou une jeune fille avec un animal.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "answers": [
+   {
+    "textId": "e9e2bb0f93",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo consultés ne montrent que des extraits sonores de musique et de vent. Je n'ai pas accès aux images du début de la vidéo pour comparer l'aspect du paysage.",
+    "citations": []
+   },
+   {
+    "textId": "d45eac6369",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas le début de la séquence. Les extraits consultés commencent par un environnement brumeux et sombre, puis montrent un paysage montagneux avec des traînées lumineuses vertes (moment-44, 344000-352000).",
+    "citations": []
+   }
+  ]
+ }
+]

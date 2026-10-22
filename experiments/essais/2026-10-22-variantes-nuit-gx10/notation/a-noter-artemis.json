@@ -1,0 +1,421 @@
+[
+ {
+  "questionId": "artemis-01",
+  "answers": [
+   {
+    "textId": "6eadbeae67",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a annoncé qu'elle donne l'autorisation (\"go\") pour reprendre le compte à rebours et procéder au lancement d'Artemis I.",
+    "citations": [
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   },
+   {
+    "textId": "8e71f4d147",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a donné l'autorisation de reprendre le compte à rebours et de procéder au lancement de la mission Artemis-1 (moment-116, moment-119). L'opératrice a confirmé qu'il y avait le feu vert pour poursuivre la procédure (moment-116).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     },
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   },
+   {
+    "textId": "5f8d206fe3",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a annoncé qu'elle avait le feu vert pour poursuivre le compte à rebours terminal et lancer la mission Artemis I (moment-116). Le directeur de lancement a confirmé que l'équipe de gestion de la mission a été consultée et qu'il n'y avait aucune contrainte pour le lancement (moment-108, moment-116).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     }
+    ]
+   },
+   {
+    "textId": "a054e6b75b",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a annoncé la décision de reprendre le compte à rebours et de procéder au lancement d'Artemis-1 (moment-116, moment-119). Le directeur de mission a confirmé l'autorisation de poursuivre les opérations (moment-116, moment-117).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     },
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   },
+   {
+    "textId": "4bededdac1",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a annoncé l'autorisation de poursuivre le compte à rebours final et le lancement d'Artemis I (moment-116, moment-119). Le directeur de lancement a confirmé avoir reçu l'ordre de procéder (moment-117).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     },
+     {
+      "id": "moment-117",
+      "startMs": 928000,
+      "endMs": 936000
+     },
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-02",
+  "answers": [
+   {
+    "textId": "ceb0273589",
+    "kind": "observation",
+    "answer": "L'eau est injectée dans le lanceur mobile pour supprimer la surpression et le son intense générés par l'ignition des moteurs, ce qui pourrait endommager la fusée.",
+    "citations": [
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "ac61dcb4a6",
+    "kind": "observation",
+    "answer": "The ignition overpressure and sound suppression system will flood the mobile launcher with water to reduce the power from the pressure and thunderous sound caused by the rocket's ignition. This process is necessary to prevent potential damage to the rocket (moment-153, moment-154).",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "151091fd80",
+    "kind": "observation",
+    "answer": "Le système de suppression du son et de la pression inonde le lanceur mobile d'eau pour réduire l'impact de l'allumage de la fusée et du bruit tonitruant (moment-153, moment-154). Cette procédure vise à éviter que la pression et le son ne causent des dommages à la fusée (moment-154).",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "a264279b88",
+    "kind": "observation",
+    "answer": "Le système de suppression du son et de la pression d'allumage inonde le lanceur mobile d'eau pour réduire la puissance de la pression et du son assourdissant causés par l'allumage de la fusée (moment-153, moment-154). Cette mesure est nécessaire car ces forces pourraient endommager la fusée (moment-154).",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "fd8ed51e2d",
+    "kind": "observation",
+    "answer": "Le système de suppression de la pression d'allumage et du son inonde le lanceur mobile d'eau pour éviter que la pression et le bruit assourdissants de l'allumage de la fusée n'endommagent la fusée elle-même (moment-153, moment-154).",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-04",
+  "answers": [
+   {
+    "textId": "4e03b92b9b",
+    "kind": "observation",
+    "answer": "Le décollage a eu lieu, comme l'indique l'annonce de l'envol d'Artemis I (moment-204). Le véhicule est propulsé par les quatre moteurs RS-25 de l'étage central ainsi que par deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "c3fff7f9da",
+    "kind": "observation",
+    "answer": "Le décollage d'Artemis I a eu lieu, comme l'indiquent les annonces de l'allumage des boosters et du décollage (moment-204). Le véhicule est propulsé par les quatre moteurs RS-25 de l'étage central ainsi que par deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "e4489399d2",
+    "kind": "observation",
+    "answer": "Le décollage de la mission Artemis I a eu lieu (moment-204). Le véhicule est propulsé par les quatre moteurs RS-25 de l'étage central ainsi que par deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "92513cea24",
+    "kind": "observation",
+    "answer": "Le décollage a eu lieu, comme l'indiquent les flammes et la montée du lanceur (moment-204). Le véhicule est propulsé par quatre moteurs RS-25 sur l'étage central et deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "326e9ee4f2",
+    "kind": "observation",
+    "answer": "Yes, liftoff has happened. The vehicle is being propelled by the four RS-25 engines on the core stage and two solid rocket boosters.",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-05",
+  "answers": [
+   {
+    "textId": "ab33e6e13e",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide viennent de se séparer (moment-221). L'étage central, propulsé par les quatre moteurs RS-25, continue d'assurer la propulsion du vol d'Orion (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "b4878e007b",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide viennent de se séparer (moment-221). L'étage central continue d'alimenter le vol d'Orion grâce aux quatre moteurs RS-25 (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "1b395e0913",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide se sont séparés (moment-221). L'étage central, propulsé par les quatre moteurs RS-25, continue d'assurer la propulsion du vol (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "784faa7e06",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide viennent de se séparer (moment-221). L'étage central continue d'assurer la propulsion du vol d'Orion grâce aux quatre moteurs RS-25 (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "54f78adf5d",
+    "kind": "observation",
+    "answer": "The solid rocket boosters have just separated. The flight is now being powered by the core stage's RS-25 engines.",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-07",
+  "answers": [
+   {
+    "textId": "cda4df0917",
+    "kind": "observation",
+    "answer": "Les commentateurs se préparent pour l'arrêt des moteurs principaux de l'étage central (moment-258, moment-261). Les quatre moteurs RS-25 sont en train de réduire leur poussée (moment-259, moment-261).",
+    "citations": [
+     {
+      "id": "moment-258",
+      "startMs": 2056000,
+      "endMs": 2064000
+     },
+     {
+      "id": "moment-259",
+      "startMs": 2064000,
+      "endMs": 2072000
+     },
+     {
+      "id": "moment-261",
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ]
+   },
+   {
+    "textId": "ed8c58ae06",
+    "kind": "observation",
+    "answer": "Les commentateurs se préparent pour l'arrêt des moteurs principaux de l'étage central (moment-261). Ils indiquent qu'il reste trente secondes avant cet événement (moment-261).",
+    "citations": [
+     {
+      "id": "moment-261",
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ]
+   },
+   {
+    "textId": "10af891be1",
+    "kind": "observation",
+    "answer": "Les commentateurs se préparent pour le Main Engine Cutoff (MECO), c'est-à-dire l'extinction des moteurs principaux de l'étage central. Les données indiquent que les quatre moteurs RS-25 sont en train de réduire leur poussée (throttle down) et que l'extinction est prévue dans 30 secondes.",
+    "citations": [
+     {
+      "id": "moment-261",
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ]
+   },
+   {
+    "textId": "49521499e8",
+    "kind": "observation",
+    "answer": "Les commentateurs se préparent pour l'arrêt des moteurs principaux de l'étage central (moment-258, moment-261). Ils indiquent que les quatre moteurs RS-25 commencent à réduire leur poussée (moment-259, moment-261).",
+    "citations": [
+     {
+      "id": "moment-261",
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ]
+   },
+   {
+    "textId": "11292eb81c",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   }
+  ]
+ }
+]

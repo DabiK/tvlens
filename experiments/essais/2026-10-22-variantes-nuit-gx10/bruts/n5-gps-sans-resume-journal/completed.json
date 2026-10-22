@@ -1,0 +1,29 @@
+[
+  {
+    "video": "kennedy",
+    "arm": "GPSRJ",
+    "label": "kennedy-GPSRJ-1",
+    "proxyStopped": true,
+    "campaignSha256": "1dc08b4ba984cfeabe1c288be309efa56ef7ebcd6a807768272883879e3ed2f0",
+    "runId": "eb7ed19a-f96b-48bd-b673-bc927ccc6d06",
+    "acquired": 5
+  },
+  {
+    "video": "spring",
+    "arm": "GPSRJ",
+    "label": "spring-GPSRJ-1",
+    "proxyStopped": true,
+    "campaignSha256": "00a1520ee5608d9a3c43778be3e5a671a612fa3f2a13230e0c9eb54deee9d7b0",
+    "runId": "ad842fb6-c152-4ff3-805c-70bb4cede71f",
+    "acquired": 5
+  },
+  {
+    "video": "cnrs-apprentissage",
+    "arm": "GPSRJ",
+    "label": "cnrs-apprentissage-GPSRJ-1",
+    "proxyStopped": true,
+    "campaignSha256": "9a9b8afeaa3de96008330d0b0ad7901f194f173035e6f3711d373ea802a659e4",
+    "runId": "89b74ca0-4fea-4d18-aaaa-bd06dbdd8d86",
+    "acquired": 5
+  }
+]

@@ -1,0 +1,182 @@
+[
+ [
+  "kennedy",
+  "kennedy-n1",
+  "accepted",
+  "Faits vérifiés sur la transcription et sur l'énergie 300-3000 Hz de l'audio. La parole tombe à 29,2-32,2 ; 33,0-37,0 ; 38,2-39,6 ; 40,4-43,8 s. Blocs "
+ ],
+ [
+  "kennedy",
+  "kennedy-n2",
+  "corrected",
+  "Faits requis justes : Vénus à 80,5-86,5 s, les étoiles à 87,4-91,6 s, blocs 10-11, Δ ≥ 64, anciens. Question claire, pose 160 à 32 s de 128. Correctio"
+ ],
+ [
+  "kennedy",
+  "kennedy-n3",
+  "corrected",
+  "Faits requis justes : Bradford à 151,5-158,2 s, la citation à 159,3-171,1 s, blocs 18-21, Δ ≥ 72, anciens. Pose 248 à 24 s de 272. Trois corrections. "
+ ],
+ [
+  "kennedy",
+  "kennedy-n4",
+  "corrected",
+  "Faits requis justes : la parole tombe à 202,8-216,4 s, blocs 25-27, Δ ≥ 72, anciens. Question claire et sans doublon : la liste n'est qu'un fait C de "
+ ],
+ [
+  "kennedy",
+  "kennedy-n5",
+  "accepted",
+  "Phrase vérifiée à l'énergie : 386,2-389,0 puis 389,8-392,8 s. « as yet » tombe dans le bloc 49 (Δ=8, parole A), récent (fin 400 > 360). « But why, som"
+ ],
+ [
+  "artemis",
+  "artemis-n1",
+  "accepted",
+  "Les deux ASR concordent : « he brought me here to see Apollo 11 launch… my first launch » vers 283-289 s, puis « I was five years old » vers 289-291,5"
+ ],
+ [
+  "artemis",
+  "artemis-n2",
+  "accepted",
+  "YouTube et Whisper concordent : « two hours long, it runs until 3:04 a.m. Eastern Time » vers 586-591 s, puis « 40 cutouts… about a second to about a "
+ ],
+ [
+  "artemis",
+  "artemis-n3",
+  "corrected",
+  "Faits vérifiés sur l'ASR YouTube, car Whisper hallucine dans cette zone. « performing up to 100 commands per second » se dit vers 1149,7-1158 s, puis "
+ ],
+ [
+  "artemis",
+  "artemis-n4",
+  "accepted",
+  "Les deux ASR concordent : « First milestone… Max-Q at about 1 minute and 9 seconds into launch » vers 1660,6-1667 s. Blocs 207-208, Δ=72, anciens (fin"
+ ],
+ [
+  "artemis",
+  "artemis-n5",
+  "accepted",
+  "YouTube place l'appel à 1852,0 s, puis l'explication de 1853,6 s à environ 1861,5 s ; Whisper finit « cutoff time » à 1860,6 s. Les blocs 231-232 sont"
+ ],
+ [
+  "spring",
+  "spring-n1",
+  "accepted",
+  "Texte « Blender Animation Studio presents » relu sur l'agrandissement ffmpeg à 00:20 et sur les images de référence 00:18 et 00:20 ; visible de 00:18 "
+ ],
+ [
+  "spring",
+  "spring-n2",
+  "corrected",
+  "Faits vérifiés (ffmpeg à 0,5 s de 82 à 93 s, agrandissements à 87, 88,5, 89,5 et 90 s) : nid sur une grosse branche nue et noueuse, œufs pâles (au moi"
+ ],
+ [
+  "spring",
+  "spring-n3",
+  "corrected",
+  "Faits requis vérifiés (ffmpeg à 1 s de 110 à 133 s, agrandissements à 119, 123, 127 et 131 s) : pierre pointue creusée d'une cavité sur un tertre au b"
+ ],
+ [
+  "spring",
+  "spring-n4",
+  "corrected",
+  "Poursuite vérifiée (ffmpeg à 1 s de 268 à 291 s, à 0,5 s de 291 à 302,5 s) : le chien court derrière une lueur cyan (04:33–04:37, 04:45–04:47), la fil"
+ ],
+ [
+  "spring",
+  "spring-n5",
+  "accepted",
+  "Geste vérifié (ffmpeg à 0,5 s de 403 à 414,5 s, agrandissements à 407,5–409,5 s) : la fille marche vers le chien couché près des rochers (06:47,5), se"
+ ],
+ [
+  "tears",
+  "tears-n1",
+  "accepted",
+  "Réplique vérifiée dans le SRT (38–41 et 41–42 s, avec « of death ») et dans la transcription Whisper de référence (39,4–42,3 s, sans « of death »). C'"
+ ],
+ [
+  "tears",
+  "tears-n2",
+  "corrected",
+  "Fait requis vérifié sur les images de référence de 0:56 à 1:02 : cerveau rose sur une assiette blanche, tiges métalliques, composants, arcs lumineux r"
+ ],
+ [
+  "tears",
+  "tears-n3",
+  "accepted",
+  "Répliques vérifiées dans le SRT (356–359, 359,5–361, 361–363) et dans Whisper (356,6–360,6 puis 360,6–363,6). Images 5:56–6:00 conformes : le jeune Th"
+ ],
+ [
+  "tears",
+  "tears-n4",
+  "corrected",
+  "Geste vérifié sur les images de référence 9:04 à 9:10 (agrandies) : le vieux Thom, cheveux gris et manteau à carreaux, pose les deux mains sur la tête"
+ ],
+ [
+  "tears",
+  "tears-n5",
+  "accepted",
+  "Répliques vérifiées dans le SRT (518–520 et 534–536) et dans Whisper (518,6–520,6 et 532,6–537,6), sans autre réplique entre elles. Annonce « Memory o"
+ ],
+ [
+  "cnrs",
+  "cnrs-n1",
+  "corrected",
+  "Faits, horodatages par mot, disponibilité (A, Δ = 48 à 56 s) et âge (ancien : dernier bloc [120,128), fin = E − 48) vérifiés ; pose multiple de 8, à 5"
+ ],
+ [
+  "cnrs",
+  "cnrs-n2",
+  "corrected",
+  "Comparaison, correction et itération confirmées (239,3–280,0 s, A, anciennes) ; diapositive 2/3 vue de 03:24 à 05:32 ; pose à 48 s de cnrs-04 ; pas de"
+ ],
+ [
+  "cnrs",
+  "cnrs-n3",
+  "corrected",
+  "Le nom est bien dit à 8,9–11,3 s et affiché de 00:06 à 00:22 (A, ancien, environ 560 s). Mais la question « De quelle formation… » était ambiguë : FID"
+ ],
+ [
+  "cnrs",
+  "cnrs-n4",
+  "corrected",
+  "Traductions confirmées à 682,3–686,5 s (bloc [680,688), Δ = 8, A, récent), médaillon sur « Spécialisation et métier » de 11:16 à 11:44 vérifié, pose à"
+ ],
+ [
+  "cnrs",
+  "cnrs-n5",
+  "accepted",
+  "Les quatre règles sont confirmées par mot (808,3–815,6 s), dans le bloc [808,816) : Δ = 48, disponibilité A, âge ancien (fin = E − 48). La suite (816–"
+ ],
+ [
+  "cuisine",
+  "cuisine-n1",
+  "corrected",
+  "« poitrine non fumée » est dit à 58,2–62,0 s (bloc [56,64), Δ = 80, A, ancien). La liste incrustée « 200 g de lardons non fumés », de 00:40 à 00:52, e"
+ ],
+ [
+  "cuisine",
+  "cuisine-n2",
+  "accepted",
+  "« Ça fait cinq bonnes minutes que ça dort [dore] » est dit à 289,4–292,1 s (« cinq » p = 0,79 ; bloc [288,296), Δ = 8, A, récent). La viande entre dan"
+ ],
+ [
+  "cuisine",
+  "cuisine-n3",
+  "accepted",
+  "Agrandissement des images à 00:40 et 00:48 : « 1,5 l de vin rouge » est lisible, ainsi que 1,2 kg, 200 g, 300 g, 150 g et 75 g. La liste est à l'écran"
+ ],
+ [
+  "cuisine",
+  "cuisine-n4",
+  "accepted",
+  "Le geste à la main (455,8–458,2 s) et le jus (459,4–465,3 s) sont confirmés par mot et à l'image : morceaux pris à la main de 07:36 à 07:44, plat reto"
+ ],
+ [
+  "cuisine",
+  "cuisine-n5",
+  "corrected",
+  "Les trois accompagnements sont confirmés par mot (707,3–716,8 s ; blocs [704,712) et [712,720), Δ = 16 et 8, A, récents). L'assiette est nature à l'im"
+ ]
+]

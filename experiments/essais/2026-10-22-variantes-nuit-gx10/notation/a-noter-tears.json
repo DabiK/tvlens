@@ -1,0 +1,320 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "7c16851f50",
+    "kind": "observation",
+    "answer": "Selon la conversation entre Thom et Celia sur le pont (moment-4), les passions de chacun sont clairement définies. Thom déclare vouloir être \"awesome in space\" (incroyable dans l'espace), tandis que Celia a une passion pour la robotique, comme en témoigne son bras mécanique et sa discussion ultérieure sur ses cauchemars liés à celui-ci.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "288a8155d4",
+    "kind": "observation",
+    "answer": "Selon la conversation, Celia est passionnée par la robotique. Thom, quant à lui, exprime le désir d'être exceptionnel dans le domaine de l'espace.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "c2b56df2ef",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite exceller dans l'exploration spatiale. Ces intérêts sont mentionnés lors de leur échange sur un pont (moment-4, 24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "ad52e550ac",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite devenir un explorateur spatial. L'homme mentionne explicitement vouloir être impressionnant dans l'espace et évoque la passion de Celia pour la robotique.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "4dc6f082a0",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique. Thom, quant à lui, exprime le désir d'être exceptionnel dans le domaine de l'espace.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "6bd23b43cf",
+    "kind": "observation",
+    "answer": "Barley ne mentionne pas de durée précise dans l'extrait disponible. Il répond seulement que tout est prêt et que les systèmes sont opérationnels.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "381d57d705",
+    "kind": "observation",
+    "answer": "Barley dit qu'ils devraient avoir \"minutes\" (des minutes) pour procéder.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "4b3ef24c04",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les paroles de Barley concernant la durée nécessaire ne sont pas présentes dans les passages consultés. Les extraits s'arrêtent avant qu'il ne donne cette information.",
+    "citations": []
+   },
+   {
+    "textId": "22e4b81098",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo disponibles ne contiennent pas de réponse de Barley sur la durée restante. Le dernier segment montre Barley mentionnant des minutes, mais la phrase est incomplète.",
+    "citations": []
+   },
+   {
+    "textId": "19ce39d549",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne contiennent pas de mention d'une durée ou d'un temps que Barley devrait avoir. La vidéo s'arrête sur une mention de \"minutes\" sans préciser de quantité précise.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "5652f9f3b5",
+    "kind": "observation",
+    "answer": "Thom is advised to be tender and honest with her. He is also told to remind her what love is (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "2bf1b930fd",
+    "kind": "observation",
+    "answer": "On conseille à Thom d'être tendre et honnête avec elle, et de lui rappeler ce qu'est l'amour. Ces instructions sont données dans le passage moment-31 (240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "8b52697bd8",
+    "kind": "observation",
+    "answer": "Barley conseille à Thom d'être tendre et honnête avec elle. Il lui dit également de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "1ecfdcbbc6",
+    "kind": "observation",
+    "answer": "Thom reçoit le conseil d'être tendre et honnête envers Celia, et de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "d1a3351055",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête envers elle. On lui dit également de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "14aacbd787",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre. Elle exprime également une envie de l'écraser dans ce passage.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "7c4bc70862",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre. Elle lui dit explicitement : \"You forgot me on earth!\" (Tu m'as oubliée sur Terre !), ajoutant qu'il a brisé son cœur.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "9e2d523500",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre (moment-49, 384000-392000). Elle exprime sa douleur en disant qu'elle a eu le cœur brisé.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "957e94691c",
+    "kind": "observation",
+    "answer": "Les passages disponibles ne montrent pas de reproche de Celia envers Thom. On y voit Thom exprimer de la panique et de la colère face aux actions de Celia, l'insultant dans un moment de détresse (moment-48).",
+    "citations": [
+     {
+      "id": "moment-48",
+      "startMs": 376000,
+      "endMs": 384000
+     }
+    ]
+   },
+   {
+    "textId": "1daa392a00",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom d'avoir oublié son existence sur Terre. Elle lui dit également qu'il lui a brisé le cœur.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "7197412c8b",
+    "kind": "observation",
+    "answer": "L'écrasement de la mémoire est annoncé comme étant terminé (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "f5c03d6237",
+    "kind": "observation",
+    "answer": "L'état annoncé est que l'écrasement de la mémoire est terminé (Memory override complete!), comme on peut l'entendre dans le dernier passage disponible.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "db97d42603",
+    "kind": "observation",
+    "answer": "L'état annoncé est que la substitution de mémoire est terminée. Dans le segment 536000-544000, un personnage déclare explicitement : \"Memory override complete!\".",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "ac98fb39ea",
+    "kind": "observation",
+    "answer": "L'écrasement de la mémoire est annoncé comme étant terminé. Cette information est rapportée dans le passage moment-68.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "00e508abf1",
+    "kind": "observation",
+    "answer": "L'état annoncé est que l'écrasement de la mémoire est terminé. Cette information est rapportée dans le passage moment-68 entre 536000 et 544000 ms.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

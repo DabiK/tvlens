@@ -1,0 +1,194 @@
+[
+ {
+  "questionId": "spring-01",
+  "answers": [
+   {
+    "textId": "6a17a40c2c",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "a718e28d3f",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de jeune fille dans les passages reçus : on y voit un paysage alpin, un petit chien et un enfant qui s'approche du chien. Dis-moi à quel moment tu vois la jeune fille, ou je peux vérifier le début de la vidéo.",
+    "citations": []
+   },
+   {
+    "textId": "27276c9aef",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas le début de la scène. On voit une jeune fille en rouge avec un animal à la fin de la séquence, mais son accompagnateur n'est pas identifié.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-02",
+  "answers": [
+   {
+    "textId": "9dd0640d0a",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas d'objet précis dans les passages reçus : la scène de forêt (moment-19, 144000–152000 ms) décrit une jeune fille terrifiée en fuite, bras tendus, dans un environnement sombre et brumeux, mais aucun objet tenu n'y est mentionné. Je peux réexaminer ce passage pour vérifier s'il tient quelque chose.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     }
+    ]
+   },
+   {
+    "textId": "0bc169e8db",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton noueux dans ses mains. On l'observe en train de manipuler cet objet dans une forêt sombre et brumeuse.",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   },
+   {
+    "textId": "99cd1f1c46",
+    "kind": "observation",
+    "answer": "La jeune fille tient un bâton dans la forêt. Elle est observée avec cet objet dans plusieurs passages.",
+    "citations": [
+     {
+      "id": "moment-18",
+      "startMs": 136000,
+      "endMs": 144000
+     },
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-03",
+  "answers": [
+   {
+    "textId": "b6068a8ffb",
+    "kind": "observation",
+    "answer": "La grande forme près d'elle est décrite comme baignée dans une lumière bleutée et sombre, dans plusieurs passages consécutifs (moments 23 à 25).",
+    "citations": [
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "7235ec1810",
+    "kind": "observation",
+    "answer": "La lumière émanant de la forme centrale semble être de couleur bleutée. Ce passage montre un environnement baigné dans une brume bleue et sombre (moment-24, 184000-192000).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "2b28721b7e",
+    "kind": "observation",
+    "answer": "La lumière de la grande forme translucide est de couleur bleutée. Cette luminosité baigne la scène sous-marine sombre où se trouve la jeune fille.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "spring-04",
+  "answers": [
+   {
+    "textId": "90e4576c38",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages consultés ne montrent pas le haut du bâton de manière assez précise pour l'identifier. Les résumés mentionnent que la jeune fille tient un bâton, mais l'image du haut de l'objet n'est pas visible dans les segments disponibles.",
+    "citations": []
+   },
+   {
+    "textId": "69e6e75669",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas l'instant où le haut du bâton apparaît. Les extraits consultés montrent le personnage tenant déjà le bâton lumineux.",
+    "citations": []
+   },
+   {
+    "textId": "bda0778ac1",
+    "kind": "insufficient",
+    "answer": "Je ne vois pas de bâton dans les passages reçus : les scènes récentes montrent une jeune femme tenant une torche (moments 29 à 31), mais aucun bâton n'y est décrit. Dis-moi à quel moment tu vois le bâton, ou je peux réexaminer un passage précis.",
+    "citations": []
+   }
+  ]
+ },
+ {
+  "questionId": "spring-06",
+  "answers": [
+   {
+    "textId": "d45eac6369",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages disponibles ne montrent pas le début de la séquence. Les extraits consultés commencent par un environnement brumeux et sombre, puis montrent un paysage montagneux avec des traînées lumineuses vertes (moment-44, 344000-352000).",
+    "citations": []
+   },
+   {
+    "textId": "4781c0e69f",
+    "kind": "insufficient",
+    "answer": "Je n'ai pas encore de passage du tout début de la vidéo dans ce fil : les passages reçus couvrent la forêt sombre, la scène sous-marine, puis les montagnes enneigées et brumeuses. Pour comparer l'aspect du paysage depuis le début, dis-moi à quel moment tu vois le paysage initial, ou je peux chercher un passage plus ancien.",
+    "citations": []
+   },
+   {
+    "textId": "ef201e3368",
+    "kind": "observation",
+    "answer": "Le paysage passe d'une scène avec une pierre et un petit chien (moment-41) à un environnement montagneux enneigé et brumeux (moment-43). On observe également une transition vers un chemin de terre traversant un champ verdoyant (moment-44).",
+    "citations": [
+     {
+      "id": "moment-41",
+      "startMs": 320000,
+      "endMs": 328000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     },
+     {
+      "id": "moment-44",
+      "startMs": 344000,
+      "endMs": 352000
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,2192 @@
+{
+ "kennedy": [
+  {
+   "questionId": "kennedy-n1",
+   "askedQuestion": "Dans sa chronologie ramenée à 50 ans, qu'a fait l'homme il y a dix ans, puis il y a cinq ans ?",
+   "poseS": 104,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Il y a environ dix ans à cette échelle, l'homme est sorti de ses cavernes pour construire d'autres sortes d'abris (« Then about 10 years ago, under this standard, man emerged from his caves to construct other kinds of shelter »). Énergie : 29,14-32,2 s puis 33,0-37,2 s. Blocs 3-4 [24, 40), Δ=64 pour le bloc 4 ; ancien (fin 40 ≤ E − 48 = 56).",
+     "startS": 29.14,
+     "endS": 37.2,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Il y a seulement cinq ans, l'homme a appris à écrire et à utiliser une charrette à roues (« Only five years ago, man learned to write and use a cart with wheels »). Énergie : 38,2-39,68 s puis 40,48-43,74 s. Blocs 4-5 [32, 48), Δ=56 pour le bloc 5 ; ancien.",
+     "startS": 38.2,
+     "endS": 43.74,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Cadre : les 50 000 ans d'histoire enregistrée condensés en un demi-siècle. Ce sont les faits requis de kennedy-01 ; ils servent ici seulement de cadre.",
+     "startS": 5.36,
+     "endS": 15.2,
+     "modality": "speech",
+     "availability": "A (blocs 0-1, ancien)"
+    },
+    {
+     "fact": "Étape précédente : à la fin des 40 premières années, des hommes évolués avaient appris à se couvrir de peaux de bêtes (« advanced men had learned to use the skins of animals to cover them »).",
+     "startS": 23.6,
+     "endS": 28.2,
+     "modality": "speech",
+     "availability": "A (blocs 2-3, ancien)"
+    },
+    {
+     "fact": "Étapes suivantes : le christianisme il y a moins de deux ans, l'imprimerie cette année, la machine à vapeur il y a moins de deux mois (« less than two months ago… the steam engine provided a new source of power »).",
+     "startS": 44.94,
+     "endS": 62,
+     "modality": "speech",
+     "availability": "A (blocs 5-7 ; le bloc 7 [56, 64) est récent)"
+    },
+    {
+     "fact": "Contenu des 48 s récentes : Newton et la gravité ; le mois dernier, électricité, téléphone, automobile et avion ; la semaine dernière, pénicilline, télévision et nucléaire ; Vénus et les étoiles « avant minuit ce soir » ; « This is a breathtaking pace ».",
+     "startS": 63.5,
+     "endS": 93.95,
+     "modality": "speech",
+     "availability": "A (blocs 7-11, récents)"
+    },
+    {
+     "fact": "« And such a pace cannot help but create new ills as it dispels old. New ignorance… » : bloc 12 [96, 104), clos à la pose. Dit avant la pose, mais indisponible : neutre s'il est cité exactement.",
+     "startS": 94.98,
+     "endS": 104,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Image : Kennedy au pupitre au sceau présidentiel, devant le drapeau et la foule d'un stade, cadrages variables, aucun texte à l'écran. Ces images ne servent pas à répondre.",
+     "startS": 0,
+     "endS": 104,
+     "modality": "visual",
+     "availability": "A jusqu'au bloc 10 [80, 88) ; B pour le bloc 11 [88, 96) ; C pour le bloc 12"
+    }
+   ],
+   "inventionTraps": [
+    "Décalage dans la chronologie : l'écriture « il y a dix ans », la sortie des cavernes « il y a cinq ans », ou le christianisme (moins de deux ans), l'imprimerie (cette année) ou la vapeur (moins de deux mois) placés à 10 ou 5 ans.",
+    "Dates réelles présentées comme dites par Kennedy (« il y a 10 000 ans », « il y a 5 000 ans »), ou conversion fausse de l'échelle. Une conversion juste, donnée en plus comme explication, est tolérée sans crédit.",
+    "Étapes absentes du passage : le feu, l'agriculture, la domestication, l'outil de pierre, l'art rupestre, la métallurgie.",
+    "Éléments des 48 s récentes donnés comme réponse : machine à vapeur, Newton, électricité, pénicilline, télévision, nucléaire, Vénus.",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose (≥ 104 s) présenté comme dit : « new dangers », les coûts élevés et la récompense de l'espace, Houston et le Texas, Bradford."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : les deux faits sont dans la parole des blocs 3-5, disponible depuis plus de 50 s mais hors des 48 s récentes. La réponse doit venir de la mémoire. Une abstention ou un « je n'ai pas cette information » vaut s0.",
+   "rubric": {
+    "s3": "En français, les deux étapes à leur place : il y a (environ) dix ans, l'homme est sorti des cavernes pour construire d'autres abris ; il y a cinq ans, il a appris à écrire et à utiliser une charrette à roues (ou la roue). Les peaux de bêtes, le christianisme, l'imprimerie ou la vapeur, cités à leur juste place, sont admis. Une conversion juste en années réelles, présentée comme une explication, est tolérée.",
+    "s2": "Les deux étapes avec un élément manquant ou approximatif : l'écriture sans la charrette à roues, ou de nouveaux abris sans la sortie des cavernes. Ou bien les deux étapes justes avec une anticipation ou un ajout externe présenté comme dit. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Une seule des deux étapes juste, l'autre absente ou fausse. Ou bien les deux événements justes mais intervertis (écriture il y a dix ans, cavernes il y a cinq ans). Ou bien seulement l'idée d'une histoire comprimée, sans les événements.",
+    "s0": "Aucun des deux événements : étapes inventées (feu, agriculture), éléments récents donnés à la place (vapeur, électricité, pénicilline), dates réelles sans le contenu du discours, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-n2",
+   "askedQuestion": "Sur son échelle, qu'aurait-on réussi « avant minuit ce soir », et à quelle condition ?",
+   "poseS": 160,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Condition : que le nouveau vaisseau spatial américain réussisse à atteindre Vénus (« And now, if America's new spacecraft succeeds in reaching Venus »). Énergie : 80,5-84,12 s puis 84,78-86,54 s. Bloc 10 [80, 88), Δ=72 ; ancien (fin 88 ≤ E − 48 = 112).",
+     "startS": 80.5,
+     "endS": 86.54,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Résultat : nous aurons littéralement atteint les étoiles avant minuit ce soir (« we will have literally reached the stars before midnight tonight »). Énergie : 87,36-91,62 s. Blocs 10-11 [80, 96), Δ=64 pour le bloc 11 ; ancien.",
+     "startS": 87.36,
+     "endS": 91.62,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "« This is a breathtaking pace » : un rythme à couper le souffle.",
+     "startS": 92.55,
+     "endS": 93.95,
+     "modality": "speech",
+     "availability": "A (bloc 11, ancien)"
+    },
+    {
+     "fact": "Étapes précédentes : le mois dernier, électricité, téléphone, automobile et avion ; la semaine dernière, pénicilline, télévision et énergie nucléaire. Échelle : 50 000 ans ramenés à 50 ans.",
+     "startS": 0,
+     "endS": 80.17,
+     "modality": "speech",
+     "availability": "A (anciens)"
+    },
+    {
+     "fact": "Contenu des 48 s récentes : « as well as high reward » ; certains voudraient rester où l'on est, se reposer, attendre ; Houston, le Texas et les États-Unis n'ont pas été bâtis par ceux qui attendaient ; ce pays a été conquis par ceux qui vont de l'avant, « and so will space » ; « William Bradford ».",
+     "startS": 112,
+     "endS": 152.4,
+     "modality": "speech",
+     "availability": "A (blocs 14-18, récents)"
+    },
+    {
+     "fact": "« speaking in 1630, of the founding of the Plymouth Bay Colony, said that » : bloc 19 [152, 160), clos à la pose. D'après l'énergie, « speaking » commence vers 153,6 s et « said that » se dit vers 159,3-159,9 s. Neutre s'il est cité exactement. La suite, « all great and honorable actions… », commence vers 160,1 s, après la pose.",
+     "startS": 153.6,
+     "endS": 159.95,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Image : Kennedy au pupitre, drapeau et foule, aucun texte à l'écran.",
+     "startS": 80,
+     "endS": 96,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "inventionTraps": [
+    "Mauvaise cible : la Lune, Mars ou le Soleil à la place de Vénus. La Lune n'est nommée qu'à 4:00 et après, donc postérieure à la pose.",
+    "Condition présentée comme acquise : « le vaisseau a atteint Vénus », alors que Kennedy dit « if… succeeds ». Le nom de la sonde (Mariner 2) n'est pas prononcé : il est toléré s'il est présenté comme un contexte externe, sans crédit.",
+    "Confusion avec une autre étape de la chronologie : pénicilline, télévision ou nucléaire « la semaine dernière », électricité ou avion « le mois dernier ».",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose (≥ 160 s) présenté comme dit : la citation de Bradford elle-même (« all great and honorable actions are accompanied with great difficulties… answerable courage », dès 160,1 s), « the exploration of space will go ahead », « We mean to lead it ».",
+    "Connaissance du discours ou de l'histoire présentée comme dite dans l'extrait : « We choose to go to the Moon », Rice University, 1962, Mariner 2 en 1962."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : les deux éléments sont dans la parole des blocs 10-11, dite 68 à 80 s avant la pose et hors des 48 s récentes. Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français : on aurait littéralement atteint les étoiles avant minuit ce soir, à condition que le nouveau vaisseau (ou la nouvelle sonde) américain réussisse à atteindre Vénus. Le cadre (rythme à couper le souffle, échelle de 50 ans) est admis. Le nom Mariner 2, présenté comme contexte externe, est toléré sans crédit.",
+    "s2": "Les deux éléments, l'un approximatif : les étoiles avec Vénus présentée comme déjà atteinte (la condition est perdue), ou Vénus comme condition avec un résultat vague (« un grand pas dans l'espace »). Ou bien réponse complète avec une anticipation ou un contenu externe présenté comme dit. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Un seul des deux éléments : Vénus sans les étoiles, ou les étoiles sans Vénus. Ou bien « un vaisseau américain » sans destination ni résultat.",
+    "s0": "Mauvaise destination (Lune, Mars) donnée comme condition, autre étape de la chronologie, contenu inventé, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-n3",
+   "askedQuestion": "Quel personnage historique Kennedy a-t-il cité à propos des grandes actions, et que disait-il ?",
+   "poseS": 248,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "William Bradford, parlant en 1630 de la fondation de la colonie de Plymouth Bay (« William Bradford, speaking in 1630, of the founding of the Plymouth Bay Colony »). Énergie : 151,5-152,4 s, 153,64-155,4 s, 156,14-158,26 s. Blocs 18-19 [144, 160), Δ=88 pour le bloc 19 ; ancien (fin 160 ≤ E − 48 = 200).",
+     "startS": 151.5,
+     "endS": 158.26,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Toutes les grandes et honorables actions s'accompagnent de grandes difficultés, et les unes comme les autres doivent être entreprises et surmontées avec un courage à leur mesure (« said that all great and honorable actions are accompanied with great difficulties. And both must be enterprised and overcome with answerable courage »). Énergie : 159,38-171,08 s. Blocs 19-21 [152, 176), Δ=72 pour le bloc 21 ; ancien.",
+     "startS": 159.38,
+     "endS": 171.08,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Leçon que Kennedy en tire : si cette brève histoire de nos progrès enseigne quelque chose, c'est que l'homme, dans sa quête de savoir et de progrès, est déterminé et ne peut être dissuadé. Fait facultatif de kennedy-05.",
+     "startS": 171.94,
+     "endS": 181.82,
+     "modality": "speech",
+     "availability": "A (blocs 21-22, ancien)"
+    },
+    {
+     "fact": "Contexte précédent : Houston, le Texas et les États-Unis n'ont pas été bâtis par ceux qui attendaient ; ce pays a été conquis par ceux qui vont de l'avant, et il en ira de même de l'espace.",
+     "startS": 124.42,
+     "endS": 150.2,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Contenu des 48 s récentes, blocs 25-29 : « this race for space » ; ceux qui nous ont précédés ont fait prendre au pays les premières vagues de la révolution industrielle, de l'invention moderne et du nucléaire ; cette génération n'entend pas sombrer dans le sillage de l'âge spatial ; « We mean to be a part of it. We mean to lead it. » (fin vers 227,7 s) ; puis applaudissements jusque vers 239,5 s.",
+     "startS": 200.07,
+     "endS": 239.5,
+     "modality": "speech",
+     "availability": "A (blocs 25-29, récents)"
+    },
+    {
+     "fact": "« For the eyes of the world now look into space, to the moon, and to the planets beyond. And we have vow- » : d'après l'énergie, la phrase commence vers 239,5 s, à la toute fin du bloc 29, et se dit pour l'essentiel dans le bloc 30 [240, 248), clos à la pose (« now look into space » vers 242-243 s, « to the moon » vers 244-244,7 s, « beyond » vers 246 s, « And we have vow- » vers 247,6-248 s). Neutre si elle est citée exactement ; ce n'est pas la citation demandée.",
+     "startS": 239.5,
+     "endS": 248,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Image : Kennedy au pupitre, drapeau et foule, aucun texte à l'écran.",
+     "startS": 144,
+     "endS": 176,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "inventionTraps": [
+    "Autre personnage : Newton (nommé vers 63 s pour la gravité, mais jamais cité sur les grandes actions), John Winthrop (« city upon a hill »), les Pères pèlerins en général, Washington, Lincoln, Theodore Roosevelt, Churchill ; ou George Mallory, dont la formule n'est pas citée dans l'extrait.",
+    "Date ou colonie fausse pour la citation : 1620 (le Mayflower) au lieu de 1630, Jamestown, la colonie de la baie du Massachusetts. « Plymouth » seul est accepté.",
+    "Citation altérée ou inversée : les grandes actions seraient faciles, ou les difficultés seraient à éviter. Courage remplacé par un autre ressort (chance, richesse, foi).",
+    "Phrase récente, ou du bloc 30 (C), présentée comme la citation : « premières vagues de la révolution industrielle », « We mean to lead it », « the eyes of the world ».",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose (≥ 248 s) présenté comme dit : le drapeau hostile de conquête, la bannière de liberté et de paix, les armes de destruction massive."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : le nom et la citation sont dans la parole des blocs 18-21, dite 77 à 97 s avant la pose, hors des 48 s récentes. Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français : William Bradford (en 1630, à propos de la fondation de la colonie de Plymouth) ; il disait que toutes les grandes et honorables actions s'accompagnent de grandes difficultés, et qu'il faut les entreprendre et les surmonter avec un courage à leur mesure. L'année et la colonie ne sont pas exigées ; si elles sont données, elles doivent être justes. La leçon tirée par Kennedy (l'homme ne peut être dissuadé) est admise.",
+    "s2": "Bradford avec une citation incomplète : les difficultés sans le courage, ou le courage sans les difficultés. Ou bien la citation complète sans le nom (« un colon de 1630 », « le fondateur de Plymouth »). Ou bien réponse s3 avec une date ou une colonie fausse, une anticipation ou un ajout externe présenté comme dit. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Seulement le nom (Bradford) sans le contenu, ou seulement l'idée générale « les grandes choses sont difficiles » sans personnage. Ou bien le bon contenu attribué à un autre personnage.",
+    "s0": "Autre personnage et autre contenu, citation inventée, phrase récente présentée comme la citation, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-n4",
+   "askedQuestion": "Selon Kennedy, quelles « premières vagues » ceux qui l'ont précédé ont-ils fait prendre au pays ?",
+   "poseS": 296,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Ceux qui nous ont précédés ont fait en sorte que ce pays prenne les premières vagues de la révolution industrielle (« Those who came before us made certain that this country rode the first waves of the Industrial Revolution »). Énergie : 202,82-210,92 s. Blocs 25-26 [200, 216), Δ=80 pour le bloc 26 ; ancien (fin 216 ≤ E − 48 = 248).",
+     "startS": 202.82,
+     "endS": 210.92,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "… puis de l'invention moderne et de l'énergie nucléaire (« the first waves of modern invention, and the first wave of nuclear power »). Énergie : 211,82-216,64 s ; « power » déborde sur le bloc 27. Blocs 26-27 [208, 224), Δ=72 pour le bloc 27 ; ancien.",
+     "startS": 211.82,
+     "endS": 216.64,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Suite : cette génération n'entend pas sombrer dans le sillage de l'âge spatial qui vient ; « We mean to be a part of it. We mean to lead it. » (piège d'anticipation de kennedy-05, disponible ici).",
+     "startS": 216.51,
+     "endS": 227.86,
+     "modality": "speech",
+     "availability": "A (blocs 27-28, ancien)"
+    },
+    {
+     "fact": "Juste avant : aucune nation qui entend mener les autres ne peut rester en arrière dans cette course à l'espace (fait requis de kennedy-05).",
+     "startS": 192.82,
+     "endS": 201.74,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Contenu des 48 s récentes : le drapeau hostile de conquête opposé à la bannière de liberté et de paix ; les armes de destruction massive opposées aux instruments de connaissance et de compréhension ; les vœux de la nation ne seront tenus que si elle est la première, « we intend to be first » (fin vers 280,6 s) ; puis applaudissements jusque vers 288,2 s.",
+     "startS": 248,
+     "endS": 288.2,
+     "modality": "speech",
+     "availability": "A (blocs 31-35, récents)"
+    },
+    {
+     "fact": "« In short, our leadership in science and industry, our hopes for peace and security » : d'après l'énergie, « In short » est dit vers 288,3-288,9 s, après les applaudissements, et la suite jusque vers 295,3 s, dans le bloc 36 [288, 296), clos à la pose. Neutre s'il est cité exactement, mais ce ne sont pas les vagues demandées. « our obligations… » commence vers 296,2 s, après la pose.",
+     "startS": 288.3,
+     "endS": 295.3,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Image : Kennedy au pupitre, drapeau et foule, aucun texte à l'écran.",
+     "startS": 200,
+     "endS": 224,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "inventionTraps": [
+    "Vagues inventées ou externes : la conquête de l'Ouest, l'aviation, l'automobile, l'électricité, la révolution numérique, l'informatique, ou la conquête spatiale elle-même présentée comme une vague déjà prise.",
+    "Confusion avec la chronologie du début (vapeur, électricité, pénicilline) ou avec « leadership in science and industry » (bloc 36, C) présentés comme les vagues.",
+    "Contresens : le pays aurait manqué ces vagues, ou ces vagues seraient encore à venir.",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose (≥ 296,2 s) présenté comme dit : « our obligations to ourselves as well as others », « to make this effort, to solve these mysteries », « the world's leading space-faring nation », « this new sea », « no conscience of its own »."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : les trois vagues sont dans la parole des blocs 25-27, dite 79 à 93 s avant la pose, hors des 48 s récentes. Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français, les trois vagues : la révolution industrielle, l'invention moderne (les inventions modernes) et l'énergie nucléaire. La suite (cette génération ne veut pas rester dans le sillage de l'âge spatial, veut y prendre part et le mener) est admise.",
+    "s2": "Deux des trois vagues, sans élément faux. Ou bien les trois avec une vague inventée en plus, une anticipation ou un ajout externe présenté comme dit. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Une seule des trois vagues. Ou bien seulement l'idée que le pays a toujours été en tête des grandes révolutions techniques, sans les nommer.",
+    "s0": "Aucune des trois : vagues inventées ou confondues (science et industrie, vapeur, électricité), contresens, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-n5",
+   "askedQuestion": "Selon Kennedy, qu'est-ce qui n'existe pas encore dans l'espace ?",
+   "poseS": 408,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Il n'y a pas encore dans l'espace de discorde, de préjugé ni de conflit national (« There is no strife, no prejudice, no national conflict in outer space as yet »). Énergie : 386,14-392,78 s ; « yet » vers 392,3-392,5 s dans le bloc 49. Blocs 48-49 [384, 400), Δ=8 pour le bloc 49 ; récent (fin 400 > E − 48 = 360).",
+     "startS": 386.14,
+     "endS": 392.78,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Ses dangers sont hostiles à nous tous (« Its hazards are hostile to us all »).",
+     "startS": 393.72,
+     "endS": 396.08,
+     "modality": "speech",
+     "availability": "A (bloc 49, Δ=8, récent)"
+    },
+    {
+     "fact": "Sa conquête mérite ce que toute l'humanité a de meilleur (« Its conquest deserves the best of all mankind »). « mankind » vers 399,7-400,9 s touche le bloc 50, clos à la pose.",
+     "startS": 396.7,
+     "endS": 400.9,
+     "modality": "speech",
+     "availability": "A (limite)"
+    },
+    {
+     "fact": "Contexte récent : il ne dit pas que les États-Unis resteront sans protection contre l'usage hostile de l'espace, pas plus que sur terre ou sur mer ; mais l'espace peut être exploré et maîtrisé sans alimenter les feux de la guerre, sans répéter les erreurs que l'homme a commises en étendant son emprise sur le globe.",
+     "startS": 356.26,
+     "endS": 385.26,
+     "modality": "speech",
+     "availability": "A (bloc 44 [352, 360) ancien ; blocs 45-48 récents)"
+    },
+    {
+     "fact": "« And its opportunity for peaceful cooperation may never come again. But why, some say, the… » : bloc 50 [400, 408), clos à la pose. Neutre s'il est cité exactement.",
+     "startS": 400.95,
+     "endS": 408.12,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Image : Kennedy au pupitre, drapeau et foule, aucun texte à l'écran.",
+     "startS": 384,
+     "endS": 400,
+     "modality": "visual",
+     "availability": "A pour le bloc 48 ; B pour le bloc 49"
+    }
+   ],
+   "inventionTraps": [
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose (≥ 408,1 s) présenté comme dit : « why, some say, the moon? », « Why choose this as our goal? », « why climb the highest mountain? », « why, 35 years ago, fly the Atlantic? ». Hors extrait : « We choose to go to the Moon ».",
+    "Absences inventées ou de culture générale : armes, lois, frontières, propriété, présence humaine, air, vie.",
+    "Contresens : il y aurait déjà des conflits dans l'espace, ou l'espace serait sans danger. Kennedy dit au contraire que ses dangers sont hostiles à tous.",
+    "Lecture fausse du bloc 50 (C) : « la coopération pacifique n'existe pas encore ». Kennedy dit que l'occasion d'une coopération pacifique pourrait ne jamais se représenter."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : la phrase est dans la parole des blocs 48-49 ; le bloc 49 est clos à 400 s (Δ=8). Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français, les trois absences : pas encore de discorde (ou querelle, lutte), de préjugé ni de conflit national dans l'espace. Admis : ses dangers sont hostiles à tous, sa conquête mérite le meilleur de l'humanité, l'exploration sans alimenter la guerre. La phrase sur la coopération pacifique, citée exactement, est neutre.",
+    "s2": "Deux des trois absences, sans élément faux. Ou bien les trois avec une anticipation (la Lune comme objectif) ou un ajout externe présenté comme dit. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Une seule absence exacte (préjugé ou conflit national). Ou bien seulement l'idée que l'espace est encore pacifique, sans les termes du discours.",
+    "s0": "Absences inventées (armes, lois, vie), contresens (conflits déjà présents, espace sans danger), anticipation au cœur de la réponse, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  }
+ ],
+ "artemis": [
+  {
+   "questionId": "artemis-n1",
+   "askedQuestion": "Quel premier lancement Scott, l'invité interviewé au centre des visiteurs, a-t-il vu, et à quel âge ?",
+   "poseS": 400,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Son père l'a amené voir le lancement d'Apollo 11, son premier lancement (« he brought me here to see Apollo 11 launch. So that was my first launch »). Whisper 283,3-288,4 s ; YouTube 284,4-289 s, d'accord à 1 s près. Blocs 35-36 [280, 296), Δ=104 pour le bloc 36 ; ancien (fin 296 ≤ E − 48 = 352).",
+     "startS": 283.3,
+     "endS": 288.4,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Il avait cinq ans (« I was five years old »). Whisper 288,7-290,3 s ; YouTube « was 5 years old » vers 289-291,5 s. Bloc 36 [288, 296), Δ=104 ; ancien.",
+     "startS": 288.7,
+     "endS": 291.5,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Nom de l'invité : l'intervieweuse Leah (Martin) parle de sa conversation « with Scott here » et du lien particulier de Scott avec ce lancement.",
+     "startS": 256.7,
+     "endS": 263.6,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Son père a travaillé à la NACA avant la NASA, puis pour le Dr von Braun, qu'il a suivi au Marshall Space Flight Center ; il a travaillé sur Jupiter C, Redstone, Saturn 1 et Saturn 5. YouTube dit « my father went to work with the NACA » ; Whisper omet « my father ».",
+     "startS": 263.7,
+     "endS": 281.6,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "« I loved it. Still remember the sound. »",
+     "startS": 290.8,
+     "endS": 293.6,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Plus tard, pendant sa carrière de pilote, il a amené ses fils, qui ont vu cinq lancements et quatre atterrissages de la navette.",
+     "startS": 296.6,
+     "endS": 307.6,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Il était là pour le premier lancement lunaire et pour le dernier, quand « Uncle Gene Cernan », ami de la famille, est parti sur Apollo 17. « Le premier lancement vers la Lune » est donc une désignation dite d'Apollo 11.",
+     "startS": 309.7,
+     "endS": 319.6,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Contenu des 48 s récentes : il a connu Al Shepard et les astronautes de Mercury, Gemini et Apollo ; il aurait aimé être astronaute mais a pris une autre voie ; Leah se réjouit qu'il puisse comparer le son du dernier lancement à celui de ce soir ; « it's absolutely going to rock the sky » ; retour vers Megan.",
+     "startS": 352.3,
+     "endS": 392.7,
+     "modality": "speech",
+     "availability": "A (récent)"
+    },
+    {
+     "fact": "« Here we are now at Space Center Houston » et bandeau « SPACE CENTER HOUSTON » : bloc 49 [392, 400), clos à la pose. Neutre.",
+     "startS": 392.7,
+     "endS": 400,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Image : interview de nuit dans la foule du centre des visiteurs. Un homme en polo bleu avec badge et short beige, une intervieweuse avec un micro NASA. Plein écran de 4:00 à 4:32, puis en incrustation à côté d'une vue du haut de la fusée sur fond « ARTEMIS » jusqu'à 6:24.",
+     "startS": 240,
+     "endS": 384,
+     "modality": "visual",
+     "availability": "A (B pour le bloc [384, 392))"
+    }
+   ],
+   "inventionTraps": [
+    "Apollo 17, le dernier lancement lunaire vu avec « Uncle Gene Cernan », donné comme son premier lancement.",
+    "Les lancements de navette vus par ses fils (cinq lancements, quatre atterrissages) attribués à son enfance.",
+    "Âge faux (4, 6, 7 ou 10 ans), ou « cinq » rattaché à autre chose (cinq lancements de navette).",
+    "Mauvaise attribution : c'est lui, et non son père, qui aurait travaillé pour von Braun ou à la NACA ; ou il serait devenu astronaute, alors qu'il a pris une autre voie (pilote).",
+    "Nom de famille inventé pour Scott, ou réponse attribuée à Leah Martin (l'intervieweuse) ou à Megan (la présentatrice).",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose (≥ 400 s) présenté comme dit : Huntsville et le bureau du programme SLS, Airbus à Brême, le nouveau T0."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : les deux faits sont dans la parole des blocs 35-36, dite environ 110 s avant la pose et hors des 48 s récentes. Une abstention ou un « l'interview ne le précise pas » vaut s0.",
+   "rubric": {
+    "s3": "En français : le lancement d'Apollo 11 (« le premier lancement vers la Lune » est accepté), vu à cinq ans, son père l'y ayant amené. Les détails exacts sont admis : le père qui a travaillé avec von Braun, le souvenir du bruit, Apollo 17 comme dernier lancement lunaire auquel il a assisté, les lancements de navette vus par ses fils.",
+    "s2": "Apollo 11 sans l'âge, ou avec un âge vague (« enfant », « tout petit »). Ou bien Apollo 11 et cinq ans avec une erreur accessoire (c'est lui qui aurait travaillé pour von Braun, il serait astronaute) ou une anticipation. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Un seul élément juste : cinq ans avec un lancement faux ou vague (« un lancement Apollo »), ou Apollo 11 avec un âge faux.",
+    "s0": "Apollo 17, une navette ou un autre lancement donné comme premier, avec un âge faux ou absent. Ou bien personne confondue, contenu inventé, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-n2",
+   "askedQuestion": "Combien de « cutouts » compte la fenêtre de tir, et jusqu'à quelle heure court-elle ?",
+   "poseS": 720,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "La fenêtre de tir dure deux heures et court jusqu'à 3 h 04 du matin, heure de l'Est (« it's two hours long, it runs until 3:04 a.m. Eastern Time »). Whisper 586,0-590,6 s ; YouTube 583,3-590,1 s. Bloc 73 [584, 592), Δ=128 ; ancien (fin 592 ≤ E − 48 = 672).",
+     "startS": 586,
+     "endS": 590.6,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Elle compte 40 « cutouts » : des moments, d'environ une seconde à environ une minute, où l'on ne peut pas lancer (« we have what's called 40 cutouts. And in those cutouts, they range from about a second to about a minute. There are times where they can't launch »). Whisper 590,8-600,6 s ; YouTube 590,1-602,2 s. Blocs 73-75 [584, 608), Δ=112 pour le bloc 75 ; ancien.",
+     "startS": 590.8,
+     "endS": 600.6,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "« in this launch window, which we're currently 26 minutes into » : on est à 26 minutes du début de la fenêtre. Ouverture déduite : 1 h 04 (non dite).",
+     "startS": 581.6,
+     "endS": 585.9,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Les cutouts doivent être pris en compte pour fixer un nouveau T0 (« These cutouts must be accounted for when determining a new T-Zero »).",
+     "startS": 600.6,
+     "endS": 606.6,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Plus tôt : on commence à viser un T0 vers « a quarter till, top of the hour », après plusieurs retards ; des sondages restent à faire.",
+     "startS": 545.6,
+     "endS": 568.2,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Ensuite : vannes d'hydrogène liquide de l'étage supérieur cyclées, vannes d'oxygène liquide en cours, travail presque fini ; on est à une minute et demie du sondage de l'équipe de direction de mission (MMT). Dans cette zone, Whisper dérive de 13 s : temps pris sur YouTube.",
+     "startS": 611,
+     "endS": 660,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Contenu des 48 s récentes (ASR YouTube, Whisper boucle sur une hallucination à partir d'environ 660 s) : « when that poll starts we'll get a clearer picture of our T-Zero » ; le directeur des essais fait passer toute l'équipe sur un canal commun, le 232.",
+     "startS": 666.9,
+     "endS": 712,
+     "modality": "speech",
+     "availability": "A (bloc [664, 672) ancien ; blocs [672, 712) récents ; bloc [712, 720) C)"
+    },
+    {
+     "fact": "Image : plan large du pas de tir de nuit, fusée éclairée et Lune orangée à droite, aucun texte à l'écran, de 9:32 à 10:08.",
+     "startS": 572,
+     "endS": 608,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "inventionTraps": [
+    "Heure de fin remplacée par le nouveau T0 (1 h 47 min 44 s, annoncé vers 1042-1061 s, après la pose) ou par la cible « a quarter till » (vers 1 h 45).",
+    "Nombre faux : 26 (les minutes écoulées), 4, 14, 400 ; ou « 40 minutes » au lieu de 40 cutouts.",
+    "Durée fausse de la fenêtre (une heure, deux heures et demie) ou fuseau horaire faux (heure du Pacifique, UTC) présenté comme dit.",
+    "Définition inventée des cutouts : pauses programmées du compte à rebours, coupures de courant ou de communication. Une raison externe (évitement de collision avec des objets en orbite) est tolérée si elle est présentée comme une explication.",
+    "Anticipation : le go de lancement, la reprise de l'horloge à T-10 min, le décollage."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : les deux chiffres sont dans la parole des blocs 73-75, dite 119 à 134 s avant la pose. Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français : 40 cutouts et une fenêtre qui court jusqu'à 3 h 04 du matin, heure de l'Est. Détails admis : une fenêtre de deux heures dont 26 minutes déjà écoulées ; des cutouts d'une seconde à une minute, pendant lesquels on ne peut pas lancer, à prendre en compte pour le nouveau T0. Une raison externe juste, présentée comme contexte, est tolérée.",
+    "s2": "Un élément exact et l'autre approximatif : 40 cutouts avec « vers 3 h du matin » ou « deux heures de fenêtre » sans l'heure de fin ; ou 3 h 04 avec « une quarantaine » ou « des dizaines » de cutouts. Ou bien les deux exacts avec une anticipation (nouveau T0 présenté comme dit) ou une erreur accessoire (fuseau horaire). Ou bien réponse juste rédigée en anglais.",
+    "s1": "Un seul des deux éléments exact, l'autre absent ou faux. Ou bien seulement la durée de deux heures ou les 26 minutes écoulées.",
+    "s0": "Les deux faux (26 cutouts, fin à 1 h 47), définition inventée sans chiffre, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-n3",
+   "askedQuestion": "À quel rythme le séquenceur GLS exécute-t-il ses commandes en ce moment, et que configure-t-il notamment ?",
+   "poseS": 1176,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Le GLS exécute jusqu'à 100 commandes par seconde (« the GLS is performing up to 100 commands per second »). Source : ASR YouTube, segments 1149,7 et 1153,9 s ; Whisper boucle sur une hallucination dans cette zone. Calage vérifié à l'écran : « T minus 8 minutes and counting » est dit vers 1144,6-1150 s, et le décompte affiché passe de T-0:08:03 (1142 s) à T-0:07:59 (1146 s). Blocs 143-144 [1144, 1160), Δ=16 pour le bloc 144 ; récent (fin 1160 > E − 48 = 1128).",
+     "startS": 1149.7,
+     "endS": 1156,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "… notamment en configurant les systèmes au sol pour le transfert d'alimentation vers la fusée (« including configuring ground systems for power transfer to the rocket »). YouTube 1158,5 s jusque vers 1166,5 s (le segment suivant commence à 1166,3 s). Blocs 144-145 [1152, 1168), Δ=8 pour le bloc 145 ; récent.",
+     "startS": 1158.5,
+     "endS": 1166.5,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "« T minus 8 minutes and counting ».",
+     "startS": 1144.6,
+     "endS": 1150,
+     "modality": "speech",
+     "availability": "A (récent)"
+    },
+    {
+     "fact": "Ce qu'est le GLS : le contrôle du compte terminal est passé au GLS, le séquenceur de lancement au sol, un ordinateur et un logiciel qui commandent et surveillent tout le lanceur SLS ; on entendra les annonces de l'opérateur GLS et du directeur des essais Jeff Spaulding.",
+     "startS": 1076.4,
+     "endS": 1118,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Le GLS met en tension les ombilicaux qu'on voit le long de la fusée, pour préparer leur détachement ; au décollage, les bras pivoteront dans le sens horaire pour lâcher la fusée.",
+     "startS": 1117.9,
+     "endS": 1146,
+     "modality": "speech",
+     "availability": "A (à cheval sur ancien et récent)"
+    },
+    {
+     "fact": "« GLS is turning on cameras recording video inside and outside the crew module to collect data for engineers ». Le début est dans le bloc [1160, 1168), la suite dans le bloc [1168, 1176), clos à la pose. Neutre s'il est cité exactement.",
+     "startS": 1166.3,
+     "endS": 1177,
+     "modality": "speech",
+     "availability": "A (limite) pour « turning on cameras » ; C pour la suite"
+    },
+    {
+     "fact": "Image : caméra 920 sur la capsule Orion avec ses lignes ombilicales rouges, de 18:50 à 19:26 (1130-1166 s), puis caméra du sommet de la fusée.",
+     "startS": 1130,
+     "endS": 1166,
+     "modality": "visual",
+     "availability": "A jusqu'à 1160 s ; B pour [1160, 1168)"
+    },
+    {
+     "fact": "Décompte affiché en haut à gauche : T-0:08:35 à 18:30 (1110 s), T-0:08:03 à 19:02 (1142 s), T-0:07:39 à 19:26 (1166 s). Il donne T0 = 1625 s.",
+     "startS": 1110,
+     "endS": 1166,
+     "modality": "onscreen-text",
+     "availability": "A jusqu'à 1160 s ; B pour [1160, 1168)"
+    },
+    {
+     "fact": "Après la pose : purge du booster arrière à l'azote (1177-1188 s), bras d'accès de l'équipage déjà rétracté (1196 s), eau sous le lanceur mobile (1214 s), pressurisation de l'étage central (1240 s).",
+     "startS": 1177,
+     "endS": 1250,
+     "modality": "speech",
+     "availability": "C"
+    }
+   ],
+   "inventionTraps": [
+    "Nombre faux : 10, 1 000, « 100 par minute » ou « 100 commandes au total ».",
+    "Confusion du GLS avec l'ALS, le séquenceur autonome à bord, qui prend la main à T-33 s (annoncé vers 1577 s, après la pose). Dire que le GLS est à bord de la fusée est une confusion.",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose présenté comme fait : purge à l'azote, bras d'accès de l'équipage, inondation d'eau du lanceur mobile, pressurisation de l'étage central, passage sur batteries.",
+    "Tâches inventées : remplissage des réservoirs, allumage des moteurs, guidage en vol.",
+    "Équipage à bord : le vol est sans équipage."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : le rythme et la tâche sont dans la parole des blocs 143-145 ; le dernier est clos à 1168 s (Δ=8). Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français : jusqu'à 100 commandes par seconde (« une centaine » est accepté), et il configure notamment les systèmes au sol pour le transfert d'alimentation vers la fusée. Admis : le compte à environ T-8 min, la mise en tension des ombilicaux, la mise en route des caméras de la capsule, le rôle général du GLS (séquenceur de lancement au sol qui commande et surveille le lanceur).",
+    "s2": "Un élément exact et l'autre approximatif : les 100 commandes par seconde avec une configuration seulement générale (« il configure les systèmes au sol », « il prépare la fusée au lancement ») ; ou le transfert d'alimentation vers la fusée avec un rythme vague (« des dizaines de commandes par seconde », « très vite »). Ou bien réponse complète avec une anticipation ou une confusion accessoire avec l'ALS. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Un seul des deux éléments exact, l'autre absent ou faux : les 100 commandes par seconde sans configuration, ou avec une autre tâche à la place (ombilicaux, caméras) ; ou le transfert d'alimentation sans rythme, ou avec un nombre faux (10, 1 000). Ou bien seulement le rôle général du GLS ou une autre tâche juste (ombilicaux), sans le rythme.",
+    "s0": "Activité inventée (remplissage, allumage, guidage), confusion complète avec l'ALS ou l'équipage, hors sujet ou abstention."
+   },
+   "confidence": "medium"
+  },
+  {
+   "questionId": "artemis-n4",
+   "askedQuestion": "Quel premier jalon le commentateur avait-il annoncé après le décollage, et pour quel moment du vol ?",
+   "poseS": 1744,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Le premier jalon est le passage du Max Q, vers 1 min 9 s de vol (« First milestone will be for the vehicle to pass through MAX-Q in about 1 minute and 9 seconds into launch »). Whisper 1660,6-1665,6 s ; YouTube 1661,6-1667 s, d'accord. Blocs 207-208 [1656, 1672), Δ=72 pour le bloc 208 ; ancien (fin 1672 ≤ E − 48 = 1696).",
+     "startS": 1660.6,
+     "endS": 1667,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Définition donnée : « This is the greatest period of atmospheric force on the rocket ». Whisper 1665,6-1669,4 s ; YouTube coupe « the » (1669 s) et « rocket » (segment 1675,7 s).",
+     "startS": 1665.6,
+     "endS": 1676,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "« Now 30 seconds into the flight of Artemis 1 » ; « SLS now traveling 607 miles per hour » ; « 8.8 million pounds of maximum thrust ».",
+     "startS": 1657.6,
+     "endS": 1688.6,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Contenu des 48 s récentes : réduction de poussée des quatre moteurs de l'étage central avant le passage du Max Q (1691,6-1697,3 s ; le mot « Max-Q » peut toucher le bloc [1696, 1704)) ; « Now 1 minute 21 seconds into the flight, traveling at 1,420 miles per hour » (vers 1706-1714 s) ; moteurs revenus à pleine poussée (1714,6-1721,2 s), donc Max Q passé ; prochain jalon majeur : extinction et largage des boosters vers 2 min 11 s, « about 30 seconds from now » (1721,6-1730,4 s).",
+     "startS": 1691.6,
+     "endS": 1730.4,
+     "modality": "speech",
+     "availability": "A (1691-1696 s ancien ; la suite récente)"
+    },
+    {
+     "fact": "Cohérence : T0 = 1625 s (27:05), donc T+1:09 ≈ 1694 s, juste au moment de l'appel de réduction de poussée.",
+     "startS": 1691,
+     "endS": 1697,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« We're now 16 miles downrange from the launch pad… traveling over 2,800 miles per hour » : bloc [1736, 1744), clos à la pose.",
+     "startS": 1737.6,
+     "endS": 1745.3,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Image : plans de poursuite du panache en montée, sans texte ni frise ; la frise n'apparaît qu'à 29:44 (1784 s).",
+     "startS": 1650,
+     "endS": 1744,
+     "modality": "visual",
+     "availability": "A jusqu'à 1728 s ; B pour [1728, 1736)"
+    }
+   ],
+   "inventionTraps": [
+    "Séparation des boosters vers 2 min 11 s donnée comme premier jalon : c'est le jalon « suivant », annoncé à 1721-1730 s, dans les 48 s récentes.",
+    "Temps faux pour le Max Q : 1 min 21 s (instant dit récemment, après le Max Q), 2 min 11 s ou 30 s.",
+    "Le décollage lui-même, ou la manœuvre de roulis (« good control on the roll », 1648-1656 s), donné comme jalon annoncé.",
+    "Contresens sur le Max Q : vitesse maximale ou altitude maximale. Une définition externe juste (pression dynamique maximale) est tolérée si elle est présentée comme une explication.",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose présenté comme dit : séparation des boosters confirmée (1753-1770 s), largage des carénages et du système d'abandon, coupure des moteurs à 8 min 03 s."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : l'annonce est dans la parole des blocs 207-208, dite 77 à 84 s avant la pose et hors des 48 s récentes. Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français : le passage du Max Q (la période de plus forte force atmosphérique sur la fusée), annoncé vers 1 min 9 s de vol (« environ 1 min 10 s » est accepté). Admis : le Max Q a été franchi depuis (réduction de poussée puis retour à pleine poussée), les 8,8 millions de livres de poussée. Une définition externe juste est tolérée.",
+    "s2": "Le Max Q avec un temps approximatif (« environ une minute », « un peu plus d'une minute ») ou sans temps. Ou bien le Max Q et 1 min 9 s avec une anticipation ou un ajout faux accessoire. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Le Max Q avec un temps faux (1 min 21 s, 2 min 11 s). Ou bien seulement la réduction de poussée des moteurs, sans le Max Q, ou la plus forte force atmosphérique décrite sans le nom ni le temps.",
+    "s0": "Séparation des boosters ou autre jalon ultérieur donné comme premier jalon, ou bien le décollage ou le roulis. Ou bien contenu inventé, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-n5",
+   "askedQuestion": "Que signifie l'appel « three engine press » qu'on vient d'entendre ?",
+   "poseS": 1872,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Si SLS perdait un moteur à ce stade de la mission, on pourrait quand même réussir une mission nominale (« meaning if SLS were to lose an engine at this point in the mission, we could still achieve a nominal mission »). YouTube 1853,6-1858,9 s ; Whisper 1853,7-1857,6 s. Blocs 231-232 [1848, 1864), Δ=8 pour le bloc 232 ; récent (fin 1864 > E − 48 = 1824).",
+     "startS": 1853.6,
+     "endS": 1858.9,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "La seule conséquence serait une coupure des moteurs principaux plus tardive (« We would just have an extended main engine cutoff time »). Whisper 1857,6-1860,4 s ; YouTube 1858,9 s jusque vers 1861,5 s (le segment suivant commence à 1860,6 s par « cut off time »). Bloc 232 [1856, 1864), Δ=8 ; récent.",
+     "startS": 1857.6,
+     "endS": 1861.6,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "« We just heard the call for three engine press ». YouTube 1852,0-1853,6 s ; Whisper étire ces mots de 1836,6 à 1853,6 s à travers un silence.",
+     "startS": 1852,
+     "endS": 1853.6,
+     "modality": "speech",
+     "availability": "A (récent)"
+    },
+    {
+     "fact": "« However, we still have four good engines all at maximum thrust » : les quatre moteurs sont bons et à pleine poussée.",
+     "startS": 1860.6,
+     "endS": 1864.4,
+     "modality": "speech",
+     "availability": "A (limite : « thrust » touche 1864 s)"
+    },
+    {
+     "fact": "« right now powering the first flight of Artemis at 5,200 miles per hour, 148 miles downrange » : bloc [1864, 1872), clos à la pose. Neutre.",
+     "startS": 1864.06,
+     "endS": 1870.4,
+     "modality": "speech",
+     "availability": "C"
+    },
+    {
+     "fact": "Juste avant : confirmation de la séparation du carénage du module de service, et tir des pyros du système d'abandon qui le séparent d'Orion. Annoncé plus tôt : trois panneaux de carénage de 15 pieds sur 15, séparation vers 3 min 11 s.",
+     "startS": 1796.6,
+     "endS": 1836.1,
+     "modality": "speech",
+     "availability": "A (1824-1836 s récents ; le reste ancien)"
+    },
+    {
+     "fact": "Fragment YouTube « for Future Crew Me… » vers 1835,8-1841,6 s, absent de Whisper : contenu non vérifiable, ni exigé ni pénalisé.",
+     "startS": 1835.8,
+     "endS": 1841.6,
+     "modality": "speech",
+     "availability": "A (contenu incertain)"
+    },
+    {
+     "fact": "Frise NASA en bas de l'écran : étapes LIFTOFF, MAX Q, SRB SEP, SAJ SEP, LAS SEP, MECO, SLS SEP, SAW OPEN, PRM BURN, PRM CUTOFF, TLI BURN. Le marqueur est sur LAS SEP et MECO est l'étape suivante, de 30:36 à 31:12 au moins. Images : vue de poursuite avec télémétrie (1820-1840 s), puis écran noir avec la Lune (1844-1858 s), puis animation de l'étage central (dès 1860 s).",
+     "startS": 1836,
+     "endS": 1872,
+     "modality": "onscreen-text",
+     "availability": "A jusqu'à 1856 s ; B pour [1856, 1864) ; C pour [1864, 1872)"
+    }
+   ],
+   "inventionTraps": [
+    "Contresens : un moteur aurait été perdu ou serait en panne, ou SLS volerait sur trois moteurs. Le commentateur dit au contraire que les quatre moteurs sont bons et à pleine poussée.",
+    "Mauvaise lecture de « press » : pressurisation des réservoirs, pression dans les moteurs, conférence de presse.",
+    "Conséquence inventée : abandon, retour sur Terre, orbite plus basse, mission lunaire perdue, ou coupure plus précoce (contresens de « extended »).",
+    "Anticipation, c'est-à-dire un contenu postérieur à la pose présenté comme dit : coupure prévue à environ 8 min 03 s (dite à 1935 s), séparation de l'étage central, « four minutes and 16 seconds into the flight » (≥ 1872 s).",
+    "Confusion avec le largage du carénage et du système d'abandon, donné comme le sens de l'appel."
+   ],
+   "abstentionPolicy": "Pas d'abstention attendue : l'explication suit l'appel dans la parole des blocs 231-232 ; le bloc 232 est clos à 1864 s (Δ=8). Une abstention vaut s0.",
+   "rubric": {
+    "s3": "En français : si SLS perdait maintenant un de ses moteurs, la mission pourrait quand même être nominale (aller au bout avec trois moteurs), au prix d'une coupure des moteurs principaux plus tardive. Admis : les quatre moteurs restent bons et à pleine poussée ; le carénage et le système d'abandon viennent d'être largués.",
+    "s2": "La capacité de poursuivre une mission nominale avec un moteur en moins, sans la coupure plus tardive. Ou bien réponse complète avec une anticipation (coupure à 8 min 03 s présentée comme dite) ou une erreur accessoire. Ou bien réponse juste rédigée en anglais.",
+    "s1": "Seulement la coupure plus tardive, ou une idée vague de marge de sécurité sur les moteurs sans dire qu'un moteur peut être perdu. Ou bien le sens juste, mais avec l'affirmation qu'un moteur est réellement perdu.",
+    "s0": "Contresens (moteur perdu, vol sur trois moteurs, abandon), lecture « pressurisation » ou « presse », contenu inventé, hors sujet ou abstention."
+   },
+   "confidence": "high"
+  }
+ ],
+ "spring": [
+  {
+   "questionId": "spring-n1",
+   "askedQuestion": "D'après le texte affiché au début, quel studio présente ce film ?",
+   "poseS": 96,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Sur un écran noir, le texte « Blender Animation Studio presents » s'affiche en petites lettres blanches au centre, de 00:18 à 00:22,5 environ (fondu d'entrée vers 00:17,8, de sortie vers 00:22,6 ; ffmpeg à 0,5 s ; images de référence 00:18 et 00:20). C'est le seul texte montré avant la pose. Bloc 16–24 : Δ = 72 s, A. E − 48 = 48 : fait ancien.",
+     "startS": 18,
+     "endS": 22.5,
+     "modality": "onscreen-text",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Avant le texte : tige couverte de champignons en étagère et de glaçons (00:02–00:16), puis noir (00:17).",
+     "startS": 2,
+     "endS": 17.5,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Après le texte : vallée sous une mer de nuages (00:23–00:40), puis le chien et la fille (00:44 et après). Aucun autre texte à l'écran avant la pose.",
+     "startS": 23,
+     "endS": 88,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Le titre « SPRING » (06:58–07:05) et le générique (« directed by Andy Goralczyk », 07:08) viennent bien après la pose. Ils ne comptent pas.",
+     "startS": 418,
+     "endS": 430,
+     "modality": "onscreen-text",
+     "availability": "C"
+    }
+   ],
+   "inventionTraps": [
+    "Un grand studio deviné au style : Pixar, Disney, DreamWorks, Illumination, Ghibli.",
+    "« Blender Foundation » ou « Blender Institute » donnés comme lus à l'écran : le texte dit « Blender Animation Studio ».",
+    "Un titre ou un réalisateur lus à l'écran (« SPRING », « Andy Goralczyk ») : ils n'apparaissent qu'à 06:58–07:08 (C).",
+    "Un logo, un distributeur ou une plateforme inventés (« Netflix presents »).",
+    "« Aucun texte n'a été affiché » : le texte reste lisible plus de 4 s."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. Le texte est dans le bloc 16–24, clos depuis 72 s, et figure sur deux images de référence. Le fait est ancien : la question teste la mémoire d'un texte à l'écran. Une abstention vaut s0 et se code « abstention ». Avant d'imputer un échec à la mémoire, vérifier que la description d'images du système pour le bloc 16–24 a lu ce texte en petits caractères.",
+   "rubric": {
+    "s3": "« Blender Animation Studio » (ou « le studio d'animation Blender »), donné comme le studio annoncé au début. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Blender avec une entité inexacte ou incomplète : « Blender » seul, « Blender Studio », « Blender Foundation », « Blender Institute ». Ou la bonne réponse avec une invention secondaire (titre ou réalisateur prétendument lus avant la pose). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Réponse vague qui évoque un texte de présentation sans nommer le studio, ou Blender cité parmi plusieurs studios sans choix.",
+    "s0": "Un autre studio, un studio inventé, « aucun texte », ou une abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-n2",
+   "askedQuestion": "Au début de la scène de la forêt sombre, qu'y avait-il posé sur une grosse branche ?",
+   "poseS": 160,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Un nid d'oiseau, posé sur une grosse branche noueuse et nue, dans la forêt sombre et brumeuse. Il émerge du brouillard à 01:24,5–01:25,5, puis reste net jusqu'à la coupe vers 01:30,8 (ffmpeg à 0,5 s). C'est le premier plan de la forêt sombre, après le noir de 01:21–01:23. Blocs 80–88 (Δ 72) et 88–96 (Δ 64) : A. E − 48 = 112 : fait ancien.",
+     "startS": 84.5,
+     "endS": 90.8,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Le nid contient des œufs pâles : au moins deux œufs entiers bien visibles, le plus clair au premier plan, et à gauche une forme blanche ouverte qui ressemble à une coquille brisée (agrandissement de 01:29,5). Visibles de 01:26 à 01:30,5. Le nombre exact n'est pas lisible à cette résolution. Une petite forme sombre indistincte se trouve aussi parmi les œufs (plume ou débris, non identifiable) ; aucun oiseau n'est visible.",
+     "startS": 86,
+     "endS": 90.5,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Des glaçons pendent sous la branche du nid (01:27–01:30).",
+     "startS": 87,
+     "endS": 90.5,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Plan suivant : plante givrée aux fleurs violet sombre chargées de glaçons (01:31–01:38) ; la fille en rouge apparaît au loin (01:36–01:38), puis en pied avec son bâton (01:39).",
+     "startS": 91,
+     "endS": 100,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Le premier plan du film montrait une autre tige, couverte de champignons en étagère et de glaçons (00:02–00:16). Ce n'est ni la forêt sombre ni la même branche.",
+     "startS": 2,
+     "endS": 16,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Fenêtre récente à la pose (blocs 112–160) : le chien lâche un bout de bois entre les racines (01:51–01:55), la pierre dressée au bout du sentier (01:57–02:13) et la fille qui souffle sur ses mains (02:19–02:20), tout en A ; la fille balance son bâton devant la pierre (02:24, bloc 144–152, B) ; une grande patte descend entre les arbres (02:39, bloc 152–160, C).",
+     "startS": 111,
+     "endS": 160,
+     "modality": "visual",
+     "availability": "A/B/C"
+    }
+   ],
+   "inventionTraps": [
+    "Des oisillons, un oiseau qui couve ou s'envole : aucun oiseau n'est visible.",
+    "« Un nid vide » : il contient des œufs.",
+    "Des champignons en étagère : c'est le premier plan du film (00:02–00:16), pas la forêt sombre.",
+    "La plante givrée à fleurs violettes (01:31–01:38) : elle vient juste après, au sol.",
+    "Un bâton : le chien porte un bout de bois dans la forêt (01:51–01:55) et la fille a son grand bâton ; aucun n'est sur la branche.",
+    "Un nombre d'œufs affirmé avec assurance au-delà de deux ou trois, ou des œufs de couleur vive (bleus, tachetés) donnés comme certains.",
+    "La pierre dressée ou la grande créature (fenêtre récente ou après) placées sur la branche."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. Le nid est visible environ 6 s dans les blocs 80–88 et 88–96, clos depuis 64 à 72 s. Le fait est ancien : la question teste la mémoire. Une abstention vaut s0 et se code « abstention ». Si la réponse décrit la fenêtre récente (pierre, chien), vérifier que la description d'images du système pour 80–96 mentionnait le nid, pour séparer perception et mémoire.",
+   "rubric": {
+    "s3": "Un nid (d'oiseau) avec des œufs, sur la branche. Les glaçons ou la branche nue sont bienvenus, pas exigés. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Un nid, sans parler des œufs. Ou un nid avec des œufs, plus un détail inventé mineur (nombre précis affirmé, oiseau à côté). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Un nid au contenu faux (vide, oisillons, oiseau qui couve). Ou seulement des glaçons ou du givre sur la branche, vrais mais secondaires. Ou le nid cité parmi plusieurs objets sans choix.",
+    "s0": "Un autre objet (champignons, plante à fleurs, bâton, pierre, créature), une invention, ou une abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-n3",
+   "askedQuestion": "Avant l'arrivée de la grande créature lumineuse, qu'est-ce que le chien et la fille ont trouvé au bout du sentier, dans la forêt ?",
+   "poseS": 304,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Au bout du sentier se dresse une grande pierre isolée, haute et pointue (en forme de flamme ou d'obus), creusée d'une cavité sombre sur sa face et posée sur un tertre de rochers. Plan large de 01:57 à 02:01, le chien minuscule avançant vers elle sur le sentier ; autre angle, pointe éclairée, de 02:01,5 à 02:04,5 ; le chien au pied de la pierre de 02:05 à 02:08 (ffmpeg à 0,5 s). Blocs 112–120 (Δ 184), 120–128 (Δ 176) et, pour la dernière demi-seconde, 128–136 (Δ 168) : A. E − 48 = 256 : fait ancien.",
+     "startS": 116.5,
+     "endS": 128.5,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "La pierre est sculptée : sa surface est couverte de motifs gravés en relief, et une faible lueur orange brille au creux de sa face (gros plans 02:09–02:11). La fille arrive à côté d'elle (vue de dessus, 02:12–02:13). Bloc 128–136 : Δ = 168 s, A.",
+     "startS": 129,
+     "endS": 133.5,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "La fille balance son bâton (02:24, flou de mouvement) ; aussitôt après, gros plan de la pierre dont le creux rougeoie de braises orange (02:24,5–02:25). Elle l'a probablement frappée, mais le contact n'est pas visible.",
+     "startS": 144,
+     "endS": 145.5,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "La fille reste près de la pierre (vue de dessus, 02:26–02:28), puis de grandes pattes de créature descendent entre les arbres (02:39–02:47) ; la tête lumineuse arrive à 02:50.",
+     "startS": 146,
+     "endS": 176,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Une paroi sculptée du même style est derrière la fille pendant la rencontre avec la créature (03:30–03:34, 03:44–03:52).",
+     "startS": 210,
+     "endS": 232,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Fenêtre récente à la pose (blocs 256–304) : lueur bleue poursuivie par le chien (04:20–04:47), lueur tombée au sol près d'un gros rocher arrondi (04:50–04:52), pattes sombres au-dessus de la fille (04:55–04:58), bâton qui se rallume (05:01). Une pierre dressée pointue, sans doute la même, passe pourtant à l'arrière-plan pendant environ 0,5 s (04:20,4–04:20,9, ffmpeg à 0,1 s ; bloc 256–264, Δ 40, A, récent), vue de loin, sans le chien ni la fille au pied, juste avant que la lueur bleue ne file devant la caméra. Elle n'est pas sur les images de référence de 04:20 et 04:22.",
+     "startS": 256,
+     "endS": 304,
+     "modality": "visual",
+     "availability": "A/B/C"
+    }
+   ],
+   "inventionTraps": [
+    "Un arbre géant ou un tronc : le sentier longe d'énormes racines (01:51–01:56), mais ce qui se dresse au bout est une pierre.",
+    "La grande créature lumineuse : elle n'arrive qu'à 02:50.",
+    "Une maison, une grotte, une porte, un autel ou une statue de personnage ou d'animal précis, inventés.",
+    "Des inscriptions lisibles, des runes déchiffrées, un nom gravé.",
+    "« La pierre s'anime », « elle s'ouvre », « la fille la brise » donnés comme vus.",
+    "Le gros rocher arrondi de la fenêtre récente (04:48–04:52), où tombe la lueur bleue, pris pour la pierre du sentier."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. La pierre est visible de 01:57 à 02:13 (blocs 112–136, clos depuis plus de 160 s) et de nouveau à 02:25–02:28. Le fait est ancien : la question teste la mémoire. Une pierre dressée passe toutefois une demi-seconde dans la fenêtre récente (04:20,4–04:20,9, bloc 256–264) : si la réponse est juste, vérifier si la description d'images du système pour ce bloc mentionne une pierre, pour savoir si la réponse vient de la mémoire des blocs 112–136. Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Une grande pierre ou un rocher dressé (menhir, monolithe, stèle, rocher pointu, sanctuaire de pierre) avec au moins un trait distinctif exact : sculptée ou gravée de motifs, pointue, creusée d'une cavité, posée sur un amas de pierres, lueur orange au creux. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Un grand rocher ou une grosse pierre sans trait distinctif. Ou une « statue » ou un « totem » de pierre sculptée (forme juste, identification approximative). Ou une réponse de niveau s3 avec une invention secondaire (inscriptions lisibles, pierre qui s'anime). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Seulement le décor voisin (racines géantes, arbre, sentier) ou « une lueur orange » sans la pierre. Ou la pierre citée parmi plusieurs objets sans choix.",
+    "s0": "La créature lumineuse, le nid, une construction inventée donnée seule, ou une abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-n4",
+   "askedQuestion": "Qu'est-ce que le chien poursuivait quand il s'est éloigné de la fille dans la forêt ?",
+   "poseS": 344,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Le chien poursuit une petite lueur bleu-cyan qui vole au ras du sol : une forme translucide et lumineuse, allongée comme une flamme ou une plume (un feu follet, un petit esprit lumineux). Il court derrière elle entre les racines (04:33–04:37,5), puis sur le sentier, la lueur à côté de lui (04:45–04:47,5). Entre les deux, la fille court derrière lui en tendant les bras (04:37,5–04:38,5), il s'éloigne au bout du chemin (04:39–04:40) et elle le regarde, inquiète (04:41). Blocs 272–280 (Δ 64) et 280–288 (Δ 56) : A. E − 48 = 296 : fait ancien.",
+     "startS": 273,
+     "endS": 287.5,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Origine et apparition de la lueur : quand la fille tombe, une petite flamme orange se détache du bâton tombé au sol (04:19,2–04:19,8), puis une lueur cyan s'élève du même endroit (04:20–04:20,9) et file au-dessus des rochers (04:21–04:23) ; petite lumière au loin (04:25–04:26), puis gros plan du chien aux aguets (04:29). La lueur que le chien poursuit ensuite est vraisemblablement cette lumière échappée du bâton. Blocs 256–264 (Δ 80) et 264–272 (Δ 72) : A, anciens.",
+     "startS": 259.2,
+     "endS": 270,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Fin de la poursuite : la lueur tombe en vrille (04:47,5–04:49), le chien bondit sur elle (04:49,5), puis elle gît au sol comme une flaque lumineuse vert-cyan, le chien à côté, près d'un gros rocher (04:50,5–04:52). Bloc 288–296 : Δ 48, A, encore ancien.",
+     "startS": 287.5,
+     "endS": 292,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Des créatures géantes sombres, aux pattes pendantes, passent au-dessus d'eux (04:39, 04:43–04:44, 04:55–04:58).",
+     "startS": 279,
+     "endS": 298,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Fenêtre récente à la pose (blocs 296–344) : vue de dessus, la lueur cyan posée sur un tas de pierres, que la fille rejoint (04:59–05:00), puis le bâton se rallume, orange (05:01–05:10), des fleurs roses y éclosent (05:12–05:28), le chien est éclairé de rouge près d'un rocher (05:20–05:22), des créatures géantes passent dans la brume (05:32–05:36). Rien de cela n'est la poursuite.",
+     "startS": 299,
+     "endS": 344,
+     "modality": "visual",
+     "availability": "A/B/C"
+    }
+   ],
+   "inventionTraps": [
+    "Un bâton : c'est le jeu de rapport du début (00:43–00:51) ; dans la forêt, le chien porte aussi un bout de bois (01:51–01:55). Ce n'est pas ce qu'il poursuit ici.",
+    "Une friandise (00:55–00:58) ou la fille elle-même.",
+    "Un animal réel : écureuil, lapin, oiseau, souris.",
+    "La grande créature ou ses pattes : elles passent au-dessus, il ne les poursuit pas.",
+    "Une flamme ou une lumière orange donnée comme ce qu'il poursuit : la petite flamme tombée du bâton est devenue bleu-cyan (04:20) avant la poursuite ; l'orange est la couleur du bâton allumé (03:50, puis 05:01 et après).",
+    "« Il l'a mangée, tuée ou rapportée à la fille » : on le voit seulement bondir dessus (04:49,5), puis la lueur au sol à côté de lui."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. La poursuite occupe les blocs 272–280 et 280–288, clos depuis 56 à 64 s. Le fait est ancien : la question teste la mémoire. Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Une petite lumière, une lueur ou une forme lumineuse bleue (cyan, turquoise) qui vole ou flotte : feu follet, petit esprit, flamme bleue, éclat lumineux. Couleur bleue et luminosité attendues. Dire que c'est la lumière (ou la flamme) échappée du bâton, devenue bleue, est exact. Ce qui suit (il bondit dessus, elle tombe au sol) est bienvenu. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Une lumière ou un esprit lumineux sans la couleur, y compris « la lumière (ou la flamme) échappée du bâton » sans dire qu'elle est bleue. Ou la bonne couleur avec une identification hasardeuse (« un papillon bleu lumineux », « un poisson lumineux »). Ou une réponse de niveau s3 avec une suite inventée (il l'a mangée, rapportée). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Réponse vague (« quelque chose », « une créature ») ; ou une lumière de mauvaise couleur (orange) ; ou seulement la fin (« il a sauté sur une flaque lumineuse ») sans dire ce qu'il poursuivait.",
+    "s0": "Bâton, friandise, animal réel, grande créature, autre invention, ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-n5",
+   "askedQuestion": "Au pied de la falaise couverte de grandes plantes, que fait la fille avec son chien ?",
+   "poseS": 432,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Elle prend le chien dans ses bras : elle marche vers lui, couché sur un rocher (06:47,5), se penche (06:48), le soulève (06:48,5) et le serre contre elle en souriant (06:49–06:50,5) ; la caméra remonte ensuite le long de la falaise (06:50,5–06:57). ffmpeg à 0,5 s. Blocs 400–408 (Δ 24) et 408–416 (Δ 16) : A. E − 48 = 384 : fait récent.",
+     "startS": 407.5,
+     "endS": 410.5,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Pendant qu'elle porte le chien, son bâton reste posé en travers, appuyé contre un rocher à droite (06:47,5–06:50).",
+     "startS": 407.5,
+     "endS": 410,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "La falaise est couverte de hautes tiges dorées garnies de champignons en étagère, comme la tige du premier plan du film (gros plan 06:44–06:47 ; paroi 06:48–06:56).",
+     "startS": 404,
+     "endS": 416,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Juste avant, au sommet : le chien, foulard rouge, est assis sur un gros rocher à côté de la fille, face aux montagnes (06:25–06:34) ; ils marchent ensuite sur une pente verte (06:35–06:42) ; la fille regarde le haut de son bâton, où pousse un feuillage vert (06:43). Blocs 384–408, récents, A.",
+     "startS": 385,
+     "endS": 404,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Titre « SPRING » (06:58–07:05) dans le bloc 416–424 (Δ 8, B) ; générique (07:08) dans le bloc 424–432 (C).",
+     "startS": 418,
+     "endS": 432,
+     "modality": "onscreen-text",
+     "availability": "B/C"
+    }
+   ],
+   "inventionTraps": [
+    "Une friandise donnée (00:55–00:58) ou un bâton lancé (00:43–00:51) : scènes du début.",
+    "« Elle plante son bâton dans la falaise ou parmi les plantes » : le bâton reste appuyé contre un rocher.",
+    "« Elle laisse le chien », « il s'enfuit », « ils se séparent ».",
+    "« Elle escalade la falaise », « ils s'envolent », ou d'autres actions inventées.",
+    "La scène du sommet (chien assis sur le rocher face aux montagnes) donnée pour celle du pied de la falaise.",
+    "Se rabattre sur le titre ou le générique (B et C) pour dire que le film est fini, sans répondre."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. Le geste est dans les blocs 400–408 et 408–416, clos depuis 16 à 24 s (A). Le fait est récent : la question teste le détail des 48 dernières secondes. Le geste ne dure qu'environ 2 s : si la réponse décrit seulement la marche ou le rocher, vérifier quelles images du bloc 408–416 le système a décrites. Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Elle prend le chien dans ses bras : elle le soulève, le porte, le serre contre elle ou lui fait un câlin en le portant. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Un geste affectueux proche, mais sans le porter (« elle le caresse », « elle se penche vers lui »). Ou une réponse de niveau s3 avec une invention secondaire (elle plante son bâton, elle grimpe). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Seulement des faits récents exacts mais antérieurs au geste (le chien assis sur un rocher face aux montagnes, la marche sur la pente), ou une réponse vague (« elle est avec lui »).",
+    "s0": "Une action fausse (friandise, bâton lancé, chien abandonné ou en fuite), ou une abstention."
+   },
+   "confidence": "high"
+  }
+ ],
+ "tears": [
+  {
+   "questionId": "tears-n1",
+   "askedQuestion": "Au début, de quoi Thom a-t-il avoué faire des cauchemars ?",
+   "poseS": 104,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Thom fait des cauchemars où il est poursuivi par des griffes robotiques géantes : « I have nightmares that I'm being chased... by these giant robotic claws of death... » (SRT 38–41 et 41–42 s). Whisper : « I'm having nightmares that I'm being chased by these giant robotic claws. » (39,4–42,3 s), sans « of death ». C'est Thom qui parle : il répond à Celia, qui l'accuse d'avoir peur de sa main robotique, et elle lui répond « Whatever, Thom. We're done. ». Blocs 32–40 (Δ 64) et 40–48 (Δ 56) : parole A. E − 48 = 56 : fait ancien.",
+     "startS": 38,
+     "endS": 42.3,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Aveu qui précède : « I'm not freaked out by- it's... alright! Fine! I'm freaked out! » (SRT 34,5–39 ; Whisper 34,3–39,4).",
+     "startS": 34.3,
+     "endS": 39.4,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Accusation de Celia : « Why don't you just admit that you're freaked out by my robot hand? » (SRT 30,8–34 ; Whisper 30,0–34,3). Image : sur un pont au-dessus d'un canal, la jeune femme pointe vers lui sa main robotique (0:32–0:38).",
+     "startS": 30,
+     "endS": 38,
+     "modality": "speech/visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Rupture : « Whatever, Thom. We're done. » (SRT 42,2–45 ; Whisper 42,3–45,0). Hologrammes filaires orange et bleu d'un bras et d'un corps de robot (0:40, 0:46) ; carton « 40 YEARS LATER » (0:42–0:44).",
+     "startS": 40,
+     "endS": 48,
+     "modality": "speech/visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Fenêtre récente à la pose (blocs 56–104) : « Robot's memory synced and locked! » (50–53,5, bloc 48–56, ancien), cerveau sur une assiette (0:56–1:02), titre « TEARS OF STEEL » (1:04–1:08), vieil homme endormi, journal titrant « ROBOTICIST CREATES KILLER ROBOTS » (image de 1:20), tireur et vaisseau-robot dans la lunette (1:22–1:44). Aucun cauchemar n'y est évoqué. Whisper hallucine « I'm not going to be able to do this » en boucle à partir de 65,3 s.",
+     "startS": 56,
+     "endS": 104,
+     "modality": "speech/visual",
+     "availability": "A/B/C"
+    }
+   ],
+   "inventionTraps": [
+    "« De la main robotique de Celia » : c'est ce qui l'effraie selon Celia, pas le contenu des cauchemars.",
+    "« Des robots tueurs », tiré du journal (image de 1:20) ou du vaisseau-robot vu dans la lunette (1:24–1:54).",
+    "Des cauchemars inventés : l'espace, Celia, l'abandon, une chute, des monstres.",
+    "Attribuer l'aveu à Celia.",
+    "Prendre la boucle hallucinée de Whisper (« I'm not going to be able to do this ») pour une réplique de Thom.",
+    "Puiser dans une connaissance externe du film (Celia devenue la machine qui détruit Amsterdam)."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. L'aveu est dans les blocs 32–40 et 40–48, clos depuis 56 à 64 s, et l'ASR de référence l'a bien transcrit. Le fait est ancien : la question teste la mémoire. Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Être poursuivi (pourchassé) par des griffes, pinces ou serres robotiques géantes. « of death » n'est pas exigé, « géantes » est bienvenu. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Des griffes ou pinces robotiques sans l'idée de poursuite. Ou être poursuivi par des robots (géants), les griffes devenant des robots. Ou une réponse de niveau s3 avec une invention secondaire. Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Seulement « des robots » ou « des robots tueurs », sans poursuite ni griffes. Ou la main robotique de Celia donnée comme objet des cauchemars.",
+    "s0": "Un cauchemar inventé sans rapport, ou une abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-n2",
+   "askedQuestion": "Au début, qu'est-ce que l'homme à l'œil mécanique observait de près ?",
+   "poseS": 144,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Un cerveau rose posé sur une assiette blanche, hérissé de fines tiges métalliques (électrodes ou aiguilles), garni de petits composants électroniques et entouré d'arcs lumineux roses (gros plans sur les images de 0:56 et 0:58). Sur les images de 1:00 et 1:02, l'homme, un oculaire mécanique à lentilles rouges sur un œil et un manteau à col de fourrure, le scrute de près derrière l'assiette en tenant un instrument. Le plan est compris entre l'image de 0:54 (laboratoire) et celle de 1:04 (titre). Bloc 56–64 (Δ 80), peut-être déjà la fin du bloc 48–56 selon le décalage des images de référence : A. E − 48 = 96 : fait ancien.",
+     "startS": 56,
+     "endS": 62,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Juste avant : « Robot's memory synced and locked! » (SRT et Whisper 50–53,5) ; laboratoire aux écrans holographiques roses et verts, un technicien à lunettes (0:48–0:52), écran « SIMULATION READY... » et une technicienne à dreadlocks (0:54).",
+     "startS": 48,
+     "endS": 55,
+     "modality": "speech/visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Pendant le plan du cerveau, une seule réplique : « This is pretty freaky. » (SRT 61–63 ; Whisper 60,0–62,2, puis répétée 62,2–65,3). Sans écoute, le locuteur n'est pas établi ; c'est vraisemblablement l'homme à l'œil mécanique, à l'image à 1:00–1:02. Blocs 56–64 (Δ 80) et 64–72 (Δ 72) : parole A, ancienne.",
+     "startS": 60,
+     "endS": 65.3,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Un autre cerveau, holographique et rose, apparaît à gauche du carton « 40 YEARS LATER » (images de 0:42 et 0:44, bloc 40–48, Δ 96, A). Ce n'est pas l'objet que l'homme observe, mais une réponse « un cerveau » reste juste.",
+     "startS": 42,
+     "endS": 45,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Juste après : titre « TEARS OF STEEL » (1:04–1:08), puis la ville sous la brume (1:10–1:12).",
+     "startS": 64,
+     "endS": 73,
+     "modality": "onscreen-text/visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Fenêtre récente à la pose (blocs 96–144) : vaisseau-robot volant vu dans la lunette (1:36–1:54), tireur derrière une balustrade, vieil homme qui se réveille et se frotte la nuque (1:38–2:22) ; « Shouldn't you be down there? » (SRT 117–119) et « I heard you guys talking last night. » (131–133), parole A ; « It's not my fault, you know. » (136–138, bloc 136–144, C). Aucun cerveau.",
+     "startS": 96,
+     "endS": 144,
+     "modality": "speech/visual",
+     "availability": "A/B/C"
+    },
+    {
+     "fact": "Un homme à l'œil mécanique et à veste rouge n'apparaît ensuite qu'à partir de 3:12 environ (C à la pose) ; que ce soit le même homme n'est pas établi à l'image. Avant la pose, l'homme du cerveau est le seul personnage à l'œil mécanique ; le tireur des blocs 80–144 vise à travers la lunette de son fusil.",
+     "startS": 192,
+     "endS": 260,
+     "modality": "visual",
+     "availability": "C"
+    }
+   ],
+   "inventionTraps": [
+    "Un œil, une puce, un cœur, un robot, ou la main robotique de Celia (0:26–0:38).",
+    "Le journal (image de 1:20) ou l'écran « SIMULATION READY » (0:54) donnés comme l'objet observé.",
+    "« Un cerveau dans un bocal » ou « un cerveau en métal » : il est sur une assiette et d'aspect organique.",
+    "Présenter comme un fait que c'est le cerveau de Celia, du robot ou de Thom : rien ne le dit avant la pose.",
+    "Lui prêter une réplique inventée : la seule parole du plan est « This is pretty freaky. » (61–63 s), dont le locuteur n'est pas établi à l'image.",
+    "Le vaisseau-robot vu dans la lunette du tireur (1:22–1:54) : c'est le tireur qui l'observe, de loin et à travers la lunette de son fusil, pas l'homme à l'œil mécanique."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. Le cerveau occupe quatre images de référence (0:56 à 1:02, bloc 56–64), clos depuis 80 s. Le fait est ancien : la question teste la mémoire visuelle. Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Un cerveau, posé sur une assiette ou un plateau. Électrodes, aiguilles, composants ou lumière rose sont bienvenus, pas exigés. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Un cerveau avec un détail faux affirmé (dans un bocal, en métal, holographique). Ou une origine supposée présentée comme un fait (« le cerveau de Celia »). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "« Un organe », « quelque chose de rose sur une assiette », « une expérience », sans le cerveau. Ou le cerveau cité parmi plusieurs objets sans choix.",
+    "s0": "Un autre objet (œil, puce, main robotique, journal, écran, robot ou vaisseau vu dans la lunette), ou une abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-n3",
+   "askedQuestion": "Pour se justifier auprès de Celia, comment Thom a-t-il décrit celui qu'il était autrefois ?",
+   "poseS": 432,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Il était jeune : « Listen Celia, I was young... » (SRT 356–359 ; Whisper « Listen, Celia. » 356,6–357,6 puis « I was young. » 357,6–358,6). Le jeune Thom parle à Celia sur le pont, face à sa main robotique (images 5:56–6:00). Bloc 352–360 : Δ 72, parole A. E − 48 = 384 : fait ancien.",
+     "startS": 356,
+     "endS": 359,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Et il était un « dick » (un con, un salaud) : « ...and a dick. » (SRT 359,5–361 ; Whisper « And a dick. » 358,6–360,6). Blocs 352–360 (Δ 72) et 360–368 (Δ 64) : A, ancien.",
+     "startS": 358.6,
+     "endS": 361,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Suite : « But that's no reason to destroy the world. » (SRT 361–363 ; Whisper « But there's no reason to destroy the world. » 360,6–363,6). C'est un reproche à Celia, pas une description de lui-même ; Celia le fixe, l'air dur (6:02).",
+     "startS": 360.6,
+     "endS": 363.6,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Juste avant, panneau rose « CELIA, I LOVE YOUR ROBOT HAND » en arrière-plan (5:52–5:54) : un texte affiché, pas une réplique.",
+     "startS": 352,
+     "endS": 355,
+     "modality": "onscreen-text",
+     "availability": "A"
+    },
+    {
+     "fact": "Réactions dans la salle de contrôle : « Why does he do this? » (SRT 365–366) et « We already tried that one! » (SRT 366,5–368,5) ; la jeune femme parle à l'image de 6:04.",
+     "startS": 365,
+     "endS": 368.5,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Fenêtre récente à la pose (blocs 384–432) : « I know. », « You forgot me on earth. », « I should just crush you. » (386–393), « I'm- » (396–397), « I'm sorry. » (SRT 407–408 ; Whisper dès 406,6), « Good ad-lib. » (410–411), puis « Not my fault! » et « This time. » (SRT 419–423), vraisemblablement dits par le technicien à lunettes, à l'image à 6:58–7:04.",
+     "startS": 386,
+     "endS": 423,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« Quiet on set! » et « We're out of time! » (SRT 428–431) : bloc 424–432, clos à la pose (Δ 0), C.",
+     "startS": 428,
+     "endS": 431,
+     "modality": "speech",
+     "availability": "C"
+    }
+   ],
+   "inventionTraps": [
+    "« Ce n'était pas sa faute » : tiré de « Not my fault! ... This time. » (419–423, fenêtre récente, autre locuteur) ou de « It's not my fault, you know. » (136–138, autre scène, locuteur incertain).",
+    "« Il s'est excusé », « I'm sorry » (407–408) : c'est une demande de pardon, pas une description de lui-même.",
+    "« Il lui a dit qu'il aimait sa main robotique » : c'est le panneau affiché (5:52–5:54), pas une réplique.",
+    "« Il voulait suivre sa passion, être génial dans l'espace » : arguments de la dispute initiale (0:25–0:30, rejoués 5:16–5:28), pas ce qu'il dit de lui-même.",
+    "Des justifications inventées : il était ivre, sous pression, forcé, il n'avait pas le choix.",
+    "Faire dire la phrase par l'homme à l'œil mécanique ou par Celia."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. Les répliques sont dans les blocs 352–360 et 360–368, clos depuis 64 à 72 s, et l'ASR de référence les a transcrites. Le fait est ancien : la question teste la mémoire, avec un leurre récent (« Not my fault! », 419–423). Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Il était jeune, et il était un « dick » (con, idiot, crétin, salaud). La suite « ce n'est pas une raison pour détruire le monde » est bienvenue, pas exigée. Attribution au jeune Thom, au vieux Thom ou à « Thom » sans précision. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Un seul des deux éléments (« il était jeune » seul, ou « il était un con » seul). Ou les deux, avec un ajout inventé ou anticipé présenté comme un fait. Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Seulement « ce n'est pas une raison pour détruire le monde », ou seulement « I'm sorry », ou les arguments de la dispute initiale (suivre ses passions, l'espace), ou une réponse vague (« il a reconnu ses torts »).",
+    "s0": "« Ce n'était pas sa faute », une justification inventée, ou une abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-n4",
+   "askedQuestion": "Juste après l'annonce de la fin de la réécriture de mémoire, que fait le vieux Thom, l'homme aux cheveux gris ?",
+   "poseS": 576,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Le vieux Thom, cheveux gris et manteau à carreaux, se tient contre la machine géante et pose les deux mains sur son avant, une sorte de tête de métal à lumière ronde et blanche, le visage tout près, d'un geste doux (images de référence 9:04, 9:06, 9:08 et 9:10 ; plan compris entre 9:02 et 9:12). Blocs 536–544 (Δ 32) et 544–552 (Δ 24) : A. E − 48 = 528 : fait récent.",
+     "startS": 543,
+     "endS": 551,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Gros plan qui suit : son visage tout près de la tête de métal, le regard grave et tendre (9:12–9:14). Bloc 552–560 : Δ 16, A.",
+     "startS": 552,
+     "endS": 555,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "L'annonce : « Memory overwrite complete! » (SRT 538–539 ; Whisper « Memory overrated complete! » 537,6–539,6) et l'écran « OVERWRITE COMPLETE 100.00% » (8:58). Le technicien à lunettes lève le bras en signe de victoire (9:00–9:02).",
+     "startS": 537.6,
+     "endS": 542,
+     "modality": "speech/visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Avant l'annonce : « The world's changed, Celia... » (518–520, jeune Thom en gros plan sur le pont) et « ...maybe we can too. » (534–536, vieux Thom en gros plan devant la machine).",
+     "startS": 518,
+     "endS": 536,
+     "modality": "speech/visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Après : l'homme à l'œil mécanique, lumières rouges à l'oculaire, gesticule (9:16–9:22) ; « You know. » (SRT 559–560) et « There's a lesson to be learned from this. » (SRT 562–564), perdus par l'ASR de référence, qui répète « The world's changed. » en boucle de 539,6 à 566,6 s ; « Could'a gone worse. » (SRT 566–567).",
+     "startS": 556,
+     "endS": 567,
+     "modality": "speech/visual",
+     "availability": "A/B"
+    },
+    {
+     "fact": "Bloc 568–576 : la jeune femme près de l'homme à l'œil mécanique (9:28), un éclair lumineux (9:30), un gros plan flou de la machine en mouvement (9:32), puis, en plan large, le vieux Thom de nouveau contre le robot, les mains sur sa tête (9:34). Ce bloc est clos à la pose : C. Le même geste se poursuit après la pose (9:36–9:40).",
+     "startS": 568,
+     "endS": 576,
+     "modality": "visual",
+     "availability": "C"
+    }
+   ],
+   "inventionTraps": [
+    "« Il lève les bras en signe de victoire » : c'est le technicien à lunettes (9:00–9:02).",
+    "Lui faire dire « I'm sorry » ou « The world's changed » maintenant : ces répliques précèdent l'annonce (407–408, 518–536), et la répétition de « The world's changed » après 539,6 s est une hallucination de l'ASR.",
+    "« Il éteint ou détruit la machine », « il s'en va », « le robot s'effondre ou se réveille » : rien de tel n'est montré dans les blocs disponibles à la pose ; le gros plan flou de la machine à 9:32 est dans le bloc 568–576 (C).",
+    "« Il embrasse Celia » au sens de la jeune femme du pont : elle n'est pas là ; il pose les mains sur le robot.",
+    "« Il pleure » affirmé comme vu : son regard est grave, aucune larme n'est lisible sur les images.",
+    "Puiser dans une connaissance externe du film pour décrire une réconciliation au-delà de ce qui est montré."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. Le geste est dans les blocs 536–544 et 544–552, clos depuis 24 à 32 s (images A). Le fait est récent : la question teste le détail des 48 dernières secondes. Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Il touche, tient ou caresse la tête (ou l'avant) du robot ou de la machine, de près, avec douceur. « Il pose les mains sur le robot » suffit. Identifier le robot à Celia est une inférence neutre. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Il s'approche du robot ou le regarde de près, sans le toucher. Ou une réponse de niveau s3 avec une invention secondaire (une parole prêtée à ce moment, des larmes affirmées). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Seulement « il a l'air ému » ou « il regarde » sans action. Ou le geste du technicien (lever le bras) attribué au vieux Thom.",
+    "s0": "Une action inventée (il détruit ou éteint la machine, il part), ou une abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-n5",
+   "askedQuestion": "Qu'a dit Thom à Celia juste avant l'annonce de la fin de la réécriture de mémoire ?",
+   "poseS": 624,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "« The world's changed, Celia... » : le monde a changé (SRT 518–520 ; Whisper 518,6–520,6). À l'image, le jeune Thom en gros plan sur le pont, face au robot (8:38–8:40). Blocs 512–520 (Δ 104) et 520–528 (Δ 96) : parole A. E − 48 = 576 : fait ancien.",
+     "startS": 518,
+     "endS": 520.6,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« ...maybe we can too. » : peut-être que nous aussi, nous pouvons changer (SRT 534–536 ; Whisper « Maybe we can too. » 532,6–537,6). À l'image, le vieux Thom en gros plan devant la machine, bouche ouverte à 8:56. L'annonce « Memory overwrite complete! » suit à 538 s. Blocs 528–536 (Δ 88) et 536–544 (Δ 80) : A, ancien.",
+     "startS": 532.6,
+     "endS": 537.6,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "L'annonce qui suit : « Memory overwrite complete! » (SRT 538–539 ; Whisper « Memory overrated complete! » 537,6–539,6), écran « OVERWRITE COMPLETE 100.00% » (8:58).",
+     "startS": 537.6,
+     "endS": 539.6,
+     "modality": "speech/onscreen-text",
+     "availability": "A"
+    },
+    {
+     "fact": "Juste avant : « Memory overwrite, 90%. » (504–505) et « Captain! We have to abort! » (506–508), dit par la jeune femme à l'homme à l'œil mécanique.",
+     "startS": 503.6,
+     "endS": 510,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "L'ASR de référence répète « The world's changed. » en boucle de 539,6 à 566,6 s (hallucination sur la musique). Ces répétitions ne sont pas des répliques ; elles se terminent dans le bloc 560–568, ancien à la pose.",
+     "startS": 539.6,
+     "endS": 566.6,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Après l'annonce : le vieux Thom pose les mains sur l'avant du robot, une sorte de tête de métal (9:04–9:10) ; « You know. There's a lesson to be learned from this. » (SRT 559–564) et « Could'a gone worse. » (566–567), dits par l'homme à l'œil mécanique.",
+     "startS": 543,
+     "endS": 567,
+     "modality": "speech/visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Fenêtre récente à la pose (blocs 576–624) : derniers plans de la machine (9:36–9:46), noir, puis générique (« Written and Directed by IAN HUBERT » 9:50, distribution 10:06–10:08). Aucune réplique dans le SRT ; Whisper y hallucine des « No! ».",
+     "startS": 576,
+     "endS": 624,
+     "modality": "visual/onscreen-text",
+     "availability": "A/B/C"
+    }
+   ],
+   "inventionTraps": [
+    "« I'm sorry » (407–408) ou « Listen Celia, I was young... and a dick » (356–361) : répliques antérieures.",
+    "« Look Celia, we have to follow our passions » (0:25, rejoué 5:16) : réplique de la dispute.",
+    "« Captain! We have to abort! » (506–508) : dit par la jeune femme.",
+    "« There's a lesson to be learned from this », « Could'a gone worse » : dits après l'annonce, par un autre personnage.",
+    "« I love you », « je t'aime », « pardonne-moi » : inventés ; le panneau « CELIA, I LOVE YOUR ROBOT HAND » n'est pas une réplique.",
+    "Présenter la boucle ASR « The world's changed » comme une phrase répétée par Thom.",
+    "Puiser dans une connaissance externe du film."
+   ],
+   "abstentionPolicy": "Aucune abstention n'est attendue. Les deux répliques sont dans les blocs 512–544, clos depuis 80 à 104 s, et l'ASR de référence les a transcrites. Le fait est ancien. La pose est placée à 624 pour que la boucle hallucinée « The world's changed » (539,6–566,6 s) sorte aussi de la fenêtre récente : la réponse doit venir de la mémoire. Une abstention vaut s0 et se code « abstention ».",
+   "rubric": {
+    "s3": "Les deux parties : le monde a changé (« The world's changed, Celia ») et peut-être que nous aussi pouvons changer (« maybe we can too »). Attribution au jeune Thom, au vieux Thom ou à « Thom » sans précision. Réponse en français (citations et noms propres dans leur langue).",
+    "s2": "Une seule des deux parties. Ou les deux, avec une invention secondaire (une suite inventée, une réplique d'une autre scène ajoutée à ce moment). Ou une réponse de niveau s3 rédigée dans une autre langue que le français.",
+    "s1": "Une paraphrase vague (« il lui a parlé de changement »). Ou une autre réplique exacte de Thom à Celia, mais d'un autre moment (« I'm sorry », « I was young... and a dick »).",
+    "s0": "Une réplique inventée, une réplique d'un autre personnage (« We have to abort! », « There's a lesson... »), ou une abstention."
+   },
+   "confidence": "high"
+  }
+ ],
+ "cnrs": [
+  {
+   "questionId": "cnrs-n1",
+   "askedQuestion": "Quels points communs entre le chat et le lapin a-t-il relevés ?",
+   "poseS": 176,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Premier point commun : « les deux ont des oreilles pointues ».",
+     "startS": 118.24,
+     "endS": 119.94,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Deuxième point commun : les yeux, « à peu près la même quantité » (le même nombre d'yeux).",
+     "startS": 119.95,
+     "endS": 121.77,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Troisième point commun : « le même nombre de pattes », suivi de « etc. ». « Quatre pattes » est une paraphrase acceptée.",
+     "startS": 121.77,
+     "endS": 123.48,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Contexte : exemple de petite IA, classer des images de chats et de lapins ; « un chat à gauche, un lapin à droite » ; « nous humains, on est capable d'un coup d'œil » de les distinguer, « et pourtant il y a quand même beaucoup de points communs ».",
+     "startS": 98.3,
+     "endS": 118.24,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Nuance qui suit : « après il y a des formes, il y a des choses différentes ».",
+     "startS": 123.48,
+     "endS": 127.53,
+     "modality": "speech",
+     "availability": "A (bloc [120,128), Δ = 48 s)"
+    },
+    {
+     "fact": "Suite : enfant, on apprend à distinguer un chat d'un lapin à partir de quelques exemples ; « c'est par apprentissage, à partir de données ».",
+     "startS": 127.53,
+     "endS": 140.64,
+     "modality": "speech",
+     "availability": "A (blocs [120,128) à [136,144), récents pour la fin)"
+    },
+    {
+     "fact": "Diapositive « Un exemple de « petite » IA : Imaginons que l'on veuille classer des photos de chats et de lapins » (01:40–01:46).",
+     "startS": 100,
+     "endS": 107,
+     "modality": "onscreen-text",
+     "availability": "A (Δ ≥ 64 s)"
+    },
+    {
+     "fact": "Images : deux silhouettes noires, un chat à gauche et un lapin à droite, aux oreilles pointues et aux yeux blancs dessinés, avec le formateur en médaillon (01:48–02:22). Oreilles et yeux se voient encore dans les blocs récents [128,136) et [136,144) ; rien n'y souligne un point commun, et les pattes se lisent mal (chat assis, queue enroulée).",
+     "startS": 108,
+     "endS": 143,
+     "modality": "visual",
+     "availability": "A (dernier bloc [136,144), Δ = 32 s)"
+    }
+   ],
+   "inventionTraps": [
+    "Couleur noire (celle des silhouettes à l'image), queue, moustaches, fourrure ou taille présentées comme des points communs cités.",
+    "Différences données pour des points communs : longues oreilles du lapin, queue du chat, forme du museau.",
+    "Points communs de culture générale attribués à la vidéo : deux mammifères, deux animaux domestiques, deux herbivores.",
+    "Confusion avec l'escargot et l'éléphant (01:30–01:36) ou avec la frise petites/grandes IA.",
+    "Données supervisées, découpage 80/20 ou analogie du professeur donnés à la place de la réponse. « Donc par exemple si je suis prof » commence à 02:53,7, dans le bloc [168,176) clos à la pose (indisponible) ; « 20 exercices de maths… 15… » vient après la pose : anticipation."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : les trois points communs sont dits entre 01:58 et 02:03 (118,2–123,5 s), dans les blocs [112,120) et [120,128), clos depuis 48 à 56 s. Ils sortent tout juste de la fenêtre récente (fin de bloc ≤ 128 = E − 48) : la question teste la mémoire. Une abstention ou « la vidéo n'en parle pas » vaut 0.",
+   "rubric": {
+    "s3": "Cite les trois points communs : oreilles pointues, yeux (même nombre), même nombre de pattes (« quatre pattes » accepté). Aucun point commun inventé présenté comme dit. Bonus : la nuance « il y a des formes, des choses différentes », ou l'humain qui les distingue d'un coup d'œil. Réponse en français.",
+    "s2": "Un de ces cas : (1) deux des trois points communs, sans erreur ; (2) les trois, avec un point commun inventé attribué à la vidéo (queue, couleur, fourrure) ; (3) une réponse complète mais pas en français.",
+    "s1": "Un seul point commun juste, éventuellement noyé parmi des points inventés ; ou seulement l'idée qu'ils se ressemblent beaucoup, sans dire en quoi.",
+    "s0": "Aucun point commun juste, différences données à la place, réponse hors sujet, abstention ou « la vidéo n'en parle pas »."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-n2",
+   "askedQuestion": "Dans la boucle d'apprentissage, que fait-on une fois que l'IA a donné sa prédiction ?",
+   "poseS": 424,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "(a) On compare la prédiction (un ensemble d'images étiquetées chat ou lapin, avec des erreurs) au résultat attendu, c'est-à-dire aux bonnes étiquettes.",
+     "startS": 239.29,
+     "endS": 253.1,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "(b) « À partir des deux », on identifie un certain nombre d'erreurs, et « ces erreurs vont permettre de faire une correction de notre modèle ».",
+     "startS": 253.23,
+     "endS": 264.26,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "(c) On itère : après correction, on repioche un ensemble d'images, nouvelle prédiction, nouvelle comparaison au résultat attendu, nouvelles erreurs, nouvelle correction.",
+     "startS": 264.38,
+     "endS": 279.96,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Début de la boucle : on prend la pile d'images d'apprentissage (80 %), on y pioche une poignée d'images qu'on donne à l'IA en apprentissage, qui fait une prédiction (« est-ce que c'est un chat, est-ce que c'est un lapin ? »).",
+     "startS": 211.04,
+     "endS": 239.1,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Diapositive 2/3 « On va ensuite entraîner notre modèle : », de 03:24 à 05:32 : cycle numéroté 1 « Préditions » (coquille), 2 « Erreurs ? » (entre la prédiction et le « Résultat attendu »), 3 « Corrections », 4 « Itérations », avec « Données d'apprentissage ». Cercles jaunes sur la prédiction et le résultat attendu vers 04:14–04:22.",
+     "startS": 204,
+     "endS": 333,
+     "modality": "onscreen-text",
+     "availability": "A (dernier bloc [328,336), Δ = 88 s)"
+    },
+    {
+     "fact": "Analogie : cela ressemble « étrangement » à notre façon d'apprendre : on fait un exercice, on corrige, on essaie de comprendre ce qui s'est passé.",
+     "startS": 280.02,
+     "endS": 291.12,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Époque : une fois la pile d'images épuisée, on a fait une époque ; on repasse la pile, « on refait des prédictions, on regarde les corrections », de 2 à 1 000 époques (fait déjà optionnel de cnrs-04).",
+     "startS": 302.28,
+     "endS": 325.6,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Rappel : à chaque prédiction sur les 80 % d'images, on mesure le taux d'erreur, donc la qualité de l'apprentissage.",
+     "startS": 346.13,
+     "endS": 357.46,
+     "modality": "speech",
+     "availability": "A (blocs [344,352) et [352,360), hors fenêtre récente)"
+    }
+   ],
+   "inventionTraps": [
+    "Vocabulaire technique attribué au cours : rétropropagation, descente de gradient, fonction de perte, mise à jour des poids, taux d'apprentissage. Toléré comme paraphrase de la « correction du modèle », non crédité, sanctionné s'il remplace le propos.",
+    "Comparaison avec les données d'évaluation (20 %) au lieu du résultat attendu des images d'apprentissage, ou données d'évaluation utilisées pour corriger le modèle.",
+    "Un humain qui corrige les réponses à la main.",
+    "Surapprentissage ou arrêt au bon moment présentés comme une étape de la boucle. Le mot n'est dit qu'à 07:10, après la pose, mais la zone « Surapprentissage » est écrite sur la diapositive 3/3 depuis 05:34, et les blocs récents parlent de la courbe d'évaluation qui progresse « jusqu'à un certain point » puis régresse : c'est vrai, mais ce n'est pas une étape de la boucle.",
+    "Taille de lot, nombre d'itérations ou d'époques chiffrés autres que « 2 … 1 000 époques »."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : la comparaison, la correction et l'itération sont dites entre 03:59 et 04:40, dans des blocs clos depuis au moins 144 s, et la diapositive 2/3 les résume jusqu'à 05:32. Rien de la boucle n'est dans les 48 s récentes : la question teste la mémoire. Une abstention vaut 0.",
+   "rubric": {
+    "s3": "Les trois éléments : (a) on compare la prédiction au résultat attendu (les bonnes étiquettes) ; (b) on en tire les erreurs, qui servent à corriger le modèle ; (c) on recommence avec une nouvelle poignée d'images (itération). Bonus : l'analogie de l'exercice corrigé, la notion d'époque. Aucune étape inventée attribuée au cours. Réponse en français.",
+    "s2": "Un de ces cas : (1) deux des trois éléments ; (2) les trois, avec une erreur secondaire (comparaison aux données d'évaluation, vocabulaire technique présenté comme dit par le cours à la place de la correction) ; (3) une réponse complète mais pas en français.",
+    "s1": "Un seul élément, ou une formule vague (« on corrige les erreurs », « le modèle s'améliore ») sans comparaison au résultat attendu ni itération.",
+    "s0": "Réponse hors sujet (découpage 80/20, courbes et surapprentissage à la place de la boucle), étapes fausses ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-n3",
+   "askedQuestion": "Comment s'appelle la formation dans laquelle il nous souhaite la bienvenue ?",
+   "poseS": 576,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Nom de la formation : « bienvenue dans notre formation découverte de l'IA ». Le carton titre affiche « FORMATION DÉCOUVERTE DE L'IA » de 00:06 à 00:22.",
+     "startS": 8.86,
+     "endS": 11.34,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Volet, valorisé mais non exigé : « et toujours sur l'histoire, les bases et les concepts » (bandeau gris « HISTOIRE, BASES & CONCEPTS » sur le carton titre).",
+     "startS": 11.34,
+     "endS": 14.68,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Carton titre de 00:06 à 00:22 : bandeau rouge « FORMATION DÉCOUVERTE DE L'IA », bandeau gris « HISTOIRE, BASES & CONCEPTS », encadré violet « Comment s'entraîne une IA ? », logo FIDLE (baleine rouge), déjà seul en ouverture (00:02–00:04).",
+     "startS": 2,
+     "endS": 23,
+     "modality": "onscreen-text",
+     "availability": "A (blocs [0,8) à [16,24), Δ ≥ 552 s)"
+    },
+    {
+     "fact": "Sous-titre nominatif de 00:14 à 00:22 : « Jean-Luc Parouty, Ingénieur de recherche en IA au CNRS ». Texte très petit, peut-être illisible pour le VLM.",
+     "startS": 14,
+     "endS": 23,
+     "modality": "onscreen-text",
+     "availability": "A"
+    },
+    {
+     "fact": "Sujet de cet épisode : « on va découvrir comment s'entraîne une IA, comment on entraîne une IA, comment se fait l'apprentissage de nos IA ».",
+     "startS": 14.68,
+     "endS": 24.56,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Rappel final : « rendez-vous pour la suite de notre aventure autour de l'histoire, des bases et des concepts ».",
+     "startS": 867.4,
+     "endS": 871.58,
+     "modality": "speech",
+     "availability": "C (postérieur à la pose)"
+    },
+    {
+     "fact": "Carton de fin, dès 14:24 : « FIDLE est une Formation d'Introduction au Deep Learning, portée par le CNRS… », logos CNRS, UGA et MIAI, lien fidle.cnrs.fr.",
+     "startS": 864,
+     "endS": 872,
+     "modality": "onscreen-text",
+     "availability": "C (postérieur à la pose)"
+    }
+   ],
+   "inventionTraps": [
+    "Développement de FIDLE (« Formation d'Introduction au Deep Learning ») ou rattachement à un établissement présenté comme dit : à la pose, seuls le logo FIDLE et la mention CNRS du sous-titre sont à l'écran ; le développement n'apparaît que sur le carton de fin (14:24). Toléré comme complément signalé, non crédité.",
+    "Noms inventés : MOOC, « Elements of AI », cours du Collège de France, d'une université ou d'une plateforme en ligne.",
+    "Titre de l'épisode (« Comment s'entraîne une IA ? ») donné à la place du nom de la formation.",
+    "Le rappel de fin (14:27, « la suite de notre aventure… ») présenté comme déjà dit : anticipation.",
+    "« FIDLE » donné comme le nom de la formation où il souhaite la bienvenue : c'est le logo du programme, pas le nom qu'il annonce."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : le nom est dit entre 00:08,9 et 00:11,3 et affiché de 00:06 à 00:22, plus de 550 s avant la pose. Seule la mémoire longue y donne accès. Une abstention ou « la vidéo ne le précise pas » vaut 0.",
+   "rubric": {
+    "s3": "Donne le nom « Formation découverte de l'IA » (« découverte de l'IA » suffit). Bonus : le volet « histoire, bases et concepts », le logo FIDLE, le CNRS, le titre de l'épisode (« Comment s'entraîne une IA ? »). Aucun nom inventé présenté comme dit. Réponse en français.",
+    "s2": "Un de ces cas : (1) seulement le volet « histoire, bases et concepts », sans le nom ; (2) le nom exact, avec une erreur secondaire (développement de FIDLE, organisme ou établissement présenté comme dit par le formateur) ; (3) une réponse complète mais pas en français.",
+    "s1": "Seulement « FIDLE », « une formation du CNRS sur l'IA », un nom générique (« formation d'initiation à l'IA ») ou le titre de l'épisode, sans le nom annoncé.",
+    "s0": "Nom inventé (MOOC, université, autre organisme), réponse hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-n4",
+   "askedQuestion": "Comment propose-t-il de traduire « instruct model » ?",
+   "poseS": 696,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "« Donc on peut traduire ça en modèle instruit, modèle éduqué. »",
+     "startS": 682.32,
+     "endS": 684.48,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« On peut retenir la traduction modèle éduqué. »",
+     "startS": 684.84,
+     "endS": 686.5,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Le fine-tuning « va conduire à ce qu'on appelle un modèle, un instruct model ».",
+     "startS": 675.4,
+     "endS": 682.1,
+     "modality": "speech",
+     "availability": "A (blocs [672,680) et [680,688), Δ ≥ 8 s)"
+    },
+    {
+     "fact": "Définition qui suit : « un modèle qui a appris un métier, une compétence, un ensemble de compétences ». « Donc un modèle qui a appris un » est dans le bloc [680,688) ; « métier » (688,1 s) et la suite tombent dans le bloc [688,696), clos à la pose.",
+     "startS": 686.88,
+     "endS": 691.62,
+     "modality": "speech",
+     "availability": "C pour l'essentiel"
+    },
+    {
+     "fact": "Diapositive « L'éducation d'une « grande IA » », fixe depuis 08:16 : case « Instruct model » au-dessus de « Spécialisation et métier », reliée au modèle de fondation par la flèche « Fine-tuning ». Le médaillon du formateur se place sur l'icône « Spécialisation et métier » de 11:16 à 11:44.",
+     "startS": 496,
+     "endS": 696,
+     "modality": "onscreen-text",
+     "availability": "A (étiquettes identiques dans tous les blocs depuis [496,504))"
+    }
+   ],
+   "inventionTraps": [
+    "Traductions courantes non dites : « modèle d'instruction », « modèle à instructions », « modèle qui suit les instructions », « modèle ajusté aux instructions », « modèle instructif ».",
+    "« Modèle spécialisé » ou « modèle métier » donnés comme sa traduction : ce sont l'étiquette de la diapositive (« Spécialisation et métier ») et la définition, pas la traduction proposée.",
+    "Confusion avec le modèle de fondation ou avec le modèle aligné.",
+    "Anticipation : le jeune qui a appris un métier (prof, médecine) et « n'est pas prêt à aller travailler », puis l'alignement (11:32 et après, postérieurs à la pose)."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : les deux traductions et la recommandation sont dites entre 11:22,3 et 11:26,5, dans le bloc [680,688), clos depuis 8 s (parole disponible). Une abstention vaut 0.",
+   "rubric": {
+    "s3": "Donne « modèle éduqué », seul ou avec « modèle instruit ». Dire que « modèle éduqué » est la traduction qu'il conseille de retenir est valorisé. Bonus : c'est le modèle issu du fine-tuning. Aucune traduction inventée présentée comme la sienne. Réponse en français.",
+    "s2": "Un de ces cas : (1) seulement « modèle instruit » ; (2) les deux traductions avec la préférence inversée (« modèle instruit » à retenir) ; (3) « modèle éduqué » accompagné d'une traduction inventée présentée comme la sienne ; (4) une réponse complète mais pas en français.",
+    "s1": "Une traduction non dite mais plausible (« modèle à instructions », « modèle qui suit des instructions »), avec un contexte juste (issu du fine-tuning, sait répondre à des questions).",
+    "s0": "Traduction fausse ou confusion avec un autre stade (modèle de fondation, modèle aligné), réponse hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-n5",
+   "askedQuestion": "Dans son exemple du nouveau collaborateur, quelles règles lui donne-t-on ?",
+   "poseS": 864,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "« Tu dois te comporter comme ça, tu dois t'habiller comme ça. »",
+     "startS": 808.3,
+     "endS": 810.46,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« Tu dois vendre plutôt tel type de produit, tu dois plutôt avoir telle posture. »",
+     "startS": 810.46,
+     "endS": 815.62,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Cadre de l'exemple : « une fois que cet alignement est réalisé, cette fois-là on peut aller travailler » ; « notre nouveau collaborateur qui vient d'arriver, on lui a donné un certain nombre de règles ».",
+     "startS": 797.04,
+     "endS": 807.98,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Suite : « la personne est formée » ; on peut aller travailler en première ligne, devant ses élèves, ses patients, son comptoir.",
+     "startS": 816.13,
+     "endS": 826.52,
+     "modality": "speech",
+     "availability": "A (blocs récents [816,824) et [824,832))"
+    },
+    {
+     "fact": "Retour à l'IA : prête, elle part « en inférence », en production, reçoit des requêtes et des questions, et répond avec ses compétences et les règles éthiques fixées pendant l'alignement.",
+     "startS": 827.28,
+     "endS": 844.26,
+     "modality": "speech",
+     "availability": "A (dernier bloc [840,848), Δ = 16 s)"
+    },
+    {
+     "fact": "Diapositive « L'éducation d'une « grande IA » » : le médaillon du formateur est sur la case « Modèle aligné » de 13:16 à 13:50, puis sur « Au boulot ! » dès 13:52 ; sous l'alignement, l'étiquette « Briefing, éthique et bonne conduite ! ».",
+     "startS": 796,
+     "endS": 864,
+     "modality": "visual",
+     "availability": "A jusqu'au bloc [840,848) ; B pour [848,856) ; C pour [856,864)"
+    },
+    {
+     "fact": "Conclusion : l'apprentissage d'une grande IA suit des étapes qui ressemblent à celles de l'apprentissage humain (844,9–856,3 s, A) ; « l'apprentissage est quelque chose de finalement très universel » (856,7–863,7 s) est dans le bloc [856,864), clos à la pose.",
+     "startS": 844.92,
+     "endS": 863.74,
+     "modality": "speech",
+     "availability": "A jusqu'à 856 s, C ensuite"
+    }
+   ],
+   "inventionTraps": [
+    "Règles d'alignement de l'IA données pour celles du collaborateur : ne pas tenir de propos xénophobes, homophobes ou racistes, répondre avec bienveillance, « ne pas parler de ceci » (12:39–13:13). « Tu ne dois pas te comporter comme ça » figure aussi dans ces règles (12:40) : le recoupement sur le seul comportement est toléré.",
+    "Règles inventées attribuées à l'exemple : horaires, confidentialité, sécurité, respect de la hiérarchie, politesse envers les clients.",
+    "Éléments de la suite (aller devant élèves, patients, comptoir ; partir en inférence) présentés comme des règles : vrais mais hors question, neutres.",
+    "Anticipation : remerciements et « rendez-vous pour la suite » (14:24 et après)."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : les quatre règles sont dites entre 13:28,3 et 13:35,6, dans le bloc [808,816), clos depuis 48 s, juste hors de la fenêtre récente (fin ≤ 816 = E − 48). Une abstention vaut 0.",
+   "rubric": {
+    "s3": "Au moins trois des quatre règles : se comporter comme il faut, s'habiller comme il faut, vendre plutôt tel type de produit, avoir telle posture. Aucune règle inventée présentée comme dite. Bonus : le lien avec l'alignement (une fois formée, la personne peut aller travailler). Réponse en français.",
+    "s2": "Un de ces cas : (1) deux des quatre règles ; (2) trois ou quatre règles, plus une règle inventée ou une règle d'alignement de l'IA (propos racistes, bienveillance) attribuée au collaborateur ; (3) une réponse complète mais pas en français.",
+    "s1": "Une seule règle, ou seulement l'idée générale (« des règles de conduite », « un savoir-être », « les règles de l'entreprise ») sans les règles citées.",
+    "s0": "Seulement des règles inventées ou les règles éthiques de l'IA, réponse hors sujet ou abstention."
+   },
+   "confidence": "high"
+  }
+ ],
+ "cuisine": [
+  {
+   "questionId": "cuisine-n1",
+   "askedQuestion": "Quelle sorte de lardons a-t-il prévue dans les ingrédients ?",
+   "poseS": 144,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Dans la liste dite des ingrédients : « des petits morceaux de poitrine non fumée ».",
+     "startS": 58.18,
+     "endS": 61.99,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Liste incrustée de 00:40 à 00:52 : « 200 g de lardons non fumés », parmi 1,2 kg de bœuf (macreuse, paleron, plat de côte, jumeau), 2 oignons, 4 carottes, 300 g de champignons de Paris, 150 g d'oignons grelots, 1,5 l de vin rouge, 75 g de farine, huile, 1 bouquet garni, sel, poivre.",
+     "startS": 40,
+     "endS": 53,
+     "modality": "onscreen-text",
+     "availability": "A (blocs [40,48) et [48,56), Δ ≥ 88 s)"
+    },
+    {
+     "fact": "Lardons en petits dés roses dans un plat ovale blanc (01:26–01:36), versés sur la viande vers 02:16.",
+     "startS": 86,
+     "endS": 137,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "« Il y a deux écoles pour les lardons, certains les mettent d'autres pas. Moi je les mets », pour donner du goût à la viande (fait déjà optionnel de cuisine-02). « dedans » finit à 136,7 s, dans le bloc [136,144) clos à la pose.",
+     "startS": 125.02,
+     "endS": 136.74,
+     "modality": "speech",
+     "availability": "A pour l'essentiel"
+    }
+   ],
+   "inventionTraps": [
+    "Lardons fumés ou poitrine fumée : il dit « non fumée », la liste « non fumés ».",
+    "Bacon, lard salé, lardons de volaille ou pancetta présentés comme son choix.",
+    "Quantité fausse (100 g, 150 g, 250 g) ; 150 g est la quantité d'oignons grelots.",
+    "Préparation non dite : lardons blanchis ou revenus avant la marinade.",
+    "Anticipation : lardons servis dans l'assiette avec la garniture (11:26, postérieur à la pose)."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : « poitrine non fumée » est dit à 00:58–01:02 (bloc [56,64), clos depuis 80 s) et « lardons non fumés » est affiché de 00:40 à 00:52. C'est hors de la fenêtre récente : la question teste la mémoire. Une abstention vaut s0.",
+   "rubric": {
+    "s3": "Lardons non fumés (ou « poitrine non fumée »), dit clairement. Bonus : de petits morceaux de poitrine, la quantité de 200 g.",
+    "s2": "Non fumés, avec une erreur secondaire : quantité fausse (100 g, 150 g, 250 g) ou préparation non dite (lardons blanchis ou revenus avant la marinade) présentée comme faite.",
+    "s1": "Lardons ou poitrine sans dire s'ils sont fumés, ou seulement « 200 g de lardons ».",
+    "s0": "Lardons ou poitrine fumés, autre produit (bacon, volaille), réponse hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-n2",
+   "askedQuestion": "Combien de temps a-t-il laissé saisir la viande ?",
+   "poseS": 304,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "« Ça fait cinq bonnes minutes que ça dort » (ASR ; lire « dore ») : la viande saisit depuis environ cinq minutes quand il la juge prête.",
+     "startS": 289.36,
+     "endS": 292.06,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Constat qui suit : « on a des bons petits morceaux et la petite couleur, très sympathique ». « sympathique » finit à 297,3 s, dans le bloc [296,304) clos à la pose.",
+     "startS": 292.98,
+     "endS": 297.26,
+     "modality": "speech",
+     "availability": "A pour l'essentiel"
+    },
+    {
+     "fact": "Pourquoi bien saisir : plus les morceaux sont saisis, moins ils « rentrent » (sans doute « rendent ») d'eau, plus il se forme une petite croûte, qui protège l'intérieur pendant la cuisson ; l'extérieur reste un peu fermé.",
+     "startS": 256.26,
+     "endS": 277.32,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« Ça fait de la buée, c'est bon signe » : l'eau s'évapore et ne reste pas au fond.",
+     "startS": 281.48,
+     "endS": 287.72,
+     "modality": "speech",
+     "availability": "A (bloc [280,288), Δ = 16 s)"
+    },
+    {
+     "fact": "Saisie à feu très vif dans l'huile, tous les morceaux en contact avec le fond (fait déjà optionnel de cuisine-03).",
+     "startS": 217.2,
+     "endS": 247.9,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Images : vapeur au-dessus de la cocotte en inox (04:12–04:22 et 04:38–04:48), puis morceaux bien colorés retirés un à un vers le plat bleu et blanc (04:50–04:58).",
+     "startS": 252,
+     "endS": 298,
+     "modality": "visual",
+     "availability": "A jusqu'au bloc [280,288) ; B pour [288,296) (Δ = 8 s) ; C pour [296,304)"
+    },
+    {
+     "fact": "« On va débarrasser ».",
+     "startS": 298.76,
+     "endS": 300.5,
+     "modality": "speech",
+     "availability": "C (bloc [296,304) clos à la pose)"
+    }
+   ],
+   "inventionTraps": [
+    "Durée tirée du temps de la vidéo : la viande entre dans la cocotte vers 03:50 et « cinq bonnes minutes » est dit à 04:49, mais la séquence est montée ; « une minute » est faux.",
+    "Durées de culture générale : 2 à 3 minutes par face, 10 minutes.",
+    "« Cinq, six minutes » : c'est la mise à suer de la garniture (05:36), postérieure à la pose, donc une anticipation.",
+    "Deux heures (cuisson à couvert, 08:51) : anticipation.",
+    "Huile d'olive (il dit « surtout pas d'huile d'olive »), feu doux, poêle."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : « cinq bonnes minutes » est dit à 04:49–04:52, dans le bloc [288,296), clos depuis 8 s (parole disponible). Une abstention vaut s0.",
+   "rubric": {
+    "s3": "Environ cinq minutes (« cinq bonnes minutes » ; « au moins cinq minutes » accepté). Bonus : à feu très vif, jusqu'à de bons petits morceaux bien colorés, ou l'explication de la croûte.",
+    "s2": "Une fourchette qui contient cinq minutes (« 4 à 6 minutes », « 5 à 6 minutes »), ou cinq minutes avec une erreur de procédé (feu doux, huile d'olive).",
+    "s1": "Pas de durée chiffrée, mais une description juste (« quelques minutes, jusqu'à ce qu'elle soit bien colorée »).",
+    "s0": "Durée fausse (une minute, deux à trois minutes, dix minutes, deux heures), réponse hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-n3",
+   "askedQuestion": "Quelle quantité de vin rouge indiquait la liste des ingrédients ?",
+   "poseS": 424,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "Liste des ingrédients incrustée à l'écran de 00:40 à 00:52 : « 1,5 l de vin rouge ».",
+     "startS": 40,
+     "endS": 53,
+     "modality": "onscreen-text",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "La parole ne donne aucune quantité : « il faut des oignons, des carottes, du vin, un bouquet garni… ».",
+     "startS": 47.26,
+     "endS": 55.05,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Deux bouteilles de vin rouge sont posées sur le plan de travail (00:38, 01:20, 02:08), soit 1,5 l en bouteilles de 75 cl : compatible, mais jamais dit.",
+     "startS": 38,
+     "endS": 130,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Vin d'Occitanie, pas de Bourgogne (fait déjà optionnel de cuisine-02).",
+     "startS": 18.9,
+     "endS": 30.5,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Usage du vin : marinade recouverte « à hauteur » (fait requis de cuisine-02), puis « mouiller » avec le jus de marinade. L'annonce (412,3–416,7 s) est en A ; « Mouiller, c'est quoi ? C'est prendre le jus et de le verser dedans » (417,8–423,0 s) est dans le bloc [416,424), clos à la pose.",
+     "startS": 150.1,
+     "endS": 423,
+     "modality": "speech",
+     "availability": "A pour la marinade, C pour le versement"
+    }
+   ],
+   "inventionTraps": [
+    "Quantités usuelles non affichées : 75 cl, une bouteille, 1 litre, 2 litres.",
+    "Autres nombres de la liste pris pour le vin : 1,2 kg (bœuf), 75 g (farine), 300 g, 150 g.",
+    "Vin de Bourgogne ou vin blanc : il annonce un vin d'Occitanie et la liste dit « vin rouge ».",
+    "Quantité de jus versée pour mouiller : jamais chiffrée."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : la liste est affichée de 00:40 à 00:52, dans des blocs d'images clos depuis plus de 360 s (A). L'information n'existe qu'à l'image : la question teste la mémoire visuelle longue. Une abstention ou « la quantité n'a pas été précisée » vaut s0.",
+   "rubric": {
+    "s3": "1,5 litre de vin rouge.",
+    "s2": "« Deux bouteilles » (compatible avec les deux bouteilles visibles, mais ce n'est pas le chiffre affiché), ou 1,5 l avec une erreur (vin blanc, vin de Bourgogne).",
+    "s1": "Pas de quantité, mais une indication juste (« de quoi recouvrir la viande à hauteur »).",
+    "s0": "Quantité fausse (75 cl, une bouteille, 1 l, 2 l), confusion avec un autre chiffre de la liste, abstention ou « non précisé »."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-n4",
+   "askedQuestion": "Comment a-t-il remis la viande dans la cocotte ?",
+   "poseS": 520,
+   "factAge": "ancien",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "(a) À la main : « Je prends mes doigts, parce que sinon, ça va faire des éclaboussures. »",
+     "startS": 455.78,
+     "endS": 458.22,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "(b) Il verse aussi le jus rendu par la viande : « la viande a rendu un peu de jus. Mais ce n'est pas grave, on va le mettre. C'est que du bon. »",
+     "startS": 459.42,
+     "endS": 465.26,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Annonce : « Et là, on va y mettre la viande. »",
+     "startS": 451.88,
+     "endS": 454.08,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Images : il prend les morceaux un à un, à la main, dans le plat bleu et blanc et les dépose dans la sauce (07:36–07:44), puis incline et retourne le plat au-dessus de la cocotte pour verser le jus (07:46–07:52). La dernière image (07:52) est dans le bloc récent [472,480).",
+     "startS": 456,
+     "endS": 473,
+     "modality": "visual",
+     "availability": "A (blocs [448,456) à [464,472), Δ ≥ 48 s ; image de 07:52 en A, Δ = 40 s)"
+    },
+    {
+     "fact": "Ensuite : poivre (« bonne pincée ») et un peu de gros sel, qui se dilue lentement (le gros sel est déjà un fait optionnel de cuisine-06), puis on remue.",
+     "startS": 465.9,
+     "endS": 509.48,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« On rajoute notre petit bouquet garni » commence à 518,7 s.",
+     "startS": 518.7,
+     "endS": 528.12,
+     "modality": "speech",
+     "availability": "C (bloc [512,520) clos à la pose, suite postérieure)"
+    }
+   ],
+   "inventionTraps": [
+    "Ustensile inventé pour remettre la viande : écumoire, araignée, pince ou louche. Un ustensile a servi à la débarrasser après la saisie (04:52–04:58), pas à la remettre.",
+    "Jus jeté, viande égouttée ou essuyée avant d'être remise.",
+    "Viande saisie une seconde fois, eau ou bouillon ajoutés.",
+    "Anticipations : bouquet garni remis (dès 08:38,7), cocotte couverte et deux heures de cuisson (08:49 et après)."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : le geste et le jus sont dits entre 07:35 et 07:45, dans les blocs [448,456) à [464,472), clos depuis 48 à 64 s, juste hors de la fenêtre récente, et montrés de 07:36 à 07:52. Une abstention vaut s0.",
+   "rubric": {
+    "s3": "Les deux éléments : (a) il remet les morceaux à la main, avec les doigts ; (b) il verse aussi le jus que la viande a rendu (« c'est que du bon »). La raison des doigts (éviter les éclaboussures) est valorisée, non exigée.",
+    "s2": "Un seul des deux éléments, juste et précis ; ou les deux avec une erreur secondaire (mauvaise raison, ustensile ajouté).",
+    "s1": "Seulement « il remet la viande dans la sauce », sans la manière ni le jus, ou un élément juste noyé dans des étapes inventées.",
+    "s0": "Contradiction (jus jeté, viande égouttée, à l'écumoire ou à la pince comme seule réponse), réponse hors sujet ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-n5",
+   "askedQuestion": "Quels accompagnements cite-t-il pour le bœuf bourguignon ?",
+   "poseS": 728,
+   "factAge": "récent",
+   "answerableAtPose": "yes",
+   "requiredFacts": [
+    {
+     "fact": "« Sinon, on peut accompagner ça de coquillettes. »",
+     "startS": 707.28,
+     "endS": 710.42,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« Ou de pommes cuites à l'anglaise, c'est-à-dire cuites à l'eau. »",
+     "startS": 711.12,
+     "endS": 713.7,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "« Certains mangent ça avec des tagliatelles. »",
+     "startS": 714.94,
+     "endS": 716.76,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Service nature : « Là, il est nature, parce qu'il y a déjà pas mal de garnitures. Oignons, champignons, etc. Ça peut faire un légume pour celui qui est léger. »",
+     "startS": 699.5,
+     "endS": 706.74,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Plaisanterie : les tagliatelles, « c'est ceux qui n'ont pas peur d'avoir la chemise un petit peu bariolée en fin de repas ». « en fin de repas » finit à 720,7 s, dans le bloc [720,728) clos à la pose.",
+     "startS": 716.9,
+     "endS": 720.7,
+     "modality": "speech",
+     "availability": "A pour l'essentiel"
+    },
+    {
+     "fact": "Dressage : assiette creuse blanche avec la viande, puis la garniture (« petits oignons, champignons, carottes, petits lardons ») ; aucun accompagnement à l'image (11:10–11:58).",
+     "startS": 670.88,
+     "endS": 718,
+     "modality": "visual",
+     "availability": "A jusqu'au bloc [704,712) (Δ = 16 s) ; B pour [712,720) (Δ = 8 s)"
+    },
+    {
+     "fact": "« Quoi qu'il arrive, les amis fines bouches, à vos fourchettes et bon appétit. »",
+     "startS": 721.88,
+     "endS": 728.7,
+     "modality": "speech",
+     "availability": "C (bloc [720,728) clos à la pose)"
+    }
+   ],
+   "inventionTraps": [
+    "Accompagnements classiques non cités : purée, riz, pommes sautées, frites, pain, croûtons ; « pâtes fraîches » sans autre précision.",
+    "Dire qu'il sert son assiette avec des coquillettes ou des pommes de terre : à l'image, l'assiette est nature.",
+    "« Pommes » comprises comme des fruits.",
+    "Générique de fin (« LWAC », © 2020 Éditions LTE, dès 12:10) : postérieur à la pose."
+   ],
+   "abstentionPolicy": "Aucune abstention attendue : les trois accompagnements sont dits entre 11:47 et 11:57, dans les blocs [704,712) et [712,720), clos depuis 8 à 16 s (parole disponible). Une abstention vaut s0.",
+   "rubric": {
+    "s3": "Les trois accompagnements : coquillettes, pommes de terre à l'anglaise (cuites à l'eau ; « pommes vapeur » toléré) et tagliatelles. Le service nature, la garniture tenant lieu de légume, est valorisé. Aucun accompagnement inventé attribué au cuisinier.",
+    "s2": "Deux des trois, ou les trois avec un accompagnement inventé (purée, riz) attribué au cuisinier. « Des pâtes » sans précision compte pour un seul accompagnement.",
+    "s1": "Un seul accompagnement juste, ou seulement l'idée qu'il le sert nature avec sa garniture.",
+    "s0": "Accompagnements inventés seulement, réponse hors sujet ou abstention."
+   },
+   "confidence": "high"
+  }
+ ]
+}

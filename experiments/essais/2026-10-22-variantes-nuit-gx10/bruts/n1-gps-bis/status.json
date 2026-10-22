@@ -1,0 +1,227 @@
+{
+  "id": "57cefe39bbdc4663babfdde1239e1ad7",
+  "startedAtUtc": "2026-10-21T23:08:45.348687+00:00",
+  "deadlineUtc": "2026-10-22T01:28:45.348399+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/kennedy/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/kennedy-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T23:08:48.700795+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:08:49.207205+00:00",
+      "durationSeconds": 0.5012000260030618
+    },
+    {
+      "name": "kennedy-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/kennedy/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/kennedy-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T23:08:49.208013+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:16:07.263455+00:00",
+      "durationSeconds": 438.05368661799
+    },
+    {
+      "name": "spring-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/spring/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/spring-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T23:16:07.808467+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:16:08.311082+00:00",
+      "durationSeconds": 0.500846939990879
+    },
+    {
+      "name": "spring-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/spring/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/spring-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T23:16:08.311653+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:24:10.364499+00:00",
+      "durationSeconds": 482.0512073489954
+    },
+    {
+      "name": "cnrs-apprentissage-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/cnrs-apprentissage/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/cnrs-apprentissage-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T23:24:10.908467+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:24:11.911338+00:00",
+      "durationSeconds": 1.0010943240049528
+    },
+    {
+      "name": "cnrs-apprentissage-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/cnrs-apprentissage/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/cnrs-apprentissage-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T23:24:11.911843+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:39:10.029592+00:00",
+      "durationSeconds": 898.1162996019993
+    },
+    {
+      "name": "boeuf-bourguignon-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/boeuf-bourguignon/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/boeuf-bourguignon-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T23:39:10.600191+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:39:11.603063+00:00",
+      "durationSeconds": 1.0008107260073302
+    },
+    {
+      "name": "boeuf-bourguignon-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/boeuf-bourguignon/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/boeuf-bourguignon-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T23:39:11.603634+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:51:38.528182+00:00",
+      "durationSeconds": 746.9229210630001
+    },
+    {
+      "name": "tears-of-steel-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/tears-of-steel/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/tears-of-steel-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T23:51:39.093210+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T23:51:40.096391+00:00",
+      "durationSeconds": 1.0012645929964492
+    },
+    {
+      "name": "tears-of-steel-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/tears-of-steel/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/tears-of-steel-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T23:51:40.097229+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T00:03:56.943084+00:00",
+      "durationSeconds": 736.8441238710075
+    },
+    {
+      "name": "artemis-GPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/artemis/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/artemis-GPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T00:03:57.498236+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T00:03:59.001681+00:00",
+      "durationSeconds": 1.5015654290036764
+    },
+    {
+      "name": "artemis-GPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/inputs/artemis/scenario-GPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/config-GPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n1-gps-bis-results/artemis-GPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T00:03:59.002660+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T00:39:21.165997+00:00",
+      "durationSeconds": 2122.161983676997
+    }
+  ],
+  "updatedAtUtc": "2026-10-22T00:39:21.235428+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

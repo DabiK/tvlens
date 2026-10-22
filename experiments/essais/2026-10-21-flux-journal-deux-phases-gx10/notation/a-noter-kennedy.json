@@ -1,0 +1,212 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "answers": [
+   {
+    "textId": "401df1e4df",
+    "kind": "observation",
+    "answer": "Kennedy évoque une période de cinquante mille ans d'histoire humaine enregistrée (moment-2, 8000-16000). Il compare cela à une durée de seulement un demi-siècle (moment-1, 0-8000).",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-1",
+      "startMs": 0,
+      "endMs": 8000
+     }
+    ]
+   },
+   {
+    "textId": "70efb07953",
+    "kind": "observation",
+    "answer": "Kennedy évoque une période de 50 000 ans d'histoire humaine enregistrée, tout en soulignant que les progrès récents se sont accomplis en seulement un demi-siècle. Il précise que nous ne connaissons que très peu de choses sur les 40 premières années de cette période.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-03",
+  "answers": [
+   {
+    "textId": "59f121a7d2",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes (moment-13, 96000-104000). L'ouverture de l'espace promet des coûts et des risques élevés, tout comme des récompenses importantes (moment-14, 104000-112000 ; moment-15, 112000-120000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "bc18ce1759",
+    "kind": "observation",
+    "answer": "L'accélération du progrès technique produit de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes (moment-13). L'ouverture de l'espace promet des coûts et des risques élevés, mais aussi une récompense élevée (moment-14, moment-15).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "answers": [
+   {
+    "textId": "efb53ebb14",
+    "kind": "observation",
+    "answer": "Le président affirme que l'exploration spatiale est une aventure majeure qui se poursuivra avec ou sans nous (moment-24). Il soutient que les États-Unis ne peuvent rester en retrait s'ils aspirent à être un leader mondial (moment-25), précisant que ceux qui les ont précédés ont fait en sorte que le pays soit en tête de cette course à l'espace (moment-26).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "d2148ba47f",
+    "kind": "observation",
+    "answer": "L'orateur affirme que l'exploration spatiale progressera avec ou sans la participation du pays, la qualifiant de grande aventure (moment-24, 184000-192000). Il ajoute qu'aucune nation qui aspire à être un leader ne peut se permettre de rester en arrière (moment-25, 192000-200000) et que les prédécesseurs ont fait en sorte que le pays soit en tête de cette course (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "answers": [
+   {
+    "textId": "6fefc48b2a",
+    "kind": "observation",
+    "answer": "Kennedy wants space to be governed by a banner of freedom and peace (moment-33). He rejects the idea that space should be ruled by a hostile flag of conquest (moment-32).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "6b2f97d774",
+    "kind": "observation",
+    "answer": "Kennedy souhaite que l'espace soit représenté par une bannière de liberté et de paix (moment-33, 256000-264000). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "answers": [
+   {
+    "textId": "281ea0b400",
+    "kind": "observation",
+    "answer": "Le président affirme que la science et la technologie n'ont pas de conscience propre (moment-42). Il précise que le fait que la force devienne un bien ou un mal dépend de l'homme et de la position occupée par les États-Unis (moment-43).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "98cf2600fd",
+    "kind": "observation",
+    "answer": "L'orateur affirme que la science et la technologie n'ont pas de conscience propre. Il précise que leur devenir, qu'elles soient une force pour le bien ou pour le mal, dépend de l'homme (moment-42, 328000-344000).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   }
+  ]
+ }
+]

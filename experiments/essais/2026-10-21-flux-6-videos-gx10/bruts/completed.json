@@ -1,0 +1,83 @@
+[
+  {
+    "video": "kennedy",
+    "arm": "GPSV",
+    "label": "kennedy-GPSV-1",
+    "proxyStopped": true,
+    "campaignSha256": "ac9e4666cbc80cedd298b974cd2bb95518eeac213c4ae81e94e123baf013eca9",
+    "runId": "4392370e-fa77-4bee-aa2c-f9916fc2924e",
+    "acquired": 5
+  },
+  {
+    "video": "spring",
+    "arm": "GPSV",
+    "label": "spring-GPSV-1",
+    "proxyStopped": true,
+    "campaignSha256": "36771f028de546c24aa910e6e6792052dc750c627fdf45d3b1e3ed60b263a99d",
+    "runId": "719043dd-c8df-4fb7-97a5-f32179314b9c",
+    "acquired": 5
+  },
+  {
+    "video": "cnrs-apprentissage",
+    "arm": "GPSV",
+    "label": "cnrs-apprentissage-GPSV-1",
+    "proxyStopped": true,
+    "campaignSha256": "07c359305a1106cbd3b068a533f78d1a6b3cd85d8c7a4fbb27f3a9fd1754d13e",
+    "runId": "41fe1a5d-b2af-41e6-a986-dfb322c4354c",
+    "acquired": 5
+  },
+  {
+    "video": "boeuf-bourguignon",
+    "arm": "GPS",
+    "label": "boeuf-bourguignon-GPS-1",
+    "proxyStopped": true,
+    "campaignSha256": "69d35c893e54b1b052451c9ea53d117d25414ff9db40c69863cb5e93a9669e75",
+    "runId": "a9ae82ef-9132-4df5-8977-335177c00239",
+    "acquired": 5
+  },
+  {
+    "video": "boeuf-bourguignon",
+    "arm": "GPSV",
+    "label": "boeuf-bourguignon-GPSV-1",
+    "proxyStopped": true,
+    "campaignSha256": "232e66ba14c3f00079f89a4fe8ea4bf8acdcf292577183767b06dd3f274e3772",
+    "runId": "d1618c02-64eb-45d4-9581-81ac9447e52a",
+    "acquired": 5
+  },
+  {
+    "video": "tears-of-steel",
+    "arm": "GPS",
+    "label": "tears-of-steel-GPS-1",
+    "proxyStopped": true,
+    "campaignSha256": "7c8f00fba62b2182f72df0355a3b2623c5ac7226fd901ed806faf200b1a212ab",
+    "runId": "36a6b3f6-9d71-4c74-879f-3cb54f9f5754",
+    "acquired": 5
+  },
+  {
+    "video": "tears-of-steel",
+    "arm": "GPSV",
+    "label": "tears-of-steel-GPSV-1",
+    "proxyStopped": true,
+    "campaignSha256": "ed50fd3599f14f720dac79e03779fe67ae533414f1d62f8e806f4e9bbb290f0e",
+    "runId": "c69e8550-b5d6-49f5-9df5-ed94ead73303",
+    "acquired": 5
+  },
+  {
+    "video": "artemis",
+    "arm": "GPS",
+    "label": "artemis-GPS-1",
+    "proxyStopped": true,
+    "campaignSha256": "16b11ee10d74b70bb51cd80b3a053307488cd2e2773fa4dabb901d265eecb260",
+    "runId": "ce4f3ce1-a246-42dd-a899-9ee1dd10b8bc",
+    "acquired": 5
+  },
+  {
+    "video": "artemis",
+    "arm": "GPSV",
+    "label": "artemis-GPSV-1",
+    "proxyStopped": true,
+    "campaignSha256": "3433c372016515e2c5dd9be04dc38af9898f604a39a8ab7f1363d951080a16ff",
+    "runId": "c1b00099-8606-4083-972a-e87bbfc02906",
+    "acquired": 5
+  }
+]

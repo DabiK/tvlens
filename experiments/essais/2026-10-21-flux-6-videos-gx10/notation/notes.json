@@ -1,0 +1,902 @@
+[
+ {
+  "video": "kennedy",
+  "cfg": "GPS",
+  "q": "kennedy-01",
+  "s": 5.011044240000003,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "E1",
+  "q": "kennedy-01",
+  "s": 34.030896565000006,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPSV",
+  "q": "kennedy-01",
+  "s": 11.014951807999998,
+  "relevant": true,
+  "score": 2.5,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPSV",
+  "q": "kennedy-03",
+  "s": 6.081247535000002,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPS",
+  "q": "kennedy-03",
+  "s": 12.101210101999998,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "E1",
+  "q": "kennedy-03",
+  "s": 15.114269940999991,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "kennedy",
+  "cfg": "E1",
+  "q": "kennedy-05",
+  "s": 14.171088011999993,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPS",
+  "q": "kennedy-05",
+  "s": 11.172174317999977,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPSV",
+  "q": "kennedy-05",
+  "s": 7.143597035999992,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "E1",
+  "q": "kennedy-06",
+  "s": 19.225333700000018,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPS",
+  "q": "kennedy-06",
+  "s": 7.21540407400002,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPSV",
+  "q": "kennedy-06",
+  "s": 5.200382370999956,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPS",
+  "q": "kennedy-08",
+  "s": 9.360274121000025,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "GPSV",
+  "q": "kennedy-08",
+  "s": 5.3093312679999505,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "kennedy",
+  "cfg": "E1",
+  "q": "kennedy-08",
+  "s": 19.302082956,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "spring",
+  "cfg": "GPS",
+  "q": "spring-01",
+  "s": 4.033720591000005,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "E1",
+  "q": "spring-01",
+  "s": 14.039530906,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "GPSV",
+  "q": "spring-01",
+  "s": 4.034129734000002,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "E1",
+  "q": "spring-02",
+  "s": 16.15751901400002,
+  "relevant": false,
+  "score": 0,
+  "invention": true,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "GPSV",
+  "q": "spring-02",
+  "s": 4.103676921999984,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "spring",
+  "cfg": "GPS",
+  "q": "spring-02",
+  "s": 6.1170225230000215,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "spring",
+  "cfg": "E1",
+  "q": "spring-03",
+  "s": 15.169075217999984,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "spring",
+  "cfg": "GPSV",
+  "q": "spring-03",
+  "s": 4.1294446579999935,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "spring",
+  "cfg": "GPS",
+  "q": "spring-03",
+  "s": 5.162183882000012,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "spring",
+  "cfg": "GPS",
+  "q": "spring-04",
+  "s": 4.192808542000013,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "GPSV",
+  "q": "spring-04",
+  "s": 4.160740111999971,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "E1",
+  "q": "spring-04",
+  "s": 14.203781713000033,
+  "relevant": false,
+  "score": 0,
+  "invention": true,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "GPSV",
+  "q": "spring-06",
+  "s": 4.2520743479999945,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "E1",
+  "q": "spring-06",
+  "s": 17.302642106000043,
+  "relevant": false,
+  "score": 0,
+  "invention": true,
+  "unjustified": true
+ },
+ {
+  "video": "spring",
+  "cfg": "GPS",
+  "q": "spring-06",
+  "s": 6.304105909999984,
+  "relevant": false,
+  "score": 1,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPSV",
+  "q": "cnrs-01",
+  "s": 8.063703485000005,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPS",
+  "q": "cnrs-01",
+  "s": 7.049393920000003,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "E1",
+  "q": "cnrs-01",
+  "s": 26.078681685000003,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPSV",
+  "q": "cnrs-02",
+  "s": 6.160321116000007,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPS",
+  "q": "cnrs-02",
+  "s": 6.159535330999992,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "E1",
+  "q": "cnrs-02",
+  "s": 24.188137879999996,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "E1",
+  "q": "cnrs-04",
+  "s": 21.503090285999992,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPS",
+  "q": "cnrs-04",
+  "s": 14.521165891000011,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPSV",
+  "q": "cnrs-04",
+  "s": 6.479368513000023,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPS",
+  "q": "cnrs-05",
+  "s": 7.9044222229999725,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPSV",
+  "q": "cnrs-05",
+  "s": 5.845535294999951,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "cnrs",
+  "cfg": "E1",
+  "q": "cnrs-05",
+  "s": 24.878520626999904,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPS",
+  "q": "cnrs-06",
+  "s": 8.416765920999925,
+  "relevant": false,
+  "score": 1,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "GPSV",
+  "q": "cnrs-06",
+  "s": 7.068982195999939,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cnrs",
+  "cfg": "E1",
+  "q": "cnrs-06",
+  "s": 23.317122151999968,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPSV",
+  "q": "cuisine-02",
+  "s": 14.132006036000005,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPS",
+  "q": "cuisine-02",
+  "s": 16.151562371999987,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "E1",
+  "q": "cuisine-02",
+  "s": 25.159709979999985,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "E1",
+  "q": "cuisine-03",
+  "s": 17.202286402999977,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPS",
+  "q": "cuisine-03",
+  "s": 8.191783667999989,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPSV",
+  "q": "cuisine-03",
+  "s": 11.182324987,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "E1",
+  "q": "cuisine-05",
+  "s": 21.46359711599996,
+  "relevant": false,
+  "score": 1,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPSV",
+  "q": "cuisine-05",
+  "s": 12.464445642000006,
+  "relevant": false,
+  "score": 1,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPS",
+  "q": "cuisine-05",
+  "s": 11.487725804999995,
+  "relevant": false,
+  "score": 1,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPSV",
+  "q": "cuisine-06",
+  "s": 11.608675557999987,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "E1",
+  "q": "cuisine-06",
+  "s": 17.633158224000013,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPS",
+  "q": "cuisine-06",
+  "s": 9.665475083000027,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "E1",
+  "q": "cuisine-07",
+  "s": 15.850317266000086,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPS",
+  "q": "cuisine-07",
+  "s": 8.089506514000007,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "cuisine",
+  "cfg": "GPSV",
+  "q": "cuisine-07",
+  "s": 11.822784069000045,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "GPS",
+  "q": "tears-01",
+  "s": 4.032919460999998,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "GPSV",
+  "q": "tears-01",
+  "s": 4.027694833000002,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "E1",
+  "q": "tears-01",
+  "s": 13.033259298000004,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "E1",
+  "q": "tears-03",
+  "s": 13.188976025000011,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "GPS",
+  "q": "tears-03",
+  "s": 6.199999898999987,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "tears",
+  "cfg": "GPSV",
+  "q": "tears-03",
+  "s": 10.141329085999983,
+  "relevant": false,
+  "score": 0,
+  "invention": true,
+  "unjustified": true
+ },
+ {
+  "video": "tears",
+  "cfg": "GPSV",
+  "q": "tears-04",
+  "s": 10.203382825999986,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "E1",
+  "q": "tears-04",
+  "s": 10.233260863000003,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "GPS",
+  "q": "tears-04",
+  "s": 4.236497805999999,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "GPS",
+  "q": "tears-06",
+  "s": 4.385842492999974,
+  "relevant": true,
+  "score": 2,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "E1",
+  "q": "tears-06",
+  "s": 13.37810327099997,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "tears",
+  "cfg": "GPSV",
+  "q": "tears-06",
+  "s": 11.370395011000044,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "E1",
+  "q": "tears-07",
+  "s": 15.644184527999954,
+  "relevant": false,
+  "score": 0,
+  "invention": false,
+  "unjustified": true
+ },
+ {
+  "video": "tears",
+  "cfg": "GPSV",
+  "q": "tears-07",
+  "s": 10.619248789999983,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "tears",
+  "cfg": "GPS",
+  "q": "tears-07",
+  "s": 7.731371999999974,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "E1",
+  "q": "artemis-01",
+  "s": 26.390748955999968,
+  "relevant": false,
+  "score": 2,
+  "invention": true,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPSV",
+  "q": "artemis-01",
+  "s": 12.577499411999947,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPS",
+  "q": "artemis-01",
+  "s": 15.08697191000008,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPS",
+  "q": "artemis-02",
+  "s": 6.813984584999969,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPSV",
+  "q": "artemis-02",
+  "s": 5.775468483000062,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "E1",
+  "q": "artemis-02",
+  "s": 21.300670147999888,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPSV",
+  "q": "artemis-04",
+  "s": 5.371472500999924,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPS",
+  "q": "artemis-04",
+  "s": 5.933730309999781,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "E1",
+  "q": "artemis-04",
+  "s": 24.18518822000013,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "E1",
+  "q": "artemis-05",
+  "s": 19.634761851000135,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPSV",
+  "q": "artemis-05",
+  "s": 5.731424602000043,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPS",
+  "q": "artemis-05",
+  "s": 6.9490014070000035,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPSV",
+  "q": "artemis-07",
+  "s": 7.302157693000044,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "GPS",
+  "q": "artemis-07",
+  "s": 7.138095279000233,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ },
+ {
+  "video": "artemis",
+  "cfg": "E1",
+  "q": "artemis-07",
+  "s": 17.162204573000082,
+  "relevant": true,
+  "score": 3,
+  "invention": false,
+  "unjustified": false
+ }
+]

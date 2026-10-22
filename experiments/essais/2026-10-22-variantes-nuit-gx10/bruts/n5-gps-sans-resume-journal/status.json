@@ -1,0 +1,151 @@
+{
+  "id": "7abaca21d7764a9ebf15ceac2358fed0",
+  "startedAtUtc": "2026-10-22T05:25:26.663044+00:00",
+  "deadlineUtc": "2026-10-22T07:45:26.662956+00:00",
+  "status": "boeuf-bourguignon-GPSRJ-1",
+  "stages": [
+    {
+      "name": "kennedy-GPSRJ-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/kennedy/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/kennedy-GPSRJ-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T05:25:33.145411+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:25:33.648169+00:00",
+      "durationSeconds": 0.5006226399855223
+    },
+    {
+      "name": "kennedy-GPSRJ-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/kennedy/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/kennedy-GPSRJ-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T05:25:33.648664+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:32:43.105381+00:00",
+      "durationSeconds": 429.45446325300145
+    },
+    {
+      "name": "spring-GPSRJ-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/spring/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/spring-GPSRJ-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T05:32:43.641292+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:32:44.144227+00:00",
+      "durationSeconds": 0.5006700070225634
+    },
+    {
+      "name": "spring-GPSRJ-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/spring/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/spring-GPSRJ-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T05:32:44.144755+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:40:34.607021+00:00",
+      "durationSeconds": 470.4604334110045
+    },
+    {
+      "name": "cnrs-apprentissage-GPSRJ-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/cnrs-apprentissage/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/cnrs-apprentissage-GPSRJ-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T05:40:35.152987+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:40:36.156459+00:00",
+      "durationSeconds": 1.0014632820093539
+    },
+    {
+      "name": "cnrs-apprentissage-GPSRJ-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/cnrs-apprentissage/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/cnrs-apprentissage-GPSRJ-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T05:40:36.156979+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:55:23.582389+00:00",
+      "durationSeconds": 887.4239950499905
+    },
+    {
+      "name": "boeuf-bourguignon-GPSRJ-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/boeuf-bourguignon/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/boeuf-bourguignon-GPSRJ-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T05:55:24.131284+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:55:25.134685+00:00",
+      "durationSeconds": 1.0012953559926245
+    },
+    {
+      "name": "boeuf-bourguignon-GPSRJ-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/inputs/boeuf-bourguignon/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5-gps-sans-resume-journal-results/boeuf-bourguignon-GPSRJ-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T05:55:25.135221+00:00",
+      "exitCode": null
+    }
+  ],
+  "updatedAtUtc": "2026-10-22T05:55:25.135225+00:00"
+}

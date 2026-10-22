@@ -1,0 +1,196 @@
+[
+ {
+  "questionId": "artemis-01",
+  "answers": [
+   {
+    "textId": "152087058c",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a donné l'autorisation de procéder au décompte final et au lancement d'Artemis-1 (moment-116, moment-119). Des étapes de configuration supplémentaires sont toutefois nécessaires avant de pouvoir reprendre le compte à rebours (moment-120).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     },
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     },
+     {
+      "id": "moment-120",
+      "startMs": 952000,
+      "endMs": 960000
+     }
+    ]
+   },
+   {
+    "textId": "2bc2b6d428",
+    "kind": "observation",
+    "answer": "L'équipe de lancement a annoncé qu'elle avait le feu vert pour procéder au décompte final et au lancement d'Artemis I (moment-116). Le directeur de lancement a confirmé que l'équipe de gestion de la mission était prête et a donné l'autorisation de reprendre le décompte (moment-119).",
+    "citations": [
+     {
+      "id": "moment-116",
+      "startMs": 920000,
+      "endMs": 928000
+     },
+     {
+      "id": "moment-119",
+      "startMs": 944000,
+      "endMs": 952000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-02",
+  "answers": [
+   {
+    "textId": "6d671226d7",
+    "kind": "observation",
+    "answer": "Le système de suppression de la pression d'allumage et du son inonde le lanceur mobile d'eau pour réduire la puissance de la pression et du bruit causés par l'allumage de la fusée (moment-153). Cette mesure est nécessaire car l'absence de réduction de ces forces pourrait endommager la fusée (moment-154).",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   },
+   {
+    "textId": "7f26653ba1",
+    "kind": "observation",
+    "answer": "Le système de suppression de l'allumage, de la pression et du son inonde le lanceur mobile avec de l'eau. Cette procédure vise à réduire la puissance de la pression et du bruit assourdissants causés par l'allumage de la fusée, afin d'éviter d'endommager celle-ci.",
+    "citations": [
+     {
+      "id": "moment-153",
+      "startMs": 1216000,
+      "endMs": 1224000
+     },
+     {
+      "id": "moment-154",
+      "startMs": 1224000,
+      "endMs": 1232000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-04",
+  "answers": [
+   {
+    "textId": "a4591b12d0",
+    "kind": "observation",
+    "answer": "Le décollage a eu lieu comme l'indique le passage de l'allumage des boosters (moment-204). Le véhicule est propulsé par quatre moteurs RS-25 sur l'étage principal et deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   },
+   {
+    "textId": "85548cba28",
+    "kind": "observation",
+    "answer": "Le décollage a bien eu lieu, comme l'indiquent les images de la fusée s'élevant avec des flammes et de la fumée (moment-204). Le véhicule est propulsé par les quatre moteurs RS-25 de l'étage central ainsi que par deux boosters à propulsion solide (moment-206).",
+    "citations": [
+     {
+      "id": "moment-204",
+      "startMs": 1624000,
+      "endMs": 1632000
+     },
+     {
+      "id": "moment-206",
+      "startMs": 1640000,
+      "endMs": 1648000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-05",
+  "answers": [
+   {
+    "textId": "96c6b37eef",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide viennent de se séparer (moment-221). L'étage principal, propulsé par les moteurs RS-25, continue d'assurer la propulsion du vol d'Orion (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   },
+   {
+    "textId": "340c637011",
+    "kind": "observation",
+    "answer": "Les boosters à propulsion solide se sont séparés du lanceur (moment-221). Le vol d'Orion est désormais assuré par les quatre moteurs RS-25 de l'étage central (moment-222).",
+    "citations": [
+     {
+      "id": "moment-221",
+      "startMs": 1760000,
+      "endMs": 1768000
+     },
+     {
+      "id": "moment-222",
+      "startMs": 1768000,
+      "endMs": 1776000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "artemis-07",
+  "answers": [
+   {
+    "textId": "1bd9e3a473",
+    "kind": "observation",
+    "answer": "Les commentateurs se préparent pour l'arrêt des moteurs principaux de l'étage central (moment-258, moment-261). Les quatre moteurs RS-25 sont déjà en train de réduire leur poussée (moment-259, moment-261).",
+    "citations": [
+     {
+      "id": "moment-258",
+      "startMs": 2056000,
+      "endMs": 2064000
+     },
+     {
+      "id": "moment-259",
+      "startMs": 2064000,
+      "endMs": 2072000
+     },
+     {
+      "id": "moment-261",
+      "startMs": 2080000,
+      "endMs": 2088000
+     }
+    ]
+   },
+   {
+    "textId": "11292eb81c",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   }
+  ]
+ }
+]

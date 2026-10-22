@@ -1,0 +1,139 @@
+export const meta = {
+  name: 'oracle-extension-60',
+  description: 'Write five new media-grounded questions per video with their oracle entries, then verify each one independently',
+  phases: [
+    { title: 'Rédaction', detail: 'one author per pair of videos proposes five new questions per video with oracle entries' },
+    { title: 'Vérification', detail: 'one independent reviewer per pair checks each question against the media' },
+  ],
+}
+
+const A = args
+const PAIRS = [
+  [{ key: 'kennedy', lang: 'anglais', durationS: 418, note: 'Discours de Kennedy à Rice (extrait de 7 min).' },
+   { key: 'artemis', lang: 'anglais', durationS: 2098,
+      note: 'Extrait 2:50:00–3:25:00 du direct NASA Artemis : temps local = temps source − 2:50:00. '
+        + 'Une frise NASA (T+, étapes) est visible à l\'écran.' }],
+  [{ key: 'spring', lang: 'sans dialogue', durationS: 462,
+     note: 'Court métrage d\'animation sans dialogue : seules les images comptent (pas de transcription).' },
+   { key: 'tears', lang: 'anglais', durationS: 732,
+      note: 'Fiction Tears of Steel ; SRT officiel : ' + A.repo + '/experiments/gx10/evaluation/preuves/en/TOS-en.srt (à aligner au fichier).' }],
+  [{ key: 'cnrs', lang: 'français', durationS: 878, note: 'Cours CNRS sur l\'apprentissage automatique, avec diapositives à l\'écran.' },
+   { key: 'cuisine', lang: 'français', durationS: 736, note: 'Recette du bœuf bourguignon.' }],
+]
+
+const COMMON = `
+Contexte : TVLens, compagnon de visionnage. Des questions sont posées pendant la lecture d'une vidéo ; un système local
+(blocs de 8 s : ASR Whisper + images décrites par un VLM, puis un LLM répond en français) doit répondre. Le système ne voit
+que les 6 derniers blocs clos (48 s) en détail ; tout ce qui est plus ancien n'est accessible que par sa mémoire.
+Lecture seule sur le dépôt ${A.repo} (aucune modification, aucun git). Écris seulement dans ton dossier de travail.
+Langue de travail et de rendu : français (les citations restent dans leur langue).
+
+Matériaux (indépendants du système évalué) :
+- Transcriptions Whisper large-v3-turbo, temps absolus du fichier : ${A.lab}/oracle/transcriptions/<video>.transcript.txt
+  (aucune pour spring). Transcription automatique : recoupe avec les images si c'est douteux.
+- Images toutes les 2 s : ${A.media}/frames/<video>/NNNNN.jpg, l'image n ≈ (n−1)×2 s. Planche :
+  python3 -I ${A.lab}/planche.py --frames ${A.media}/frames/<video> --from <s> --to <s> [--every 4] --out <ton dossier>/x.jpg
+  puis ouvre l'image avec l'outil Read (24 images max par planche).
+- Oracle v2 des questions existantes (format à reproduire exactement) : ${A.lab}/oracle-v2.json
+
+INTERDIT : ouvrir des campaign.json, des dossiers notation*, a-noter-*, cle-*, membres-*, ou toute sortie de TVLens.
+
+Disponibilité à la pose (règle commune de l'oracle v2) : blocs [8k, 8k+8) s depuis le début du fichier ; un bloc n'est traité
+qu'après sa clôture. Δ = pose − fin du bloc qui contient le fait. Parole disponible si Δ ≥ 3 s ; image si Δ ≥ 10 s.
+A = disponible, B = incertain (image avec 3 ≤ Δ < 10), C = indisponible. Un fait C ne peut pas être requis.
+Âge d'un fait : soit E = fin du dernier bloc clos à la pose (E = 8 × floor(pose / 8)). Le fait est « récent » si son bloc est
+parmi les 6 derniers blocs clos (fin du bloc > E − 48), « ancien » sinon.
+`
+
+const ENTRY = {
+  type: 'object',
+  properties: {
+    questionId: { type: 'string' }, askedQuestion: { type: 'string' }, poseS: { type: 'number' },
+    factAge: { type: 'string', enum: ['ancien', 'récent'] },
+    answerableAtPose: { type: 'string', enum: ['yes', 'partial', 'no'] },
+    requiredFacts: { type: 'array', items: { type: 'object', properties: {
+      fact: { type: 'string' }, startS: { type: 'number' }, endS: { type: 'number' },
+      modality: { type: 'string', enum: ['speech', 'visual', 'onscreen-text'] },
+      availability: { type: 'string', enum: ['A', 'B', 'C'] } }, required: ['fact', 'startS', 'endS', 'modality', 'availability'] } },
+    optionalFacts: { type: 'array', items: { type: 'object', properties: {
+      fact: { type: 'string' }, startS: { type: 'number' }, endS: { type: 'number' },
+      modality: { type: 'string' }, availability: { type: 'string' } }, required: ['fact'] } },
+    inventionTraps: { type: 'array', items: { type: 'string' } },
+    abstentionPolicy: { type: 'string' },
+    rubric: { type: 'object', properties: { s3: { type: 'string' }, s2: { type: 'string' }, s1: { type: 'string' }, s0: { type: 'string' } },
+      required: ['s3', 's2', 's1', 's0'] },
+    confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+  },
+  required: ['questionId', 'askedQuestion', 'poseS', 'factAge', 'answerableAtPose', 'requiredFacts', 'optionalFacts',
+    'inventionTraps', 'abstentionPolicy', 'rubric', 'confidence'],
+}
+
+const AUTHOR_SCHEMA = {
+  type: 'object',
+  properties: { videos: { type: 'array', items: { type: 'object', properties: {
+    video: { type: 'string' }, questions: { type: 'array', items: ENTRY }, notes: { type: 'string' } },
+    required: ['video', 'questions'] } } },
+  required: ['videos'],
+}
+
+const REVIEW_SCHEMA = {
+  type: 'object',
+  properties: { videos: { type: 'array', items: { type: 'object', properties: {
+    video: { type: 'string' },
+    verdicts: { type: 'array', items: { type: 'object', properties: {
+      questionId: { type: 'string' }, verdict: { type: 'string', enum: ['accepted', 'corrected', 'rejected'] },
+      reason: { type: 'string' }, entry: ENTRY }, required: ['questionId', 'verdict', 'reason'] } } },
+    required: ['video', 'verdicts'] } } },
+  required: ['videos'],
+}
+
+function existing(v) {
+  return `Questions existantes de « ${v.key} » (ne pas les dupliquer, ni leurs faits) : voir oracle-v2.json, clé ${v.key}.`
+}
+
+function authorPrompt(pair) {
+  return `${COMMON}
+Tu rédiges CINQ nouvelles questions pour chacune de ces vidéos, avec leur entrée d'oracle, pour doubler le jeu d'évaluation
+(30 → 60 questions). Dossier de travail : ${A.lab}/oracle-extension/travail/redaction-${pair.map(v => v.key).join('-')}/ (crée-le).
+
+${pair.map(v => `- « ${v.key} » (${v.lang}, ${v.durationS} s). ${v.note} ${existing(v)}`).join('\n')}
+
+Règles pour chaque vidéo :
+1. Identifiants ${'<video>'}-n1 à -n5 (ex. ${pair[0].key}-n1). Questions en français, comme un spectateur les poserait à TVLens,
+   courtes, sans oui/non, avec une réponse précise vérifiable dans le média. Pas de question qu'on peut résoudre par culture
+   générale seule. Pas de doublon d'une question existante.
+2. Instant de pose : multiple de 8 s, ≥ 40 s, ≤ durée − 8 s, à ≥ 24 s de toute autre pose (existantes et nouvelles).
+3. Au moins TROIS questions « ancien » (tous les faits requis sont anciens selon la règle, donc hors des 48 s récentes) et au moins
+   UNE « récent ». Les questions « ancien » testent la mémoire : par exemple « Quel chiffre a-t-il donné au début pour… »,
+   « Qu'avait-elle fait avant de… ».
+4. Tous les faits requis doivent être disponibles (A) à la pose ; rien de postérieur à la pose ne doit être nécessaire.
+5. Vérifie chaque fait dans la transcription ET, pour les faits visuels, sur une planche d'images ; horodatages précis.
+6. Entrée d'oracle au format d'oracle-v2.json (faits requis/optionnels, disponibilité, pièges d'invention dont les anticipations,
+   politique d'abstention, grille 0–3 propre à la question), plus factAge.
+Rends les deux vidéos.`
+}
+
+function reviewerPrompt(pair, draft) {
+  return `${COMMON}
+Tu es le vérificateur indépendant de nouvelles questions d'évaluation. Pour chaque question proposée ci-dessous, reviens aux
+médias et vérifie : les faits requis existent bien aux horodatages donnés ; leur disponibilité (A/B/C) et l'âge (ancien/récent)
+sont justes selon la règle ; rien de postérieur à la pose n'est nécessaire ; la question est claire, en français, sans réponse
+ambiguë ni connaissance externe ; elle ne duplique pas une question existante (oracle-v2.json) ; la pose respecte multiple de
+8 s et ≥ 24 s des autres poses ; la grille est juste. Verdict : accepted (entrée inchangée), corrected (rends l'entrée corrigée,
+même questionId, même pose sauf erreur de règle), rejected (raison). Rends l'entrée finale pour accepted et corrected.
+Dossier de travail : ${A.lab}/oracle-extension/travail/verification-${pair.map(v => v.key).join('-')}/ (crée-le).
+
+Propositions :
+${JSON.stringify(draft)}`
+}
+
+const results = await pipeline(
+  PAIRS,
+  pair => agent(authorPrompt(pair), { label: `redaction:${pair.map(v => v.key).join('+')}`, phase: 'Rédaction', schema: AUTHOR_SCHEMA }),
+  (draft, pair) => draft ? agent(reviewerPrompt(pair, draft), { label: `verification:${pair.map(v => v.key).join('+')}`, phase: 'Vérification',
+     schema: REVIEW_SCHEMA })
+    .then(review => ({ pair: pair.map(v => v.key), draft, review })) : null,
+)
+const done = results.filter(Boolean)
+log(`${done.length}/3 paires rédigées et vérifiées`)
+return done

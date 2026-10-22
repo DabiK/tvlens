@@ -1,0 +1,227 @@
+{
+  "id": "a73ebd3314854e1dafccf886d5d8f4aa",
+  "startedAtUtc": "2026-10-22T03:40:50.960991+00:00",
+  "deadlineUtc": "2026-10-22T06:00:50.960904+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "kennedy-QPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/kennedy/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/kennedy-QPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T03:40:54.353456+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T03:40:54.859701+00:00",
+      "durationSeconds": 0.500732643995434
+    },
+    {
+      "name": "kennedy-QPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/kennedy/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/kennedy-QPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T03:40:54.860195+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T03:48:11.426389+00:00",
+      "durationSeconds": 436.5639651300153
+    },
+    {
+      "name": "spring-QPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/spring/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/spring-QPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T03:48:11.965985+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T03:48:12.468641+00:00",
+      "durationSeconds": 0.5006744010024704
+    },
+    {
+      "name": "spring-QPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/spring/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/spring-QPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T03:48:12.469654+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T03:56:14.994183+00:00",
+      "durationSeconds": 482.5233709960012
+    },
+    {
+      "name": "cnrs-apprentissage-QPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/cnrs-apprentissage/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/cnrs-apprentissage-QPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T03:56:15.530676+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T03:56:16.533575+00:00",
+      "durationSeconds": 1.00114910400589
+    },
+    {
+      "name": "cnrs-apprentissage-QPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/cnrs-apprentissage/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/cnrs-apprentissage-QPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T03:56:16.534114+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T04:11:16.197263+00:00",
+      "durationSeconds": 899.6616220020223
+    },
+    {
+      "name": "boeuf-bourguignon-QPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/boeuf-bourguignon/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/boeuf-bourguignon-QPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T04:11:16.770106+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T04:11:17.774210+00:00",
+      "durationSeconds": 1.0016628200246487
+    },
+    {
+      "name": "boeuf-bourguignon-QPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/boeuf-bourguignon/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/boeuf-bourguignon-QPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T04:11:17.775066+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T04:23:54.722632+00:00",
+      "durationSeconds": 756.9458696309885
+    },
+    {
+      "name": "tears-of-steel-QPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/tears-of-steel/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/tears-of-steel-QPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T04:23:55.289738+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T04:23:56.293117+00:00",
+      "durationSeconds": 1.0014456359785981
+    },
+    {
+      "name": "tears-of-steel-QPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/tears-of-steel/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/tears-of-steel-QPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T04:23:56.294160+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T04:36:15.164798+00:00",
+      "durationSeconds": 738.8692951309786
+    },
+    {
+      "name": "artemis-QPS-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/artemis/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/artemis-QPS-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T04:36:15.717584+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T04:36:17.220758+00:00",
+      "durationSeconds": 1.501247576001333
+    },
+    {
+      "name": "artemis-QPS-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/inputs/artemis/scenario-QPS.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/config-QPS.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n4-qps-results/artemis-QPS-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T04:36:17.221369+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T05:11:32.404517+00:00",
+      "durationSeconds": 2115.1814650809974
+    }
+  ],
+  "updatedAtUtc": "2026-10-22T05:11:32.475561+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

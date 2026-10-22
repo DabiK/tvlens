@@ -1,0 +1,487 @@
+[
+ {
+  "questionId": "kennedy-01",
+  "answers": [
+   {
+    "textId": "6b0aefb3d7",
+    "kind": "observation",
+    "answer": "Kennedy évoque 50 000 ans d'histoire humaine condensés en un demi-siècle. Il précise que, formulés ainsi, nous ne connaissons que très peu de choses sur les 40 premières années.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "5723235405",
+    "kind": "observation",
+    "answer": "Dans son discours, Kennedy évoque une période de cinquante ans au sein de l'histoire humaine enregistrée. Il compare ce laps de temps à cinquante mille ans d'histoire.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   },
+   {
+    "textId": "d964519fb3",
+    "kind": "observation",
+    "answer": "Kennedy utilise l'ordre de grandeur de **50 000 ans** (ou 50 millénaires) pour désigner l'histoire enregistrée de l'humanité.",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   },
+   {
+    "textId": "5326dbf636",
+    "kind": "observation",
+    "answer": "Kennedy évoque 50 000 ans d'histoire humaine (moment-2, 8000-16000ms). Il compare cette durée à un intervalle de seulement un demi-siècle (moment-2, 8000-16000ms).",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     }
+    ]
+   },
+   {
+    "textId": "c7aad3e0d6",
+    "kind": "observation",
+    "answer": "Kennedy évoque 50 000 ans d'histoire humaine enregistrée. Il compare cette durée à une période de seulement un demi-siècle. (moment-2, moment-3)",
+    "citations": [
+     {
+      "id": "moment-2",
+      "startMs": 8000,
+      "endMs": 16000
+     },
+     {
+      "id": "moment-3",
+      "startMs": 16000,
+      "endMs": 24000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-03",
+  "answers": [
+   {
+    "textId": "9e11629666",
+    "kind": "observation",
+    "answer": "L'accélération technologique décrite produit des avancées majeures comme la pénicilline, la télévision et la puissance nucléaire. L'ouverture de l'espace promet des coûts élevés mais aussi de hautes récompenses.",
+    "citations": [
+     {
+      "id": "moment-12",
+      "startMs": 88000,
+      "endMs": 96000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     }
+    ]
+   },
+   {
+    "textId": "ddc423eebe",
+    "kind": "observation",
+    "answer": "Cette accélération des inventions produit de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes en dissipant les anciens (moment-13, 96000-104000). L'ouverture des perspectives de l'espace promet des coûts et des risques élevés, mais aussi de grandes récompenses (moment-14, 104000-112000 ; moment-15, 112000-120000).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "dbfc311b2b",
+    "kind": "observation",
+    "answer": "Cette accélération du rythme des inventions crée de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes (moment-13, 96000-104000ms). L'ouverture de l'espace promet des coûts et des risques élevés, mais aussi de grandes récompenses (moment-14, 104000-112000ms ; moment-15, 112000-120000ms).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "9702e880f3",
+    "kind": "observation",
+    "answer": "Cette accélération du progrès crée de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes en dissipant les anciens (moment-13). L'ouverture de l'espace promet des coûts et des risques élevés, mais aussi de grandes récompenses (moment-14, moment-15).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "26df6fc196",
+    "kind": "observation",
+    "answer": "Cette accélération produit de nouveaux maux, de nouvelles ignorances et de nouveaux problèmes (moment-13). L'ouverture de l'espace promet des coûts et des récompenses élevés (moment-14, moment-15).",
+    "citations": [
+     {
+      "id": "moment-13",
+      "startMs": 96000,
+      "endMs": 104000
+     },
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-05",
+  "answers": [
+   {
+    "textId": "518372baa6",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est une aventure qui se poursuivra avec ou sans nous, car l'espace promet de grandes récompenses malgré des coûts et des risques élevés (moment-14, moment-15, moment-24). Concernant les États-Unis, il déclare que ce pays n'a pas été bâti par ceux qui attendent, mais par ceux qui avancent (moment-17, moment-19) et qu'aucune nation voulant être un leader ne peut rester à la traîne dans cette course à l'espace (moment-25, moment-26).",
+    "citations": [
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "2bb5c10d50",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est l'une des plus grandes aventures de tous les temps et qu'elle se poursuivra avec ou sans nous (moment-24). Il précise qu'aucune nation qui aspire à être un leader ne peut se permettre de rester à la traîne dans cette course à l'espace (moment-25, moment-26).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "3c75c7e4e7",
+    "kind": "observation",
+    "answer": "Dans ce passage, le président Kennedy présente l'exploration spatiale comme une nécessité stratégique et morale pour les États-Unis. Il affirme que l'espace s'étendra de toute façon, mais que la nation doit y participer activement pour ne pas rester en arrière dans sa course à la tête des nations. Il insiste sur le fait que le progrès technologique et l'acquisition de l'espace sont des défis majeurs qui exigent du courage et une détermination inébranlable pour maintenir le leadership américain.",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "b0ab97607f",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est l'une des plus grandes aventures de tous les temps et qu'elle se poursuivra avec ou sans nous (moment-24, 184000-192000). Il précise qu'aucune nation qui aspire à être un leader ne peut se permettre de rester à la traîne dans cette course à l'espace (moment-25, 192000-200000), ajoutant que les prédécesseurs ont fait en sorte que le pays soit en première ligne (moment-26, 200000-208000).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "0588e0958c",
+    "kind": "observation",
+    "answer": "Kennedy affirme que l'exploration spatiale est l'une des plus grandes aventures de tous les temps (moment-24, 184000-192000ms). Il précise qu'aucune nation qui aspire à être un leader ne peut rester à la traîne dans cette course à l'espace (moment-25, 192000-200000ms ; moment-26, 200000-208000ms).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-06",
+  "answers": [
+   {
+    "textId": "9d35726090",
+    "kind": "observation",
+    "answer": "Kennedy souhaite que l'espace soit régi par un emblème de liberté et de paix (moment-33, 256000-264000ms). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32, 248000-256000ms).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "6c2cd29d5a",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace soit régi par un emblème de liberté et de paix (moment-33, 256000-264000). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32, 248000-256000).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "a327e6ef50",
+    "kind": "observation",
+    "answer": "Kennedy veut que l'espace représente un domaine de liberté et de paix, qu'il oppose à la conquête hostile. Il rejette explicitement l'idée que l'espace soit gouverné par un drapeau de conquête ou rempli d'armes.",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   },
+   {
+    "textId": "76d8339e63",
+    "kind": "observation",
+    "answer": "Kennedy voit l'espace comme une ouverture promettant de grandes récompenses malgré des coûts et des risques élevés (moment-14, moment-15). Il rejette l'idée de rester en retrait ou d'attendre, affirmant que les États-Unis ne sont pas bâtis par ceux qui cherchent à regarder en arrière (moment-17).",
+    "citations": [
+     {
+      "id": "moment-14",
+      "startMs": 104000,
+      "endMs": 112000
+     },
+     {
+      "id": "moment-15",
+      "startMs": 112000,
+      "endMs": 120000
+     }
+    ]
+   },
+   {
+    "textId": "bc41fd334c",
+    "kind": "observation",
+    "answer": "Kennedy souhaite que l'espace soit représenté par une bannière de liberté et de paix (moment-33). Il rejette l'idée que l'espace soit gouverné par un drapeau hostile de conquête (moment-32).",
+    "citations": [
+     {
+      "id": "moment-32",
+      "startMs": 248000,
+      "endMs": 256000
+     },
+     {
+      "id": "moment-33",
+      "startMs": 256000,
+      "endMs": 264000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "kennedy-08",
+  "answers": [
+   {
+    "textId": "5aed408541",
+    "kind": "observation",
+    "answer": "Kennedy affirme que la science et la technologie n'ont pas de conscience propre. Il précise que leur utilisation comme force pour le bien ou pour le mal dépend de l'homme (moment-42, 328000-344000).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "a2587006a8",
+    "kind": "observation",
+    "answer": "Selon le président Kennedy, la science et la technologie n'ont pas de conscience propre. C'est l'homme qui détermine si elles deviendront une force pour le bien ou pour le mal (moment-42, 328000-336000ms ; moment-43, 336000-344000ms).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "b3f5cf5be0",
+    "kind": "observation",
+    "answer": "Selon John F. Kennedy, la science et la technologie n'ont pas de conscience propre. C'est l'homme qui détermine si elles seront une force pour le bien ou pour le mal (moment-42, moment-43).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "d2aae3a6a9",
+    "kind": "observation",
+    "answer": "Selon le discours de John F. Kennedy, la science et la technologie n'ont pas de conscience propre. C'est l'homme qui détermine si elles deviendront une force pour le bien ou pour le mal (moment-42, moment-43).",
+    "citations": [
+     {
+      "id": "moment-42",
+      "startMs": 328000,
+      "endMs": 336000
+     },
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   },
+   {
+    "textId": "f09cd96483",
+    "kind": "observation",
+    "answer": "Selon le discours, c'est l'humanité (« man ») qui détermine si la technologie sert le bien ou le mal. Kennedy affirme que la science et la technologie n'ont pas de conscience propre ; leur impact dépend uniquement des choix humains.",
+    "citations": [
+     {
+      "id": "moment-43",
+      "startMs": 336000,
+      "endMs": 344000
+     }
+    ]
+   }
+  ]
+ }
+]

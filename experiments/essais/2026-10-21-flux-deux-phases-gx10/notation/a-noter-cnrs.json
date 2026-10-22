@@ -1,0 +1,221 @@
+[
+ {
+  "questionId": "cnrs-01",
+  "answers": [
+   {
+    "textId": "64b06e61db",
+    "kind": "observation",
+    "answer": "Une petite IA se distingue par un faible nombre de neurones et de données, ce qui lui permet d'effectuer des tâches comme la classification de données (moment-7, 48000-56000). Elle possède quelques millions de paramètres et peut fonctionner sur un ordinateur portable (moment-8, 56000-64000). En comparaison, les grandes IA comme les LLM ont un nombre de paramètres beaucoup plus élevé, avec un facteur de différence d'au moins 100 000 (moment-9, 64000-72000 ; moment-10, 72000-80000).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   },
+   {
+    "textId": "16cd904a3d",
+    "kind": "observation",
+    "answer": "Une petite IA se distingue par un faible nombre de neurones et de données, ce qui lui permet d'effectuer des tâches comme la classification de données (moment-7). Elle possède quelques millions de paramètres et peut fonctionner sur un ordinateur portable (moment-8), contrairement aux grandes IA qui atteignent des ordres de grandeur bien plus élevés (moment-9). La différence de taille entre les deux est d'un facteur d'au moins 100 000 paramètres (moment-10).",
+    "citations": [
+     {
+      "id": "moment-7",
+      "startMs": 48000,
+      "endMs": 56000
+     },
+     {
+      "id": "moment-8",
+      "startMs": 56000,
+      "endMs": 64000
+     },
+     {
+      "id": "moment-9",
+      "startMs": 64000,
+      "endMs": 72000
+     },
+     {
+      "id": "moment-10",
+      "startMs": 72000,
+      "endMs": 80000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-02",
+  "answers": [
+   {
+    "textId": "bb1bf0259e",
+    "kind": "observation",
+    "answer": "La séparation permet de garder un ensemble de données de côté pour effectuer une évaluation, comme une interrogation en fin de cours (moment-25, 192000-200000). L'objectif est de vérifier si l'apprentissage s'est bien déroulé en utilisant des données que le modèle n'a pas utilisées pour s'entraîner (moment-24, 184000-192000).",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "e1fd1b762c",
+    "kind": "observation",
+    "answer": "La séparation permet de garder des données de côté pour une évaluation, comme une interrogation en classe (moment-25). L'objectif est de vérifier si l'apprentissage s'est bien déroulé en utilisant des exercices que l'on n'a pas utilisés pour l'entraînement (moment-24).",
+    "citations": [
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     },
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-04",
+  "answers": [
+   {
+    "textId": "c0e593e03f",
+    "kind": "insufficient",
+    "answer": "Je n’ai pas pu relier cette réponse aux passages consultés.",
+    "citations": []
+   },
+   {
+    "textId": "32ac432eac",
+    "kind": "observation",
+    "answer": "Le cours explique que le surapprentissage survient lorsque la courbe de validation commence à régresser après avoir atteint un maximum (moment-54). L'objectif est de savoir s'arrêter au moment où l'apprentissage est optimal, avant d'entrer dans cette phase de dégradation (moment-55, moment-56).",
+    "citations": [
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     },
+     {
+      "id": "moment-56",
+      "startMs": 440000,
+      "endMs": 448000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-05",
+  "answers": [
+   {
+    "textId": "72c9735b75",
+    "kind": "observation",
+    "answer": "La vidéo ne précise pas explicitement le contenu exact de ce que le modèle apprend durant le pré-entraînement. Elle mentionne seulement que ce processus est extrêmement coûteux et nécessite des quantités de calcul monstrueuses (moment-76, 600000-616000 ; moment-77, 616000-616000).",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     }
+    ]
+   },
+   {
+    "textId": "5ce3baea2e",
+    "kind": "observation",
+    "answer": "La vidéo mentionne que le pré-entraînement est une phase extrêmement coûteuse nécessitant des quantités de calcul monstrueuses (moment-76, moment-77). Ce processus est comparé à l'apprentissage complexe d'une langue (moment-75, moment-77).",
+    "citations": [
+     {
+      "id": "moment-76",
+      "startMs": 600000,
+      "endMs": 608000
+     },
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-75",
+      "startMs": 592000,
+      "endMs": 600000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cnrs-06",
+  "answers": [
+   {
+    "textId": "b17567c107",
+    "kind": "observation",
+    "answer": "Le cours définit l'alignement comme l'apprentissage d'un savoir-être et de règles éthiques pour éviter un comportement arbitraire (moment-93, 736000-744000 ; moment-95, 752000-760000). Bien que le terme fine-tuning ne soit pas explicitement défini par opposition dans ces passages, l'orateur présente l'acquisition de compétences comme une étape préalable à l'alignement (moment-93, 736000-744000).",
+    "citations": [
+     {
+      "id": "moment-93",
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ]
+   },
+   {
+    "textId": "e0c4bd03d4",
+    "kind": "observation",
+    "answer": "Le cours définit l'alignement comme l'apprentissage d'un savoir-être et d'un ensemble de règles éthiques pour éviter des comportements arbitraires (moment-93, moment-95). La vidéo ne mentionne pas explicitement le terme fine-tuning pour établir une comparaison directe, mais évoque une phase d'acquisition de compétences avant l'alignement (moment-93, moment-94).",
+    "citations": [
+     {
+      "id": "moment-93",
+      "startMs": 736000,
+      "endMs": 744000
+     },
+     {
+      "id": "moment-94",
+      "startMs": 744000,
+      "endMs": 752000
+     },
+     {
+      "id": "moment-95",
+      "startMs": 752000,
+      "endMs": 760000
+     }
+    ]
+   }
+  ]
+ }
+]

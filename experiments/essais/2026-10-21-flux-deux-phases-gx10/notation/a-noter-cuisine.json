@@ -1,0 +1,222 @@
+[
+ {
+  "questionId": "cuisine-02",
+  "answers": [
+   {
+    "textId": "bf99bc48f1",
+    "kind": "observation",
+    "answer": "Le chef verse du vin dans un bol contenant de la viande et des légumes hachés pour les recouvrir à hauteur (moment-20, moment-21). Il indique que le mélange doit reposer au moins une nuit à température fraîche (moment-23, moment-24).",
+    "citations": [
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     },
+     {
+      "id": "moment-24",
+      "startMs": 184000,
+      "endMs": 192000
+     }
+    ]
+   },
+   {
+    "textId": "87c4bf6732",
+    "kind": "observation",
+    "answer": "Le chef ajoute du poivre puis du vin dans un bol contenant de la viande et des légumes hachés, en veillant à ce que les ingrédients soient bien recouverts. Il indique que le mélange doit reposer au moins une nuit à température fraîche.",
+    "citations": [
+     {
+      "id": "moment-19",
+      "startMs": 144000,
+      "endMs": 152000
+     },
+     {
+      "id": "moment-20",
+      "startMs": 152000,
+      "endMs": 160000
+     },
+     {
+      "id": "moment-21",
+      "startMs": 160000,
+      "endMs": 168000
+     },
+     {
+      "id": "moment-23",
+      "startMs": 176000,
+      "endMs": 184000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-03",
+  "answers": [
+   {
+    "textId": "9e8f2f260c",
+    "kind": "observation",
+    "answer": "La première partie est la viande bien égouttée. La deuxième est la garniture composée de carottes et de jus. La troisième est le jus de marinade, à savoir le vin.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   },
+   {
+    "textId": "1628449707",
+    "kind": "observation",
+    "answer": "La première partie est la viande bien égouttée. La deuxième est la garniture composée de carottes et de jus. La troisième partie est le jus de marinade, à savoir le vin.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     },
+     {
+      "id": "moment-27",
+      "startMs": 208000,
+      "endMs": 216000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-05",
+  "answers": [
+   {
+    "textId": "e5c08f5efe",
+    "kind": "observation",
+    "answer": "Le chef ne mentionne pas d'action pour épaissir la préparation. Pour la mouiller, il explique qu'il faut prendre le jus et le verser dans le mélange (moment-53), puis il verse un liquide rouge foncé depuis un pichet (moment-54). Il termine en remuant vigoureusement pour gratter le fond de la casserole (moment-55).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   },
+   {
+    "textId": "274e66bb77",
+    "kind": "observation",
+    "answer": "La vidéo ne montre pas d'action pour épaissir la préparation, mais le chef verse un liquide rouge foncé dans la casserole pour la mouiller (moment-53, moment-54). Il précise ensuite qu'il faut bien remuer et gratter le fond de la casserole (moment-55).",
+    "citations": [
+     {
+      "id": "moment-53",
+      "startMs": 416000,
+      "endMs": 424000
+     },
+     {
+      "id": "moment-54",
+      "startMs": 424000,
+      "endMs": 432000
+     },
+     {
+      "id": "moment-55",
+      "startMs": 432000,
+      "endMs": 440000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-06",
+  "answers": [
+   {
+    "textId": "2fd8bd36a8",
+    "kind": "observation",
+    "answer": "Le chef recommande une cuisson de deux heures à feu moyen (moment-67, moment-68). Il précise que le liquide ne doit pas bouillir mais seulement frémir (moment-67).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "1c510d1562",
+    "kind": "observation",
+    "answer": "Le chef recommande une cuisson de deux heures à feu moyen (moment-67, moment-68). Il précise que le liquide ne doit pas bouillir mais doit frémir (moment-67).",
+    "citations": [
+     {
+      "id": "moment-67",
+      "startMs": 528000,
+      "endMs": 536000
+     },
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "cuisine-07",
+  "answers": [
+   {
+    "textId": "a9aa3df14f",
+    "kind": "observation",
+    "answer": "Le chef ajoute les petits oignons une fois que les champignons sont à la bonne température (moment-77). Il laisse ensuite le contenu de la marmite reposer quelques minutes pour que l'ensemble se réchauffe (moment-81).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-81",
+      "startMs": 640000,
+      "endMs": 648000
+     }
+    ]
+   },
+   {
+    "textId": "675ba74da4",
+    "kind": "observation",
+    "answer": "Le chef ajoute les petits oignons une fois que les champignons sont à la température du plat (moment-77). Il précise ensuite qu'il faut mélanger le tout très doucement pour ne pas les casser (moment-79, moment-80).",
+    "citations": [
+     {
+      "id": "moment-77",
+      "startMs": 608000,
+      "endMs": 616000
+     },
+     {
+      "id": "moment-79",
+      "startMs": 624000,
+      "endMs": 632000
+     }
+    ]
+   }
+  ]
+ }
+]

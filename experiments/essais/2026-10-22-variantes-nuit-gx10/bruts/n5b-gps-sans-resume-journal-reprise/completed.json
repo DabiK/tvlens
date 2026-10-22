@@ -1,0 +1,29 @@
+[
+  {
+    "video": "boeuf-bourguignon",
+    "arm": "GPSRJ",
+    "label": "boeuf-bourguignon-GPSRJ-1",
+    "proxyStopped": true,
+    "campaignSha256": "d8bf83b8a3680ed895b87e7106da3b70e699a59f8ff999e8c881f99f1fd4299c",
+    "runId": "0673b1a1-d178-4d84-9e8b-3a8c78d7e4c6",
+    "acquired": 5
+  },
+  {
+    "video": "tears-of-steel",
+    "arm": "GPSRJ",
+    "label": "tears-of-steel-GPSRJ-1",
+    "proxyStopped": true,
+    "campaignSha256": "72ae75c4dbb6ccc8ec1c10ca36e4fc59eb1e1bec30887f6042dbe912b1bc18ba",
+    "runId": "30bcff2f-31d0-4aff-96fe-837cf0b824d8",
+    "acquired": 5
+  },
+  {
+    "video": "artemis",
+    "arm": "GPSRJ",
+    "label": "artemis-GPSRJ-1",
+    "proxyStopped": true,
+    "campaignSha256": "309c8753875247bc6a34effc5f2280ad2fd1f81907e28415282d8f8c213c0e98",
+    "runId": "1c117c3e-3c13-458f-8d37-ca77d5107666",
+    "acquired": 5
+  }
+]

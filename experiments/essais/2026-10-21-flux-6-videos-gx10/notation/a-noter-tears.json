@@ -1,0 +1,189 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "288a8155d4",
+    "kind": "observation",
+    "answer": "Selon la conversation, Celia est passionnée par la robotique. Thom, quant à lui, exprime le désir d'être exceptionnel dans le domaine de l'espace.",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "05a64fb298",
+    "kind": "observation",
+    "answer": "According to the conversation, Celia is interested in robotics and Thom wants to be awesome in space. This is mentioned during their walk on a bridge (moment-4, 24000-32000ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "5d267827c8",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée de robotique et Thom veut « être génial dans l'espace ».",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "e3aa6c8b82",
+    "kind": "observation",
+    "answer": "Barley dit qu’ils devraient avoir environ 10 minutes.",
+    "citations": [
+     {
+      "id": "moment-25",
+      "startMs": 192000,
+      "endMs": 200000
+     }
+    ]
+   },
+   {
+    "textId": "22e4b81098",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre à cette question car les passages vidéo disponibles ne contiennent pas de réponse de Barley sur la durée restante. Le dernier segment montre Barley mentionnant des minutes, mais la phrase est incomplète.",
+    "citations": []
+   },
+   {
+    "textId": "0a7c7b6253",
+    "kind": "observation",
+    "answer": "Je ne peux pas répondre à cette question car Barley ne mentionne pas de durée spécifique dans les passages consultés. Il indique seulement que tout est prêt et qu'il ne reste qu'une minute.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "15ff03d110",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête avec elle. On lui demande également de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "892cc892e5",
+    "kind": "observation",
+    "answer": "On lui dit d’être honnête et tendre avec elle, et de se rappeler ce qu’est l’amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "d1a3351055",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête envers elle. On lui dit également de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "14aacbd787",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre. Elle exprime également une envie de l'écraser dans ce passage.",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "c08a3af77c",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : les passages reçus montrent Celia reprochant à Thom de lui avoir brisé le cœur et de l’avoir oubliée sur Terre, mais je n’ai pas de passage où elle lui reproche un fait précis.",
+    "citations": []
+   },
+   {
+    "textId": "8d973bfa36",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oublié sur Terre (moment-49, 384000-392000ms). Elle exprime également une grande détresse en disant qu'il lui a brisé le cœur (moment-49, 384000-392000ms).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "ffbc1706a5",
+    "kind": "insufficient",
+    "answer": "Je ne peux pas répondre avec certitude : le passage moment-68 (536000-544000 ms) mentionne « Memory over right to bleed! » mais cette transcription automatique est incertaine et ne précise pas l'état annoncé de la réécriture de mémoire.",
+    "citations": []
+   },
+   {
+    "textId": "6fc5d59c44",
+    "kind": "observation",
+    "answer": "La vidéo indique que l'écrasement de la mémoire est terminé (moment-68, 536000-544000ms).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "00e508abf1",
+    "kind": "observation",
+    "answer": "L'état annoncé est que l'écrasement de la mémoire est terminé. Cette information est rapportée dans le passage moment-68 entre 536000 et 544000 ms.",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

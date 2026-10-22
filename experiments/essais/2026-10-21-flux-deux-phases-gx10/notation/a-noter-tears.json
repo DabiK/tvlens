@@ -1,0 +1,147 @@
+[
+ {
+  "questionId": "tears-01",
+  "answers": [
+   {
+    "textId": "9bbbb77771",
+    "kind": "observation",
+    "answer": "Selon leur conversation, Celia est passionnée par la robotique et Thom souhaite travailler dans le domaine de l'espace (moment-4, 24000-32000).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   },
+   {
+    "textId": "05a64fb298",
+    "kind": "observation",
+    "answer": "According to the conversation, Celia is interested in robotics and Thom wants to be awesome in space. This is mentioned during their walk on a bridge (moment-4, 24000-32000ms).",
+    "citations": [
+     {
+      "id": "moment-4",
+      "startMs": 24000,
+      "endMs": 32000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-03",
+  "answers": [
+   {
+    "textId": "b8e1643912",
+    "kind": "insufficient",
+    "answer": "I cannot determine how much time Barley says they should have, as his specific response is not captured in the provided footage.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   },
+   {
+    "textId": "0a7c7b6253",
+    "kind": "observation",
+    "answer": "Je ne peux pas répondre à cette question car Barley ne mentionne pas de durée spécifique dans les passages consultés. Il indique seulement que tout est prêt et qu'il ne reste qu'une minute.",
+    "citations": [
+     {
+      "id": "moment-26",
+      "startMs": 200000,
+      "endMs": 208000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-04",
+  "answers": [
+   {
+    "textId": "5652f9f3b5",
+    "kind": "observation",
+    "answer": "Thom is advised to be tender and honest with her. He is also told to remind her what love is (moment-31, 240000-248000).",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   },
+   {
+    "textId": "15ff03d110",
+    "kind": "observation",
+    "answer": "Thom est conseillé d'être tendre et honnête avec elle. On lui demande également de lui rappeler ce qu'est l'amour.",
+    "citations": [
+     {
+      "id": "moment-31",
+      "startMs": 240000,
+      "endMs": 248000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-06",
+  "answers": [
+   {
+    "textId": "e903e5786d",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oubliée sur Terre, comme l'indique ses paroles : « You forgot me on earth! » (moment-49, 384000-392000).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   },
+   {
+    "textId": "8d973bfa36",
+    "kind": "observation",
+    "answer": "Celia reproche à Thom de l'avoir oublié sur Terre (moment-49, 384000-392000ms). Elle exprime également une grande détresse en disant qu'il lui a brisé le cœur (moment-49, 384000-392000ms).",
+    "citations": [
+     {
+      "id": "moment-49",
+      "startMs": 384000,
+      "endMs": 392000
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "questionId": "tears-07",
+  "answers": [
+   {
+    "textId": "0da4b5ec1f",
+    "kind": "observation",
+    "answer": "La dernière annonce indique que l'écrasement de la mémoire est terminé (moment-68, 536000-544000).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   },
+   {
+    "textId": "6fc5d59c44",
+    "kind": "observation",
+    "answer": "La vidéo indique que l'écrasement de la mémoire est terminé (moment-68, 536000-544000ms).",
+    "citations": [
+     {
+      "id": "moment-68",
+      "startMs": 536000,
+      "endMs": 544000
+     }
+    ]
+   }
+  ]
+ }
+]

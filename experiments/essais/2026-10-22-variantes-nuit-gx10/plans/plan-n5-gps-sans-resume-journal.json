@@ -1,0 +1,114 @@
+{
+  "experiment": "n5-gps-sans-resume-journal",
+  "hypothesis": "Combinaison des deux gains de la nuit : vision sans topicSummary (N2 : médiane 5,7 s, 0 bloc perdu, 21/30) et journal mémoire (N3 : faits anciens 8/12 contre 6/12). Pertinence au moins égale à GPS, faits anciens mieux couverts, délai médian sous 8 s.",
+  "codeShas": [
+    "2035a2faad499659bcdf940c6104e50e311a9cd6"
+  ],
+  "runnerSha256": "532329d2f84707d0380c52fce59d7e025965ea0106c53c93eac1bd244ce9ef77",
+  "configEnv": "/home/nvidia/tvlens-setup/reference-2026-10-20/config-base.env",
+  "configEnvSha256": "1c0072714e8501bc4a295c571cae664996feaabcbf146fff1c0c224a9e32fcc7",
+  "envOverrides": {
+    "TVLENS_LOCAL_VLM_URL": "http://127.0.0.1:11501",
+    "TVLENS_LOCAL_QUESTIONS_URL": "http://127.0.0.1:11502",
+    "TVLENS_LOCAL_INSPECTION_URL": "http://127.0.0.1:11503",
+    "TVLENS_LOCAL_EMBEDDINGS_URL": "http://127.0.0.1:11504"
+  },
+  "videos": {
+    "kennedy": {
+      "preparation": "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-kennedy"
+    },
+    "spring": {
+      "preparation": "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-spring"
+    },
+    "cnrs-apprentissage": {
+      "preparation": "/home/nvidia/tvlens-setup/reference-2026-10-20/preparation-cnrs-apprentissage"
+    },
+    "boeuf-bourguignon": {
+      "preparation": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-boeuf-bourguignon"
+    },
+    "tears-of-steel": {
+      "preparation": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-tears-of-steel"
+    },
+    "artemis": {
+      "preparation": "/home/nvidia/tvlens-setup/reprise-corpus-20261020T224923Z/results/preparation-artemis"
+    }
+  },
+  "arms": {
+    "GPSRJ": {
+      "scenario": {
+        "config": {
+          "localVlm": {
+            "url": "http://127.0.0.1:11501"
+          },
+          "localQuestions": {
+            "url": "http://127.0.0.1:11502",
+            "model": "gemma4:26b-a4b-it-q4_K_M"
+          },
+          "localEmbeddings": {
+            "url": "http://127.0.0.1:11504"
+          },
+          "visionDuringAsk": false
+        },
+        "selectedModels": {
+          "codexModel": "gemma4:26b-a4b-it-q4_K_M"
+        }
+      },
+      "env": {
+        "TVLENS_LOCAL_QUESTIONS_MODEL": "gemma4:26b-a4b-it-q4_K_M",
+        "TVLENS_VISION_DURING_ASK": "0",
+        "TVLENS_WHISPER_MODEL": "/srv/tvlens-gx10/poids/ggml-small.bin"
+      }
+    }
+  },
+  "order": [
+    [
+      "kennedy",
+      "GPSRJ"
+    ],
+    [
+      "spring",
+      "GPSRJ"
+    ],
+    [
+      "cnrs-apprentissage",
+      "GPSRJ"
+    ],
+    [
+      "boeuf-bourguignon",
+      "GPSRJ"
+    ],
+    [
+      "tears-of-steel",
+      "GPSRJ"
+    ],
+    [
+      "artemis",
+      "GPSRJ"
+    ]
+  ],
+  "proxy": {
+    "roles": {
+      "vlm": 11501,
+      "questions": 11502,
+      "inspection": 11503,
+      "embeddings": 11504
+    },
+    "bodyRoles": [
+      "vlm",
+      "inspection"
+    ],
+    "rewrite": {
+      "vlm": "no-topic-summary",
+      "questions": "journal"
+    }
+  },
+  "overheadModel": "qwen3-embedding:0.6b",
+  "requiredModels": [
+    "gemma3:4b",
+    "gemma4:26b-a4b-it-q4_K_M",
+    "qwen3-embedding:0.6b"
+  ],
+  "budgetSeconds": 8400,
+  "stopConditions": "Premier passage incomplet, verrou occupé, autre charge GPU, plafond de 3 h ou échéance absolue : arrêt sans relance, sorties partielles conservées.",
+  "knownConcurrentLoad": "Aucune : N4 clos à 05:12 UTC."
+}

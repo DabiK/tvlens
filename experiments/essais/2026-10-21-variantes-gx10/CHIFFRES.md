@@ -23,13 +23,13 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 | Préremplissage d'une question | 2,8–5,7 s (2 100–2 700 jetons de contexte) | E1 |
 | Chargement à froid du modèle de questions | 13,4 s à la première question | E1 Kennedy |
 | Vision par bloc de 8 s | médiane 6,0–7,4 s ; 129 appels sur 612 au-delà de 8 s | E1 |
-| Part de `topicSummary` (inutile aux questions) dans la sortie vision | 32–44 % | E1 |
+| Part de `topicSummary` dans la sortie vision (inutile aux questions, mais résumé cumulatif des cartes de la frise TV) | 32–44 % | E1 ; usages produit : `core/memory/lanes.cjs:297`, `core/perception-context.cjs:59`, `docs/lg-timeline.md` |
 | Blocs de vision perdus | 1 à 14 par vidéo | E1 |
 | Appels d'outils par le modèle de questions | 0 sur 180 questions (E1 + 150 archivées) | E1, [audit](../2026-10-21-audit-nuit-gx10/) |
 | **Mémoire : journal compact injecté (G2, 30 questions × 2)** | 47/60 pertinentes contre 38/60 ; inventions 6 contre 14 ; +2,9 s (13,4 contre 10,5 s) | [série G](../2026-10-21-serie-g-gx10/) |
 | Mémoire : 6 passages retrouvés par recherche (G2) | 41/60 pertinentes ; inventions 11 ; +0,5 s | série G |
 | Cause : le schéma JSON imposé bloque les outils | avec schéma 0/40 appels ; sans schéma 20/20 (dont 12/12 sur faits anciens) | G1 (`qwen3.8:27b`, 10 questions × 2) |
-| Contexte vu par une question | 6 derniers passages (48 s) ; 11 questions sur 30 portent sur un fait plus ancien | code `core/video-tools.cjs`, oracle v2 |
+| Contexte vu par une question | 6 derniers passages (48 s) ; 6 questions sur 30 demandent un fait plus ancien (fenêtre réelle [P − 56 s, P − 8 s)) | code `core/video-tools.cjs`, oracle v2 |
 
 ## Pertes de pertinence identifiées
 
@@ -41,7 +41,44 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 | Abstentions injustifiées (essais antérieurs) | 21/150 | [notation v0](../2026-10-21-oracle-notation-recherche-gx10/notation-v0/) |
 | Inventions, vidéo cuisine (essais antérieurs) | 3–4 réponses sur 5 | notation v0 |
 
-## Résultat principal (E4, flux réel, Kennedy + Spring + CNRS, 15 questions)
+## Résultat principal (E5, flux réel, six vidéos, 30 questions)
+
+| Configuration | Pertinentes | dont sous 15 s | Inventions | Abstentions injustifiées | Délai médian | Blocs vision perdus |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Actuelle (E1) | 16/30 | **3** | 7 | 10 | 17,5 s | 1 à 14 par vidéo |
+| **Gemma 4 + pause + Whisper small (GPS)** | **21/30** | **20** | 5 | 3 | 7,1 s | 1 à 14 par vidéo |
+| GPS + vision `gemma4:e4b` sans raisonnement (GPSV) | 20/30 | 20 | 5 | 6 | 6,8 s | **0** |
+| GPSV + répondeur en deux phases (E6) | 18/30 | 17 | 6 | 6 | 9,3 s | Spring : médiane 156 s |
+| GPSV + journal mémoire + deux phases (E7) | 17/30 | 17 | 6 | 7 | 11,8 s | Spring 146 s, Tears 41 s ; 3 erreurs |
+
+Source : [E5](../2026-10-21-flux-6-videos-gx10/), notation à l'aveugle d'E1, GPS et GPSV dans un même paquet (GPS de
+Kennedy, Spring et CNRS repris d'E4). Pertinentes sous 15 s : de 3 à 20 sur 30. [E6](../2026-10-21-flux-deux-phases-gx10/)
+et [E7](../2026-10-21-flux-journal-deux-phases-gx10/) sont notés chacun contre GPSV dans leur propre paquet ; GPSV y
+obtient 20/30 puis 19/30, soit une réponse d'écart d'un paquet à l'autre.
+
+## Nuit du 22 octobre : variantes de GPS (six vidéos, un seul paquet de notation)
+
+| Variante | Pertinentes | dont sous 15 s | Inventions | Délai médian | Blocs vision perdus | Fait hors fenêtre / dans la fenêtre |
+| --- | ---: | ---: | ---: | ---: | --- | --- |
+| GPS (E4/E5, renotée) | 21/30 | 20 | 5 | 7,1 s | 1 à 14 par vidéo | 1/6 · 20/24 |
+| N1 : GPS rejoué à l'identique | 17/30 | 17 | 9 | 8,5 s | 0 à 37 | 2/6 · 15/24 |
+| **N2 : vision sans `topicSummary`** | **21/30** | **21** | **4** | **5,7 s** | **0** | 2/6 · 19/24 |
+| N3 : journal mémoire seul | 21/30 | 18 | 4 | 9,1 s | 0 à 25 | **4/6** · 17/24 |
+| N4 : questions `qwen3.6:35b-a3b-mtp` | 18/30 | 17 | 7 | 6,1 s | 0 à 16 | 1/6 · 17/24 |
+
+| Chiffre | Valeur | Source |
+| --- | --- | --- |
+| **Variabilité d'un passage à l'autre (GPS rejoué)** | 8 questions sur 30 basculent ; 21 puis 17 pertinentes | [nuit](../2026-10-22-variantes-nuit-gx10/) |
+| Vision `gemma3:4b` sans `topicSummary`, dans le flux | 4,9–5,4 s par bloc ; 1 bloc sur 667 au-delà de 8 s | nuit, N2 |
+| N2 plus rapide que GPS, question par question | 25 sur 30 (test des signes, p ≈ 0,0003) ; que N1 : 26 sur 30 | nuit, N2 |
+| Condition pour le produit | `topicSummary` sert aux cartes de la frise TV et au contexte de la vision suivante : le calculer hors du chemin critique (changement de sujet, tous les N blocs, hors pause) plutôt que le supprimer | code, `docs/lg-timeline.md` |
+| Contexte des questions avec journal | 4 762 jetons (GPS ≈ 2 500) ; +2 s par question | nuit, N3 |
+| Questions qui demandent un fait hors de la fenêtre de 48 s (fenêtre réelle [P − 56 s, P − 8 s)) | 6 sur 30 en partie, aucune entièrement ; oracle v3 : 19 entièrement et 2 en partie sur les 30 nouvelles | nuit, [oracle v3](../2026-10-22-oracle-60-questions-gx10/) |
+
+Source : [nuit du 22 octobre](../2026-10-22-variantes-nuit-gx10/). Un passage par variante : en dessous de 4 à
+5 réponses, un écart de pertinence n'est pas un signal.
+
+## Premier résultat (E4, flux réel, Kennedy + Spring + CNRS, 15 questions)
 
 | Configuration | Pertinentes | dont sous 15 s | Inventions | Abstentions injustifiées | Délai médian |
 | --- | ---: | ---: | ---: | ---: | ---: |

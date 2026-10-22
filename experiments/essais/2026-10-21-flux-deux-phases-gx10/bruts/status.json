@@ -1,0 +1,227 @@
+{
+  "id": "54b968cbebf343949f0eb2ccb58ce08b",
+  "startedAtUtc": "2026-10-21T20:07:50.824961+00:00",
+  "deadlineUtc": "2026-10-21T22:37:50.824874+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "cnrs-apprentissage-GPSVT-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/cnrs-apprentissage/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/cnrs-apprentissage-GPSVT-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T20:07:54.042912+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:07:55.048910+00:00",
+      "durationSeconds": 1.0011703529889928
+    },
+    {
+      "name": "cnrs-apprentissage-GPSVT-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/cnrs-apprentissage/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/cnrs-apprentissage-GPSVT-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T20:07:55.049693+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:22:40.565888+00:00",
+      "durationSeconds": 885.5147072449909
+    },
+    {
+      "name": "boeuf-bourguignon-GPSVT-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/boeuf-bourguignon/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/boeuf-bourguignon-GPSVT-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T20:22:41.125755+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:22:42.128886+00:00",
+      "durationSeconds": 1.001202026993269
+    },
+    {
+      "name": "boeuf-bourguignon-GPSVT-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/boeuf-bourguignon/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/boeuf-bourguignon-GPSVT-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T20:22:42.129739+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:35:04.418883+00:00",
+      "durationSeconds": 742.2877498029993
+    },
+    {
+      "name": "spring-GPSVT-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/spring/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/spring-GPSVT-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T20:35:04.973535+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:35:05.475954+00:00",
+      "durationSeconds": 0.5006034859979991
+    },
+    {
+      "name": "spring-GPSVT-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/spring/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/spring-GPSVT-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T20:35:05.476414+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:42:56.061773+00:00",
+      "durationSeconds": 470.5838923849951
+    },
+    {
+      "name": "kennedy-GPSVT-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/kennedy/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/kennedy-GPSVT-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T20:42:56.600125+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:42:57.102687+00:00",
+      "durationSeconds": 0.5007728850032436
+    },
+    {
+      "name": "kennedy-GPSVT-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/kennedy/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/kennedy-GPSVT-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T20:42:57.103339+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:50:04.607874+00:00",
+      "durationSeconds": 427.50261273900105
+    },
+    {
+      "name": "tears-of-steel-GPSVT-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/tears-of-steel/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/tears-of-steel-GPSVT-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T20:50:05.150744+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T20:50:06.152691+00:00",
+      "durationSeconds": 1.0011076220107498
+    },
+    {
+      "name": "tears-of-steel-GPSVT-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/tears-of-steel/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/tears-of-steel-GPSVT-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T20:50:06.153626+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T21:02:20.383514+00:00",
+      "durationSeconds": 734.2284913139883
+    },
+    {
+      "name": "artemis-GPSVT-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/artemis/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/artemis-GPSVT-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-21T21:02:20.925926+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T21:02:22.434915+00:00",
+      "durationSeconds": 1.5015138320013648
+    },
+    {
+      "name": "artemis-GPSVT-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/inputs/artemis/scenario-GPSVT.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/config-GPSVT.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/e6-flux-results/artemis-GPSVT-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-21T21:02:22.435651+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-21T21:37:34.089402+00:00",
+      "durationSeconds": 2111.6524191780045
+    }
+  ],
+  "updatedAtUtc": "2026-10-21T21:37:34.178967+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

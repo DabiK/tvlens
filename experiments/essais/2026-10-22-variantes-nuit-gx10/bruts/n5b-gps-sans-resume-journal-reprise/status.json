@@ -1,0 +1,119 @@
+{
+  "id": "062853a1b79c4b8d845737db0ac85437",
+  "startedAtUtc": "2026-10-22T07:59:28.267376+00:00",
+  "deadlineUtc": "2026-10-22T10:19:28.267304+00:00",
+  "status": "finished",
+  "stages": [
+    {
+      "name": "boeuf-bourguignon-GPSRJ-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/inputs/boeuf-bourguignon/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/boeuf-bourguignon-GPSRJ-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T07:59:35.688322+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T07:59:36.693175+00:00",
+      "durationSeconds": 1.0024625739997646
+    },
+    {
+      "name": "boeuf-bourguignon-GPSRJ-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/inputs/boeuf-bourguignon/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/boeuf-bourguignon-GPSRJ-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T07:59:36.693784+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T08:11:59.672208+00:00",
+      "durationSeconds": 742.9756960559998
+    },
+    {
+      "name": "tears-of-steel-GPSRJ-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/inputs/tears-of-steel/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/tears-of-steel-GPSRJ-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T08:12:00.224136+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T08:12:01.227294+00:00",
+      "durationSeconds": 1.001144234000094
+    },
+    {
+      "name": "tears-of-steel-GPSRJ-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/inputs/tears-of-steel/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/tears-of-steel-GPSRJ-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T08:12:01.227824+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T08:24:15.670997+00:00",
+      "durationSeconds": 734.441224448
+    },
+    {
+      "name": "artemis-GPSRJ-1-validation",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/inputs/artemis/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/artemis-GPSRJ-1-validation/run",
+        "--validate"
+      ],
+      "startedAtUtc": "2026-10-22T08:24:16.215121+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T08:24:17.720646+00:00",
+      "durationSeconds": 1.5023285490005946
+    },
+    {
+      "name": "artemis-GPSRJ-1",
+      "argv": [
+        "node",
+        "scripts/replay-local-stream.cjs",
+        "--scenario",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/inputs/artemis/scenario-GPSRJ.json",
+        "--config",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/config-GPSRJ.env",
+        "--out",
+        "/home/nvidia/tvlens-setup/labo-claude/n5b-gps-sans-resume-journal-reprise-results/artemis-GPSRJ-1/run",
+        "--execute"
+      ],
+      "startedAtUtc": "2026-10-22T08:24:17.721284+00:00",
+      "exitCode": 0,
+      "finishedAtUtc": "2026-10-22T08:59:30.926479+00:00",
+      "durationSeconds": 2113.204069182999
+    }
+  ],
+  "updatedAtUtc": "2026-10-22T08:59:30.992253+00:00",
+  "readyForScoring": false,
+  "cleanupConfirmed": true
+}

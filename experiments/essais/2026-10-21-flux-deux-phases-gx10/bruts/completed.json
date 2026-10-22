@@ -1,0 +1,56 @@
+[
+  {
+    "video": "cnrs-apprentissage",
+    "arm": "GPSVT",
+    "label": "cnrs-apprentissage-GPSVT-1",
+    "proxyStopped": true,
+    "campaignSha256": "b721f7acea720c6c4d73ff1912677e25e3af5d913a52ee4168f39686d567c184",
+    "runId": "de37a778-5c65-4546-991c-233fdb801cec",
+    "acquired": 5
+  },
+  {
+    "video": "boeuf-bourguignon",
+    "arm": "GPSVT",
+    "label": "boeuf-bourguignon-GPSVT-1",
+    "proxyStopped": true,
+    "campaignSha256": "55c6f7de1f7e6fbf866b8a27fbe83f2c71591862f2f29147abcffb6340389e10",
+    "runId": "0962df9b-5491-44f1-b3f6-2fa0aff3d713",
+    "acquired": 5
+  },
+  {
+    "video": "spring",
+    "arm": "GPSVT",
+    "label": "spring-GPSVT-1",
+    "proxyStopped": true,
+    "campaignSha256": "579d291513695adbc8f099313c49faacf74edc391bdb728311da360c5c141f1f",
+    "runId": "23986cdb-ae9e-4458-b0e8-ae7cc1a94fc8",
+    "acquired": 4
+  },
+  {
+    "video": "kennedy",
+    "arm": "GPSVT",
+    "label": "kennedy-GPSVT-1",
+    "proxyStopped": true,
+    "campaignSha256": "dd8575799fa6092e4d150340d93036f42650573f57bc9e42938c12b27870986a",
+    "runId": "449f20fb-380c-433b-989d-b865fc2593e4",
+    "acquired": 5
+  },
+  {
+    "video": "tears-of-steel",
+    "arm": "GPSVT",
+    "label": "tears-of-steel-GPSVT-1",
+    "proxyStopped": true,
+    "campaignSha256": "1cac3ef5ce5964f0e806059bcd51f568bb1a8b7aee0cc0ce4d931a3228661170",
+    "runId": "62d228bd-88a5-44ae-b2c4-f7e72cdcbeba",
+    "acquired": 5
+  },
+  {
+    "video": "artemis",
+    "arm": "GPSVT",
+    "label": "artemis-GPSVT-1",
+    "proxyStopped": true,
+    "campaignSha256": "e254a89f5c81a74c2791d6916aaf6516693044841ef3e7ce70a8ad258e9e34de",
+    "runId": "8137569e-4679-4d7d-bfc7-62c16a03d93f",
+    "acquired": 5
+  }
+]
