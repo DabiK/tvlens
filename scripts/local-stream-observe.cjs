@@ -2,6 +2,7 @@ const { LocalVlmAgent } = require('../adapters/local-vlm-agent.cjs');
 const { CodexAnalysisAgent } = require('../adapters/codex-analysis-agent.cjs');
 const { createJournal } = require('./local-stream-journal.cjs');
 const { instrumentInspection, instrumentSearch, instrumentTranscriber, observeSurveillance } = require('./local-stream-provider-observation.cjs');
+const { questionsWebOf, webRecordOf, withoutPageText } = require('./local-stream-web.cjs');
 
 function questionIdentity(agent) {
   const value = agent.identity;
@@ -100,12 +101,12 @@ function questionOrigin(options, backend) {
   if (backend === 'local' && options.LocalAgent || backend === 'codex' && options.CodexAgent) return 'substituted';
   return 'composed';
 }
-function initializeRoles(runtime, roles, options) {
+function initializeRoles(runtime, roles, options, webRetrieval) {
   const { session } = runtime;
   const overrides = options.overrides || {};
   Object.assign(roles.perception, { origin: overrides.perception ? 'injected' : 'composed', identity: analysisIdentity(session.perception) });
   Object.assign(roles.questions, { origin: questionOrigin(options, roles.questions.configured), identity: questionIdentity(runtime.agent),
-    web: roles.questions.configured === 'local' ? 'indisponible ; outils vidéo seulement' : 'capacité Codex' });
+    web: questionsWebOf(roles.questions.configured, webRetrieval) });
   Object.assign(roles.embeddings, { origin: overrides.embeddings ? 'injected' : 'composed', identity: session.search.embeddingDiagnostics });
   roles.embeddings.calls = roles.embeddings.identity.enabled ? null : 0;
   Object.assign(roles.inspection, { origin: options.localInspection ? 'simulated' : 'composed', identity: session.inspector.identity });
@@ -136,15 +137,16 @@ function observeIndex(index, role) {
   }
 }
 function observedJob(entry, job, roles, invoked) {
-  Object.assign(entry, { status: job.status, result: structuredClone(job.result), metrics: structuredClone(job.metrics ?? null),
+  const { web, ...called } = invoked.get(job.id) || { exercised: false };
+  Object.assign(entry, { status: job.status, result: withoutPageText(job.result), metrics: structuredClone(job.metrics ?? null),
     effectiveBackend: job.metrics?.backend || { configured: roles.questions.configured, identity: roles.questions.identity,
-      origin: roles.questions.origin }, called: structuredClone(invoked.get(job.id) || { exercised: false }),
-    roles: structuredClone(invoked.get(job.id)?.roles || {}) });
+      origin: roles.questions.origin }, called: structuredClone(called), roles: structuredClone(called.roles || {}) });
+  if (web) entry.web = structuredClone(web);
   if (job.errorDetail) entry.error = job.errorDetail;
 }
 function observeHost(host, report, writer, options) {
   const { runtime, clock } = host, { session } = runtime, roles = report.roles;
-  initializeRoles(runtime, roles, options);
+  initializeRoles(runtime, roles, options, report.webRetrieval);
   initializeSurveillance(runtime, roles, options);
   if (roles.questions.configured === 'local' && roles.questions.identity.kind !== 'ollama')
     throw guard(report, 'TVLENS_REPLAY_QUESTIONS_IDENTITY_INVALID');
@@ -159,7 +161,10 @@ function observeHost(host, report, writer, options) {
     const called = { exercised: true, identity: questionIdentity(runtime.agent), origin: roles.questions.origin };
     observeTools(input, called, lifetime, roles);
     invoked.set(input.jobId, called);
-    return answer(input);
+    return Promise.resolve(answer(input)).then(result => {
+      if (!lifetime.sealed) called.web = webRecordOf(result);
+      return result;
+    });
   };
   instrumentInspection(session, roles.inspection, lifetime, clock);
   instrumentSearch(session, roles.embeddings, lifetime, clock);

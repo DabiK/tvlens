@@ -11,6 +11,8 @@ const { videoToolDefinitions } = require('../core/video-tool-contracts.cjs');
 const { OllamaQuestionAgent, WEB_RETRIEVAL_TIMEOUT_MS, WEB_RETRIEVAL_FAILED_LIMIT } = require('../adapters/ollama/question-agent.cjs');
 const { WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS } = require('../core/web-retrieval.cjs');
 const { OllamaHttpClient } = require('../adapters/ollama/http-client.cjs');
+const { FrozenCorpusRetrieval } = require('../adapters/web/frozen-corpus.cjs');
+const { SearxngRetrieval } = require('../adapters/web/searxng.cjs');
 const { deferred, bounded, failure, turns } = require('./helpers/wait.cjs');
 const { manualClock, VirtualClock } = require('./helpers/clock.cjs');
 const { QUESTION_TIMEOUT_MS } = require('../core/deep-ask.cjs');
@@ -43,6 +45,50 @@ test('the shared composition selects only the explicit backend and validates bef
   }
   const injected = {};
   assert.equal(createConversationRuntime({ agent: injected, config: localConfig() }).agent, injected);
+});
+
+test('local web retrieval is composed from its configuration and an invalid one is refused before any constructor', () => {
+  const calls = [];
+  function LocalAgent(options) { calls.push(['local', options]); return this; }
+  function CodexAgent() { calls.push(['codex']); return this; }
+  const createWebRetrieval = localWeb => { calls.push(['retrieval', localWeb]); return { residence: 'local' }; };
+  const compose = (config, options) => createConversationRuntime({ config, selectedModels: {}, LocalAgent, CodexAgent,
+    createWebRetrieval, ...options });
+  const local = localConfig();
+  compose(local);
+  assert.equal(calls[0][1], local.localQuestions);
+  for (const localWeb of ['corpus', { backend: 'PRIVATE_BACKEND', corpus: '/c' }, { backend: 'corpus' }, { backend: 'corpus', corpus: 42 },
+    { backend: 'corpus', corpus: '' }, { backend: 'searxng' }, { backend: 'searxng', url: 'ftp://PRIVATE_HOST' },
+    { backend: 'searxng', url: 'PRIVATE_NOT_AN_URL' }, { backend: 'searxng', url: 'http://user:PRIVATE_PASS@127.0.0.1:8888' },
+    { backend: 'corpus', corpus: '/c', url: 'http://user:PRIVATE_PASS@127.0.0.1:8888' }, { backend: 'corpus', corpus: '/c', url: 'PRIVATE_NOT_AN_URL' },
+    { backend: 'corpus', corpus: '/c', trigger: 'PRIVATE_TRIGGER' }]) {
+    const before = calls.length;
+    for (const options of [{}, { agent: {} }])
+      assert.throws(() => compose({ ...local, localWeb }, options),
+        error => error.code === 'TVLENS_LOCAL_WEB_CONFIG_INVALID' && !/PRIVATE|42/.test(error.message));
+    assert.equal(calls.length, before);
+  }
+  const codex = { questionsBackend: 'codex', localWeb: { backend: 'PRIVATE_BACKEND' } };
+  assert.doesNotThrow(() => compose(codex));
+  assert.deepEqual(calls.at(-1), ['codex']);
+  calls.length = 0;
+  const localWeb = { backend: 'corpus', corpus: '/corpus', trigger: 'always' };
+  compose({ ...local, localWeb });
+  assert.deepEqual(calls[0], ['retrieval', localWeb]);
+  assert.deepEqual(calls[1][1], { ...local.localQuestions, retrieval: { residence: 'local' }, webTrigger: 'always' });
+  compose({ ...local, localWeb: { backend: 'searxng', url: 'http://127.0.0.1:8888' } });
+  assert.equal(Object.hasOwn(calls[3][1], 'webTrigger'), false);
+});
+
+test('the default web retrieval factory builds the corpus or SearXNG port without reading or fetching', () => {
+  const received = [];
+  function LocalAgent(options) { received.push(options); return this; }
+  for (const localWeb of [{ backend: 'corpus', corpus: '/missing/corpus' }, { backend: 'searxng', url: 'https://127.0.0.1:1/search' }])
+    createConversationRuntime({ config: { ...localConfig(), localWeb }, selectedModels: {}, LocalAgent });
+  assert.ok(received[0].retrieval instanceof FrozenCorpusRetrieval);
+  assert.equal(received[0].retrieval.directory, '/missing/corpus');
+  assert.ok(received[1].retrieval instanceof SearxngRetrieval);
+  assert.equal(received[1].retrieval.residence, 'hybrid');
 });
 
 async function backend(t, handler) {

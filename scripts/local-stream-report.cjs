@@ -2,6 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { codeIdentity } = require('./perception-replay-identity.cjs');
 const { readBytes, sha256 } = require('./perception-replay-input.cjs');
+const { campaignWebResidence } = require('./local-stream-web.cjs');
 
 function reportWriter(outputDir, report) {
   let pending = Promise.resolve();
@@ -57,6 +58,7 @@ function finalizeRoles(report) {
     id: entry.id, jobId: entry.jobId, status: entry.status, acquired: Boolean(entry.acquired), identity: entry.called.identity,
     providerRequests: entry.metrics?.calls?.providerRequests ?? null, metrics: structuredClone(entry.metrics ?? null),
   }));
+  report.webResidence = campaignWebResidence(report.questions);
   for (const name of Object.keys(report.roles)) {
     const role = report.roles[name];
     for (const key of ['model', 'numCtx', 'keepAlive', 'temperature', 'reasoningEffort', 'threads', 'audioCtx'])

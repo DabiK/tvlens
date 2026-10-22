@@ -7,6 +7,7 @@ const { validateOllamaConfig } = require("../adapters/ollama/http-client.cjs");
 const { normalizeThink } = require("../adapters/ollama/thinking.cjs");
 const { trace, safeError } = require("../adapters/chat-trace.cjs");
 const { createPublicationDiagnostic } = require("./publication-diagnostic.cjs");
+const { validateLocalWeb, createWebRetrieval: defaultWebRetrieval, localAgentOptions } = require("./local-web-retrieval.cjs");
 const TVLENS_QUESTION_SCOPE_FOREIGN = "TVLENS_QUESTION_SCOPE_FOREIGN";
 const TVLENS_QUESTIONS_BACKEND_INVALID = 'TVLENS_QUESTIONS_BACKEND_INVALID';
 
@@ -24,12 +25,14 @@ function questionTimeout(value) {
   return value;
 }
 
-function createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota }) {
+function createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, createWebRetrieval, codexBinary, selectedModels, quota }) {
   if (!['codex', 'local'].includes(backend))
     throw domainError(TVLENS_QUESTIONS_BACKEND_INVALID, 'Backend de questions inconnu (codex ou local).');
   if (backend === 'local') validateOllamaConfig(config.localQuestions);
+  // Codex keeps its own web: the local retrieval settings only concern the local agent.
+  if (backend === 'local' && config.localWeb) validateLocalWeb(config.localWeb);
   if (agent) return agent;
-  if (backend === 'local') return new LocalAgent(config.localQuestions);
+  if (backend === 'local') return new LocalAgent(localAgentOptions(config, createWebRetrieval));
   return new CodexAgent({ binary: codexBinary || 'codex', authHome: config.codexAuthHome,
     model: selectedModels?.codexModel, reasoningEffort: config.chatReasoningEffort || 'low', quota });
 }
@@ -46,6 +49,7 @@ function createConversationRuntime({
   agent,
   CodexAgent = CodexSessionAgent,
   LocalAgent = OllamaQuestionAgent,
+  createWebRetrieval = defaultWebRetrieval,
   codexBinary,
   config = {},
   selectedModels,
@@ -61,7 +65,8 @@ function createConversationRuntime({
   normalizeThink(config.localQuestions?.think, 'TVLENS_LOCAL_QUESTIONS_THINK');
   const timeoutMs = questionTimeout(config.questionTimeoutMs);
   const backend = config.questionsBackend ?? 'codex';
-  const conversationAgent = createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, codexBinary, selectedModels, quota });
+  const conversationAgent = createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, createWebRetrieval,
+    codexBinary, selectedModels, quota });
   const makeTools = (signal, onProgress, scope = {}) => {
     const session = getSession();
     if (!session?.memory || !session.memoryMedia || !session.search || !session.inspector)

@@ -37,7 +37,7 @@ Un scénario version 1 contient :
 | `provenance` | `kind`, `reference` descriptive, et préparation pour une vidéo |
 | `plannedDurationMs` | Borne de fin du calendrier, relative à l'origine de session |
 | `finalWaitMs`, `closeWaitMs` | Bornes du runner pour vidage et fermeture, distinctes des délais produit |
-| `config` | Choix explicites des quatre backends et paramètres locaux |
+| `config` | Choix explicites des quatre backends et paramètres locaux ; `localWeb` facultatif pour le web des questions locales |
 | `selectedModels` | `observationModel`, `inspectionModel`, `codexModel` explicites pour la référence distante |
 | `clips` | Liste ordonnée de `{id, block, occurrence, atMs, language}` |
 | `questions` | Liste de `{id, atMs, question}`, avec `cancelAtMs` facultatif |
@@ -162,10 +162,29 @@ copie du scénario. Le rapport annonce `reference: "codex"` ; elle ne devient pa
 Le runner utilise `smoke: false`. Une perception locale sans `metrics.backend.kind: "ollama"`
 ou une identité de questions locales inconnue refuse la qualification de la campagne. Chaque rôle
 conserve sélection, identité effective, origine et invocation. Un rôle injecté, simulé, désactivé
-ou non exercé garde `localMeasurement: false`. Les questions locales ne disposent pas du web et
-une panne locale ne déclenche aucun repli Codex/OpenRouter. Embeddings et inspection restent
-identifiés indépendamment dans le bilan de campagne.
+ou non exercé garde `localMeasurement: false`. Les questions locales ne disposent du web que si
+`localWeb` est déclaré (voir ci-dessous) ; une panne locale ne déclenche aucun repli Codex/OpenRouter.
+Embeddings et inspection restent identifiés indépendamment dans le bilan de campagne.
 La garde sur le résultat visuel consigne son diagnostic sans modifier le résultat livré à la session.
+
+### Web des questions locales
+
+`config.localWeb` reprend les réglages `TVLENS_LOCAL_WEB_*` : `{backend, corpus?, url?, trigger?}`, avec
+`backend` `corpus` (et `corpus`) ou `searxng` (et `url`), toute `url` présente en http(s) sans identifiants
+quel que soit le backend, `trigger` `auto` (défaut) ou `always`. Dans un scénario, `corpus` est un chemin relatif au dossier du scénario, descendant, sans `..`.
+Il est fusionné champ par champ avec `localWeb` de la configuration importée, le scénario l'emportant ;
+sans `localWeb` ni d'un côté ni de l'autre, aucune récupération n'est composée. Un `localWeb` qui n'est pas
+un objet ou un corpus qui sort du dossier est refusé avec `TVLENS_REPLAY_CONFIG_INVALID` ; une forme
+invalide (backend, dossier, URL, déclencheur) avec `TVLENS_LOCAL_WEB_CONFIG_INVALID`, avant tout hôte.
+
+Le rapport relève `webRetrieval` : `backend`, `trigger` et `residence` du port réellement composé, jamais le
+chemin du corpus ni l'URL de recherche. La copie du scénario dans `parameters` garde le chemin relatif du
+corpus et l'URL déclarée, jamais un chemin complet ni une URL avec identifiants. Chaque question qui a récupéré des pages porte `web` : `retrieval`
+(`residence`, `status`, `documents`, `elapsedMs`), `acceptedSources` (URL des sources acceptées) et
+`sourceValidation` (comptes, URL refusées et raison). Ce relevé vient du résultat de l'agent et reste
+présent quand DeepAsk refuse la réponse. Aucun texte de page n'est recopié : la copie de `result` retire
+la citation `evidence` de chaque source. `webResidence` vaut `hybrid` dès qu'une question a récupéré par
+une voie qui sort de la machine (SearXNG) : la campagne est alors hybride. Sans relevé web, il vaut `null`.
 
 ## Transport, sorties et limites
 

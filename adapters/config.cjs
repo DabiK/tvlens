@@ -63,7 +63,8 @@ const SWITCHES = ['TVLENS_WHISPER_AUDIO_CTX', 'TVLENS_VISION_DURING_ASK', 'TVLEN
   'TVLENS_LOCAL_QUESTIONS_NUM_CTX', 'TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE', 'TVLENS_LOCAL_QUESTIONS_THINK', 'TVLENS_LOCAL_VLM_THINK',
   'TVLENS_LOCAL_INSPECTION_URL', 'TVLENS_LOCAL_INSPECTION_MODEL', 'TVLENS_LOCAL_INSPECTION_NUM_CTX',
   'TVLENS_LOCAL_INSPECTION_KEEP_ALIVE', 'TVLENS_LOCAL_INSPECTION_THINK',
-  'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL', 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS'];
+  'TVLENS_EMBEDDINGS_BACKEND', 'TVLENS_LOCAL_EMBEDDINGS_URL', 'TVLENS_LOCAL_EMBEDDINGS_MODEL', 'TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS',
+  'TVLENS_LOCAL_WEB_BACKEND', 'TVLENS_LOCAL_WEB_CORPUS', 'TVLENS_LOCAL_WEB_URL', 'TVLENS_LOCAL_WEB_TRIGGER'];
 const LOCAL_TOKENS = ['TVLENS_LOCAL_VLM_TOKEN', 'TVLENS_LOCAL_QUESTIONS_TOKEN', 'TVLENS_LOCAL_EMBEDDINGS_TOKEN', 'TVLENS_LOCAL_INSPECTION_TOKEN'];
 // Ces chemins remplacent ceux du cache au démarrage ; leur persistance à l'import reste celle du fournisseur.
 const WHISPER_PATHS = ['TVLENS_WHISPER_MODEL', 'TVLENS_WHISPER_BINARY'];
@@ -82,6 +83,7 @@ function switches(env) {
     ...embeddingsConfig(env),
     questionsBackend: env.TVLENS_QUESTIONS_BACKEND || 'codex',
     localQuestions: localQuestionsConfig(env),
+    ...localWebConfig(env),
     perceptionBackend: env.TVLENS_PERCEPTION_BACKEND || 'codex',
     inspectionBackend: env.TVLENS_INSPECTION_BACKEND || 'codex',
     localInspectionVlm: localInspectionVlmConfig(env),
@@ -101,6 +103,15 @@ function localQuestionsConfig(env) {
     ...(env.TVLENS_LOCAL_QUESTIONS_THINK ? { think: env.TVLENS_LOCAL_QUESTIONS_THINK } : {}),
     numCtx: env.TVLENS_LOCAL_QUESTIONS_NUM_CTX ? Number(env.TVLENS_LOCAL_QUESTIONS_NUM_CTX) : undefined,
     keepAlive: env.TVLENS_LOCAL_QUESTIONS_KEEP_ALIVE || undefined, token: env.TVLENS_LOCAL_QUESTIONS_TOKEN || null };
+}
+// Web retrieval for local questions stays off unless its backend is set: no key at all, so a configuration
+// without it is the same as before. The session runtime validates the values at start.
+function localWebConfig(env) {
+  if (!env.TVLENS_LOCAL_WEB_BACKEND) return {};
+  return { localWeb: { backend: env.TVLENS_LOCAL_WEB_BACKEND,
+    ...(env.TVLENS_LOCAL_WEB_CORPUS ? { corpus: env.TVLENS_LOCAL_WEB_CORPUS } : {}),
+    ...(env.TVLENS_LOCAL_WEB_URL ? { url: env.TVLENS_LOCAL_WEB_URL } : {}),
+    ...(env.TVLENS_LOCAL_WEB_TRIGGER ? { trigger: env.TVLENS_LOCAL_WEB_TRIGGER } : {}) } };
 }
 function embeddingsConfig(env) {
   const timeout = env.TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS;

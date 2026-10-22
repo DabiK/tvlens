@@ -7,8 +7,26 @@ const { RemoteMedia } = require('../adapters/remote-media.cjs');
 const { TranscriptionSettings } = require('../adapters/transcription-settings.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
 const { bounded, REQUEST_MS } = require('./local-stream-transport.cjs');
+const { createWebRetrieval } = require('../runtime/local-web-retrieval.cjs');
+const { webSettingsOf } = require('./local-stream-web.cjs');
 
 const realClock = { now: () => performance.now(), setTimer: (fn, ms) => setTimeout(fn, ms), clearTimer: timer => clearTimeout(timer) };
+// The scenario's corpus is a path below its own folder; the imported one is kept as configured. Merged field by field
+// like the local roles, and only when one of them declares it: no empty setting is invented.
+function mergedWeb(imported, scenarioWeb, scenarioPath) {
+  if (!imported.localWeb && !scenarioWeb) return {};
+  const corpus = scenarioWeb?.corpus === undefined ? {} : { corpus: path.resolve(path.dirname(scenarioPath), scenarioWeb.corpus) };
+  return { localWeb: { ...imported.localWeb, ...scenarioWeb, ...corpus } };
+}
+// The report keeps what the composed retrieval really is, never its path or address.
+function observedWebRetrieval(report, config, factory = createWebRetrieval) {
+  report.webRetrieval = webSettingsOf(config);
+  return localWeb => {
+    const port = factory(localWeb);
+    if (report.webRetrieval) report.webRetrieval.residence = port?.residence ?? null;
+    return port;
+  };
+}
 async function createHost(options, dependencies, loaded, report) {
   const root = path.join(options.outputDir, 'data'), sourceClock = dependencies.clock || realClock;
   await fs.mkdir(root, { mode: 0o700 });
@@ -18,6 +36,8 @@ async function createHost(options, dependencies, loaded, report) {
     budgetFile: path.join(root, 'trial-budget.json') };
   for (const role of ['localVlm', 'localQuestions', 'localEmbeddings'])
     config[role] = { ...imported[role], ...loaded.scenario.config[role] };
+  delete config.localWeb;
+  Object.assign(config, mergedWeb(imported, loaded.scenario.config.localWeb, options.scenarioPath));
   let origin = null, wallOrigin = null;
   const wallClock = dependencies.wallClock || Date.now;
   const readClock = () => {
@@ -27,6 +47,7 @@ async function createHost(options, dependencies, loaded, report) {
   const runtimeOptions = dependencies.runtimeOptions || {};
   let diagnosticsOpen = true;
   const runtime = new HeadlessRuntime({ ...runtimeOptions, config, userData: root, sessionsRoot: path.join(root, 'sessions'),
+    createWebRetrieval: observedWebRetrieval(report, config, runtimeOptions.createWebRetrieval),
     selectedModels: loaded.scenario.selectedModels, smoke: false, readClock, wallClock,
     transcriptionSettings: new TranscriptionSettings(path.join(root, 'transcription.json')),
     log: line => {

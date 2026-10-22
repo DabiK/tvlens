@@ -3,6 +3,7 @@ const { readJson, sha256, loadCase, requireInput: check } = require('./perceptio
 const { validateRemote } = require('../adapters/remote-media.cjs');
 const { validateOllamaConfig } = require('../adapters/ollama/http-client.cjs');
 const { validateEmbeddingTimeout } = require('../adapters/embeddings/ollama-embeddings.cjs');
+const { validateLocalWeb } = require('../runtime/local-web-retrieval.cjs');
 
 const HASH = /^[a-f0-9]{64}$/;
 const MAX_TIMER_MS = 2147483647;
@@ -10,15 +11,22 @@ const MAX_TIMER_MS = 2147483647;
 const SEGMENT_BODY_LIMIT_BYTES = 13000000;
 const QUESTION_MAX_CHARS = 2000;
 const CONFIG_KEYS = ['perceptionBackend', 'questionsBackend', 'inspectionBackend', 'embeddingsBackend',
-  'localVlm', 'localQuestions', 'localEmbeddings', 'visionDuringAsk', 'backgroundIndex'];
+  'localVlm', 'localQuestions', 'localEmbeddings', 'localWeb', 'visionDuringAsk', 'backgroundIndex'];
 const positiveTime = value => Number.isFinite(value) && value > 0 && value <= MAX_TIMER_MS;
 const relativeTime = value => Number.isFinite(value) && value >= 0 && value <= MAX_TIMER_MS;
+const descending = file => typeof file === 'string' && !path.isAbsolute(file) && !file.split(/[\\/]/).includes('..');
 async function referenced(base, reference) {
-  check(reference && typeof reference.path === 'string' && !path.isAbsolute(reference.path)
-    && !reference.path.split(/[\\/]/).includes('..') && HASH.test(reference.sha256), 'REFERENCE_INVALID');
+  check(reference && descending(reference.path) && HASH.test(reference.sha256), 'REFERENCE_INVALID');
   const file = await readJson(path.join(base, reference.path));
   check(file.sha256 === reference.sha256, 'HASH_MISMATCH');
   return file;
+}
+// The scenario is copied into the report: its corpus stays a path below the scenario folder, never a full path.
+function validateScenarioWeb(localWeb) {
+  if (localWeb === undefined) return;
+  check(localWeb && typeof localWeb === 'object' && !Array.isArray(localWeb), 'CONFIG_INVALID');
+  validateLocalWeb(localWeb);
+  check(localWeb.corpus === undefined || descending(localWeb.corpus), 'CONFIG_INVALID');
 }
 function validateConfig(config, models) {
   check(config && ['local', 'codex'].includes(config.perceptionBackend)
@@ -34,6 +42,7 @@ function validateConfig(config, models) {
     validateOllamaConfig(config.localEmbeddings);
     validateEmbeddingTimeout(config.localEmbeddings.timeoutMs);
   }
+  validateScenarioWeb(config.localWeb);
   // Les secrets appartiennent au fichier de configuration de l'hôte, jamais au scénario conservé.
   check(!JSON.stringify(config).match(/"(?:token|apiKey|codexAuthHome)"/), 'CONFIG_INVALID');
   check([true, false, undefined].includes(config.visionDuringAsk)

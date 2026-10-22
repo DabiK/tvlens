@@ -357,3 +357,26 @@ test('local embedding deadlines persist from imports while startup overrides rem
     environment: { TVLENS_LOCAL_EMBEDDINGS_TIMEOUT_MS: '25000' } });
   assert.equal(bare.localEmbeddings.timeoutMs, 25000);
 });
+
+test('local web retrieval is absent unless its backend is set, and imports persist while startup overrides win', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-local-web-config-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const safeStorage = { isEncryptionAvailable: () => true, encryptString: text => Buffer.from(text), decryptString: bytes => bytes.toString() };
+  const bareStorage = { isEncryptionAvailable: () => false };
+  const load = options => loadConfig({ userData: root, safeStorage, environment: {}, ...options });
+  assert.equal(Object.hasOwn(await loadConfig({ userData: root, safeStorage: bareStorage, environment: {} }), 'localWeb'), false);
+  const unset = await loadConfig({ userData: root, safeStorage: bareStorage,
+    environment: { TVLENS_LOCAL_WEB_BACKEND: '', TVLENS_LOCAL_WEB_CORPUS: '/corpus', TVLENS_LOCAL_WEB_TRIGGER: 'always' } });
+  assert.equal(Object.hasOwn(unset, 'localWeb'), false);
+  const fromEnvironment = await loadConfig({ userData: root, safeStorage: bareStorage,
+    environment: { TVLENS_LOCAL_WEB_BACKEND: 'searxng', TVLENS_LOCAL_WEB_URL: 'http://127.0.0.1:8888' } });
+  assert.deepEqual(fromEnvironment.localWeb, { backend: 'searxng', url: 'http://127.0.0.1:8888' });
+  const configPath = path.join(root, 'web.env');
+  await fs.writeFile(configPath, 'TVLENS_LOCAL_WEB_BACKEND=corpus\nTVLENS_LOCAL_WEB_CORPUS=/file/corpus\nTVLENS_LOCAL_WEB_TRIGGER=auto\n');
+  const imported = await load({ configPath, environment: { TVLENS_LOCAL_WEB_TRIGGER: 'always' } });
+  assert.deepEqual(imported.localWeb, { backend: 'corpus', corpus: '/file/corpus', trigger: 'always' });
+  assert.deepEqual((await load()).localWeb, { backend: 'corpus', corpus: '/file/corpus', trigger: 'auto' });
+  const overridden = await load({ environment: { TVLENS_LOCAL_WEB_BACKEND: 'searxng', TVLENS_LOCAL_WEB_URL: 'http://127.0.0.1:8888' } });
+  assert.deepEqual(overridden.localWeb, { backend: 'searxng', corpus: '/file/corpus', url: 'http://127.0.0.1:8888', trigger: 'auto' });
+  assert.deepEqual((await load()).localWeb, { backend: 'corpus', corpus: '/file/corpus', trigger: 'auto' });
+});
