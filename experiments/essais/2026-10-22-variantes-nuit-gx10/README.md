@@ -73,7 +73,8 @@ Questions qui basculent face à GPS :
 ## Lecture
 
 - **Variabilité** : rejouer GPS à l'identique fait basculer 8 questions sur 30 (17 contre 21 pertinentes). Sur 30
-  questions et un passage, un écart de pertinence de moins de 4 à 5 réponses n'est donc pas un signal. Les délais
+  questions et un passage, un écart de quelques réponses est du même ordre que ces bascules et ne suffit pas à
+  conclure ; ce n'est pas un seuil statistique (remarque de Codex Astra). Les délais
   varient moins (médiane 7,1 s puis 8,5 s), mais les blocs vision perdus par `gemma3:4b` varient beaucoup (Artemis : 14
   puis 37).
 - **N2 est la meilleure variante de la nuit.** Elle a la pertinence de GPS (21/30, 4 inventions), le délai médian le

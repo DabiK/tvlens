@@ -45,7 +45,7 @@ Critères fixés avant la notation (revue de Codex Astra) :
 
 ## Lecture
 
-- Le journal complet est le seul gagnant. Il porte la mémoire de 4 à 10 sur 12 et réduit les inventions de près de
+- Le journal complet est le seul gagnant (9 réponses gagnées, 5 perdues face à A). Il porte la mémoire de 4 à 10 sur 12 et réduit les inventions de près de
   moitié : sans journal, le modèle comble souvent le manque par des faits plausibles. Il coûte 1,3 s par question et
   2 réponses récentes sur 48, ce qui reste dans le bruit.
 - Le plafonner ou le déplacer garde une partie du gain sur la mémoire (8/12), mais pas la baisse des inventions.

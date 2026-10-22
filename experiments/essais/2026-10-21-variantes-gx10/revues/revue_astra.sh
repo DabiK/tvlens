@@ -48,7 +48,7 @@ EOF
 if [ "${DRY:-0}" = 1 ]; then echo "consigne : $OUT/consigne-$STAMP.md"; exit 0; fi
 
 for attempt in 1 2 3; do
-  codex exec -m gpt-6-astra -c model_reasoning_effort="high" -s read-only -C $REPO -o $OUT/revue-$STAMP.md - \
+  codex exec -m gpt-6-astra -c model_reasoning_effort="medium" -s read-only -C $REPO -o $OUT/revue-$STAMP.md - \
     < $OUT/consigne-$STAMP.md > $OUT/log-$STAMP-$attempt.txt 2>&1
   if [ -s $OUT/revue-$STAMP.md ] && ! grep -q "at capacity" $OUT/log-$STAMP-$attempt.txt; then break; fi
   echo "tentative $attempt sans rapport complet" >> $OUT/echecs-$STAMP.txt

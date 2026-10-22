@@ -67,3 +67,16 @@ modèle sans la vision en parallèle. Référence `qwen3.8:27b` : 9,2 s médian,
 | J2 | Flux réel, 6 vidéos, **60 questions** (oracle v3) | N2 (GPS + vision sans `topicSummary`), sans journal : référence à 60 questions | fait : premier départ bloqué à 10:50 UTC (`OTHER_GPU_PROCESS_ACTIVE`, modèle de G5 en déchargement), relancé 10:51–12:21 UTC | **médiane 5,0 s ; 60/60 sous 15 s ; 0 bloc perdu** | à noter (avec J3) | |
 | J3 | Flux réel, 6 vidéos, 60 questions | J2 + journal complet (bras B de G5) | en cours (départ 12:21 UTC) | | | |
 | J4 | Flux réel, 6 vidéos, 60 questions | J2 + `topicSummary` calculé hors du chemin critique par le proxy (vision sans le champ, puis un appel texte qui replie les blocs du sujet quand le GPU est libre) | en file (après J3) | | | |
+
+## Connaissance extérieure et outils (priorité depuis le 22/10)
+
+Questions dont la réponse demande internet ou un outil, notées à part des 60 questions vidéo : W (web, faits stables et
+actualité datée), M (fait de la vidéo + fait extérieur), O (relecture d'images anciennes avec `inspect_clip`).
+
+| ID | Essai | Ce qui change | Statut | Vitesse | Pertinence | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| O4 | Oracle v4 | 2–3 W, 2 M, 2 O par vidéo, rédigées puis vérifiées depuis les médias et des sources datées ; corpus web figé | en cours (départ ~12:40 UTC) | — | — | |
+| S1 | [SearXNG sur la GX10](../2026-10-22-searxng-gx10/) | moteur de recherche auto-hébergé en conteneur, boucle locale, API JSON (décision de Dabi) | fait (12:41 UTC) | 3,0 s par requête | 50 résultats sur la requête de test | Prêt pour F1 |
+| H1 | Hors ligne, requêtes capturées | A sans source ; B extraits du corpus injectés + champ sources ; C recherche comme outil en deux phases ; O `inspect_clip` en deux phases | en file (après J4) | | | |
+| T1 | Produit | port de recherche, adaptateurs corpus et web, récupération avant la réponse, sources validées par l'adaptateur Ollama | exploration en cours ; moteur réel : SearXNG sur la GX10 (S1) | | | |
+| F1 | Flux réel, catégorie W/M/O | configuration retenue + récupération (après intégration de T1) | en file | | | |

@@ -3,7 +3,7 @@
 ## Question
 
 Rejouer GPS à l'identique fait basculer 8 questions sur 30 ([nuit du 22 octobre](../2026-10-22-variantes-nuit-gx10/)).
-Avec 30 questions, un écart de moins de 4 à 5 réponses n'est pas un signal. Peut-on doubler le jeu d'évaluation
+Avec 30 questions, un écart de quelques réponses est du même ordre que ces bascules et ne suffit pas à conclure. Peut-on doubler le jeu d'évaluation
 automatiquement, avec le même soin que l'oracle v2, et en visant la mémoire, qui est la faiblesse principale ?
 
 ## Configuration

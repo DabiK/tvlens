@@ -15,6 +15,12 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 > - Réserve produit : `topicSummary` alimente le résumé cumulatif des cartes de la frise TV. Il ne peut pas être
 >   supprimé ; il faut le calculer hors du chemin critique (essai J4).
 
+## Connaissance extérieure et outils
+
+Catégorie à part, prioritaire depuis le 22/10 : W (web), M (vidéo + extérieur), O (relecture d'images). Point de départ
+établi dans le code : la voie locale refuse toute réponse extérieure et n'a aucun outil web (à confirmer par
+l'exploration). Chiffres à venir : oracle v4, essai hors ligne H1, flux réel F1.
+
 ## Matériel et configuration de référence
 
 | Chiffre | Valeur | Source |
@@ -92,8 +98,9 @@ N1 à N4 sont notés dans un premier paquet ; N5 et N6 dans un second, avec GPS 
 | Contexte des questions avec journal | 4 762 jetons (GPS ≈ 2 500) ; +2 s par question | nuit, N3 |
 | Questions qui demandent un fait hors de la fenêtre de 48 s (fenêtre réelle [P − 56 s, P − 8 s)) | 6 sur 30 en partie, aucune entièrement ; oracle v3 : 19 entièrement et 2 en partie sur les 30 nouvelles | nuit, [oracle v3](../2026-10-22-oracle-60-questions-gx10/) |
 
-Source : [nuit du 22 octobre](../2026-10-22-variantes-nuit-gx10/). Un passage par variante : en dessous de 4 à
-5 réponses, un écart de pertinence n'est pas un signal.
+Source : [nuit du 22 octobre](../2026-10-22-variantes-nuit-gx10/). Un passage par variante : un écart de quelques réponses est du même
+ordre que les bascules entre deux passages identiques (7 à 8 sur 30) et ne suffit pas à conclure. Ce n'est pas un seuil
+statistique (remarque de Codex Astra).
 
 ## Sur 60 questions (oracle v3)
 
