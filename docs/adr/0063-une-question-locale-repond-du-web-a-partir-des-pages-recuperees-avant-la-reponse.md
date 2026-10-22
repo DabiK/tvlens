@@ -11,7 +11,8 @@ insuffisante (`adapters/ollama/question-response.cjs`). Le propriétaire veut qu
 qui demandent internet, ou un fait vidéo plus un fait extérieur. T308 a livré un port de récupération
 (`WebRetrievalPort`, `core/ports.cjs`), une règle pure qui dit si une question appelle le web (`callsForWeb`,
 `core/web-retrieval.cjs`) et une clé d'URL stricte (`sourceKey`, `adapters/external-links.cjs`). La règle du domaine
-reste : une source ne compte que si sa page a été ouverte (`docs/domaine.md:17`). DeepAsk ne revalide pas les URL ;
+reste : une source ne compte que si sa page a été ouverte (`docs/domaine.md:17`) ; le propriétaire a confirmé le 22/10
+qu'elle vaut aussi pour la voie locale, un simple résultat de recherche ne comptant pas. DeepAsk ne revalide pas les URL ;
 l'agent est le seul garde.
 
 ## Décision
