@@ -1,7 +1,7 @@
 ---
 id: T310
 titre: Retrieve and open web pages through a self-hosted SearXNG
-statut: a-faire
+statut: termine
 bloque_par: T308
 adr: non
 installe: non
@@ -79,3 +79,35 @@ Aucune décision n'est attendue.
 ## Journal
 
 - 22/10, orchestrateur : ticket ouvert depuis l'exploration de la recherche web locale ; indépendant de T309.
+- 22/10, orchestrateur : exploration (`.harness-state/tickets/T310/exploration.md`). Port T308 confirmé (`core/ports.cjs:49-54`,
+  `WEB_DOCUMENT_LIMIT` 3, `WEB_TEXT_MAX_CHARS` 2500, `clipText`) ; modèle `adapters/web/frozen-corpus.cjs` ; erreurs expurgées sans cause
+  comme `adapters/ollama/http-client.cjs` ; faux serveur et `manualClock` déjà outillés dans les tests ; l'agent T309 ne lit que
+  `documents`. Choix déclarés dans `ecarts.md` : extraction HTML dans `adapters/web/html-text.cjs`, URL finale après redirection.
+- 22/10, implémenteur : `adapters/web/searxng.cjs`, `adapters/web/html-text.cjs`, `tests/searxng-retrieval.test.cjs` (14 tests, rouge vu
+  par comportement ; plafond et attente des ouvertures prouvés par mutation). `node scripts/check.mjs --changed` : vert.
+- 22/10, relecture 1 (`relecture-1.md`) : à corriger, 3 mineurs (titre non fermé en temps quadratique, `<head>` non fermé qui effaçait
+  la page, borne exacte du critère 3 non fixée). Écarts 1 à 9 de `ecarts.md` acceptés.
+- 22/10, implémenteur : corrections des trois constats, deux tests ajoutés, test du critère 3 fixé à l'octet près (16 tests).
+- 22/10, relecture 2 (correction) : accepté, 0 constat, `NON CORRIGÉS : 0`.
+- 22/10, orchestrateur : `node scripts/check.mjs` : vert, 3106 tests JS sur 158 fichiers, 71 tests Python ; cliquet
+  `cas_de_test_produit` 1680 → 1696.
+- 22/10, orchestrateur, tentative 2 : la boucle a refusé la tentative 1 (contrôle complet rouge, tests JS puis tests Python au-delà
+  de 1200 s chacun). Cause lue dans `pmset -g log` : le Mac est entré en veille (capot fermé, sur batterie) à 17:11:20, 30 s après
+  le début du contrôle, et n'a été éveillé qu'environ 80 s jusqu'à 18:05. Les budgets de `spawnSync` comptent le temps de veille :
+  celui des tests JS est tombé au réveil de maintenance de 17:31:45, celui des tests Python à celui de 18:05:36. Les tests Python,
+  que T310 ne touche pas, ont expiré de la même façon. Code inchangé depuis la relecture 2 (empreintes identiques à
+  `reviewed-state.json`), donc pas de nouvelle relecture. `node --test tests/searxng-retrieval.test.cjs` : 16 tests en 110 ms.
+- 22/10, orchestrateur : `caffeinate -i node scripts/check.mjs` de 18:18 à 18:27, une fois la charge du réveil retombée sous 8 :
+  vert, 3106 tests JS sur 158 fichiers, 71 tests Python ; aucune veille pendant le contrôle (`check-final-2.log`).
+
+### Réserves à la clôture
+
+- Écart accepté, périmètre : extraction HTML dans un fichier à part, adapters/web/html-text.cjs, pour tenir max-lines et complexity du lint.
+- Écart accepté, critère 1 : l'URL d'un document est la page finale après redirections ; deux résultats menant à la même page ne donnent qu'un document.
+- Écart accepté, périmètre : la requête de recherche part en redirect: 'error' (une redirection de SearXNG rend la recherche indisponible) et sa réponse JSON est plafonnée à 1 Mio.
+- Écart accepté, critère 2 : seuil de page courte MIN_PAGE_TEXT_CHARS = 200, choisi sans mesure.
+- Écart accepté, périmètre : l'URL de SearXNG n'est pas validée à la construction de l'adaptateur ; la configuration (T311) devra le faire.
+- Non vérifié : rien n'a tourné contre le vrai SearXNG de la GX10 ni sur de vraies pages https (exclu par le ticket).
+- Question pour le propriétaire : sur une page sans body, article ni main, un <head> jamais fermé efface encore le texte, et un <title> jamais fermé donne une page vide comme dans un navigateur ; dans les deux cas la page compte comme non lue.
+- À savoir : aucun code ne lit encore les limits de l'adaptateur ; l'agent de question (T309) ne lit que documents.
+- Question pour le propriétaire : capot fermé sur batterie, le Mac dort malgré caffeinate et les budgets de check.mjs comptent la veille ; un contrôle de la boucle lancé à ce moment rend un faux rouge, comme à la tentative 1.
