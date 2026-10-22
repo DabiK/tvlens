@@ -30,10 +30,10 @@ la voie locale mesurée sur la GX10. Aucune mesure ne les comparait sur les mêm
 | dont faits anciens | 11/19 | 9/19 |
 | Inventions (vidéo) | **7** | 12 |
 | Délai médian (vidéo) | 5,5 s | 6,2 s (flux réel, GX10) |
-| Questions web justes (W) | 11/18 | **12/18** (H4, début de page) |
+| Questions web justes (W) | 11/18 | **12/18** (H4, début de page, renoté dans ce paquet) |
 | Questions mixtes justes (M) | **4/12** | 2/12 |
-| Inventions (W + M) | **2** | 6 |
-| Délai médian (W/M) | 10,8 s (90e centile ~19 s) | ~8,5 s estimé (0,65 + 1,7 + 6,2 s) |
+| Inventions (W + M) | **2** | 6 (H4-V0 renoté ; 3 à sa première notation) |
+| Délai médian (W/M) | 10,8 s mesurés (90e centile ~19 s) | non mesuré de bout en bout : somme de trois médianes ≈ 8,5 s (0,65 + 1,7 + 6,2 s), à confirmer par F1 |
 | Relecture d'images (O) | 0/12 | non comparé ici (H1 : 4/24 avec l'outil) |
 
 - Face à face sur la vidéo : Codex gagne 8 questions et en perd 4 (test des signes : p ≈ 0,39).
@@ -41,8 +41,11 @@ la voie locale mesurée sur la GX10. Aucune mesure ne les comparait sur les mêm
 
 ## Lecture
 
-Le local fait jeu égal avec Codex sur la justesse, à une exécution près. Il répond plus vite aux questions web, mais il
-invente davantage. L'écart restant porte sur la prudence (inventions) et sur les questions mixtes, pas sur la vitesse.
+Sur une exécution, l'écart de justesse entre le local et Codex reste dans le bruit : ce n'est ni une supériorité ni une
+équivalence démontrée. Codex invente nettement moins (7 contre 12 en vidéo, 2 contre 6 en web et mixte). Le local est
+peut-être plus rapide sur le web, mais son délai n'est pour l'instant qu'une somme de médianes, que F1 doit mesurer.
+Les renotations font varier un même jeu de réponses (J6 : 40 puis 38 ; H4-V0 : 3 puis 6 inventions) : chaque
+comparaison ne vaut qu'à l'intérieur de son paquet de notation.
 
 ## Limites
 
