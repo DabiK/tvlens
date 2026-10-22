@@ -19,7 +19,13 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 
 Catégorie à part, prioritaire depuis le 22/10 : W (web), M (vidéo + extérieur), O (relecture d'images). Point de départ
 établi dans le code : la voie locale refuse toute réponse extérieure et n'a aucun outil web (à confirmer par
-l'exploration). Chiffres à venir : oracle v4, essai hors ligne H1, flux réel F1.
+l'exploration ; confirmé). Chiffres à venir : essai hors ligne H1, flux réel F1.
+
+| Chiffre | Valeur | Source |
+| --- | --- | --- |
+| Questions de la catégorie (oracle v4) | 42 : 18 W (11 stables, 7 d'actualité), 12 M, 12 O ; 0 rejetée | [oracle v4](../2026-10-22-oracle-v4-web-outils-gx10/) |
+| Corpus web figé | 51 pages sur 54 ; 59 extraits sur 67 retrouvés ; 28/30 questions W/M avec une source retrouvée | oracle v4 |
+| Recherche SearXNG sur la GX10 | 3,0 s par requête (50 résultats) | [SearXNG](../2026-10-22-searxng-gx10/) |
 
 ## Matériel et configuration de référence
 

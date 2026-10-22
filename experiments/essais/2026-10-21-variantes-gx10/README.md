@@ -75,8 +75,8 @@ actualité datée), M (fait de la vidéo + fait extérieur), O (relecture d'imag
 
 | ID | Essai | Ce qui change | Statut | Vitesse | Pertinence | Verdict |
 | --- | --- | --- | --- | --- | --- | --- |
-| O4 | Oracle v4 | 2–3 W, 2 M, 2 O par vidéo, rédigées puis vérifiées depuis les médias et des sources datées ; corpus web figé | en cours (départ ~12:40 UTC) | — | — | |
+| O4 | [Oracle v4](../2026-10-22-oracle-v4-web-outils-gx10/) | 2–3 W, 2 M, 2 O par vidéo, rédigées puis vérifiées ; corpus web figé | fait (12:40–13:30 UTC) | — | 42 questions (18 W dont 7 d'actualité, 12 M, 12 O), 0 rejetée ; corpus 51/54 pages, 28/30 W/M avec une source retrouvée | Prêt pour H1 |
 | S1 | [SearXNG sur la GX10](../2026-10-22-searxng-gx10/) | moteur de recherche auto-hébergé en conteneur, boucle locale, API JSON (décision de Dabi) | fait (12:41 UTC) | 3,0 s par requête | 50 résultats sur la requête de test | Prêt pour F1 |
 | H1 | Hors ligne, requêtes capturées | A sans source ; B extraits du corpus injectés + champ sources ; C recherche comme outil en deux phases ; O `inspect_clip` en deux phases | en file (après J4) | | | |
-| T1 | Produit | port de recherche, adaptateurs corpus et web, récupération avant la réponse, sources validées par l'adaptateur Ollama | exploration en cours ; moteur réel : SearXNG sur la GX10 (S1) | | | |
+| T1 | Produit | port de recherche, adaptateurs corpus et SearXNG, récupération avant la réponse, sources validées par l'adaptateur Ollama ; nouvel ADR | exploration faite (plusieurs tickets, ADR 0057 à remplacer) ; découpage et boucle dans le worktree `tvlens-recherche-web`, branche `feat/recherche-web-locale` | | | |
 | F1 | Flux réel, catégorie W/M/O | configuration retenue + récupération (après intégration de T1) | en file | | | |

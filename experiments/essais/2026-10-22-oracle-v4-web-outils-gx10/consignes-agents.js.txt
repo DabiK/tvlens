@@ -1,0 +1,128 @@
+export const meta = {
+  name: 'oracle-v4-web-outils',
+  description: 'Write web, mixed and image-reinspection questions per video with sourced oracle entries, then verify each independently',
+  phases: [
+    { title: 'Rédaction', detail: 'one author per pair of videos writes W, M and O questions with oracle entries and web sources' },
+    { title: 'Vérification', detail: 'one independent verifier per pair checks media evidence and web sources' },
+  ],
+}
+
+const A = args
+const PAIRS = [
+  [{ key: 'kennedy', run: 'kennedy', lang: 'anglais', note: 'Discours de Kennedy à l\'université Rice, 12 septembre 1962 (extrait de 7 min).' },
+   { key: 'artemis', run: 'artemis', lang: 'anglais',
+   note: 'Extrait 2:50:00–3:25:00 du direct NASA du lancement Artemis : temps local = temps source − 2:50:00.' }],
+  [{ key: 'spring', run: 'spring', lang: 'sans dialogue', note: 'Court métrage d\'animation « Spring » (Blender Studio), sans dialogue.' },
+   { key: 'tears', run: 'tears-of-steel', lang: 'anglais', note: 'Court métrage « Tears of Steel » (Blender Foundation, 2012).' }],
+  [{ key: 'cnrs', run: 'cnrs-apprentissage', lang: 'français', note: 'Cours CNRS sur l\'apprentissage automatique, avec diapositives.' },
+   { key: 'cuisine', run: 'boeuf-bourguignon', lang: 'français', note: 'Recette du bœuf bourguignon.' }],
+]
+
+const COMMON = `
+Contexte : TVLens, compagnon de visionnage. Des questions sont posées pendant la lecture ; un système local (blocs de 8 s :
+ASR + images décrites par un VLM, puis un LLM qui répond en français) répond. Il ne voit en détail que les 6 derniers blocs
+traités, soit [P − 56 s, P − 8 s) à une pose P ; il a des outils vidéo (search_moments, get_transcript, inspect_clip qui
+réexamine les images d'un intervalle) mais aujourd'hui aucun accès à internet. On ajoute une catégorie d'évaluation
+« connaissance extérieure et outils », notée à part des 60 questions existantes, qui restent intactes.
+Lecture seule sur le dépôt ${A.repo} (aucune modification, aucun git). Écris seulement dans ton dossier de travail.
+Langue : français ; citations dans leur langue. Date du jour : 22 octobre 2026.
+
+Matériaux vidéo :
+- Transcriptions de référence : ${A.lab}/oracle/transcriptions/<video>.transcript.txt (aucune pour spring).
+- Images toutes les 2 s : ${A.media}/frames/<video>/NNNNN.jpg (image n ≈ (n−1)×2 s). Planche :
+  python3 -I ${A.lab}/planche.py --frames ${A.media}/frames/<video> --from <s> --to <s> [--every 4] --out <dossier>/x.jpg
+  puis ouvre l'image avec Read (24 images max).
+- Oracle v3 (format à reproduire, et liste des instants de pose existants) : ${A.oracle}
+- Ce que la vision du système a dit de chaque bloc (pour les questions O) : journal du proxy de N2,
+  ${A.repo}/experiments/essais/2026-10-22-variantes-nuit-gx10/bruts/n2-gps-sans-resume/<run>-GPSR-1.jsonl.gz
+  (lignes role=vlm : request.messages[0].content contient la transcription et l'intervalle ; response.message.content est
+  un JSON avec summary et visual). Lis-le avec python3 et gzip.
+
+Internet : utilise WebSearch et WebFetch (charge-les avec ToolSearch si besoin). Préfère des sources stables et
+citables (sites officiels, encyclopédies, agences, médias reconnus). Pour chaque source : URL exacte, titre, date de
+consultation (22/10/2026) et un extrait court (25 mots au plus) qui porte le fait. N'entre aucune donnée personnelle et
+ne remplis aucun formulaire.
+
+INTERDIT : ouvrir des campaign.json, notation*, a-noter-*, cle-*, membres-*, notes.json ; lire une réponse de TVLens.
+
+Instant de pose : chaque nouvelle question reprend l'instant de pose d'une question existante de la même vidéo
+(oracle v3), chaque instant au plus une fois parmi les nouvelles. Cela permet de rejouer les requêtes déjà capturées.
+
+Catégories (rends-en, par vidéo, W : 2 ou 3 ; M : 2 ; O : 2) :
+- W (web) : la réponse est absente de la vidéo et se trouve en ligne. Au moins une sur des faits stables (ex. « Qui était
+  ce Bradford que Kennedy cite ? »), au moins une d'actualité (ex. « Où en est aujourd'hui le programme Artemis ? »).
+  Pour l'actualité, l'attendu est daté (« au 22/10/2026 ») et la grille accepte une réponse plus récente si elle est
+  sourcée et datée.
+- M (mixte) : un fait de la vidéo, disponible à la pose, PLUS un fait extérieur. Preuve horodatée pour la part vidéo,
+  source pour la part extérieure.
+- O (outil images) : seule une relecture d'images sorties de la fenêtre récente répond (outil inspect_clip) ; ni la
+  transcription ni les descriptions de la vision (journal de N2) ne contiennent la réponse. Vérifie-le dans le journal
+  de N2 pour les blocs concernés, et donne l'intervalle à réexaminer.
+
+Entrée d'oracle (même format que v3, plus) : category (W/M/O), freshness (stable/actualité, pour W et M), sources
+[{url, title, consultedAt, extract, supports}], toolExpected (web, inspect_clip). Grille propre :
+- crédit pour un fait extérieur juste ET attribué à sa source ;
+- invention si un fait extérieur est faux, ou s'il est présenté comme dit dans la vidéo ;
+- abstention justifiée si l'outil nécessaire manque (la grille la note s0 mais justified) ;
+- pour M, chaque volet compte.
+`
+
+const SOURCE = { type: 'object', properties: { url: { type: 'string' }, title: { type: 'string' }, consultedAt: { type: 'string' },
+  extract: { type: 'string' }, supports: { type: 'string' } }, required: ['url', 'title', 'consultedAt', 'extract', 'supports'] }
+const FACT = { type: 'object', properties: { fact: { type: 'string' }, startS: { type: 'number' }, endS: { type: 'number' },
+  modality: { type: 'string' }, availability: { type: 'string' }, source: { type: 'string' } }, required: ['fact'] }
+const ENTRY = {
+  type: 'object',
+  properties: {
+    questionId: { type: 'string' }, askedQuestion: { type: 'string' }, poseS: { type: 'number' },
+    category: { type: 'string', enum: ['W', 'M', 'O'] }, freshness: { type: 'string', enum: ['stable', 'actualité', 'na'] },
+    toolExpected: { type: 'string' }, answerableAtPose: { type: 'string' },
+    requiredFacts: { type: 'array', items: FACT }, optionalFacts: { type: 'array', items: FACT },
+    sources: { type: 'array', items: SOURCE }, inspectInterval: { type: 'string' },
+    inventionTraps: { type: 'array', items: { type: 'string' } }, abstentionPolicy: { type: 'string' },
+    rubric: { type: 'object', properties: { s3: { type: 'string' }, s2: { type: 'string' }, s1: { type: 'string' }, s0: { type: 'string' } },
+      required: ['s3', 's2', 's1', 's0'] },
+    confidence: { type: 'string', enum: ['high', 'medium', 'low'] },
+  },
+  required: ['questionId', 'askedQuestion', 'poseS', 'category', 'freshness', 'toolExpected', 'requiredFacts', 'sources',
+    'inventionTraps', 'abstentionPolicy', 'rubric', 'confidence'],
+}
+const AUTHOR = { type: 'object', properties: { videos: { type: 'array', items: { type: 'object', properties: {
+  video: { type: 'string' }, questions: { type: 'array', items: ENTRY }, notes: { type: 'string' } }, required: ['video', 'questions'] } } },
+  required: ['videos'] }
+const REVIEW = { type: 'object', properties: { videos: { type: 'array', items: { type: 'object', properties: {
+  video: { type: 'string' }, verdicts: { type: 'array', items: { type: 'object', properties: {
+    questionId: { type: 'string' }, verdict: { type: 'string', enum: ['accepted', 'corrected', 'rejected'] },
+    reason: { type: 'string' }, entry: ENTRY }, required: ['questionId', 'verdict', 'reason'] } } },
+  required: ['video', 'verdicts'] } } }, required: ['videos'] }
+
+function authorPrompt(pair) {
+  return `${COMMON}
+Tu rédiges les questions W, M et O de ces vidéos. Identifiants <video>-w1…, <video>-m1…, <video>-o1… (ex. ${pair[0].key}-w1).
+Dossier de travail : ${A.lab}/oracle-v4/travail/redaction-${pair.map(v => v.key).join('-')}/ (crée-le).
+${pair.map(v => `- « ${v.key} » (fichier de journal N2 : ${v.run}-GPSR-1.jsonl.gz ; ${v.lang}). ${v.note}`).join('\n')}
+Vérifie chaque fait (média ou source) avant de l'écrire. Rends les deux vidéos.`
+}
+
+function reviewPrompt(pair, draft) {
+  return `${COMMON}
+Tu es le vérificateur indépendant de ces questions W, M et O. Pour chacune, reviens aux médias et aux sources :
+la part vidéo est disponible à la pose avec le bon horodatage ; la part extérieure est juste, présente dans l'extrait et
+à l'URL donnée (ouvre-la avec WebFetch) ; pour W, la réponse est bien absente de la vidéo ; pour O, ni la transcription ni
+le journal de vision de N2 ne la contiennent, et les images de l'intervalle la montrent ; pour l'actualité, l'attendu est
+daté ; la pose reprend un instant existant de l'oracle v3, chacun au plus une fois ; la grille suit les règles W/M/O.
+Verdict : accepted, corrected (entrée corrigée) ou rejected (raison).
+Dossier de travail : ${A.lab}/oracle-v4/travail/verification-${pair.map(v => v.key).join('-')}/ (crée-le).
+Propositions :
+${JSON.stringify(draft)}`
+}
+
+const results = await pipeline(
+  PAIRS,
+  pair => agent(authorPrompt(pair), { label: `redaction:${pair.map(v => v.key).join('+')}`, phase: 'Rédaction', schema: AUTHOR }),
+  (draft, pair) => draft ? agent(reviewPrompt(pair, draft), { label: `verification:${pair.map(v => v.key).join('+')}`, phase: 'Vérification', schema: REVIEW })
+    .then(review => ({ pair: pair.map(v => v.key), draft, review })) : null,
+)
+const done = results.filter(Boolean)
+log(`${done.length}/3 paires rédigées et vérifiées`)
+return done

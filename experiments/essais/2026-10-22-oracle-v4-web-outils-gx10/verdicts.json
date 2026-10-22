@@ -1,0 +1,254 @@
+[
+ [
+  "kennedy",
+  "kennedy-w1",
+  "corrected",
+  "Pose 104 reprise de v3 (kennedy-n1), une seule fois. « Venus » 85,46-86,15 s, bloc 10, Δ=16, dans la fenêtre [48,96) : vérifié dans mots-hor"
+ ],
+ [
+  "kennedy",
+  "kennedy-o1",
+  "corrected",
+  "Pose 128 reprise de v3 (kennedy-03), une seule fois. Plan large et rambarde au premier plan de 0 à 44-46 s : confirmés sur les images. Journ"
+ ],
+ [
+  "kennedy",
+  "kennedy-m1",
+  "accepted",
+  "Pose 160 reprise de v3 (kennedy-n2), une seule fois. Volet vidéo vérifié dans mots-horodates : « this city of Houston » 124,30-125,60 s, « T"
+ ],
+ [
+  "kennedy",
+  "kennedy-m2",
+  "accepted",
+  "Pose 216 reprise de v3 (kennedy-05), une seule fois. « last week » 74,61-75,37 s, « penicillin » 76,51-77,44 s, bloc 9 ; « power » finit à 8"
+ ],
+ [
+  "kennedy",
+  "kennedy-o2",
+  "accepted",
+  "Pose 248 reprise de v3 (kennedy-n3), une seule fois. Images 70-104 s revues (vk-70-104.jpg). Le drapeau commence à se soulever vers 76-78 s."
+ ],
+ [
+  "kennedy",
+  "kennedy-w2",
+  "accepted",
+  "Pose 272 reprise de v3 (kennedy-06), une seule fois. Contexte vidéo : 151,06-170,94 s, blocs 18-21, Δ ≥ 96, ancien pour la fenêtre [216,264)"
+ ],
+ [
+  "kennedy",
+  "kennedy-w3",
+  "accepted",
+  "Pose 408 reprise de v3 (kennedy-n5), une seule fois. « There is no strife… as yet » 385,13-392,60 s, blocs 48-49 : A, récent pour la fenêtre"
+ ],
+ [
+  "artemis",
+  "artemis-o1",
+  "corrected",
+  "Pose 400 reprise de v3 (artemis-n1), une seule fois. Images revues de 0 à 238 s, toutes les 2 s autour des vues de la Lune. « WHAT WE'LL DO "
+ ],
+ [
+  "artemis",
+  "artemis-w1",
+  "corrected",
+  "Pose 720 reprise de v3 (artemis-n2), une seule fois. Les causes sont absentes de l'extrait : ASR YouTube, Whisper et journal de N2 ne contie"
+ ],
+ [
+  "artemis",
+  "artemis-m1",
+  "corrected",
+  "Pose 968 reprise de v3 (artemis-01), une seule fois. La parole « Airbus… provided the European service module for the Orion spacecraft » est"
+ ],
+ [
+  "artemis",
+  "artemis-m2",
+  "corrected",
+  "Pose 1176 reprise de v3 (artemis-n3), une seule fois. Le nom vient de l'ASR YouTube (538-544 s, bloc 67, Δ=632) et de la transcription de N2"
+ ],
+ [
+  "artemis",
+  "artemis-w3",
+  "corrected",
+  "Pose 1744 reprise de v3 (artemis-n4), une seule fois. Absent du direct de 2022. Attendu daté au 22/10/2026. Pages ouvertes : nasa.gov/humans"
+ ],
+ [
+  "artemis",
+  "artemis-w2",
+  "corrected",
+  "Pose 1872 reprise de v3 (artemis-n5), une seule fois. La vidéo s'arrête à T+7 min 45 s, sans rien sur la fin de mission. Pages ouvertes : le"
+ ],
+ [
+  "artemis",
+  "artemis-o2",
+  "corrected",
+  "Pose 2096 reprise de v3 (artemis-07), une seule fois. La Lune est confirmée de 30:44 à 30:56 : demi-disque éclairé par le bas, en haut à dro"
+ ],
+ [
+  "spring",
+  "spring-w1",
+  "accepted",
+  "La pose 432 existe en v3 (spring-n5) et n'est reprise qu'une fois. Réponse bien absente de la vidéo : j'ai relu le titre et tout le génériqu"
+ ],
+ [
+  "spring",
+  "spring-w2",
+  "accepted",
+  "La pose 372 existe en v3 (spring-06) et n'est reprise qu'une fois. La page studio.blender.org/projects/spring/pages/about/ porte mot pour mo"
+ ],
+ [
+  "spring",
+  "spring-w3",
+  "corrected",
+  "Pose 160 conforme et unique. J'ai vérifié chaque fait à sa source. La page des films range Cowboi et Overgrown en « In Development », Singul"
+ ],
+ [
+  "spring",
+  "spring-m1",
+  "accepted",
+  "Pose 96 conforme (spring-n1) et unique ; fenêtre [40, 88). Volet vidéo vérifié : la vallée est noyée sous une mer de nuages (images 00:22–00"
+ ],
+ [
+  "spring",
+  "spring-m2",
+  "accepted",
+  "Pose 222 conforme (spring-03) et unique ; fenêtre [160, 208). Volet vidéo vérifié avec ffmpeg à 1 image/s (166–185 s, 208–231 s) : masse lum"
+ ],
+ [
+  "spring",
+  "spring-o1",
+  "accepted",
+  "Pose 192 conforme (spring-02) et unique ; fenêtre [136, 184). Images ffmpeg revues : foulard ou collier rouge au cou du chien à 45 s, 52 s, "
+ ],
+ [
+  "spring",
+  "spring-o2",
+  "accepted",
+  "Pose 268 conforme (spring-04) et unique ; fenêtre [208, 256). Séquence ffmpeg vérifiée (128–147 s à 1 image/s, plus 139, 139,5, 140 et 140,5"
+ ],
+ [
+  "tears",
+  "tears-w1",
+  "accepted",
+  "Pose 624 conforme (tears-n5) et unique ; fenêtre [568, 616). Générique revu (09:48–12:12) : aucune année. L'image n° 351 (11:40) et la n° 35"
+ ],
+ [
+  "tears",
+  "tears-w2",
+  "accepted",
+  "Pose 432 conforme (tears-n3) et unique. Le modèle de caméra est absent de la vidéo : à 10:32 (image n° 317), le générique ne crédite que « 4"
+ ],
+ [
+  "tears",
+  "tears-w3",
+  "accepted",
+  "Pose 552 conforme (tears-07) et unique. Vérifié sur blender.org le 22/10/2026 : la page de téléchargement donne « Blender 5.2.3 LTS » « Rele"
+ ],
+ [
+  "tears",
+  "tears-m1",
+  "accepted",
+  "Pose 48 conforme (tears-01) et unique ; fenêtre [0, 40). Images 00:26–00:38 revues : pont au-dessus d'un canal, rambarde de fer, arbres et m"
+ ],
+ [
+  "tears",
+  "tears-m2",
+  "accepted",
+  "Pose 216 conforme (tears-03) et unique ; fenêtre [160, 208). Images revues : descente à la corde devant le grand orgue entre des piliers env"
+ ],
+ [
+  "tears",
+  "tears-o1",
+  "accepted",
+  "Pose 104 conforme (tears-n1) et unique ; fenêtre [48, 96), donc le bloc 40–48 est hors fenêtre. Images n° 21 (00:40) et n° 24 (00:46) agrand"
+ ],
+ [
+  "tears",
+  "tears-o2",
+  "accepted",
+  "Pose 144 conforme (tears-n2) et unique ; fenêtre [88, 136). Image n° 28 (00:54) agrandie : « SIMULATION READY... » en grandes lettres sur l'"
+ ],
+ [
+  "cnrs",
+  "cnrs-w1",
+  "accepted",
+  "La pose 96 reprend cnrs-01 de v3, une seule fois. La vidéo ne cite que « ChatGPT ou Gemini » (mots à 46,15–47,13 s), sans version. Les deux "
+ ],
+ [
+  "cnrs",
+  "cnrs-m1",
+  "accepted",
+  "La pose 176 reprend cnrs-n1, une seule fois. Part vidéo : d'après les horodatages par mot, « élé » commence à 94,18 s et « neurones » finit "
+ ],
+ [
+  "cnrs",
+  "cnrs-o1",
+  "corrected",
+  "Le fond est juste. Les images 07:54–08:14 montrent « Celles qui sont à la mode ! » à droite du titre, avec un trait fin (agrandissement de l"
+ ],
+ [
+  "cnrs",
+  "cnrs-w2",
+  "accepted",
+  "La pose 648 reprend cnrs-05, une seule fois. Le cours emploie « modèle de fondation » à 541,9 s, 544–549 s et 602–613 s, sans en donner l'or"
+ ],
+ [
+  "cnrs",
+  "cnrs-o2",
+  "accepted",
+  "La pose 696 reprend cnrs-n4, une seule fois. La diapositive 3/3 s'affiche de 05:34 à 07:52 (334–473 s) ; à 05:32, c'est encore la 2/3. Agran"
+ ],
+ [
+  "cnrs",
+  "cnrs-m2",
+  "accepted",
+  "La pose 792 reprend cnrs-06, une seule fois. Part vidéo, d'après les horodatages par mot : « super important » commence à 764,43 s, « OpenAI"
+ ],
+ [
+  "cnrs",
+  "cnrs-w3",
+  "accepted",
+  "La pose 864 reprend cnrs-n5, une seule fois. La vidéo parle de règles éthiques fixées par les concepteurs (12:08–13:13 et 14:01), sans aucun"
+ ],
+ [
+  "cuisine",
+  "cuisine-m1",
+  "corrected",
+  "La pose 144 reprend cuisine-n1, une seule fois. Part vidéo : « en général je prends dans la mâcreuse ou le paleron » (39,69–43,50 s, blocs ["
+ ],
+ [
+  "cuisine",
+  "cuisine-w1",
+  "accepted",
+  "La pose 200 reprend cuisine-02, une seule fois. La vidéo dit seulement « nous n'allons pas utiliser un vin de Bourgogne » (19,64–22,84 s) et"
+ ],
+ [
+  "cuisine",
+  "cuisine-w2",
+  "accepted",
+  "La pose 248 reprend cuisine-03, une seule fois. Dans la parole, « bouquet garni » ne vient jamais avec sa composition. À l'image, un fagot d"
+ ],
+ [
+  "cuisine",
+  "cuisine-o1",
+  "accepted",
+  "La pose 304 reprend cuisine-n2, une seule fois. Images vérifiées en pleine définition. À 03:34, gros plan sur la bouteille en plastique tran"
+ ],
+ [
+  "cuisine",
+  "cuisine-m2",
+  "corrected",
+  "La pose 424 reprend cuisine-n3, une seule fois. Part vidéo, d'après les horodatages par mot : « Plus ils sont saisis, moins ils rentrent d'e"
+ ],
+ [
+  "cuisine",
+  "cuisine-o2",
+  "corrected",
+  "La pose 456 reprend cuisine-05, une seule fois. Images vérifiées : le pot transparent de farine est posé devant lui dès 05:58 (avec l'incrus"
+ ],
+ [
+  "cuisine",
+  "cuisine-w3",
+  "corrected",
+  "La pose 728 reprend cuisine-n5, une seule fois. La vidéo ne parle pas des vendanges : seule l'Occitanie est nommée, à 23,94–30,19 s. À l'URL"
+ ]
+]

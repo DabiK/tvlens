@@ -1,0 +1,3062 @@
+{
+ "kennedy": [
+  {
+   "questionId": "kennedy-w1",
+   "askedQuestion": "Le vaisseau américain qui devait atteindre Vénus, dont parle Kennedy : comment s'appelait-il, et y est-il parvenu ?",
+   "poseS": 104,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "no — Kennedy ne nomme pas le vaisseau ; répondable avec le web",
+   "requiredFacts": [
+    {
+     "fact": "Ce vaisseau est la sonde Mariner 2 de la NASA (JPL), lancée le 27 août 1962.",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://science.nasa.gov/mission/mariner-2/"
+    },
+    {
+     "fact": "Elle y est parvenue : survol de Vénus le 14 décembre 1962, à environ 34 850 km ; premier succès d'une mission vers une autre planète.",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://www.jpl.nasa.gov/missions/mariner-2 ; https://science.nasa.gov/mission/mariner-2/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Contexte dit dans la vidéo : « if America's new spacecraft succeeds in reaching Venus, we will have literally reached the stars before midnight tonight ». « Venus » à 85,46-86,15 s, bloc 10 [80,88), Δ=16 ; « tonight » finit à 91,08 s, bloc 11 [88,96), Δ=8 : A, récent (fenêtre [48,96)). Kennedy ne nomme pas le vaisseau.",
+     "startS": 81.33,
+     "endS": 91.08,
+     "modality": "speech",
+     "availability": "A (récent)"
+    },
+    {
+     "fact": "Au moment du discours (12 septembre 1962), Mariner 2 était en route depuis le 27 août. Son jumeau Mariner 1 avait été perdu au lancement en juillet 1962. C'est un survol, pas un atterrissage. Distance : 34 854 km selon la NASA, 34 773 km selon d'autres sources.",
+     "modality": "web",
+     "availability": "extérieur"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://science.nasa.gov/mission/mariner-2/",
+     "title": "Mariner 2 — NASA Science",
+     "consultedAt": "2026-10-22",
+     "extract": "the spacecraft flew by Venus at a range of 21,660 miles (34,854 kilometers) at 19:59:28 UT Dec. 14, 1962",
+     "supports": "Survol de Vénus le 14/12/1962 et distance ; la même page donne le lancement le 27 août 1962 (« Launch Date: Aug. 27, 1962 »)."
+    },
+    {
+     "url": "https://www.jpl.nasa.gov/missions/mariner-2",
+     "title": "Mariner 2 — NASA Jet Propulsion Laboratory",
+     "consultedAt": "2026-10-22",
+     "extract": "Mariner 2 became the first successful mission to another planet when it flew by Venus on December 14, 1962.",
+     "supports": "Identité du vaisseau et réussite du survol."
+    }
+   ],
+   "inventionTraps": [
+    "Mauvais vaisseau : Mariner 1 (échec au lancement), Venera (soviétique), Pioneer Venus (1978), Magellan (1989).",
+    "Atterrissage sur Vénus, ou échec de la mission.",
+    "Date fausse (1961, 1963, ou le soir même du discours, en prenant « avant minuit ce soir » au pied de la lettre).",
+    "Nom du vaisseau présenté comme dit par Kennedy dans la vidéo.",
+    "Anticipation : la Lune ou « why climb the highest mountain », dits après 405 s, présentés comme déjà dits."
+   ],
+   "abstentionPolicy": "La vidéo ne nomme pas le vaisseau. Sans outil web, une abstention qui le dit (« Kennedy ne le nomme pas, je ne peux pas vérifier en ligne ») vaut s0, justifiée. Une réponse de mémoire juste mais sans source est plafonnée à s1. Un fait faux vaut s0 (invention).",
+   "rubric": {
+    "s3": "En français : Mariner 2, qui a réussi son survol de Vénus le 14 décembre 1962 (le mois et l'année suffisent), avec une source citée (NASA, JPL ou autre source fiable), sans présenter le nom comme dit dans la vidéo.",
+    "s2": "Mariner 2 et la réussite, sourcés, sans date ou avec une date vague (« fin 1962 »). Ou bien réponse complète et sourcée, rédigée en anglais.",
+    "s1": "Faits justes mais sans source (connaissance générale). Ou bien seulement le nom Mariner 2, sourcé, sans dire si la mission a réussi.",
+    "s0": "Vaisseau faux, atterrissage ou échec affirmé, nom attribué à Kennedy, contenu inventé ou hors sujet. Ou bien abstention (justifiée si l'outil web manque)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-o1",
+   "askedQuestion": "Au tout début de l'extrait, comment Kennedy était-il cadré, et qu'y avait-il au premier plan, devant le pupitre ?",
+   "poseS": 128,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "yes — seulement en réexaminant les images 0-48 s (inspect_clip)",
+   "inspectInterval": "0-48 s : plan large et rambarde qui traverse le bas de l'image devant le pupitre de 0 à 46 s ; resserrement progressif de 44 à 58 s ; ensuite seul un tronçon de rambarde reste dans le coin inférieur gauche",
+   "requiredFacts": [
+    {
+     "fact": "De 0 à environ 44 s, le plan est plus large qu'ensuite : Kennedy paraît plus petit, on voit toute la tribune, le pied du pupitre et, en haut, les gradins supérieurs du stade (ces gradins restent en partie visibles ensuite, ils ne suffisent pas à distinguer le début).",
+     "startS": 0,
+     "endS": 44,
+     "modality": "visual",
+     "availability": "A (blocs 0-5, fin 48, Δ=80 ≥ 10) ; ancien (fenêtre [72,120))"
+    },
+    {
+     "fact": "Au premier plan, une rambarde (garde-corps) claire, à tubes horizontaux, traverse tout le bas de l'image devant le pupitre, de 0 à 46 s. La caméra se resserre progressivement de 44 à 58 s : dès 48 s, la rambarde ne passe plus devant le pupitre ; un tronçon reste visible dans le coin inférieur gauche, à gauche du pupitre (en partie masqué par les plis du drapeau à partir de 98 s), jusque vers 242 s, puis disparaît (absent dès 254 s).",
+     "startS": 0,
+     "endS": 46,
+     "modality": "visual",
+     "availability": "A ; ancien"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Éléments présents dans tout l'extrait, donc sans valeur pour répondre : drapeau américain à gauche du pupitre, sceau présidentiel sur le pupitre, micros, hommes assis à droite, foule du stade.",
+     "startS": 0,
+     "endS": 418,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Journal de N2 (blocs [0,48)) : « foule », « drapeau », « emblème », « pupitre », sans rambarde ni cadrage. La transcription n'en dit rien.",
+     "startS": 0,
+     "endS": 48,
+     "modality": "visual",
+     "availability": "contrôle d'absence"
+    },
+    {
+     "fact": "Fenêtre récente à la pose [72,120) : plan rapproché, seul un bout de rambarde dans le coin inférieur gauche. Une réponse tirée de ces images (« une barre en bas à gauche ») ne décrit pas le début.",
+     "startS": 72,
+     "endS": 120,
+     "modality": "visual",
+     "availability": "A (récent) ; contrôle"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« Même cadrage qu'ensuite » ou « rien de particulier ».",
+    "Kennedy « tenant le drapeau » (erreur répétée par la vision de N2 : le drapeau est sur une hampe).",
+    "Éléments inventés au premier plan : photographes, caméras, cordon de police, foule debout, estrade décorée.",
+    "Description de la fenêtre récente (plan rapproché) donnée comme celle du début."
+   ],
+   "abstentionPolicy": "Ni la transcription ni les descriptions de la vision ne contiennent la réponse ; inspect_clip sur 0-48 s la donne. Le système dispose de l'outil, donc une abstention vaut s0, non justifiée (justifiée seulement si inspect_clip est absent de la configuration testée).",
+   "rubric": {
+    "s3": "Plan plus large au début (tribune entière visible, Kennedy plus petit) ET rambarde, barrière ou garde-corps au premier plan, devant le pupitre. Le moment du resserrement (progressif de 44 à 58 s) est admis, pas exigé.",
+    "s2": "La rambarde ou barrière au premier plan, devant le pupitre, sans rien dire du cadrage. Ou bien le cadrage plus large avec un premier plan approximatif mais compatible (« le bord de l'estrade avec une balustrade »).",
+    "s1": "Seulement « plan plus large, on voyait davantage la tribune », sans la rambarde.",
+    "s0": "Même plan qu'ensuite, élément inventé, Kennedy tenant le drapeau, description du plan récent, ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-m1",
+   "askedQuestion": "Dans quelle ville Kennedy dit-il se trouver, et dans quel lieu précis et à quelle date a-t-il prononcé ce discours ?",
+   "poseS": 160,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial — la ville est dans la vidéo (A, récent) ; le lieu et la date demandent le web",
+   "requiredFacts": [
+    {
+     "fact": "Vidéo : « But this city of Houston, this state of Texas, this country of the United States… ». « Houston » 124,85-125,60 s et « Texas » 126,99-127,51 s, bloc 15 [120,128), Δ=32 ; « United States » se termine à 130,27 s, bloc 16 [128,136), Δ=24. A, récent (fenêtre [104,152)).",
+     "startS": 124.3,
+     "endS": 130.27,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Extérieur : le discours a été prononcé au stade de l'université Rice (Rice Stadium), à Houston.",
+     "modality": "web",
+     "availability": "extérieur, absent de l'extrait",
+     "source": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/ ; https://news.rice.edu/news/2022/reflecting-president-kennedys-moonshot-speech-60-years-later"
+    },
+    {
+     "fact": "Extérieur : le 12 septembre 1962.",
+     "modality": "web",
+     "availability": "extérieur, absent de l'extrait",
+     "source": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Foule d'environ 35 000 personnes selon la légende NASA ; d'autres sources disent environ 40 000.",
+     "modality": "web",
+     "availability": "extérieur",
+     "source": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/"
+    },
+    {
+     "fact": "Image : stade bondé, pupitre au sceau présidentiel ; la vision de N2 dit « stade », sans nom.",
+     "startS": 0,
+     "endS": 152,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "« We choose to go to the Moon » et « Why does Rice play Texas? » viennent plus loin dans le discours, hors de l'extrait de 7 min.",
+     "modality": "web",
+     "availability": "extérieur"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.nasa.gov/image-article/president-john-f-kennedy-rice-university/",
+     "title": "President John F. Kennedy at Rice University — NASA",
+     "consultedAt": "2026-10-22",
+     "extract": "President Kennedy speaks before a crowd of 35,000 people at Rice University in the football field on Sept. 12, 1962.",
+     "supports": "Lieu (terrain de football de l'université Rice), date, taille de la foule."
+    },
+    {
+     "url": "https://news.rice.edu/news/2022/reflecting-president-kennedys-moonshot-speech-60-years-later",
+     "title": "Reflecting on President Kennedy's 'Moonshot' speech 60 years later — Rice News (6 septembre 2022)",
+     "consultedAt": "2026-10-22",
+     "extract": "When President John F. Kennedy spoke those seven words on Sept. 12, 1962 to a Rice Stadium echoing with cheers",
+     "supports": "Rice Stadium et date du 12/09/1962."
+    }
+   ],
+   "inventionTraps": [
+    "« Rice » présenté comme dit par Kennedy dans l'extrait (il ne le dit pas avant 7:00).",
+    "Lieu faux : Astrodome (inauguré en 1965), université de Houston, Manned Spacecraft Center ou Johnson Space Center, Dallas, Austin.",
+    "Date fausse : 25 mai 1961 (discours au Congrès), 1963, 1969.",
+    "Ville fausse ou confondue avec l'État (« au Texas » seul n'est pas la ville)."
+   ],
+   "abstentionPolicy": "Le volet vidéo (Houston) est disponible et récent : l'omettre ou s'abstenir sur lui vaut au plus s1. Sans web, dire « Houston, mais la vidéo ne précise ni le lieu ni la date et je ne peux pas vérifier » vaut s1, avec abstention justifiée sur le volet extérieur. Chaque volet compte.",
+   "rubric": {
+    "s3": "En français : Houston (dit par Kennedy), au stade de l'université Rice, le 12 septembre 1962, ces deux faits extérieurs attribués à une source et non à la vidéo.",
+    "s2": "Houston plus un seul des deux faits extérieurs (lieu ou date), sourcé. Ou bien les trois éléments justes mais les faits extérieurs sans source. Ou bien réponse complète en anglais.",
+    "s1": "Houston seul (abstention justifiée sur le reste). Ou bien Rice et la date, sourcés, sans la ville dite dans la vidéo.",
+    "s0": "Ville, lieu ou date faux ; Rice ou la date présentés comme dits dans la vidéo ; contenu inventé ; abstention totale."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-m2",
+   "askedQuestion": "Sur son échelle, quand Kennedy situe-t-il la pénicilline, et en réalité, qui l'a découverte et en quelle année ?",
+   "poseS": 216,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial — le repère est dans la vidéo (A, ancien : mémoire) ; découvreur et année par le web",
+   "requiredFacts": [
+    {
+     "fact": "Vidéo : « Only last week did we develop penicillin and television and nuclear power ». « last week » 74,61-75,37 s, « penicillin » 76,51-77,44 s, bloc 9 [72,80), Δ=136 ; « power » se termine à 80,17 s, bloc 10 [80,88), Δ=128. A, ancien (fenêtre [160,208)).",
+     "startS": 74.36,
+     "endS": 80.17,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Extérieur : la pénicilline a été découverte par Alexander Fleming, à l'hôpital St Mary's de Londres, en septembre 1928.",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Calcul (non sourcé) : sur l'échelle de Kennedy, 50 000 ans deviennent 50 ans, donc une semaine vaut environ 19 ans ; 1962 − 1928 = 34 ans, soit moins de deux « semaines ». L'ordre de grandeur est cohérent.",
+     "modality": "calcul",
+     "availability": "dérivé"
+    },
+    {
+     "fact": "Prix Nobel de médecine 1945 partagé par Fleming, Florey et Chain ; production de masse pendant la Seconde Guerre mondiale.",
+     "modality": "web",
+     "availability": "extérieur"
+    },
+    {
+     "fact": "Le journal de N2 résume les blocs [72,104) par « il parle des avions, de la pénicilline, de la télévision et de l'énergie nucléaire », sans le repère temporel.",
+     "startS": 72,
+     "endS": 104,
+     "modality": "speech",
+     "availability": "contrôle"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.pbs.org/newshour/health/the-real-story-behind-the-worlds-first-antibiotic",
+     "title": "The real story behind the world's first antibiotic — PBS NewsHour (Howard Markel, 27 septembre 2013)",
+     "consultedAt": "2026-10-22",
+     "extract": "Penicillin was discovered in London in September of 1928. As the story goes, Dr. Alexander Fleming, the bacteriologist on duty at St. Mary's Hospital",
+     "supports": "Découvreur (Fleming), lieu (St Mary's, Londres) et date (septembre 1928)."
+    }
+   ],
+   "inventionTraps": [
+    "« Le mois dernier » : c'est le repère de l'électricité, du téléphone, de l'automobile et de l'avion (« Last month », 66,05-73,86 s).",
+    "« Hier », « cette année » (l'imprimerie) ou « il y a deux mois » (la machine à vapeur).",
+    "Découvreur faux (Pasteur, Florey seul) ou année fausse (1945, années 1940, 1938).",
+    "Fleming ou 1928 présentés comme dits par Kennedy."
+   ],
+   "abstentionPolicy": "Le repère est ancien à la pose : il faut le retrouver en mémoire (get_transcript ou search_moments). Sans web, « la semaine dernière ; je ne peux pas vérifier la découverte » vaut s1, avec abstention justifiée sur le volet extérieur. Chaque volet compte.",
+   "rubric": {
+    "s3": "En français : « la semaine dernière » (avec la télévision et l'énergie nucléaire, admis), puis Alexander Fleming en 1928, attribués à une source.",
+    "s2": "« La semaine dernière » plus Fleming et 1928 justes mais sans source. Ou bien « la semaine dernière » plus un seul des deux faits extérieurs, sourcé. Ou bien réponse complète en anglais.",
+    "s1": "« La semaine dernière » seul (abstention justifiée sur le reste). Ou bien Fleming et 1928, sourcés, avec un repère vidéo absent ou faux.",
+    "s0": "Repère faux et fait extérieur faux ou absent ; découvreur ou année faux ; faits extérieurs attribués à Kennedy ; abstention totale."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-o2",
+   "askedQuestion": "Quand Kennedy parlait de la pénicilline et du vaisseau vers Vénus, qu'est-il arrivé au drapeau à côté de lui ?",
+   "poseS": 248,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "yes — en situant le passage par la parole puis en réexaminant les images 72-100 s (inspect_clip)",
+   "inspectInterval": "72-100 s : drapeau soulevé par le vent d'environ 78 à 94 s",
+   "requiredFacts": [
+    {
+     "fact": "Vers 78-94 s, le vent soulève le drapeau américain, fixé sur une hampe à gauche du pupitre : il se déploie largement derrière Kennedy, occupe presque toute la moitié gauche de l'image et passe derrière sa tête ; on voit les étoiles du canton vers 88-92 s. Il retombe le long de sa hampe vers 94-96 s.",
+     "startS": 78,
+     "endS": 96,
+     "modality": "visual",
+     "availability": "A (blocs 9-11 [72,96), Δ=152) ; ancien (fenêtre [192,240))"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Repères de parole pour situer le passage : « penicillin » 76,51-77,44 s ; « Venus » 85,46-86,15 s ; « reached the stars before midnight tonight » 88,00-90,49 s.",
+     "startS": 76.51,
+     "endS": 90.49,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Kennedy tourne brièvement la tête vers sa droite (gauche de l'image) vers 82-90 s.",
+     "startS": 82,
+     "endS": 90,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Journal de N2 (blocs [72,96)) : « drapeau américain en arrière-plan », « tient le drapeau » ; ni vent ni déploiement.",
+     "startS": 72,
+     "endS": 96,
+     "modality": "visual",
+     "availability": "contrôle d'absence"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "Kennedy « tient » ou « brandit » le drapeau (erreur de la vision de N2).",
+    "Drapeau tombé, retiré, déchiré ou remplacé.",
+    "« Rien, le drapeau est resté immobile » : c'est ce que montrent les images récentes.",
+    "Bonne description attribuée à un autre moment (par exemple pendant la citation de Bradford)."
+   ],
+   "abstentionPolicy": "La transcription situe le passage (pénicilline, Vénus) ; seul inspect_clip sur 72-100 s montre le drapeau. Le système dispose de l'outil, donc une abstention vaut s0, non justifiée (justifiée seulement si inspect_clip est absent de la configuration testée).",
+   "rubric": {
+    "s3": "Le vent a soulevé et déployé le drapeau, qui s'est étalé derrière Kennedy (largement, jusque derrière sa tête), puis est retombé. « On voyait ses étoiles » est admis, pas exigé.",
+    "s2": "« Le drapeau a flotté au vent » ou « a bougé », sans l'ampleur ni la position. Ou bien bonne description située un bloc trop tôt ou trop tard.",
+    "s1": "Mouvement évoqué avec incertitude (« il semble bouger »), ou description juste attribuée à un autre moment du discours.",
+    "s0": "Rien, drapeau immobile, Kennedy tenant le drapeau, invention, ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-w2",
+   "askedQuestion": "Qui était ce William Bradford que Kennedy cite ?",
+   "poseS": 272,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "no — la vidéo donne seulement « 1630 » et « la fondation de la colonie de Plymouth » ; l'identité vient du web",
+   "requiredFacts": [
+    {
+     "fact": "Un des Pères pèlerins, séparatiste anglais, arrivé en 1620 sur le Mayflower.",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://en.wikipedia.org/wiki/William_Bradford_(governor)"
+    },
+    {
+     "fact": "Gouverneur de la colonie de Plymouth, par intermittence, pendant une trentaine d'années entre 1621 et 1657.",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://en.wikipedia.org/wiki/William_Bradford_(governor)"
+    },
+    {
+     "fact": "Auteur de la chronique « Of Plymouth Plantation », dont vient la phrase citée par Kennedy.",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://www.pilgrimhall.org/decision-to-emigrate-to-america/ ; https://en.wikipedia.org/wiki/William_Bradford_(governor)"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Contexte dit dans la vidéo : « William Bradford, speaking in 1630, of the founding of the Plymouth Bay Colony, said that all great and honorable actions are accompanied with great difficulties… » 151,06-170,94 s, blocs 18-21 [144,176), Δ ≥ 96 : A, ancien (fenêtre [216,264)).",
+     "startS": 151.06,
+     "endS": 170.94,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Né vers 1590 dans le Yorkshire, mort en 1657 ; exil à Leyde avant le départ. La chronique couvre 1620-1646 ; sa première partie a été écrite en 1630. La phrase citée vient du passage sur la décision d'émigrer.",
+     "modality": "web",
+     "availability": "extérieur",
+     "source": "https://en.wikipedia.org/wiki/William_Bradford_(governor)"
+    },
+    {
+     "fact": "Kennedy dit « Plymouth Bay Colony » ; la colonie s'appelle Plymouth Colony, distincte de la Massachusetts Bay Colony fondée en 1630.",
+     "modality": "web",
+     "availability": "extérieur, non requis"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+     "title": "William Bradford (governor) — Wikipedia",
+     "consultedAt": "2026-10-22",
+     "extract": "emigrated to the Plymouth Colony on the Mayflower in 1620 … Governor of Plymouth Colony intermittently for about 30 years between 1621 and 1657",
+     "supports": "Mayflower 1620 ; gouverneur de Plymouth de 1621 à 1657."
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/William_Bradford_(governor)",
+     "title": "William Bradford (governor) — Wikipedia",
+     "consultedAt": "2026-10-22",
+     "extract": "His journal Of Plymouth Plantation covered the years from 1620 to 1646 in Plymouth.",
+     "supports": "Auteur d'Of Plymouth Plantation."
+    },
+    {
+     "url": "https://www.pilgrimhall.org/decision-to-emigrate-to-america/",
+     "title": "Decision to Emigrate to America — Pilgrim Hall Museum",
+     "consultedAt": "2026-10-22",
+     "extract": "all great & honourable actions are accompanied with great difficulties (William Bradford, Of Plymouth Plantation)",
+     "supports": "La phrase citée par Kennedy vient d'Of Plymouth Plantation."
+    }
+   ],
+   "inventionTraps": [
+    "Gouverneur ou fondateur de la Massachusetts Bay Colony, ou fondateur de Boston (c'est John Winthrop, 1630).",
+    "Capitaine du Mayflower (Christopher Jones), président ou père fondateur des États-Unis.",
+    "Homonyme : William Bradford l'imprimeur (1663-1752).",
+    "Plymouth fondée en 1630 (c'est 1620 ; 1630 est la date que Kennedy donne à la parole de Bradford).",
+    "Faits extérieurs présentés comme dits par Kennedy (il ne dit ni « gouverneur » ni « Mayflower »)."
+   ],
+   "abstentionPolicy": "La vidéo ne dit pas qui il était. Sans web, une abstention qui le dit vaut s0, justifiée ; restituer seulement ce que Kennedy dit (1630, la fondation de la colonie de Plymouth) vaut s1. Une réponse de mémoire juste mais sans source est plafonnée à s1.",
+   "rubric": {
+    "s3": "En français : gouverneur de la colonie de Plymouth, plus au moins un autre fait requis (passager du Mayflower en 1620, ou auteur d'Of Plymouth Plantation), attribués à une source.",
+    "s2": "Un seul fait extérieur requis, sourcé. Ou bien réponse complète et sourcée en anglais.",
+    "s1": "Faits justes sans source. Ou bien seulement le contexte dit par Kennedy (« il parlait en 1630 de la fondation de la colonie de Plymouth »), présenté comme tel.",
+    "s0": "Identité fausse (Winthrop, Massachusetts Bay, imprimeur, capitaine), fait extérieur attribué à Kennedy, invention. Ou bien abstention (justifiée si l'outil web manque)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "kennedy-w3",
+   "askedQuestion": "Kennedy dit qu'il n'y a encore aucun conflit dans l'espace. Aujourd'hui, combien de pays ont signé les accords Artemis, le cadre de la NASA pour une exploration pacifique ?",
+   "poseS": 408,
+   "category": "W",
+   "freshness": "actualité",
+   "toolExpected": "web",
+   "answerableAtPose": "no — absent de la vidéo (accords de 2020) ; répondable avec le web, réponse datée",
+   "requiredFacts": [
+    {
+     "fact": "Au 22/10/2026 : 77 pays signataires. Le 77e, l'Ouzbékistan, a signé le 19 octobre 2026, lors d'une cérémonie à Samarcande.",
+     "modality": "web",
+     "availability": "extérieur, actualité",
+     "source": "https://www.nasa.gov/artemis-accords/ ; https://www.nasa.gov/organizations/oiir/artemis-accords/nasa-welcomes-uzbekistan-as-newest-artemis-accords-signatory/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Contexte dit dans la vidéo : « There is no strife, no prejudice, no national conflict in outer space as yet » 385,13-392,60 s, blocs 48-49 [384,400), Δ=16 et 8 : A, récent (fenêtre [352,400)). « peaceful cooperation » (402,45-404,20 s, bloc 50) est C à la pose.",
+     "startS": 385.13,
+     "endS": 392.6,
+     "modality": "speech",
+     "availability": "A (récent)"
+    },
+    {
+     "fact": "Les accords ont été établis en 2020 par la NASA, le Département d'État et sept autres pays fondateurs ; ils posent des principes communs et des activités « exclusivement pacifiques ».",
+     "modality": "web",
+     "availability": "extérieur",
+     "source": "https://www.nasa.gov/artemis-accords/"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.nasa.gov/artemis-accords/",
+     "title": "Artemis Accords — NASA",
+     "consultedAt": "2026-10-22",
+     "extract": "On October 19, 2026, Uzbekistan became the 77th nation to sign the accords.",
+     "supports": "Total de 77 signataires et date du dernier."
+    },
+    {
+     "url": "https://www.nasa.gov/organizations/oiir/artemis-accords/nasa-welcomes-uzbekistan-as-newest-artemis-accords-signatory/",
+     "title": "NASA Welcomes Uzbekistan as Newest Artemis Accords Signatory — NASA (20 octobre 2026)",
+     "consultedAt": "2026-10-22",
+     "extract": "The Republic of Uzbekistan became the 77th signatory of the Artemis Accords during a ceremony in Samarkand on Monday",
+     "supports": "77e signataire ; cérémonie à Samarcande."
+    }
+   ],
+   "inventionTraps": [
+    "Total plus ancien (tiré des connaissances du modèle) présenté comme actuel, sans date.",
+    "Confusion avec le traité de l'espace de 1967 (environ 115 à 118 États parties) ou avec un traité de l'ONU.",
+    "Accords Artemis présentés comme évoqués par Kennedy (anachronisme : 2020).",
+    "Chine ou Russie données comme signataires."
+   ],
+   "abstentionPolicy": "Absent de la vidéo. Sans web, une abstention qui le dit vaut s0, justifiée. Un total daté de la mémoire du modèle, signalé comme possiblement dépassé et sans prétendre être actuel, est traité comme une abstention justifiée. Un total ancien présenté comme actuel est une invention. Une réponse plus récente que le 22/10/2026 est acceptée si elle est sourcée et datée.",
+   "rubric": {
+    "s3": "77 pays au 19-20 octobre 2026 (ou un total plus récent, sourcé et daté), avec la source et la date. Citer l'Ouzbékistan comme dernier signataire est admis, pas exigé.",
+    "s2": "77, sourcé mais sans date. Ou bien un total exact à une date récente antérieure, sourcé et daté (par exemple 76 avant le 19 octobre). Ou bien réponse complète en anglais.",
+    "s1": "Ordre de grandeur juste (« plus de 70 ») sans source ni date.",
+    "s0": "Nombre faux présenté comme actuel, confusion avec le traité de 1967, accords attribués à la vidéo, invention. Ou bien abstention (justifiée si l'outil web manque)."
+   },
+   "confidence": "high"
+  }
+ ],
+ "artemis": [
+  {
+   "questionId": "artemis-o1",
+   "askedQuestion": "Dans le petit film du début, quel titre s'est affiché en grand sur une vue de la surface de la Lune ?",
+   "poseS": 400,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "yes — seulement en réexaminant les images 80-96 s (inspect_clip)",
+   "inspectInterval": "80-96 s : titre visible sur les images 1:28 et 1:30 (environ 87-91 s)",
+   "requiredFacts": [
+    {
+     "fact": "Le titre « WHAT WE'LL DO » s'affiche en lettres blanches sur une vue rasante de la surface lunaire, images 1:28 et 1:30 (environ 87-91 s). Absent à 1:26 (Lune seule) et à 1:32 (archives d'Apollo 11).",
+     "startS": 87,
+     "endS": 91,
+     "modality": "onscreen-text",
+     "availability": "A (bloc 11 [88,96), Δ=304) ; ancien (fenêtre [344,392))"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Avant : la Lune apparaît depuis le noir (1:20-1:26). Après : archives d'Apollo 11 (écusson « APOLLO 11 », « July 1969 ») à 1:32, puis une navette au décollage et des astronautes.",
+     "startS": 80,
+     "endS": 96,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Aucune parole sur le titre : silence d'environ 86,3 à 91,9 s, puis « We'll use the lessons for more than 50 years of peaceful exploration… ».",
+     "startS": 86.3,
+     "endS": 99.2,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Journal de N2 : bloc [80,88) « vue de la Terre et de la Lune » ; bloc [88,96) « surface lunaire, en noir et blanc ». Aucun texte relevé.",
+     "startS": 80,
+     "endS": 96,
+     "modality": "visual",
+     "availability": "contrôle d'absence"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« ARTEMIS » : logo affiché vers 3:34 sur fond étoilé, à 6:30 sur fond violet et à 30:30 (1830 s) sur un triangle blanc, jamais sur la Lune.",
+    "« Why the Moon » : petit texte d'interface à 0:00, pas un titre en grand.",
+    "Titre fabriqué à partir de la parole : « Artemis generation », « To stay », « Moon to Mars », « We are going ».",
+    "« U.S. SPACE & ROCKET CENTER » ou « SPACE CENTER HOUSTON » : bandeaux des duplex à 6:32-7:30."
+   ],
+   "abstentionPolicy": "Ni la transcription ni les descriptions de la vision ne contiennent le titre ; inspect_clip sur 80-96 s le donne. Le système dispose de l'outil, donc une abstention vaut s0, non justifiée (justifiée seulement si inspect_clip est absent de la configuration testée).",
+   "rubric": {
+    "s3": "« WHAT WE'LL DO », ou une traduction fidèle (« Ce que nous allons faire »), avec ou sans le texte anglais.",
+    "s2": "Texte approchant (« WHAT WE WILL DO », « WHAT WE DO »), ou bon titre situé sur un autre fond.",
+    "s1": "Dit qu'un titre en lettres blanches apparaît sur la Lune, sans pouvoir le lire.",
+    "s0": "Titre faux ou inventé (ARTEMIS, Why the Moon…), ou abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-w1",
+   "askedQuestion": "Pourquoi le décollage a-t-il pris du retard cette nuit-là ?",
+   "poseS": 720,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "no — l'extrait parle de « plusieurs retards » sans en donner les causes ; répondable avec le web",
+   "requiredFacts": [
+    {
+     "fact": "Une petite fuite d'hydrogène liquide sur une vanne du lanceur mobile (la vanne qui réapprovisionne l'étage central) ; une « red crew » de trois personnes est allée sur le pas de tir, pendant le remplissage, resserrer la vanne.",
+     "modality": "web",
+     "availability": "extérieur, absent de l'extrait",
+     "source": "https://www.nasa.gov/humans-in-space/artemis-red-crew-team-helps-enable-successful-launch ; https://spaceflightnow.com/2022/11/16/nasa-calls-on-red-crew-to-fix-leak-near-mostly-fueled-artemis-moon-rocket/"
+    },
+    {
+     "fact": "Un commutateur Ethernet défaillant du polygone de la Space Force, à Cape Canaveral, celui qui transmet les signaux de destruction de sauvegarde de la fusée, a dû être remplacé ; le polygone restait « no go » tant que la réparation n'était pas vérifiée.",
+     "modality": "web",
+     "availability": "extérieur, absent de l'extrait",
+     "source": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Contexte dit dans la vidéo : « We've had a number of delays that have put us off the T-0, but we are starting to track to a T-0 close to around a quarter till top of the hour » (ASR YouTube 544,8-564,4 s, blocs [544,568), Δ ≥ 152 : A, ancien) ; la fenêtre de deux heures court jusqu'à 3 h 04 (587,3-593,2 s).",
+     "startS": 544.8,
+     "endS": 593.2,
+     "modality": "speech",
+     "availability": "A (ancien)"
+    },
+    {
+     "fact": "Décollage finalement à 1 h 47 HNE le 16 novembre 2022 (NASA). La fenêtre de deux heures s'était ouverte à 1 h 04 : déduit de la vidéo, qui la fait courir jusqu'à 3 h 04 (587,3-593,2 s).",
+     "modality": "web",
+     "availability": "extérieur",
+     "source": "https://www.nasa.gov/mission/artemis-i/"
+    },
+    {
+     "fact": "Le cyclage des vannes d'hydrogène puis d'oxygène de l'étage supérieur, dit à 612,8-638,8 s, est une étape normale de configuration, pas la cause des retards.",
+     "startS": 612.8,
+     "endS": 638.8,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.nasa.gov/humans-in-space/artemis-red-crew-team-helps-enable-successful-launch",
+     "title": "Artemis Red Crew Team Helps Enable Successful Launch — NASA",
+     "consultedAt": "2026-10-22",
+     "extract": "teams encountered a small leak on a hydrogen valve inside the mobile launcher.",
+     "supports": "Fuite d'hydrogène sur une vanne du lanceur mobile ; intervention de la red crew."
+    },
+    {
+     "url": "https://spaceflightnow.com/2022/11/16/nasa-calls-on-red-crew-to-fix-leak-near-mostly-fueled-artemis-moon-rocket/",
+     "title": "NASA calls on “red crew” to fix leak near mostly fueled Artemis moon rocket — Spaceflight Now (16 novembre 2022)",
+     "consultedAt": "2026-10-22",
+     "extract": "to torque nuts around a leaky hydrogen valve inside a compartment on the moon rocket's mobile launch platform.",
+     "supports": "Geste de la red crew sur la vanne."
+    },
+    {
+     "url": "https://www.airandspaceforces.com/ussf-was-almost-no-go-for-artemis-moon-launch-had-to-replace-a-faulty-switch/",
+     "title": "USSF Was Almost ‘No Go’ for Artemis Moon Launch—Had to Replace a Faulty Switch — Air & Space Forces Magazine (17 novembre 2022)",
+     "consultedAt": "2026-10-22",
+     "extract": "a failed ethernet switch in our system at Cape Canaveral Space Force Station … provides the signals required to send command destruct signals",
+     "supports": "Commutateur Ethernet de la Space Force à remplacer."
+    },
+    {
+     "url": "https://www.nasa.gov/mission/artemis-i/",
+     "title": "Artemis I — NASA",
+     "consultedAt": "2026-10-22",
+     "extract": "at 1:47 a.m. EST on Nov. 16, 2022",
+     "supports": "Heure du décollage (fait facultatif)."
+    }
+   ],
+   "inventionTraps": [
+    "Causes des tentatives précédentes présentées comme celles de cette nuit : capteur de température d'un moteur (29 août 2022), fuite d'hydrogène du 3 septembre 2022, ouragans Ian et Nicole.",
+    "Le cyclage des vannes de l'étage supérieur (dit dans la vidéo) présenté comme la cause des retards.",
+    "Météo, panne de moteur ou problème d'Orion inventés.",
+    "Causes présentées comme dites dans la vidéo."
+   ],
+   "abstentionPolicy": "L'extrait ne donne pas les causes. Sans web, une abstention qui le dit vaut s0, justifiée ; restituer seulement « plusieurs retards, un nouveau T0 vers moins le quart » vaut s1. Une réponse de mémoire juste mais sans source est plafonnée à s1. D'autres causes vraies, sourcées et propres à cette nuit sont admises en plus.",
+   "rubric": {
+    "s3": "En français : la fuite d'hydrogène sur une vanne du lanceur mobile, réparée par la red crew, ET le commutateur Ethernet ou l'équipement du polygone de la Space Force à remplacer, attribués à des sources.",
+    "s2": "Une seule des deux causes, sourcée. Ou bien les deux, sourcées, en anglais.",
+    "s1": "Causes justes sans source. Ou bien seulement le contexte de la vidéo (plusieurs retards, nouveau T0), sans cause.",
+    "s0": "Cause fausse, ou cause d'une autre tentative présentée comme celle de cette nuit ; causes présentées comme dites dans la vidéo ; invention. Ou bien abstention (justifiée si l'outil web manque)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-m1",
+   "askedQuestion": "Les employés d'Airbus qu'on a vus applaudir en Allemagne : qu'ont-ils fourni pour cette mission, et à quoi sert cet élément pendant le vol ?",
+   "poseS": 968,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial — l'élément fourni est dans la vidéo (A, ancien : mémoire) ; ses fonctions viennent du web",
+   "requiredFacts": [
+    {
+     "fact": "Vidéo : « these are employees of Airbus. Airbus is the main contractor for the European Space Agency, and together they provided the European service module for the Orion spacecraft » (ASR YouTube 463,6-474,9 s ; Whisper 462,6-473,6 s), blocs 57-59 [456,480), Δ=488 : A, ancien (fenêtre [912,960)).",
+     "startS": 463.6,
+     "endS": 474.9,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Extérieur : le module de service européen fournit à Orion l'électricité (ailes solaires de 19 m d'envergure), l'eau, l'oxygène et l'azote, la propulsion (trois types de moteurs, pour pousser et orienter le vaisseau) et la régulation thermique (radiateurs, échangeurs).",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Orion/European_Service_Module"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Bandeau à l'écran « AIRBUS - BREMEN, GERMANY » de 7:32 à 8:00 (452-480 s) : salle de Brême, employés debout qui applaudissent.",
+     "startS": 452,
+     "endS": 480,
+     "modality": "onscreen-text",
+     "availability": "A"
+    },
+    {
+     "fact": "Le module est construit par Airbus Defence and Space, maître d'œuvre de l'ESA.",
+     "modality": "web",
+     "availability": "extérieur",
+     "source": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Orion/European_Service_Module"
+    },
+    {
+     "fact": "Journal de N2 (blocs [448,480)) : « salle de conférence », applaudissements, sans Airbus ni Brême ; le résumé de bloc transmet toutefois la parole « Airbus… European service module ».",
+     "startS": 448,
+     "endS": 480,
+     "modality": "visual",
+     "availability": "contrôle"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Orion/European_Service_Module",
+     "title": "European Service Module — ESA",
+     "consultedAt": "2026-10-22",
+     "extract": "It provides electricity, water, oxygen and nitrogen … Three types of engine push Orion to its destination and can turn it in all directions",
+     "supports": "Électricité, eau, oxygène, azote et propulsion."
+    },
+    {
+     "url": "https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Orion/European_Service_Module",
+     "title": "European Service Module — ESA",
+     "consultedAt": "2026-10-22",
+     "extract": "Radiators and heat exchangers keep the astronauts and equipment at a comfortable temperature.",
+     "supports": "Régulation thermique."
+    }
+   ],
+   "inventionTraps": [
+    "Airbus aurait fourni la capsule Orion (le module d'équipage n'est pas européen), les boosters, l'étage central ou les moteurs RS-25.",
+    "Fonctions inventées : bouclier thermique, tour de sauvetage, parachutes, amarrage lunaire.",
+    "Fonctions présentées comme dites dans la vidéo (le commentaire ne les décrit pas).",
+    "Pays ou lieu faux pour les employés (France, Toulouse, Houston)."
+   ],
+   "abstentionPolicy": "Le volet vidéo est ancien à la pose : il faut le retrouver en mémoire (search_moments « Airbus »). Sans web, « le module de service européen d'Orion ; je ne peux pas vérifier ses fonctions » vaut s1, avec abstention justifiée sur le volet extérieur. Chaque volet compte.",
+   "rubric": {
+    "s3": "En français : le module de service européen d'Orion (vidéo), plus au moins trois de ses fonctions (propulsion, électricité ou panneaux solaires, eau, oxygène ou air, régulation thermique), attribuées à une source.",
+    "s2": "Le module de service plus une ou deux fonctions sourcées. Ou bien trois fonctions justes sans source. Ou bien réponse complète en anglais.",
+    "s1": "Le module de service seul (abstention justifiée sur les fonctions). Ou bien des fonctions justes et sourcées avec un élément fourni vague ou faux.",
+    "s0": "Élément fourni faux, fonctions inventées ou attribuées à la vidéo, abstention totale."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-m2",
+   "askedQuestion": "Comment s'appelle la directrice de lancement qui a donné le feu vert pour reprendre le compte à rebours, et qu'a-t-elle de particulier dans l'histoire de la NASA ?",
+   "poseS": 1176,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial — nom et rôle dans la vidéo (A, anciens : mémoire) ; le fait historique vient du web",
+   "requiredFacts": [
+    {
+     "fact": "Vidéo : elle s'appelle Charlie Blackwell-Thompson : « you're looking now live inside firing room one where launch director Charlie Blackwell Thompson is overseeing her launch team » (ASR YouTube 534,6-547,4 s ; nom vers 538-544 s, bloc 67 [536,544), Δ=632). A, ancien (fenêtre [1120,1168)).",
+     "startS": 534.6,
+     "endS": 547.4,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Vidéo : c'est la directrice de lancement qui donne le « go » : « at this time I give you a go to resume count and launch Artemis 1 » (ASR YouTube 944,8-955,8 s, blocs [944,960), Δ ≥ 216). A, ancien.",
+     "startS": 944.8,
+     "endS": 955.8,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Extérieur : elle est la première femme directrice de lancement de la NASA, nommée à ce poste en janvier 2016.",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Avant le go : « on behalf of all the men and women across our great nation who have worked to bring this hardware together… and for the Artemis generation, this is for you » (932,0-947,8 s).",
+     "startS": 932,
+     "endS": 947.8,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Elle a ensuite dirigé les opérations de lancement d'Artemis II, le 1er avril 2026.",
+     "modality": "web",
+     "availability": "extérieur",
+     "source": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/"
+    },
+    {
+     "fact": "Images : la vision de N2 décrit à [944,960) « une femme en uniforme NASA » et « une opératrice » qui donne l'autorisation, sans nom.",
+     "startS": 944,
+     "endS": 960,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+     "title": "Charlie Blackwell-Thompson — NASA (biographie)",
+     "consultedAt": "2026-10-22",
+     "extract": "Appointed to the position in January 2016, Blackwell-Thompson is NASA's first female launch director.",
+     "supports": "Première femme directrice de lancement de la NASA, nommée en janvier 2016."
+    },
+    {
+     "url": "https://www.nasa.gov/people/kennedy-biographies-blackwell-thompson/",
+     "title": "Charlie Blackwell-Thompson — NASA (biographie)",
+     "consultedAt": "2026-10-22",
+     "extract": "she directed the countdown and liftoff for NASA's Artemis I mission in November 2022",
+     "supports": "Son rôle dans le lancement d'Artemis I."
+    }
+   ],
+   "inventionTraps": [
+    "Personne confondue : le directeur des essais (NTD, Jeff Spaulding), les commentatrices Megan, Leah Martin ou Leah Cheshier, ou la mission management team.",
+    "Fait historique faux : première femme astronaute, première administratrice de la NASA, première femme à diriger le contrôle de mission.",
+    "« Première femme directrice de lancement » présenté comme dit dans la vidéo (le commentaire ne le dit pas).",
+    "Nommée pour Apollo ou pour la navette, ou date de nomination fausse."
+   ],
+   "abstentionPolicy": "Les deux faits vidéo sont anciens à la pose : il faut les retrouver en mémoire (search_moments « launch director », « Blackwell »). Sans web, donner le nom et le rôle et dire que la particularité ne peut pas être vérifiée vaut s1, avec abstention justifiée sur le volet extérieur. Chaque volet compte.",
+   "rubric": {
+    "s3": "En français : Charlie Blackwell-Thompson, plus « première femme directrice de lancement de la NASA », attribué à une source (NASA). La date de 2016 est admise, pas exigée.",
+    "s2": "Nom juste plus fait extérieur juste mais sans source. Ou bien nom approximatif (« Charlie Thompson », « Blackwell ») plus fait sourcé. Ou bien réponse complète en anglais.",
+    "s1": "Nom seul (abstention justifiée sur le reste). Ou bien le fait extérieur sourcé sans le nom.",
+    "s0": "Personne fausse, fait extérieur faux ou attribué à la vidéo, invention, abstention totale."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-w3",
+   "askedQuestion": "Depuis ce lancement, où en est aujourd'hui le programme Artemis ?",
+   "poseS": 1744,
+   "category": "W",
+   "freshness": "actualité",
+   "toolExpected": "web",
+   "answerableAtPose": "no — le direct date de 2022 ; répondable avec le web, réponse datée",
+   "requiredFacts": [
+    {
+     "fact": "Au 22/10/2026 : Artemis II a volé avec équipage. Lancement le 1er avril 2026, amerrissage le 10 avril 2026 ; équipage Reid Wiseman, Victor Glover, Christina Koch (NASA) et Jeremy Hansen (Agence spatiale canadienne). Premier survol habité de la Lune en plus de 50 ans.",
+     "modality": "web",
+     "availability": "extérieur, actualité",
+     "source": "https://www.nasa.gov/mission/artemis-ii/ ; https://www.nasa.gov/humans-in-space/artemis/"
+    },
+    {
+     "fact": "Artemis III, prévue en 2027, est un vol habité en orbite terrestre basse pour essayer les atterrisseurs commerciaux, sans alunissage.",
+     "modality": "web",
+     "availability": "extérieur, actualité",
+     "source": "https://www.nasa.gov/mission/artemis-iii/ ; https://www.nasa.gov/humans-in-space/artemis/"
+    },
+    {
+     "fact": "Le premier alunissage habité du programme est prévu avec Artemis IV, en 2028.",
+     "modality": "web",
+     "availability": "extérieur, actualité",
+     "source": "https://www.nasa.gov/humans-in-space/artemis/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Contexte dit dans la vidéo : « and liftoff of Artemis 1. We rise together back to the moon and beyond » (ASR YouTube 1627,3-1636,5 s), Δ=104 : A, ancien (fenêtre [1688,1736)).",
+     "startS": 1627.3,
+     "endS": 1636.5,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Artemis V est aussi annoncée pour 2028. Les boosters d'Artemis III ont été empilés le 30 septembre 2026 (mise à jour NASA du 13 octobre). La NASA a annoncé un point presse le 23 octobre 2026 sur l'accélération d'Artemis : une réponse postérieure, sourcée et datée, est acceptée.",
+     "modality": "web",
+     "availability": "extérieur, actualité",
+     "source": "https://www.nasa.gov/humans-in-space/artemis/ ; https://www.nasa.gov/news-release/nasa-to-discuss-artemis-acceleration-status-of-upcoming-moon-missions/"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.nasa.gov/humans-in-space/artemis/",
+     "title": "Artemis — NASA (Moon to Mars)",
+     "consultedAt": "2026-10-22",
+     "extract": "In April 2026, Artemis II launched on a nearly 10-day voyage around the Moon.",
+     "supports": "Artemis II effectuée en avril 2026."
+    },
+    {
+     "url": "https://www.nasa.gov/humans-in-space/artemis/",
+     "title": "Artemis — NASA (Moon to Mars)",
+     "consultedAt": "2026-10-22",
+     "extract": "NASA's first crewed Moon landing under the Artemis program will take place in 2028.",
+     "supports": "Premier alunissage habité d'Artemis en 2028 (Artemis IV) ; la même page annonce Artemis III pour 2027."
+    },
+    {
+     "url": "https://www.nasa.gov/mission/artemis-ii/",
+     "title": "Artemis II — NASA (mise à jour du 6 octobre 2026)",
+     "consultedAt": "2026-10-22",
+     "extract": "Artemis II: NASA's First Crewed Lunar Flyby in 50 Years",
+     "supports": "Titre de la page : premier survol habité de la Lune en 50 ans. La fiche de la même page donne le lancement le 1er avril 2026, l'amerrissage le 10 avril 2026 et l'équipage (Wiseman, Glover, Koch, Hansen)."
+    },
+    {
+     "url": "https://www.nasa.gov/mission/artemis-iii/",
+     "title": "Artemis III — NASA (mise à jour du 19 octobre 2026)",
+     "consultedAt": "2026-10-22",
+     "extract": "Artemis III will carry out a series of objectives in low Earth orbit designed to demonstrate critical systems",
+     "supports": "Artemis III en orbite terrestre basse, sans alunissage."
+    },
+    {
+     "url": "https://www.nasa.gov/news-release/nasa-to-discuss-artemis-acceleration-status-of-upcoming-moon-missions/",
+     "title": "NASA to Discuss Artemis Acceleration, Status of Upcoming Moon Missions — NASA (14 octobre 2026)",
+     "consultedAt": "2026-10-22",
+     "extract": "at 2 p.m. EDT, Friday, Oct. 23, at the agency's Kennedy Space Center in Florida.",
+     "supports": "Point presse du 23/10/2026 sur l'accélération d'Artemis (fait facultatif) : l'état attendu peut changer après la date de référence."
+    }
+   ],
+   "inventionTraps": [
+    "État périmé présenté comme actuel : Artemis II « à venir » ou « prévue en 2025 ou 2026 », Artemis III présentée comme l'alunissage de 2026 ou 2027.",
+    "Des astronautes auraient déjà remarché sur la Lune, ou Artemis II s'y serait posée.",
+    "Équipage faux ou incomplet, dates fausses.",
+    "Faits présentés comme dits dans la vidéo (le direct date de novembre 2022)."
+   ],
+   "abstentionPolicy": "Absent de la vidéo. Sans web, une abstention qui le dit vaut s0, justifiée. Un état daté de la mémoire du modèle, signalé comme possiblement dépassé et sans prétendre être actuel, est traité comme une abstention justifiée. Un état ancien présenté comme actuel est une invention. Une réponse plus récente que le 22/10/2026 est acceptée si elle est sourcée et datée.",
+   "rubric": {
+    "s3": "Réponse datée (au 22/10/2026 ou date de la source) et sourcée : Artemis II faite en avril 2026 (survol habité), Artemis III en 2027 en orbite terrestre sans alunissage, premier alunissage visé en 2028 avec Artemis IV. Une mise à jour postérieure, sourcée et datée, est acceptée.",
+    "s2": "Deux des trois points, sourcés et datés. Ou bien les trois, sourcés mais sans date. Ou bien réponse complète en anglais.",
+    "s1": "Un seul point juste et sourcé. Ou bien les trois justes sans source.",
+    "s0": "État périmé ou faux présenté comme actuel, faits attribués à la vidéo, invention. Ou bien abstention (justifiée si l'outil web manque)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-w2",
+   "askedQuestion": "Comment cette mission s'est-elle terminée, et combien de temps a-t-elle duré ?",
+   "poseS": 1872,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "no — la fin de la mission est postérieure au direct ; répondable avec le web",
+   "requiredFacts": [
+    {
+     "fact": "Orion a amerri dans l'océan Pacifique, à l'ouest de la Basse-Californie, le 11 décembre 2022 (9 h 40 PST, 12 h 40 HNE).",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://www.nasa.gov/centers-and-facilities/hq/splashdown-nasas-orion-returns-to-earth-after-historic-moon-mission/"
+    },
+    {
+     "fact": "La mission a duré environ 25,5 jours (25 jours, 10 heures et 53 minutes).",
+     "modality": "web",
+     "availability": "extérieur, absent de la vidéo",
+     "source": "https://www.nasa.gov/centers-and-facilities/hq/splashdown-nasas-orion-returns-to-earth-after-historic-moon-mission/ ; https://www.nasa.gov/mission/artemis-i/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Plus de 1,4 million de milles parcourus et près de 270 000 milles de la Terre au plus loin (page de l'amerrissage) ; 268 563 milles selon la page Artemis I ; mission sans équipage.",
+     "modality": "web",
+     "availability": "extérieur",
+     "source": "https://www.nasa.gov/centers-and-facilities/hq/splashdown-nasas-orion-returns-to-earth-after-historic-moon-mission/ ; https://www.nasa.gov/mission/artemis-i/"
+    },
+    {
+     "fact": "Contexte à la pose : vol en cours, quatre moteurs RS-25 à pleine poussée, « three engine press » (ASR YouTube 1852,0-1869,3 s).",
+     "startS": 1852,
+     "endS": 1869.3,
+     "modality": "speech",
+     "availability": "A (récent pour [1848,1864) ; [1864,1872) est C)"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.nasa.gov/centers-and-facilities/hq/splashdown-nasas-orion-returns-to-earth-after-historic-moon-mission/",
+     "title": "Splashdown! NASA's Orion Returns to Earth After Historic Moon Mission — NASA (11 décembre 2022)",
+     "consultedAt": "2026-10-22",
+     "extract": "splashed down in the Pacific Ocean at 9:40 a.m. PST on Sunday, Dec. 11, after a 25.5 day mission to the Moon.",
+     "supports": "Lieu, date et durée."
+    },
+    {
+     "url": "https://www.nasa.gov/mission/artemis-i/",
+     "title": "Artemis I — NASA",
+     "consultedAt": "2026-10-22",
+     "extract": "25 days, 10 hours, and 53 minutes.",
+     "supports": "Durée exacte de la mission."
+    }
+   ],
+   "inventionTraps": [
+    "Amerrissage dans l'Atlantique, retour sur une piste ou au Kazakhstan.",
+    "Confusion avec Artemis II (environ 10 jours, amerrissage le 10 avril 2026, avec équipage).",
+    "Durée fausse (une semaine, 42 jours) ou date fausse.",
+    "Fin de mission présentée comme dite dans la vidéo, qui s'arrête 7 min 45 s après le décollage."
+   ],
+   "abstentionPolicy": "La vidéo s'arrête pendant la montée. Sans web, une abstention qui le dit vaut s0, justifiée. Une réponse de mémoire juste mais sans source est plafonnée à s1.",
+   "rubric": {
+    "s3": "En français : amerrissage dans le Pacifique (au large de la Basse-Californie ou de San Diego, admis) le 11 décembre 2022, après environ 25,5 jours, avec une source.",
+    "s2": "Deux des trois éléments (lieu, date, durée), sourcés. Ou bien réponse complète en anglais.",
+    "s1": "Faits justes sans source. Ou bien un seul élément sourcé.",
+    "s0": "Élément faux, confusion avec Artemis II, faits attribués à la vidéo, invention. Ou bien abstention (justifiée si l'outil web manque)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "artemis-o2",
+   "askedQuestion": "Juste avant que l'animation de la fusée ne remplace pour la première fois les images réelles, la caméra a montré quelques secondes un ciel noir : qu'y voyait-on ?",
+   "poseS": 2096,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "yes — seulement en réexaminant les images 1840-1864 s (inspect_clip)",
+   "inspectInterval": "1840-1864 s : Lune visible de 30:44 à 30:56 (environ 1843-1857 s), animation à partir de 30:58",
+   "requiredFacts": [
+    {
+     "fact": "La Lune, en haut à droite du cadre, sous forme de demi-disque éclairé par le bas (proche du dernier quartier), sur fond noir, de 30:44 à 30:56 (environ 1843-1857 s).",
+     "startS": 1843,
+     "endS": 1857,
+     "modality": "visual",
+     "availability": "A (blocs [1840,1864), Δ=232) ; ancien (fenêtre [2040,2088))"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Un minuscule point lumineux (la fusée, très lointaine) se déplace plus bas dans le cadre ; la frise des étapes (LIFTOFF … TLI BURN) est en bas de l'image.",
+     "startS": 1843,
+     "endS": 1857,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Avant : caméra de poursuite avec données vertes (VIS-WFOV, N28, W80, R ≈ 218-320 km), 29:52-30:42. Après : animation de SLS à partir de 30:58.",
+     "startS": 1792,
+     "endS": 1860,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Journal de N2 (blocs [1840,1864)) : « flamme isolée » qui se déplace vers la droite, « données de position » ; aucune mention de la Lune. Parole du moment : « three engine press », sans la Lune.",
+     "startS": 1840,
+     "endS": 1864,
+     "modality": "visual",
+     "availability": "contrôle d'absence"
+    },
+    {
+     "fact": "Second intermède réel, à ne pas confondre : de 32:06 à 32:12 (environ 1926-1932 s), ciel noir avec seulement un petit point lumineux (la fusée), sans la Lune, puis retour de l'animation à 32:14. Journal de N2 [1920,1936) : « flamme isolée », T+0:05:07.",
+     "startS": 1926,
+     "endS": 1933,
+     "modality": "visual",
+     "availability": "A ; contrôle"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "Seulement « la fusée » ou « des flammes » (reprise de la description de N2).",
+    "La Terre, le Soleil, Orion, une étoile brillante.",
+    "Pleine lune ou croissant fin affirmés.",
+    "Ciel étoilé chargé, ou description de l'animation (présente dans la fenêtre récente) donnée comme réponse.",
+    "Description du second intermède (32:06-32:12, point lumineux seul) donnée comme réponse : la question vise le premier passage à l'animation (30:58) ; vaut s1 comme « seulement le petit point lumineux »."
+   ],
+   "abstentionPolicy": "Ni la transcription ni les descriptions de la vision ne contiennent la réponse ; inspect_clip sur 1840-1864 s la donne. Le système dispose de l'outil, donc une abstention vaut s0, non justifiée (justifiée seulement si inspect_clip est absent de la configuration testée).",
+   "rubric": {
+    "s3": "La Lune, en demi-disque (« demi-lune », « quartier », « à moitié éclairée »), dans le haut de l'image. Le petit point de la fusée est admis, pas exigé.",
+    "s2": "La Lune sans forme précise, avec une forme approximative (« gibbeuse », « croissant ») ou mal placée.",
+    "s1": "Un astre ou un disque lumineux non identifié. Ou bien seulement le petit point lumineux dans le noir.",
+    "s0": "Terre, Soleil, flammes ou fusée seules, pleine lune affirmée, invention, ou abstention."
+   },
+   "confidence": "high"
+  }
+ ],
+ "spring": [
+  {
+   "questionId": "spring-w1",
+   "askedQuestion": "Quand ce court métrage a-t-il été publié ?",
+   "poseS": 432,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "web-only : aucune date à l'écran ni dans le générique ; la réponse vient d'une source en ligne.",
+   "requiredFacts": [
+    {
+     "fact": "Spring a été publié le 4 avril 2019 : première diffusion en ligne, sur YouTube, ce jour-là (Wikipédia). BlenderNation annonce la sortie le même jour.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://en.wikipedia.org/wiki/Spring_(2019_film) ; https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Le film est présenté par « Blender Animation Studio » (texte à l'écran, 00:18–00:22,5, bloc 16–24, A, ancien). Selon la page du film, l'équipe a utilisé la version de développement de Blender 2.80 pendant toute la production.",
+     "startS": 18,
+     "endS": 22.5,
+     "modality": "onscreen-text",
+     "availability": "A",
+     "source": "vidéo ; https://studio.blender.org/projects/spring/pages/about/"
+    },
+    {
+     "fact": "Rien dans la vidéo ne date le film : le titre « SPRING » (06:58–07:05, bloc 416–424, B), puis le générique (07:08–07:40 : réalisateur, équipe, « Licensed as Creative Commons Attribution 4.0 », « cloud.blender.org/spring ») ne portent aucune année. Le générique vient après la pose (C).",
+     "startS": 418,
+     "endS": 460,
+     "modality": "onscreen-text",
+     "availability": "B/C",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Wikipédia signale un prix : meilleur court métrage au festival Mundos Digitales (13 juillet 2019).",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://en.wikipedia.org/wiki/Spring_(2019_film)"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+     "title": "Spring (2019 film) — Wikipedia",
+     "consultedAt": "22/10/2026",
+     "extract": "On April 4, 2019, the film was first released on YouTube.",
+     "supports": "Date de publication (fait requis)."
+    },
+    {
+     "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+     "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie — BlenderNation, 4 avril 2019",
+     "consultedAt": "22/10/2026",
+     "extract": "Spring is the latest short film produced by Blender Animation Studio.",
+     "supports": "Annonce de la sortie datée du 4 avril 2019 (date de l'article)."
+    }
+   ],
+   "inventionTraps": [
+    "Une autre année (2018, 2020) ou un autre mois ; confusion avec Hero (2018) ou Coffee Run (2020), autres films du studio.",
+    "Affirmer que la date est affichée dans le film ou au générique.",
+    "Donner la date de sortie d'une version du logiciel Blender à la place de celle du film.",
+    "Inventer une sortie en salles ou une avant-première datée sans source."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Sans accès web (cas actuel de TVLens), une abstention qui le dit (« le film n'affiche pas de date ; il faudrait vérifier en ligne ») est une abstention justifiée : s0, codée justified. Une date donnée de mémoire n'est pas une abstention : elle est notée sur son exactitude et sur sa source.",
+   "rubric": {
+    "s3": "4 avril 2019 (ou « début avril 2019 »), publication en ligne ou sur YouTube, attribué à une source (Wikipédia, BlenderNation, site du Blender Studio…), sans prétendre l'avoir lu dans la vidéo. Réponse en français.",
+    "s2": "Date juste mais sans source ; ou seulement « avril 2019 » ou « 2019 » avec une source. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Seulement l'année 2019, sans source ; ou date juste présentée comme lue dans le film (invention d'attribution) ; ou date juste noyée parmi des faits extérieurs faux.",
+    "s0": "Date fausse (invention), abstention (justified si l'absence d'accès web est dite), « impossible à savoir » sans explication, ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-w2",
+   "askedQuestion": "Qu'est-ce qui a inspiré l'histoire de ce film à son réalisateur ?",
+   "poseS": 372,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "web-only : le film, sans dialogue, ne dit rien de son origine ; le nom du réalisateur n'apparaît qu'au générique (07:08), après la pose.",
+   "requiredFacts": [
+    {
+     "fact": "Selon la page du film sur le site du Blender Studio, Spring a été écrit et réalisé par Andy Goralczyk, qui s'est inspiré de son enfance dans les montagnes d'Allemagne.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://studio.blender.org/projects/spring/pages/about/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Synopsis officiel : l'histoire d'une bergère et de son chien qui affrontent des esprits anciens pour que continue le cycle de la vie.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://studio.blender.org/projects/spring/pages/about/"
+    },
+    {
+     "fact": "« directed by ANDY GORALCZYK » s'affiche au générique à 07:08 (bloc 424–432) : après la pose, C. Le nom donné d'après une source web est permis s'il est attribué.",
+     "startS": 428,
+     "endS": 431,
+     "modality": "onscreen-text",
+     "availability": "C",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Contexte à la pose : la mer de nuages s'illumine d'une lumière dorée, puis la vallée apparaît verte et ensoleillée (05:38–05:59, blocs 336–360, A).",
+     "startS": 338,
+     "endS": 360,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://studio.blender.org/projects/spring/pages/about/",
+     "title": "Spring — About, Blender Studio",
+     "consultedAt": "22/10/2026",
+     "extract": "inspired by his childhood in the mountains of Germany",
+     "supports": "Inspiration du réalisateur (fait requis) ; la même page dit le film « written and directed by Andy Goralczyk »."
+    }
+   ],
+   "inventionTraps": [
+    "Une autre inspiration présentée comme déclarée : conte ou légende précis, Alpes suisses ou autrichiennes, Scandinavie, Japon, films du studio Ghibli, etc.",
+    "Une citation ou une interview du réalisateur inventée.",
+    "Un autre réalisateur : Hjalti Hjalmarsson (directeur de l'animation), Francesco Siddi ou Ton Roosendaal (production).",
+    "Prétendre que le film lui-même dit d'où vient l'idée, ou que le nom du réalisateur a été vu avant la pose."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Sans accès web, l'abstention qui le dit est justifiée : s0, codée justified. Une inspiration avancée de mémoire est notée sur son exactitude et sur sa source.",
+   "rubric": {
+    "s3": "L'enfance du réalisateur dans les montagnes d'Allemagne, attribuée à une source (page du film, site du Blender Studio). Le nom d'Andy Goralczyk est bienvenu mais pas exigé. Réponse en français.",
+    "s2": "Réponse juste sans source ; ou « son enfance à la montagne » sans le pays, avec une source. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Un seul élément juste (les montagnes, ou l'enfance) mêlé à une invention ; ou réponse juste présentée comme dite dans le film.",
+    "s0": "Inspiration inventée, abstention (justified si l'absence d'accès web est dite) ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-w3",
+   "askedQuestion": "Le Blender Studio, qui présente ce film, a-t-il sorti un film plus récent ? Lequel, et que prépare-t-il aujourd'hui ?",
+   "poseS": 160,
+   "category": "W",
+   "freshness": "actualité",
+   "toolExpected": "web",
+   "answerableAtPose": "web-only : fait d'actualité ; la vidéo ne donne que le nom du studio (00:18–00:22,5).",
+   "requiredFacts": [
+    {
+     "fact": "Au 22/10/2026, le film le plus récent du Blender Studio est Singularity, daté 2026 sur la page des films du studio : une « aventure spatiale picturale » présentée en ligne en mai 2026 (billet « Singularity premiere » du 11 mai ; Digital Production, 15/05/2026). C'est le premier film du studio en 4K HDR, réalisé par Andy Goralczyk, déjà réalisateur de Spring.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://studio.blender.org/films/ ; https://studio.blender.org/blog/singularity-premiere/ ; https://digitalproduction.com/2026/05/15/blender-singularity-lands-in-4k-hdr/"
+    },
+    {
+     "fact": "Au 22/10/2026, la page des films du studio affiche deux projets « In Development » : Cowboi, un film d'action, et Overgrown, présenté par le studio comme son premier long métrage.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://studio.blender.org/films/ ; https://studio.blender.org/projects/overgrown/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Films du studio entre Spring (2019) et Singularity : Coffee Run (2020), Sprite Fright (2021), Charge (2022), Wing It! (2023).",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://studio.blender.org/films/"
+    },
+    {
+     "fact": "Données évolutives au 22/10/2026 : la page du projet Overgrown indique une campagne de soutien arrêtée à 88 % de son objectif de 7 000 soutiens, ce qui permet de présenter le projet à des acheteurs extérieurs ; la page nomme elle-même deux co-réalisateurs, Hjalti Hjálmarsson et Rik Schutte. La page de Cowboi nomme Pablo Fournier comme réalisateur.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://studio.blender.org/projects/overgrown/ ; https://studio.blender.org/projects/cowboi/"
+    },
+    {
+     "fact": "Dans la vidéo, le studio est nommé par le texte « Blender Animation Studio presents » (00:18–00:22,5, bloc 16–24, A, ancien).",
+     "startS": 18,
+     "endS": 22.5,
+     "modality": "onscreen-text",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://studio.blender.org/films/",
+     "title": "Films — Blender Studio",
+     "consultedAt": "22/10/2026",
+     "extract": "Film Highlights Cowboi In Development Overgrown In Development Singularity 2026 Wing It! 2023",
+     "supports": "Bloc « Film Highlights » de la page (libellés successifs, sauts de ligne retirés) : Cowboi et Overgrown « In Development », Singularity 2026, Wing It! 2023. Porte les deux faits requis : le film le plus récent et les projets en cours."
+    },
+    {
+     "url": "https://studio.blender.org/blog/singularity-premiere/",
+     "title": "Singularity Premiere — blog du Blender Studio (billet daté « 11 May », sans année ; 2026 d'après la page : film daté 2026, commentaires des 12–14 mai 2026)",
+     "consultedAt": "22/10/2026",
+     "extract": "Blender Studio is proud to present Singularity: a painterly space adventure set in a universe before the beginning of our time.",
+     "supports": "Présentation en ligne de Singularity en mai 2026 ; le billet le dit aussi premier film du studio en 4K HDR."
+    },
+    {
+     "url": "https://digitalproduction.com/2026/05/15/blender-singularity-lands-in-4k-hdr/",
+     "title": "Blender: Singularity lands in 4K HDR — Digital Production, 15 mai 2026",
+     "consultedAt": "22/10/2026",
+     "extract": "Singularity is out as a short film in 4K HDR, framed as a painterly space adventure directed by Andy Goralczyk.",
+     "supports": "Sortie de Singularity en mai 2026 et réalisateur."
+    },
+    {
+     "url": "https://studio.blender.org/projects/overgrown/",
+     "title": "Overgrown — Blender Studio",
+     "consultedAt": "22/10/2026",
+     "extract": "After 20 years of short films, Blender Studio is ready to tackle an ambitious new project: a feature film!",
+     "supports": "Overgrown, projet de long métrage en développement."
+    }
+   ],
+   "inventionTraps": [
+    "Donner Wing It! (2023) ou Charge (2022) comme film le plus récent : réponse périmée présentée comme actuelle.",
+    "Donner comme film le plus récent un projet que la page range hors des films : DOGWALK (rubrique « Interactive », un jeu), Project Storm ou Impulse Purchase (« Project Highlights »).",
+    "Inventer un titre ou une date ; dire que Singularity est encore en production, ou que Cowboi ou Overgrown sont sortis.",
+    "Attribuer Singularity à un autre réalisateur.",
+    "Présenter ces informations comme données par la vidéo.",
+    "Confondre le Blender Studio avec une version du logiciel Blender."
+   ],
+   "abstentionPolicy": "Fait d'actualité absent de la vidéo. Sans accès web, l'abstention qui le dit est justifiée : s0, codée justified. Une réponse de mémoire doit être datée : périmée mais honnêtement datée, elle vaut s1 ; périmée et présentée comme actuelle, c'est une invention (s0). Une situation plus récente que le 22/10/2026 est acceptée si elle est sourcée et datée.",
+   "rubric": {
+    "s3": "Singularity (2026, mis en ligne en mai 2026) comme film le plus récent, ET au moins un projet en développement (Cowboi ou Overgrown), avec une date (« au … ») et une source (site du Blender Studio ou presse). Une situation plus récente, sourcée et datée, est acceptée. Réponse en français.",
+    "s2": "Singularity juste sans les projets en cours ; ou les deux volets justes sans date ni source. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Réponse périmée mais honnêtement datée (« à ma connaissance, Wing It! en 2023 ») ; ou seulement un projet en cours ; ou faits justes présentés comme tirés de la vidéo.",
+    "s0": "Titre ou date inventés, réponse périmée présentée comme actuelle, abstention (justified si l'absence d'accès web est dite) ou hors sujet."
+   },
+   "confidence": "medium"
+  },
+  {
+   "questionId": "spring-m1",
+   "askedQuestion": "Depuis la crête, la fille et son chien regardent la vallée : qu'est-ce qui la remplit, et quel phénomène météo produit ce genre de paysage ?",
+   "poseS": 96,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial-without-web : le volet vidéo est disponible (A) ; le volet météo demande une source extérieure.",
+   "requiredFacts": [
+    {
+     "fact": "La vallée est remplie d'une mer de nuages : une couche continue de nuages bas, vue d'en haut, d'où émergent les crêtes. La fille, de dos, la regarde à côté du chien (01:00–01:03, bloc 56–64, A) ; plan large de la fille, bâton en main, et du chien au bord de la falaise, au-dessus de la mer de nuages (01:12–01:17, bloc 72–80, A). La même vallée sous les nuages ouvrait le film (00:22–00:40, blocs 16–40, A, anciens).",
+     "startS": 60,
+     "endS": 78,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Une mer de nuages se forme lors d'une inversion de température : par temps anticyclonique calme, surtout en hiver, l'air froid s'accumule dans les vallées sous de l'air plus doux en altitude ; la vapeur d'eau y condense en nuages bas (stratus), que le soleil bas d'hiver dissipe mal (Météo-France).",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages ; https://meteofrance.com/actualites-et-dossiers/actualites/climat/relief-des-temperatures-minimales-plus-froides-dans-les-vallees"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Le synopsis du film publié par BlenderNation commence par une vallée couverte d'une mer de nuages, figée dans l'hiver.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/"
+    },
+    {
+     "fact": "Ce que N2 a décrit : « un lac bleu et des nuages bas » (bloc 24–32), « paysage montagneux brumeux » (56–64), « promontoire nuageux … montagnes enveloppées de brume » (72–80). Une réponse « brouillard » ou « brume épaisse » est une approximation acceptable du volet vidéo ; « un lac » est faux.",
+     "startS": 24,
+     "endS": 80,
+     "modality": "visual",
+     "availability": "A",
+     "source": "journal N2 (lignes vlm)"
+    },
+    {
+     "fact": "Bien après la pose, la mer de nuages s'éclaire d'une lumière dorée puis se dissipe sur une vallée verte (05:38–05:59, C).",
+     "startS": 338,
+     "endS": 360,
+     "modality": "visual",
+     "availability": "C",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://meteofrance.com/actualites-et-dossiers/comprendre-la-meteo/la-mer-de-nuages",
+     "title": "La mer de nuages — Météo-France",
+     "consultedAt": "22/10/2026",
+     "extract": "l'air froid a tendance à s'accumuler dans les vallées et se retrouve ainsi surplombé par de l'air beaucoup plus doux",
+     "supports": "Mécanisme de la mer de nuages ; la page lie aussi le phénomène à l'anticyclone hivernal et aux stratus."
+    },
+    {
+     "url": "https://meteofrance.com/actualites-et-dossiers/actualites/climat/relief-des-temperatures-minimales-plus-froides-dans-les-vallees",
+     "title": "Relief : des températures minimales plus froides dans les vallées qu'en altitude — Météo-France, 15/02/2023",
+     "consultedAt": "22/10/2026",
+     "extract": "On appelle ce phénomène « inversion de température ».",
+     "supports": "Nom du phénomène : inversion de température."
+    },
+    {
+     "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+     "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie — BlenderNation, 4 avril 2019",
+     "consultedAt": "22/10/2026",
+     "extract": "Covered by a sea of clouds, a valley stands still in the icy grip of winter.",
+     "supports": "Fait facultatif : le synopsis du film parle lui-même d'une mer de nuages."
+    }
+   ],
+   "inventionTraps": [
+    "« Un lac » ou « la mer » au sens propre (N2 a écrit « lac bleu » pour le bloc 24–32).",
+    "De la neige, de la fumée, un incendie.",
+    "Mécanisme inversé (air chaud en bas, air froid au-dessus), ou attribué au vent, au foehn, à la pollution, ou à une cause magique présentée comme météorologique.",
+    "Présenter l'explication météo comme donnée par le film, qui n'a ni dialogue ni texte sur ce point.",
+    "Anticiper la fonte et la vallée verte (05:38 et après, C)."
+   ],
+   "abstentionPolicy": "Le volet vidéo est disponible (A) : une abstention totale vaut s0, non justifiée. Sans accès web, le volet météo peut être déclaré non vérifiable : c'est une abstention justifiée sur ce volet, et le volet vidéo seul vaut s1. Une explication juste donnée de mémoire, sans source, est créditée mais plafonne la note à s2.",
+   "rubric": {
+    "s3": "Volet vidéo : une mer de nuages (ou nuages bas, brouillard épais) qui remplit la vallée sous la crête. Volet extérieur : inversion de température — air froid piégé dans la vallée sous de l'air plus doux, typiquement par anticyclone hivernal, avec formation de nuages bas — attribuée à une source (Météo-France ou autre source citée), sans la présenter comme dite par le film. Réponse en français.",
+    "s2": "Deux volets justes, mais l'explication n'est pas sourcée ; ou un volet imprécis (« de la brume » vague, « inversion » nommée sans mécanisme, ou mécanisme juste sans le nom). Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Un seul volet juste (souvent la vidéo seule, avec ou sans abstention justifiée sur le volet web) ; ou explication juste présentée comme montrée ou dite dans la vidéo.",
+    "s0": "Aucun volet juste : « un lac », mécanisme faux ou inversé, invention, abstention totale ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-m2",
+   "askedQuestion": "Cette immense créature lumineuse qui s'approche d'elle, à quoi ressemble-t-elle, et qu'est-ce que c'est selon les créateurs du film ?",
+   "poseS": 222,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial-without-web : l'apparence est dans la fenêtre récente (A) ; l'identité vient du synopsis officiel.",
+   "requiredFacts": [
+    {
+     "fact": "Une créature géante et translucide, aux côtes ou frondes qui lui donnent une allure de squelette, baignée d'une lumière bleu-cyan à cœur blanc bleuté. Sa tête lumineuse cyan arrive entre les arbres (02:50–02:56) ; la fille, bâton levé, et le chien se tiennent devant elle (02:59–03:01) ; ses côtes et ses frondes passent au-dessus d'elle (03:02–03:28). Blocs 168–208 : A.",
+     "startS": 170,
+     "endS": 207,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Selon le synopsis officiel (page du film, Blender Studio ; repris par BlenderNation), Spring raconte une bergère et son chien qui affrontent des « esprits anciens » (ancient spirits) pour que continue le cycle de la vie ; Wikipédia parle d'esprits anciens affrontés pour amener le changement de saison. La créature est l'un de ces esprits.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://studio.blender.org/projects/spring/pages/about/ ; https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/ ; https://en.wikipedia.org/wiki/Spring_(2019_film)"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Une couronne de petits points lumineux jaune-vert borde la tête de la créature (02:52–02:56).",
+     "startS": 172,
+     "endS": 176,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Wikipédia décrit ces esprits anciens comme ceux qui gèlent la forêt.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://en.wikipedia.org/wiki/Spring_(2019_film)"
+    },
+    {
+     "fact": "N2 décrit une « masse organique bleue et lumineuse suspendue dans l'eau » et un « squelette … immergé » (blocs 176–224) : la créature n'est pas dans l'eau.",
+     "startS": 176,
+     "endS": 224,
+     "modality": "visual",
+     "availability": "A",
+     "source": "journal N2 (lignes vlm)"
+    },
+    {
+     "fact": "Juste après la pose, une traînée cyan venue de la créature descend dans sa main et le haut du bâton vire à l'orange (03:44–03:54) : C.",
+     "startS": 224,
+     "endS": 234,
+     "modality": "visual",
+     "availability": "C",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://studio.blender.org/projects/spring/pages/about/",
+     "title": "Spring — About, Blender Studio",
+     "consultedAt": "22/10/2026",
+     "extract": "Spring is the story of a shepherd girl and her dog, who face ancient spirits in order to continue the cycle of life.",
+     "supports": "Identité de la créature : un esprit ancien ; rôle de la bergère."
+    },
+    {
+     "url": "https://www.blendernation.com/2019/04/04/watch-spring-the-blender-animation-studios-latest-open-movie/",
+     "title": "Watch ‘Spring’, the Blender Animation Studio’s latest Open Movie — BlenderNation, 4 avril 2019",
+     "consultedAt": "22/10/2026",
+     "extract": "A shepherd girl and her loyal dog have to face ancient spirits in order to continue the cycle of life.",
+     "supports": "Même synopsis, source indépendante du studio."
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Spring_(2019_film)",
+     "title": "Spring (2019 film) — Wikipedia",
+     "consultedAt": "22/10/2026",
+     "extract": "The film is about a young shepherd and her dog confronting ancient spirits in order to bring about the change of seasons.",
+     "supports": "Esprits anciens et changement de saison."
+    }
+   ],
+   "inventionTraps": [
+    "La placer dans l'eau ou en faire un animal marin réel (baleine, calmar) présenté comme un fait ; N2 décrit un « squelette immergé ». Une ressemblance donnée comme telle (« comme un squelette de baleine ») reste permise.",
+    "Une identité ou un nom propre inventés (dragon, démon, dieu nommé).",
+    "Dire que la créature attaque ou blesse la fille, ou que le synopsis parle de la tuer.",
+    "Attribuer le mot « esprit » à un texte ou à une parole du film, qui n'en contient pas.",
+    "Anticiper la lumière qui entre dans le bâton et le sommet orange (03:44 et après, C)."
+   ],
+   "abstentionPolicy": "Le volet vidéo est disponible (A) : une abstention totale vaut s0, non justifiée. Sans accès web, le volet « selon les créateurs » peut être déclaré non vérifiable : abstention justifiée sur ce volet, et le volet vidéo seul vaut s1. Une identité juste donnée de mémoire, sans source, plafonne à s2.",
+   "rubric": {
+    "s3": "Volet vidéo : géante, lumineuse ou translucide, bleu-cyan, avec des côtes, des frondes ou une allure de squelette (au moins la taille, la couleur et un trait de forme). Volet extérieur : l'un des « esprits anciens » que la bergère et son chien doivent affronter pour que continue le cycle de la vie (ou pour amener le changement de saison), attribué au synopsis officiel ou à une source citée. Réponse en français.",
+    "s2": "Deux volets justes mais source non attribuée ; ou volet vidéo incomplet (sans couleur ou sans forme) ; ou « un esprit » sans son rôle. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Un seul volet juste ; ou volet extérieur juste présenté comme dit dans le film ; ou volet vidéo juste accompagné d'une identité inventée.",
+    "s0": "Aucun volet juste, créature sous-marine affirmée, identité inventée, abstention totale ou hors sujet."
+   },
+   "confidence": "medium"
+  },
+  {
+   "questionId": "spring-o1",
+   "askedQuestion": "Le petit chien porte-t-il quelque chose autour du cou ? Si oui, quoi, et de quelle couleur ?",
+   "poseS": 192,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "inspect_clip-only : la réponse est dans des images sorties de la fenêtre récente [136, 184) ; ni la transcription (film sans dialogue) ni les descriptions de N2 ne la donnent.",
+   "inspectInterval": "[44, 60) en priorité (00:45, 00:52, 00:58–00:59) ; à défaut [110, 116) (01:52–01:54).",
+   "requiredFacts": [
+    {
+     "fact": "Oui : un collier (ou petit foulard noué) rouge, rouge orangé selon la lumière. On le voit quand le chien court vers la caméra sur le sentier givré (00:45), à côté des bottes de la fille (00:52), quand il bondit vers la friandise (00:58–00:59), puis dans la forêt sombre (01:52–01:54). Temps ffmpeg vérifiés sur le média.",
+     "startS": 45,
+     "endS": 114,
+     "modality": "visual",
+     "availability": "A (images seulement, hors fenêtre récente)",
+     "source": "vidéo"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Vérification du journal N2 : blocs 40–48 (« un petit chien, probablement un terrier … tenant un morceau de bois »), 48–56, 56–64 (« biscotte »), 72–80 (« son chien est à ses pieds ») : rien sur le cou. Aucun bloc avant la pose ne parle de collier ; la seule mention, « un collier orange », vise « un jeune garçon » au bloc 264–272, après la pose.",
+     "startS": 40,
+     "endS": 272,
+     "modality": "visual",
+     "availability": "A",
+     "source": "journal N2 (lignes vlm)"
+    },
+    {
+     "fact": "Dans la fenêtre récente [136, 184), le chien n'apparaît que minuscule aux pieds de la fille (02:58–03:00, bloc 176–184, B), collier illisible.",
+     "startS": 178,
+     "endS": 181,
+     "modality": "visual",
+     "availability": "B",
+     "source": "vidéo"
+    },
+    {
+     "fact": "La fille porte une écharpe gris-brun foncé et un manteau rouge : à ne pas reporter sur le chien.",
+     "startS": 52,
+     "endS": 72,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« Rien » ou « pas de collier ».",
+    "Une autre couleur (bleu, vert, noir, doré) ou un objet non visible (clochette, médaille, harnais, sac).",
+    "L'écharpe gris-brun de la fille attribuée au chien.",
+    "Prétendre que la couleur vient des descriptions ou d'un texte à l'écran."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse s'obtient en relisant [44, 60) ou [110, 116). Une abstention (« les descriptions ne le disent pas ») sans relecture vaut s0, non justifiée. Elle n'est justified que si l'outil manque ou renvoie une erreur signalée.",
+   "rubric": {
+    "s3": "Un collier, un foulard ou un bandana rouge (rouge orangé accepté) autour du cou du chien. Réponse en français.",
+    "s2": "« Un collier » sans couleur, ou couleur approchée (« orange ») ; ou rouge avec un détail mineur inventé (clochette). Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "« Quelque chose de rouge » sans dire quoi, ou hésitation entre plusieurs couleurs sans trancher.",
+    "s0": "Rien autour du cou, autre couleur ou objet inventé, abstention non justifiée ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "spring-o2",
+   "askedQuestion": "Près de la grande pierre sculptée, juste après avoir fermé les yeux, quel geste fait la fille avec ses mains ?",
+   "poseS": 268,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "inspect_clip-only : le geste est dans le bloc 136–144, hors de la fenêtre récente [208, 256) ; N2 ne le décrit pas.",
+   "inspectInterval": "[136, 144) ; geste à 139,0–140,5 s (ffmpeg), images de référence 02:18–02:20.",
+   "requiredFacts": [
+    {
+     "fact": "Elle se réchauffe les mains : elle les frotte l'une contre l'autre devant elle (139,0–139,5 s), puis souffle dedans, mains jointes devant la bouche (140,0 s), son bâton calé contre l'épaule. Juste avant, elle a fermé les yeux (02:17) ; juste après, elle saisit son bâton à deux mains (02:21,5) et le balance vers la pierre (02:24).",
+     "startS": 139,
+     "endS": 140.5,
+     "modality": "visual",
+     "availability": "A (images seulement, hors fenêtre récente)",
+     "source": "vidéo"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Vérification du journal N2 : le bloc 136–144 décrit la fille « assise au pied d'un arbre, les yeux fermés, tenant son bâton … méditer » ; les blocs 128–136 et 144–152 parlent d'inquiétude et de peur. Aucun geste des mains, aucune mention du froid. Transcription locale : « (suspenseful music) ».",
+     "startS": 128,
+     "endS": 152,
+     "modality": "visual",
+     "availability": "A",
+     "source": "journal N2 (lignes vlm)"
+    },
+    {
+     "fact": "Dans la fenêtre récente [208, 256), elle tend la main vers la traînée cyan et la recueille (03:44–03:49), puis le bâton s'allume en orange : ce sont d'autres gestes.",
+     "startS": 224,
+     "endS": 256,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Une faible lueur orange brille au creux de la pierre (02:09–02:11 et 02:24,5–02:25).",
+     "startS": 129,
+     "endS": 145,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« Elle tend la main vers la lumière » ou « elle recueille la lumière » : geste de 03:44, dans la fenêtre récente.",
+    "« Elle prie » ou « elle médite » donnés comme certains, ou « elle est assise » (description N2 erronée).",
+    "« Elle frappe la pierre » donné comme le geste des mains : le coup de bâton vient après, et le contact n'est pas visible.",
+    "« Elle caresse le chien » : le chien n'est pas à l'image."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse s'obtient en relisant [136, 144). Une abstention sans relecture vaut s0, non justifiée. Elle n'est justified que si l'outil manque ou renvoie une erreur signalée.",
+   "rubric": {
+    "s3": "Elle se frotte les mains et/ou souffle dedans pour se réchauffer (un des deux gestes suffit, mains rapprochées devant elle ou devant la bouche). Réponse en français.",
+    "s2": "« Elle joint les mains devant sa bouche » sans interprétation, ou « elle se réchauffe les mains » sans décrire le geste. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Un geste réel mais voisin et non demandé : elle saisit ou balance son bâton (02:21–02:24) ; ou « elle prie » avancé comme hypothèse.",
+    "s0": "Geste inventé ou tiré de la fenêtre récente (tendre la main vers la lumière), abstention non justifiée ou hors sujet."
+   },
+   "confidence": "medium"
+  }
+ ],
+ "tears": [
+  {
+   "questionId": "tears-w1",
+   "askedQuestion": "Quand ce film a-t-il été publié ?",
+   "poseS": 624,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "web-only : le générique visible à la pose ne porte aucune date.",
+   "requiredFacts": [
+    {
+     "fact": "Tears of Steel a été publié en ligne le 26 septembre 2012 : « Official online premiere » sur YouTube, avec un téléchargement HD (calendrier du projet Mango) ; Wikipédia donne la même date.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://mango.blender.org/events/ ; https://en.wikipedia.org/wiki/Tears_of_Steel"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Autour de la sortie : avant-première à De Balie, Amsterdam (le calendrier du projet la date du 26 août 2012) ; première américaine à Hollywood le 28 septembre 2012, organisée par ASIFA Hollywood.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://mango.blender.org/events/"
+    },
+    {
+     "fact": "Dans la vidéo, aucune date : la fenêtre récente [568, 616) montre le générique (« Written and Directed by IAN HUBERT » 09:52, « Produced by TON ROOSENDAAL » 09:56, distribution 10:08), sans année. La licence « Creative Commons Attribution 3.0 » et www.tearsofsteel.org viennent à 11:40–11:44, après la pose (C).",
+     "startS": 590,
+     "endS": 704,
+     "modality": "onscreen-text",
+     "availability": "A/C",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Le 15/03/2013, le blog du projet a publié environ 4 To de rushes 4K en CC-BY : ce n'est pas la sortie du film.",
+     "modality": "external",
+     "availability": "web",
+     "source": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://mango.blender.org/events/",
+     "title": "Events — Project Mango (Tears of Steel)",
+     "consultedAt": "22/10/2026",
+     "extract": "2012 September 26: Official online premiere — The film will launch at Youtube and will be offered as HD download as well.",
+     "supports": "Date et mode de publication (fait requis)."
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+     "title": "Tears of Steel — Wikipedia",
+     "consultedAt": "22/10/2026",
+     "extract": "It was officially released online for viewing and download on September 26, 2012.",
+     "supports": "Même date, source indépendante du projet."
+    }
+   ],
+   "inventionTraps": [
+    "2013 (mise en ligne des rushes 4K), 2011 ou une autre année.",
+    "Le 26 août 2012 (avant-première à De Balie) présenté comme la sortie publique, sans nuance.",
+    "Affirmer qu'une date figure au générique.",
+    "Inventer une sortie en salles nationale."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Sans accès web, l'abstention qui le dit est justifiée : s0, codée justified. Une date donnée de mémoire est notée sur son exactitude et sur sa source.",
+   "rubric": {
+    "s3": "26 septembre 2012, publication en ligne, attribuée à une source (site du projet Mango, Wikipédia…). Réponse en français.",
+    "s2": "Date juste sans source ; ou « septembre 2012 » sourcé ; ou avant-première du 26 août citée avec la date en ligne mais mal hiérarchisée. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Seulement l'année 2012 ; ou date juste présentée comme lue dans le film ; ou bonne date noyée parmi des faits faux.",
+    "s0": "Autre année (invention), abstention (justified si l'absence d'accès web est dite) ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-w2",
+   "askedQuestion": "Avec quelle caméra les scènes en prises de vues réelles de ce film ont-elles été tournées ?",
+   "poseS": 432,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "web-only : le modèle de caméra n'apparaît nulle part dans la vidéo.",
+   "requiredFacts": [
+    {
+     "fact": "Une caméra de cinéma numérique Sony F65 (gamme CineAlta), à capteur 4K natif (Wikipédia ; blog du projet Mango, 15/03/2013 ; No Film School, 29/09/2012).",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://en.wikipedia.org/wiki/Tears_of_Steel ; http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/ ; https://nofilmschool.com/2012/09/tears-of-steel-completely-open-source-film"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Les fichiers bruts de la F65 ont été convertis en OpenEXR avec les couleurs ACES, et environ 4 To de rushes 4K ont été publiés en CC-BY (blog du projet, 15/03/2013).",
+     "modality": "external",
+     "availability": "web",
+     "source": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/"
+    },
+    {
+     "fact": "Le générique crédite « 4K camera equipment : Camalot, Philippe Vié » (10:32) : un fournisseur, pas un modèle, et après la pose (C).",
+     "startS": 630,
+     "endS": 634,
+     "modality": "onscreen-text",
+     "availability": "C",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Les plans réels sont mêlés d'images de synthèse : « All CG and VFX realised entirely with blender » (10:24, C).",
+     "startS": 622,
+     "endS": 626,
+     "modality": "onscreen-text",
+     "availability": "C",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+     "title": "Tears of Steel — Wikipedia",
+     "consultedAt": "22/10/2026",
+     "extract": "The live-action footage was filmed digitally using a Sony F65 CineAlta digital motion picture camera.",
+     "supports": "Modèle de caméra (fait requis)."
+    },
+    {
+     "url": "http://mango.blender.org/production/4-tb-original-4k-footage-available-as-cc-by/",
+     "title": "4 TB original 4k footage available as CC-by — blog du projet Mango, 15/03/2013",
+     "consultedAt": "22/10/2026",
+     "extract": "Pictures have been shot using the (4k native sensor) fantastic Sony F65 camera.",
+     "supports": "Confirmation par la production ; capteur 4K natif."
+    },
+    {
+     "url": "https://nofilmschool.com/2012/09/tears-of-steel-completely-open-source-film",
+     "title": "'Tears of Steel': a Completely Open Source Live Action/CG Sci-Fi Film — No Film School, 29/09/2012",
+     "consultedAt": "22/10/2026",
+     "extract": "The movie was filmed on the Sony F65",
+     "supports": "Troisième source, de presse spécialisée."
+    }
+   ],
+   "inventionTraps": [
+    "RED (Epic, One), ARRI Alexa, Blackmagic, Canon, ou une autre Sony (F55, Venice).",
+    "« Camalot » donné comme modèle de caméra.",
+    "Dire que le film est entièrement en images de synthèse.",
+    "Prétendre que la caméra est nommée dans le film."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Sans accès web, l'abstention qui le dit est justifiée : s0, codée justified. Une réponse de mémoire est notée sur son exactitude et sur sa source.",
+   "rubric": {
+    "s3": "Sony F65 (CineAlta), attribuée à une source. Réponse en français.",
+    "s2": "Sony F65 sans source ; ou « une Sony CineAlta 4K » sourcée, sans le modèle. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Seulement « Sony » ou « une caméra 4K » ; ou réponse juste présentée comme vue dans le film.",
+    "s0": "Autre marque ou autre modèle (invention), abstention (justified si l'absence d'accès web est dite) ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-w3",
+   "askedQuestion": "Ce film a été fait avec Blender : quelle est la dernière version de ce logiciel aujourd'hui ?",
+   "poseS": 552,
+   "category": "W",
+   "freshness": "actualité",
+   "toolExpected": "web",
+   "answerableAtPose": "web-only : fait d'actualité ; la vidéo ne nomme que la fondation et le logiciel.",
+   "requiredFacts": [
+    {
+     "fact": "Au 22/10/2026, la dernière version de Blender est la série 5.2 LTS : sortie le 14/07/2026 et maintenue jusqu'en juillet 2028 ; sa mise à jour 5.2.3 LTS est publiée le 22/10/2026 (blender.org). Blender 5.3 n'est pas encore sortie.",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://www.blender.org/download/ ; https://www.blender.org/releases/5-2/ ; https://www.blender.org/download/releases/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Mises à jour précédentes : 5.2.2 LTS (15/09/2026), 5.2.1 LTS (25/08/2026). Versions précédentes : 5.1 (17/03/2026), 5.0 (18/11/2025).",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://www.blender.org/releases/5-2/ ; https://www.blender.org/download/releases/"
+    },
+    {
+     "fact": "Dans la vidéo : « Blender Foundation Presents » puis « the Mango Open Movie project » (00:00–00:08, bloc 0–8, A, ancien) ; « All CG and VFX realised entirely with blender » au générique (10:24), après la pose.",
+     "startS": 0,
+     "endS": 8,
+     "modality": "onscreen-text",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://www.blender.org/download/",
+     "title": "Download — blender.org",
+     "consultedAt": "22/10/2026",
+     "extract": "Blender 5.2.3 LTS — Released October 22, 2026",
+     "supports": "Dernière mise à jour au jour de la question."
+    },
+    {
+     "url": "https://www.blender.org/releases/5-2/",
+     "title": "Blender 5.2 LTS — blender.org",
+     "consultedAt": "22/10/2026",
+     "extract": "Initial release: July 14, 2026 — Supported until July 2028",
+     "supports": "Sortie et durée de maintenance de la série 5.2 LTS ; liste des mises à jour 5.2.1 à 5.2.3."
+    },
+    {
+     "url": "https://www.blender.org/download/releases/",
+     "title": "Blender Releases — blender.org",
+     "consultedAt": "22/10/2026",
+     "extract": "Blender 5.2 LTS — Released July 14th, 2026",
+     "supports": "5.2 LTS en tête de liste ; 5.3 absente."
+    }
+   ],
+   "inventionTraps": [
+    "Une version 4.x (4.2 ou 4.5 LTS…) ou 5.0, 5.1 présentée comme actuelle.",
+    "« Blender 5.3 est sortie » ou un numéro inventé (6.0).",
+    "Une date de sortie inventée.",
+    "Dire que la vidéo indique la version actuelle."
+   ],
+   "abstentionPolicy": "Fait d'actualité absent de la vidéo. Sans accès web, l'abstention qui le dit est justifiée : s0, codée justified. Une version donnée de mémoire doit être datée : périmée mais honnêtement datée, elle vaut s1 ; périmée et présentée comme actuelle, c'est une invention (s0). Une version plus récente que le 22/10/2026 est acceptée si elle est sourcée et datée.",
+   "rubric": {
+    "s3": "Blender 5.2 LTS (mise à jour 5.2.3 du 22/10/2026, ou 5.2.2 du 15/09/2026, puisque la 5.2.3 est sortie le jour même), avec une date et une source (blender.org). Une version plus récente, sourcée et datée, est acceptée. Réponse en français.",
+    "s2": "5.2 sans date ni source, ou datée sans source. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Version périmée honnêtement datée (« à ma connaissance, 4.5 en 2025 ») ; ou 5.2 juste présentée comme lue dans la vidéo.",
+    "s0": "Version périmée présentée comme actuelle, version ou date inventée, abstention (justified si l'absence d'accès web est dite) ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-m1",
+   "askedQuestion": "Où Thom et Celia se disputent-ils au début, et dans quelle ville le film a-t-il été tourné ?",
+   "poseS": 48,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial-without-web : le lieu de la dispute est dans la fenêtre récente ; la ville de tournage vient d'une source extérieure.",
+   "requiredFacts": [
+    {
+     "fact": "Ils se disputent sur un pont au-dessus d'un canal, accoudés à une rambarde de fer, devant des arbres et des maisons de briques à pignons (images 00:26–00:38 ; dialogue de 00:24 à 00:45). Bloc 24–32 (Δ 16) : A ; bloc 32–40 (Δ 8) : B. La description N2 du bloc 24–32 cite « une rambarde de pont » et « un canal ».",
+     "startS": 24,
+     "endS": 38,
+     "modality": "visual",
+     "availability": "A/B",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Le film a été tourné à Amsterdam, aux Pays-Bas : le site du projet Mango le dit « made in Amsterdam the Netherlands by the Blender Institute », et Wikipédia écrit « Filming was done in Amsterdam ».",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://mango.blender.org/about/ ; https://en.wikipedia.org/wiki/Tears_of_Steel"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Carton « This film is supported by the Netherlands Film Fund » (00:20, bloc 16–24, A) : un soutien néerlandais, sans nom de ville.",
+     "startS": 18,
+     "endS": 24,
+     "modality": "onscreen-text",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Wikipédia résume la scène : Thom et Celia « are standing on a bridge, arguing ».",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://en.wikipedia.org/wiki/Tears_of_Steel"
+    },
+    {
+     "fact": "Après la pose seulement : un journal dont l'en-tête gothique commence par « De Amsterd… » (01:20, C) ; N2 écrira « probablement à Amsterdam » aux blocs 272–288.",
+     "startS": 80,
+     "endS": 288,
+     "modality": "onscreen-text",
+     "availability": "C",
+     "source": "vidéo ; journal N2 (lignes vlm)"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://mango.blender.org/about/",
+     "title": "Open Movie – free to share and show — Project Mango (Tears of Steel)",
+     "consultedAt": "22/10/2026",
+     "extract": "“Tears of Steel” is a short film made in Amsterdam the Netherlands by the Blender Institute",
+     "supports": "Ville de tournage et de production (volet extérieur)."
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+     "title": "Tears of Steel — Wikipedia",
+     "consultedAt": "22/10/2026",
+     "extract": "Filming was done in Amsterdam, the Netherlands.",
+     "supports": "Lieu du tournage, source indépendante."
+    }
+   ],
+   "inventionTraps": [
+    "Une autre ville (Utrecht, Bruges, Copenhague, Venise, Paris).",
+    "Nommer un pont ou un canal précis comme un fait, sans source.",
+    "Dire que la ville est nommée dans les dialogues ou à l'écran avant la pose.",
+    "Dire que le décor du pont est entièrement en images de synthèse.",
+    "Anticiper « 40 years later » ou la rupture (bloc 40–48, C)."
+   ],
+   "abstentionPolicy": "Le volet vidéo est disponible (A) : une abstention totale vaut s0, non justifiée. Sans accès web, le volet « ville de tournage » peut être déclaré non vérifiable : abstention justifiée sur ce volet, et le volet vidéo seul vaut s1. Une ville juste donnée de mémoire, sans source, plafonne à s2.",
+   "rubric": {
+    "s3": "Volet vidéo : sur un pont au-dessus d'un canal (rambarde, maisons). Volet extérieur : Amsterdam (Pays-Bas), attribué à une source. Réponse en français.",
+    "s2": "Deux volets justes, source absente ; ou volet vidéo vague (« dans la rue », « près de l'eau »). Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Un seul volet juste ; ou Amsterdam présenté comme dit ou écrit dans le film.",
+    "s0": "Aucun volet juste, ville fausse, abstention totale ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-m2",
+   "askedQuestion": "Où le vieil homme aux cheveux gris est-il descendu au bout d'une corde, et à quel bâtiment réel ce lieu correspond-il ?",
+   "poseS": 216,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "partial-without-web : la descente et le décor sont disponibles (A) ; le nom du bâtiment vient du synopsis officiel.",
+   "requiredFacts": [
+    {
+     "fact": "Dans l'immense intérieur gothique et délabré d'une église : une silhouette descend le long d'une corde devant un grand buffet d'orgue à tuyaux, entre des piliers envahis de lierre (02:32–02:37) ; la corde touche un sol dallé (02:38) ; le vieil homme aux cheveux gris, en manteau à carreaux, tient la corde (02:40–02:42), puis avance dans la nef en ruine vers une machine dorée (02:44–02:50). Bloc 152–160 (Δ 56) : A, ancien ; blocs 160–176 : A, dans la fenêtre.",
+     "startS": 152,
+     "endS": 170,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "D'après le synopsis officiel (site du projet Mango), les guerriers et scientifiques du film sont réunis dans l'« Oude Kerk » (la Vieille Église) d'Amsterdam ; Wikipédia : « Barley lowers an older Thom (Derek de Lint) into the Oude Kerk. »",
+     "modality": "external",
+     "availability": "web",
+     "source": "https://mango.blender.org/about/ ; https://en.wikipedia.org/wiki/Tears_of_Steel"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Wikipédia place aussi le poste du tireur Barley au sommet d'une Oude Kerk « modified, futuristic » : le balcon à balustres et à bougies (01:40–02:30) est en haut de l'église.",
+     "startS": 100,
+     "endS": 150,
+     "modality": "external",
+     "availability": "web",
+     "source": "https://en.wikipedia.org/wiki/Tears_of_Steel"
+    },
+    {
+     "fact": "Descriptions N2 : bloc 152–160 « probablement une église ou un château » ; 160–168 « tenant fermement la corde » ; 168–176 « intérieur gothique ».",
+     "startS": 152,
+     "endS": 176,
+     "modality": "visual",
+     "availability": "A",
+     "source": "journal N2 (lignes vlm)"
+    },
+    {
+     "fact": "Le nom « Thom » n'est prononcé pour le vieil homme qu'à 03:46 (225,6 s), après la pose : s'il est donné, il vient du web et doit être attribué.",
+     "startS": 225.6,
+     "endS": 227,
+     "modality": "speech",
+     "availability": "C",
+     "source": "oracle v3 (SRT et Whisper)"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://mango.blender.org/about/",
+     "title": "Open Movie – free to share and show — Project Mango (Tears of Steel)",
+     "consultedAt": "22/10/2026",
+     "extract": "The film's premise is about a group of warriors and scientists, who gathered at the “Oude Kerk” in Amsterdam",
+     "supports": "Bâtiment réel : l'Oude Kerk d'Amsterdam (synopsis officiel)."
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Tears_of_Steel",
+     "title": "Tears of Steel — Wikipedia",
+     "consultedAt": "22/10/2026",
+     "extract": "Barley lowers an older Thom (Derek de Lint) into the Oude Kerk.",
+     "supports": "La descente à la corde a lieu dans l'Oude Kerk."
+    }
+   ],
+   "inventionTraps": [
+    "Une autre église (Nieuwe Kerk, Westerkerk, Notre-Dame…) ou une cathédrale d'une autre ville.",
+    "« Un château », « une usine » ou « une station spatiale » (N2 hésite entre église et château).",
+    "Dire que le nom « Oude Kerk » est dit ou écrit dans le film.",
+    "Prétendre que la vraie Oude Kerk est en ruine.",
+    "Inventer l'histoire de l'orgue ou du bâtiment sans source."
+   ],
+   "abstentionPolicy": "Le volet vidéo est disponible (A) : une abstention totale vaut s0, non justifiée. Sans accès web, le volet « bâtiment réel » peut être déclaré non vérifiable : abstention justifiée sur ce volet, et le volet vidéo seul vaut s1. Un nom juste donné de mémoire, sans source, plafonne à s2.",
+   "rubric": {
+    "s3": "Volet vidéo : l'intérieur d'une grande église gothique en ruine (nef, piliers, grand orgue). Volet extérieur : l'Oude Kerk d'Amsterdam, attribuée au synopsis officiel ou à Wikipédia. Réponse en français.",
+    "s2": "Deux volets justes sans source ; ou volet vidéo vague (« un grand bâtiment ancien ») ; ou « une église d'Amsterdam » sourcée sans le nom. Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Un seul volet juste ; ou Oude Kerk présentée comme nommée dans le film.",
+    "s0": "Aucun volet juste, autre bâtiment affirmé, abstention totale ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-o1",
+   "askedQuestion": "Autour du carton « 40 years later », de quelles couleurs étaient les hologrammes de robots ?",
+   "poseS": 104,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "inspect_clip-only : le bloc 40–48 est juste avant la fenêtre récente [48, 96) ; ni la transcription ni N2 ne donnent ces couleurs.",
+   "inspectInterval": "[40, 48) (images de 00:40 et 00:46).",
+   "requiredFacts": [
+    {
+     "fact": "Deux hologrammes filaires de robots : l'un orange (un grand bras ou robot, à gauche), l'autre bleu (une silhouette de robot, à droite), sur fond de ruines industrielles (00:40) ; on les revoit, orange et bleu, juste après le carton (00:46).",
+     "startS": 40,
+     "endS": 47,
+     "modality": "visual",
+     "availability": "A (images seulement, hors fenêtre récente)",
+     "source": "vidéo"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Vérification du journal N2 : bloc 40–48 « un paysage urbain dévasté, dominé par des structures robotiques et des ruines, avec un effet de lumière néon et un texte superposé » : aucune couleur. Transcription du bloc : fin de la dispute (« giant robotic claws », « we're done »).",
+     "startS": 40,
+     "endS": 48,
+     "modality": "visual",
+     "availability": "A",
+     "source": "journal N2 (lignes vlm)"
+    },
+    {
+     "fact": "À gauche du carton, un cerveau holographique rose (00:42–00:44) : ce n'est pas un robot.",
+     "startS": 42,
+     "endS": 45,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Bloc 48–56, dans la fenêtre : interface verte et magenta « MEMORY PLAYBACK – GLOBAL » (00:48). Le générique final (09:52 et après) montre aussi des robots bleus et orange, bien après la pose (C).",
+     "startS": 48,
+     "endS": 620,
+     "modality": "visual",
+     "availability": "A/C",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« Rose » ou « magenta » (le cerveau holographique).",
+    "« Vert » (interface de 00:48).",
+    "« Rouge et bleu », ou une seule couleur.",
+    "S'appuyer sur le générique final (C)."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse s'obtient en relisant [40, 48). Une abstention sans relecture vaut s0, non justifiée. Elle n'est justified que si l'outil manque ou renvoie une erreur signalée.",
+   "rubric": {
+    "s3": "Orange et bleu (cyan accepté pour le bleu). Réponse en français.",
+    "s2": "Une couleur juste et l'autre approchée (rouge orangé, bleu-violet) ; ou les deux couleurs justes plus une troisième attribuée à tort à un robot (le rose du cerveau). Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "Une seule couleur juste.",
+    "s0": "Couleurs fausses, abstention non justifiée ou hors sujet."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "tears-o2",
+   "askedQuestion": "Au début, dans le laboratoire, quel message s'affichait en grandes lettres sur l'écran holographique, derrière la personne aux longues dreadlocks ?",
+   "poseS": 144,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "answerableAtPose": "inspect_clip-only : le plan est dans le bloc 48–56, hors de la fenêtre récente [88, 136) ; N2 n'a lu aucun texte d'écran et la réplique entendue est autre.",
+   "inspectInterval": "[48, 56), en visant 00:53–00:55 (plan bref).",
+   "requiredFacts": [
+    {
+     "fact": "« SIMULATION READY... » (« simulation prête »), en grandes lettres sur l'écran holographique, derrière une personne aux longues dreadlocks en combinaison blanche (00:54, image de référence n° 28 ; ±1 s). Le plan précédent (00:52) montre le technicien à lunettes ; le suivant (00:56), le cerveau.",
+     "startS": 52,
+     "endS": 56,
+     "modality": "onscreen-text",
+     "availability": "A (images seulement, hors fenêtre récente)",
+     "source": "vidéo"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Vérification du journal N2 : bloc 48–56 « un homme est assis à une console … des écrans affichent des données et des images complexes » : aucun texte lu. Transcription : « Robot's memory synced and locked! » (50–53,5 s), une réplique, pas le texte affiché.",
+     "startS": 48,
+     "endS": 56,
+     "modality": "speech",
+     "availability": "A",
+     "source": "journal N2 (lignes vlm) ; oracle v3"
+    },
+    {
+     "fact": "Autre texte du même bloc : « MEMORY PLAYBACK – GLOBAL », en petits caractères sur l'interface verte (00:48).",
+     "startS": 48,
+     "endS": 49,
+     "modality": "onscreen-text",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Fenêtre récente [88, 136) : tireur, vieil homme sur un balcon, vaisseau dans la lunette, sans écran de labo. Écrans plus tardifs : « MEMORY OVERWRITE 004.29% » (04:56), « PLAYBACK » et « ERROR!!! » (06:16–06:18), après la pose.",
+     "startS": 88,
+     "endS": 380,
+     "modality": "onscreen-text",
+     "availability": "A/C",
+     "source": "vidéo ; journal N2 (lignes vlm)"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« Robot's memory synced and locked » donné comme texte affiché.",
+    "« MEMORY PLAYBACK » (autre écran, 00:48) ; « MEMORY OVERWRITE » ou « ERROR » (anticipation).",
+    "« 40 YEARS LATER » (carton, pas l'écran du labo).",
+    "Un texte inventé (« ACCESS GRANTED », « LOADING »)."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse s'obtient en relisant [48, 56). Une abstention sans relecture vaut s0, non justifiée. Elle n'est justified que si l'outil manque ou renvoie une erreur signalée.",
+   "rubric": {
+    "s3": "« SIMULATION READY » (ou sa traduction « simulation prête »). Réponse en français, citation dans sa langue.",
+    "s2": "Lecture partielle mais reconnaissable (« SIMULATION… », « SIMULATION READ »). Ou réponse de niveau s3 dans une autre langue que le français.",
+    "s1": "« MEMORY PLAYBACK » : un vrai texte du même bloc, mais pas celui demandé.",
+    "s0": "Réplique entendue donnée comme texte, texte inventé ou anticipé, abstention non justifiée ou hors sujet."
+   },
+   "confidence": "medium"
+  }
+ ],
+ "cnrs": [
+  {
+   "questionId": "cnrs-w1",
+   "askedQuestion": "Il cite Gemini : quel est aujourd'hui le modèle Gemini le plus récent de Google ?",
+   "poseS": 96,
+   "category": "W",
+   "freshness": "actualité",
+   "toolExpected": "web",
+   "answerableAtPose": "yes avec l'outil web ; sans web, abstention justifiée (la vidéo ne donne aucune version)",
+   "requiredFacts": [
+    {
+     "fact": "Au 22/10/2026, le modèle Gemini le plus récent est Gemini 4 Argon (identifiant d'API gemini-4-argon), présenté par Google comme son modèle « de frontière » pour les tâches complexes (raisonnement, ingénierie logicielle, sciences).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://gemini.google/release-notes/ ; https://ai.google.dev/gemini-api/docs/models/gemini-4-argon"
+    },
+    {
+     "fact": "Date : déployé le 13 octobre 2026 dans l'application Gemini (abonnés Google AI Pro et Ultra) et disponible dans l'API ; la fiche de l'API est mise à jour le 14/10/2026.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://gemini.google/release-notes/ ; https://ai.google.dev/gemini-api/docs/models/gemini-4-argon"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Dans la vidéo : « il n'y a pas que les très grosses IA comme ChatGPT ou Gemini » ; aucune version n'est citée.",
+     "startS": 43.95,
+     "endS": 47.13,
+     "modality": "speech",
+     "availability": "A (bloc [40,48), Δ = 48 s)",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Le cours situe les grandes IA (LLM) à « à peu près mille milliards de paramètres » ; ce chiffre n'est pas celui de Gemini 4 Argon, dont Google ne publie pas la taille dans les sources consultées.",
+     "startS": 69.85,
+     "endS": 76.42,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://gemini.google/release-notes/",
+     "title": "Gemini Apps' release updates & improvements (notes de version de l'application Gemini)",
+     "consultedAt": "2026-10-22",
+     "extract": "2026.10.13 — « Découvrez Gemini 4 Argon, notre modèle de frontière pour les tâches complexes. »",
+     "supports": "Gemini 4 Argon est le modèle le plus récent, déployé dans l'application Gemini le 13/10/2026 (abonnés Google AI Pro et Ultra)."
+    },
+    {
+     "url": "https://ai.google.dev/gemini-api/docs/models/gemini-4-argon",
+     "title": "Gemini 4 Argon — documentation de l'API Gemini (Google AI for Developers)",
+     "consultedAt": "2026-10-22",
+     "extract": "Gemini 4 Argon (gemini-4-argon) is our flagship reasoning model, built for complex software engineering,",
+     "supports": "Nom et identifiant du modèle ; page mise à jour le 14/10/2026."
+    }
+   ],
+   "inventionTraps": [
+    "Version plus ancienne présentée comme la plus récente sans date ni réserve (Gemini 1.5, 2.0, 2.5, 3, 3.5, 3.8 Flash) : fait extérieur faux au 22/10/2026.",
+    "Nom ou date inventés (« Gemini 4 Ultra », « Gemini 5 », sortie en septembre ou en 2025).",
+    "Version de Gemini attribuée à la vidéo : le cours ne dit que « Gemini ».",
+    "Nombre de paramètres de Gemini 4 Argon affirmé (par exemple « mille milliards », repris du cours) : non publié dans les sources.",
+    "Modèle d'un autre éditeur donné comme réponse (GPT, Claude, Llama)."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Avec l'outil web, une abstention vaut s0. Sans outil web, dire que la vidéo ne donne pas de version et que l'état actuel ne peut pas être vérifié est une abstention justifiée (s0 justified). Une version tirée des connaissances internes, datée et signalée comme possiblement dépassée, vaut s1.",
+   "rubric": {
+    "s3": "Gemini 4 Argon, daté (13/10/2026 ou mi-octobre 2026) et attribué à une source nommée (notes de version de l'application Gemini, documentation de l'API, annonce de Google). Une réponse plus récente que le 22/10/2026 est acceptée si elle est sourcée et datée. Rien n'est attribué à la vidéo. Réponse en français.",
+    "s2": "Gemini 4 Argon sans source ou sans date ; ou la bonne réponse sourcée avec une erreur secondaire (date décalée de quelques semaines, public d'accès faux).",
+    "s1": "Version plus ancienne donnée comme connaissance interne, datée et explicitement signalée comme possiblement dépassée, sans invention ; ou « un modèle de la famille Gemini 4 » sans nom ni date.",
+    "s0": "Version périmée présentée comme actuelle, nom ou date inventés, version attribuée à la vidéo, hors sujet, ou abstention alors que le web est disponible. Sans outil web, l'abstention vaut s0 mais est justifiée."
+   },
+   "confidence": "medium"
+  },
+  {
+   "questionId": "cnrs-m1",
+   "askedQuestion": "Combien de neurones a-t-il donnés pour l'éléphant, et combien en compte un cerveau humain ?",
+   "poseS": 176,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web (part vidéo : mémoire, search_moments ou get_transcript)",
+   "answerableAtPose": "yes : part vidéo disponible (ancienne), part extérieure par le web",
+   "requiredFacts": [
+    {
+     "fact": "Part vidéo : pour l'éléphant, il cite 250 milliards de neurones (« par rapport à un éléphant, on est à 250 milliards de neurones »).",
+     "startS": 94.18,
+     "endS": 96.08,
+     "modality": "speech",
+     "availability": "A (blocs [88,96) et [96,104), Δ ≥ 72 s ; fait ancien, hors fenêtre [120,168))",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Part extérieure : un cerveau humain adulte compte environ 86 milliards de neurones (86,1 ± 8,1 milliards, Azevedo et al., J Comp Neurol, 2009).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://pubmed.ncbi.nlm.nih.gov/19226510/"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Il donne aussi l'escargot : « 10 000 neurones à peu près ».",
+     "startS": 90.94,
+     "endS": 93.51,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "La frise de 00:24 à 01:36 dessine des silhouettes humaines entre l'oiseau et l'éléphant, mais le cours ne donne aucun chiffre pour l'humain.",
+     "startS": 24,
+     "endS": 98,
+     "modality": "visual",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "La mesure publiée pour l'éléphant d'Afrique est de 257 milliards de neurones, dont 97,5 % dans le cervelet ; son cortex n'en a que 5,6 milliards, environ un tiers du cortex humain (Herculano-Houzel et al., 2014). Cohérent avec les 250 milliards du cours.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://pubmed.ncbi.nlm.nih.gov/24971054/"
+    },
+    {
+     "fact": "Le chiffre courant de 100 milliards de neurones humains est celui que l'étude de 2009 corrige.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://pubmed.ncbi.nlm.nih.gov/19226510/"
+    },
+    {
+     "fact": "L'ASR locale du système transcrit ce passage « 10 000 € d'un peu près… on est à 250 milliards de », sans le mot « neurones » : la question le fournit.",
+     "startS": 88,
+     "endS": 96,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://pubmed.ncbi.nlm.nih.gov/19226510/",
+     "title": "Equal numbers of neuronal and nonneuronal cells make the human brain an isometrically scaled-up primate brain (Azevedo et al., J Comp Neurol, 2009)",
+     "consultedAt": "2026-10-22",
+     "extract": "We find that the adult male human brain contains on average 86.1 +/- 8.1 billion NeuN-positive cells (\"neurons\")",
+     "supports": "Cerveau humain adulte : environ 86 milliards de neurones ; l'étude corrige le chiffre courant de 100 milliards."
+    },
+    {
+     "url": "https://pubmed.ncbi.nlm.nih.gov/24971054/",
+     "title": "The elephant brain in numbers (Herculano-Houzel et al., Front Neuroanat, 2014)",
+     "consultedAt": "2026-10-22",
+     "extract": "contains 257 billion (10(9)) neurons, three times more than the average human brain",
+     "supports": "Mesure publiée pour l'éléphant d'Afrique (257 milliards), cohérente avec les 250 milliards du cours ; 97,5 % dans le cervelet."
+    }
+   ],
+   "inventionTraps": [
+    "Chiffre humain présenté comme dit dans la vidéo : le cours n'en donne aucun.",
+    "Chiffre de la vidéo faux : 10 000 (c'est l'escargot), 250 millions, ou 257 milliards présenté comme dit dans le cours.",
+    "Chiffre humain faux : 10 milliards, 1 000 milliards, ou 16 milliards (neurones du seul cortex) donné pour le cerveau entier.",
+    "Neurones confondus avec les paramètres des IA (mille milliards de paramètres pour les LLM).",
+    "Anticipation : l'exemple du chat et du lapin ou la suite du cours n'apportent aucun chiffre de neurones."
+   ],
+   "abstentionPolicy": "La part vidéo est disponible : sortie de la fenêtre récente, elle relève de la mémoire ou de search_moments ; l'oublier vaut au plus s1. Sans outil web, donner 250 milliards et dire qu'on ne peut pas vérifier le chiffre humain est une abstention justifiée sur ce volet (s1). Ne rien répondre vaut s0.",
+   "rubric": {
+    "s3": "Les deux volets : 250 milliards pour l'éléphant, attribué au cours ; environ 86 milliards pour l'humain, attribué à une source (étude d'Azevedo et al. 2009, travaux de Herculano-Houzel, encyclopédie). Bonus : l'escargot à 10 000, la mesure de 257 milliards pour l'éléphant présentée comme publiée. Réponse en français.",
+    "s2": "Les deux volets justes mais le chiffre humain sans source ; ou « environ 100 milliards » donné comme ordre de grandeur courant avec une source ou une réserve ; ou une imprécision mineure sur la part vidéo (« plus de 200 milliards »).",
+    "s1": "Un seul volet juste : 250 milliards pour l'éléphant, avec abstention justifiée ou silence sur l'humain ; ou 86 milliards sourcé sans la part vidéo.",
+    "s0": "Part vidéo fausse et part extérieure absente ou fausse ; chiffre humain présenté comme dit dans la vidéo ; hors sujet ; abstention complète."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-o1",
+   "askedQuestion": "Sur la première diapositive « L'éducation d'une grande IA », celle des deux têtes (robot et humain), quelle petite annotation figurait à côté du titre ?",
+   "poseS": 576,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "inspectInterval": "[472, 496) — visuel affiché de 07:54 à 08:14 (images 474 à 494 s)",
+   "answerableAtPose": "yes avec inspect_clip sur [472, 496) ; ni la parole ni les descriptions de la vision ne contiennent l'annotation ; la diapositive visible à la pose porte le même titre sans annotation",
+   "requiredFacts": [
+    {
+     "fact": "Annotation « Celles qui sont à la mode ! », en petits caractères à droite du titre « L'éducation d'une « grande IA » » et de sa bulle rouge « ? », reliée par un trait fin.",
+     "startS": 473,
+     "endS": 496,
+     "modality": "onscreen-text",
+     "availability": "A pour les images (blocs [472,480) à [488,496), Δ ≥ 80 s, hors fenêtre [520,568)) ; absente des descriptions de N2 (« éducation des grandes IA », « comme chez nous », « deux cerveaux ») et de la parole : seulement par inspect_clip",
+     "source": "vidéo (images 07:54–08:14)"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Sous le titre : « C'est un peu comme chez nous, les humains ! », avec une tête de robot et une tête humaine au cerveau dessiné, reliées par un pointillé. La phrase est aussi dite à l'oral (« ça va être un peu comme chez nous, les humains », 478,0–479,2 s).",
+     "startS": 473,
+     "endS": 496,
+     "modality": "onscreen-text",
+     "availability": "A"
+    },
+    {
+     "fact": "Dès 08:16, la diapositive des cinq étapes (Données, Modèle de fondation, Instruct model, Modèle aligné, Au boulot !) remplace ce visuel sous le même titre ; l'annotation n'y figure plus (vérifié de 08:16 à 09:52, donc dans toute la fenêtre [520,568)).",
+     "startS": 496,
+     "endS": 864,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "Sous-titre « C'est un peu comme chez nous, les humains ! » donné comme l'annotation.",
+    "Annotation inventée (« Les LLM », « ChatGPT, Gemini… », « Comme les humains ? », « Les grosses IA »).",
+    "Annotation attribuée à la parole : il ne la prononce pas.",
+    "Texte de la diapositive des cinq étapes, visible dans la fenêtre récente (« Au boulot ! », « Briefing, éthique et bonne conduite ! »), donné comme réponse.",
+    "« Il n'y a pas d'annotation » tiré de la diapositive des cinq étapes, qui porte le même titre et est seule visible dans la fenêtre récente.",
+    "Reprise des descriptions de la vision (« deux cerveaux ») présentée comme lecture de l'annotation."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse exige de réexaminer [472, 496). Une abstention, « la vidéo ne le montre pas » ou « mes descriptions n'en parlent pas » vaut s0, non justifiée.",
+   "rubric": {
+    "s3": "« Celles qui sont à la mode ! » (à la ponctuation près), présentée comme une annotation écrite près du titre. Rien d'inventé.",
+    "s2": "Le sens juste sans la citation exacte (« les IA à la mode », « celles qui sont à la mode » paraphrasé) ; ou la bonne annotation avec une erreur mineure de mise en page.",
+    "s1": "Seulement le sous-titre « C'est un peu comme chez nous, les humains ! » ou une description générale de la diapositive, sans invention.",
+    "s0": "Annotation inventée ou tirée d'une autre diapositive, « rien n'est écrit », abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-w2",
+   "askedQuestion": "Qui a inventé l'expression « modèle de fondation » dont il parle, et quand ?",
+   "poseS": 648,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "yes avec l'outil web ; le cours emploie le terme sans en donner l'origine",
+   "requiredFacts": [
+    {
+     "fact": "L'expression « foundation model » a été forgée par le Center for Research on Foundation Models (CRFM) du Stanford Institute for Human-Centered Artificial Intelligence (HAI).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://en.wikipedia.org/wiki/Foundation_model ; https://arxiv.org/abs/2108.07258"
+    },
+    {
+     "fact": "En août 2021, avec le rapport « On the Opportunities and Risks of Foundation Models » (Bommasani et al., arXiv 2108.07258, déposé le 16/08/2021).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://arxiv.org/abs/2108.07258 ; https://en.wikipedia.org/wiki/Foundation_model"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Dans la vidéo : « une première phase d'apprentissage pour faire ce que l'on appelle un modèle de fondation » ; « un modèle de fondation, c'est un modèle qui apprend à parler, qui maîtrise le langage ».",
+     "startS": 538.38,
+     "endS": 549.4,
+     "modality": "speech",
+     "availability": "A (blocs [536,544) et [544,552), Δ ≥ 96 s)",
+     "source": "vidéo"
+    },
+    {
+     "fact": "« Entraîner un modèle de fondation, donc on parle de pré-training » ; la diapositive des cinq étapes affiche « Modèle de fondation » et « Pre-training ».",
+     "startS": 602,
+     "endS": 613.3,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Le rapport explique le nom par leur caractère « central mais incomplet » et définit un tel modèle comme entraîné sur des données larges, en général par auto-supervision à grande échelle, puis adaptable à de nombreuses tâches.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://arxiv.org/abs/2108.07258"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://arxiv.org/abs/2108.07258",
+     "title": "On the Opportunities and Risks of Foundation Models (Bommasani et al., CRFM, Stanford HAI ; v1 du 16/08/2021)",
+     "consultedAt": "2026-10-22",
+     "extract": "We call these models foundation models to underscore their critically central yet incomplete character.",
+     "supports": "Le rapport du CRFM de Stanford introduit le nom « foundation models » en août 2021."
+    },
+    {
+     "url": "https://en.wikipedia.org/wiki/Foundation_model",
+     "title": "Foundation model — Wikipedia",
+     "consultedAt": "2026-10-22",
+     "extract": "Center for Research on Foundation Models (CRFM) coined the term \"foundation model\" in August 2021",
+     "supports": "Le CRFM du Stanford HAI a forgé le terme en août 2021."
+    }
+   ],
+   "inventionTraps": [
+    "Origine attribuée au cours, au CNRS ou à FIDLE.",
+    "Origine fausse : OpenAI (GPT, 2018), Google (BERT, Transformers 2017), Yann LeCun, Geoffrey Hinton.",
+    "Date fausse donnée avec assurance (2017, 2019, 2022, 2023).",
+    "Confusion entre l'invention du terme et celle du pré-entraînement ou de l'architecture Transformer."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Avec l'outil web, une abstention vaut s0. Sans outil web, « je ne peux pas vérifier » sans invention est une abstention justifiée (s0 justified) ; une réponse de connaissance interne juste mais non sourcée vaut s2.",
+   "rubric": {
+    "s3": "Le CRFM de Stanford (ou « des chercheurs de Stanford, HAI ») et août 2021, attribués à une source nommée (rapport « On the Opportunities and Risks of Foundation Models », arXiv, site du CRFM, encyclopédie). Bonus : Bommasani, Percy Liang, la définition. Rien n'est attribué à la vidéo.",
+    "s2": "Stanford et 2021 sans source ; ou Stanford sourcé sans la date ; ou 2021 sourcé sans l'institution.",
+    "s1": "Une seule des deux informations, non sourcée et sans erreur ; ou une origine vague (« des chercheurs américains vers 2021 »).",
+    "s0": "Origine ou date fausses, origine attribuée à la vidéo, hors sujet, abstention avec le web disponible (sans outil web : s0 justifiée)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-o2",
+   "askedQuestion": "Sur le graphique du suivi de l'apprentissage, de quelles couleurs étaient la courbe d'apprentissage et la courbe de validation ?",
+   "poseS": 696,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "inspectInterval": "[416, 432) de préférence (07:00, courbes entières) ; toute la diapositive 3/3 couvre [334, 473)",
+   "answerableAtPose": "yes avec inspect_clip ; la parole ne cite aucune couleur et les descriptions de N2 nomment les courbes sans leurs couleurs",
+   "requiredFacts": [
+    {
+     "fact": "La courbe d'apprentissage (graphique du haut, « Evaluation via les données d'apprentissage ») est tracée en bleu ; elle monte puis plafonne.",
+     "startS": 334,
+     "endS": 473,
+     "modality": "visual",
+     "availability": "A pour les images (diapositive 3/3, 05:34–07:52, hors fenêtre [640,688)) ; couleurs absentes des descriptions de N2 : seulement par inspect_clip",
+     "source": "vidéo (images 05:34–07:52)"
+    },
+    {
+     "fact": "La courbe de validation (graphique du bas, « Evaluation via les données d'évaluation ») est tracée en orange (rouge orangé) ; elle monte jusqu'à un maximum puis redescend.",
+     "startS": 334,
+     "endS": 473,
+     "modality": "visual",
+     "availability": "A pour les images ; seulement par inspect_clip",
+     "source": "vidéo (images 05:34–07:52)"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Le mot « Surapprentissage » est écrit en rose-rouge sous la partie descendante, à droite d'un pointillé vertical au maximum ; l'axe horizontal porte « Epoch ».",
+     "startS": 334,
+     "endS": 473,
+     "modality": "onscreen-text",
+     "availability": "A"
+    },
+    {
+     "fact": "Le formateur, incrusté, masque parfois la moitié droite de la courbe de validation (05:40, 07:50) ; à 07:00 il est réduit en haut du graphique et la courbe est entière.",
+     "startS": 340,
+     "endS": 470,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "La parole décrit les formes sans couleur : la courbe sur les données d'apprentissage progresse tout le temps, celle sur les données d'évaluation progresse jusqu'à un maximum puis régresse (surapprentissage).",
+     "startS": 359.7,
+     "endS": 432.9,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "Couleurs inversées (validation en bleu, apprentissage en orange) ou fausses (vert, violet, noir).",
+    "Couleurs présentées comme dites dans la parole : le cours n'en cite aucune.",
+    "Description de la vision reprise sans couleur (« courbe d'apprentissage et de validation ») présentée comme réponse complète.",
+    "Confusion avec les éléments rouges d'autres diapositives : pastilles numérotées de la diapositive 2/3, badges « 1/3 », « 2/3 », « 3/3 »."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse exige de réexaminer la diapositive 3/3, par exemple [416, 432). Une abstention ou « la vidéo ne précise pas les couleurs » vaut s0, non justifiée.",
+   "rubric": {
+    "s3": "Apprentissage en bleu et validation en orange (« rouge orangé », « orange-rouge » acceptés), chacune bien attribuée. Bonus : les formes (l'une plafonne, l'autre monte puis redescend), « Surapprentissage », l'axe « Epoch ».",
+    "s2": "Une seule couleur juste et l'autre absente ; ou apprentissage en bleu et validation dite « rouge ».",
+    "s1": "Formes justes des courbes sans couleur, ou « deux couleurs différentes » sans les nommer.",
+    "s0": "Couleurs fausses ou inversées, couleurs attribuées à la parole, abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-m2",
+   "askedQuestion": "Selon lui, quelle a été la force d'OpenAI avec ChatGPT, et par quelle méthode OpenAI a-t-il réalisé cet alignement ?",
+   "poseS": 792,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web (part vidéo dans la fenêtre récente)",
+   "answerableAtPose": "yes : part vidéo récente, part extérieure par le web",
+   "requiredFacts": [
+    {
+     "fact": "Part vidéo : la force d'OpenAI avec ChatGPT a été de « réussir à faire un alignement qui tienne la route et qui ne soit pas battu en brèche ».",
+     "startS": 764.3,
+     "endS": 773.16,
+     "modality": "speech",
+     "availability": "A (blocs [760,768) et [768,776), Δ ≥ 16 s ; fait récent, fenêtre [736,784))",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Part extérieure : OpenAI a entraîné ChatGPT par apprentissage par renforcement à partir de retours humains (RLHF), avec les mêmes méthodes qu'InstructGPT (annonce « Introducing ChatGPT », 30/11/2022).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://openai.com/index/chatgpt/ ; https://fr.wikipedia.org/wiki/ChatGPT ; https://arxiv.org/abs/2203.02155"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Part vidéo : l'IA « va se retrouver devant une multitude de personnes » qui « vont essayer de la pousser à l'erreur, de la pousser à la faute » ; les mots vont jusqu'à « et l'alignement doit » (783,9–784,1 s) ; « résister » (784,1–784,7 s) tombe dans le bloc [784,792), indisponible.",
+     "startS": 773.53,
+     "endS": 783.9,
+     "modality": "speech",
+     "availability": "A pour l'essentiel, fin en C",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Part vidéo : l'alignement, c'est apprendre à respecter des règles éthiques et professionnelles, un savoir-être (« tu dois répondre avec bienveillance »).",
+     "startS": 728.66,
+     "endS": 763.25,
+     "modality": "speech",
+     "availability": "A"
+    },
+    {
+     "fact": "Procédé décrit par OpenAI : des formateurs humains écrivent des dialogues (ajustement supervisé), classent plusieurs réponses du modèle pour entraîner un modèle de récompense, puis le modèle est optimisé par PPO, en plusieurs itérations.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://openai.com/index/chatgpt/"
+    },
+    {
+     "fact": "InstructGPT (Ouyang et al., OpenAI, mars 2022) : modèles affinés par RLHF.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://arxiv.org/abs/2203.02155"
+    },
+    {
+     "fact": "L'ASR locale du système écrit « la force par exemple d'opinier » puis « avec ChatGPT » : la question nomme OpenAI.",
+     "startS": 760,
+     "endS": 776,
+     "modality": "speech",
+     "availability": "A"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://openai.com/index/chatgpt/",
+     "title": "Introducing ChatGPT (OpenAI, 30/11/2022)",
+     "consultedAt": "2026-10-22",
+     "extract": "We trained this model using Reinforcement Learning from Human Feedback (RLHF), using the same methods as InstructGPT",
+     "supports": "ChatGPT a été entraîné par RLHF, avec les méthodes d'InstructGPT. Page refusée (HTTP 403) à l'outil de lecture ; phrase confirmée par une recherche exacte qui renvoie openai.com."
+    },
+    {
+     "url": "https://fr.wikipedia.org/wiki/ChatGPT",
+     "title": "ChatGPT — Wikipédia",
+     "consultedAt": "2026-10-22",
+     "extract": "Une troisième phase d'apprentissage utilise une technique d'apprentissage par renforcement appelée RLHF",
+     "supports": "Corrobore le RLHF dans l'entraînement de ChatGPT ; lancement le 30 novembre 2022."
+    },
+    {
+     "url": "https://arxiv.org/abs/2203.02155",
+     "title": "Training language models to follow instructions with human feedback (Ouyang et al., OpenAI ; v1 du 04/03/2022)",
+     "consultedAt": "2026-10-22",
+     "extract": "using reinforcement learning from human feedback. We call the resulting models InstructGPT.",
+     "supports": "Méthode InstructGPT (RLHF) reprise pour ChatGPT."
+    }
+   ],
+   "inventionTraps": [
+    "RLHF ou toute technique présentés comme dits dans la vidéo : le cours ne nomme aucune méthode.",
+    "Méthode d'un autre acteur attribuée à OpenAI pour ChatGPT : « IA constitutionnelle » (Anthropic) ; DPO présenté comme la méthode de 2022.",
+    "Force d'OpenAI inventée : taille du modèle, quantité de données, rapidité, pré-entraînement, gratuité.",
+    "Date de lancement de ChatGPT fausse (2020, 2021, 2023).",
+    "Anticipation : la mise en production (« inférence », 13:47) ou le nouveau collaborateur (13:21) donnés comme la force d'OpenAI."
+   ],
+   "abstentionPolicy": "La part vidéo est dans la fenêtre récente. Sans outil web, la part vidéo plus « je ne peux pas vérifier la méthode d'OpenAI » vaut s1 (abstention justifiée sur le volet extérieur) ; RLHF donné de mémoire, juste mais non sourcé, vaut au plus s2. Ne rien répondre vaut s0.",
+   "rubric": {
+    "s3": "Les deux volets : un alignement solide, qui tient la route et n'est pas battu en brèche face à ceux qui poussent l'IA à la faute (part vidéo, attribuée au cours) ; RLHF, apprentissage par renforcement à partir de retours humains, attribué à OpenAI ou à une source (annonce de ChatGPT, article InstructGPT, encyclopédie). Bonus : les étapes (classement humain, modèle de récompense, PPO).",
+    "s2": "Les deux volets justes mais RLHF sans source ; ou la part vidéo réduite à « l'alignement » sans la robustesse, avec RLHF sourcé.",
+    "s1": "Un seul volet juste : la part vidéo avec abstention justifiée ou silence sur la méthode ; ou RLHF sourcé sans la part vidéo.",
+    "s0": "Les deux volets faux ou absents ; méthode fausse (IA constitutionnelle) ; RLHF attribué à la vidéo ; abstention complète."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cnrs-w3",
+   "askedQuestion": "Il parle des règles éthiques imposées aux IA : où en est aujourd'hui l'AI Act, la loi européenne sur l'IA ?",
+   "poseS": 864,
+   "category": "W",
+   "freshness": "actualité",
+   "toolExpected": "web",
+   "answerableAtPose": "yes avec l'outil web ; le cours ne parle d'aucune loi",
+   "requiredFacts": [
+    {
+     "fact": "Au 22/10/2026, l'AI Act est entré en vigueur le 1er août 2024 et s'applique depuis le 2 août 2026, avec des exceptions.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+    },
+    {
+     "fact": "L'« omnibus IA » (accord politique du 7 mai 2026, en vigueur depuis le 27 juillet 2026) a reporté les obligations des systèmes à haut risque : au 2 décembre 2027 pour les usages de l'annexe III (biométrie, infrastructures critiques, éducation, emploi, migration…) et au 2 août 2028 pour les systèmes intégrés à des produits réglementés.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Pratiques interdites applicables depuis le 2 février 2025 ; règles de gouvernance et obligations des modèles d'IA à usage général (GPAI) depuis le 2 août 2025 ; une neuvième interdiction (contenus sexuels non consentis, pédopornographie) prend effet en décembre 2026 avec l'omnibus.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai"
+    },
+    {
+     "fact": "Dans la vidéo, l'alignement est un ensemble de règles éthiques et professionnelles données à l'IA par ses concepteurs (« tu ne dois pas parler de ceci… »), pour qu'elle ne tienne pas de propos xénophobes, homophobes ou racistes ; aucune loi n'est citée.",
+     "startS": 728.66,
+     "endS": 793.5,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",
+     "title": "AI Act — Shaping Europe's digital future (Commission européenne ; page mise à jour le 19/10/2026)",
+     "consultedAt": "2026-10-22",
+     "extract": "The AI Act entered into force on 1 August 2024 and became applicable on 2 August 2026, with some exceptions",
+     "supports": "En vigueur depuis le 01/08/2024, applicable depuis le 02/08/2026 ; omnibus IA en vigueur le 27/07/2026 ; haut risque au 02/12/2027 (annexe III) et au 02/08/2028 (produits)."
+    }
+   ],
+   "inventionTraps": [
+    "État ancien présenté comme actuel : AI Act « en projet » ou « en négociation », omnibus « seulement proposé » (état de fin 2025), ou toutes les obligations à haut risque applicables depuis août 2026.",
+    "Dates fausses (adoption en 2023 donnée comme entrée en vigueur, application complète en 2025).",
+    "Mention de l'AI Act attribuée à la vidéo : le cours ne parle que des règles d'alignement fixées par les concepteurs.",
+    "Confusion avec le RGPD, le DSA ou le DMA.",
+    "Numéro de règlement, montants d'amendes ou dates de l'omnibus inventés et non sourcés."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Avec l'outil web, une abstention vaut s0. Sans outil web, dire que l'état actuel ne peut pas être vérifié est une abstention justifiée (s0 justified) ; un état ancien daté et signalé comme possiblement dépassé vaut s1.",
+   "rubric": {
+    "s3": "L'état au 22/10/2026 : en vigueur depuis août 2024, applicable depuis le 2 août 2026 avec des exceptions, obligations à haut risque reportées à décembre 2027 et août 2028 par l'omnibus IA ; attribué à une source datée (Commission européenne, page mise à jour le 19/10/2026, ou équivalent officiel ou presse reconnue). Un état plus récent est accepté s'il est sourcé et daté.",
+    "s2": "Deux des trois éléments (en vigueur depuis 2024, applicable depuis août 2026, report du haut risque) avec une source ; ou les trois sans source ni date.",
+    "s1": "État ancien mais daté et signalé comme possiblement dépassé (par exemple « fin 2025, le report du haut risque était proposé »), sans invention ; ou seulement « en vigueur depuis 2024 ».",
+    "s0": "État faux présenté comme actuel, dates inventées, loi attribuée à la vidéo, hors sujet, abstention avec le web disponible (sans outil web : s0 justifiée)."
+   },
+   "confidence": "high"
+  }
+ ],
+ "cuisine": [
+  {
+   "questionId": "cuisine-m1",
+   "askedQuestion": "Quels morceaux de bœuf prend-il d'habitude, et de quelle partie de l'animal viennent-ils ?",
+   "poseS": 144,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web (part vidéo : mémoire, search_moments ou get_transcript)",
+   "answerableAtPose": "yes : part vidéo disponible (ancienne), part extérieure par le web",
+   "requiredFacts": [
+    {
+     "fact": "Part vidéo : « en général je prends dans la macreuse ou le paleron ».",
+     "startS": 39.69,
+     "endS": 43.5,
+     "modality": "speech",
+     "availability": "A (blocs [32,40) et [40,48), Δ ≥ 96 s ; fait ancien, hors fenêtre [88,136))",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Part extérieure : le paleron vient de l'épaule ; c'est une partie plate et charnue voisine de l'omoplate, dans la région supérieure et postérieure de l'épaule (Wikipédia, « Paleron »).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://fr.wikipedia.org/wiki/Paleron"
+    },
+    {
+     "fact": "Part extérieure : la macreuse vient aussi de l'épaule, de la partie supérieure de la pointe d'épaule (Grand dictionnaire terminologique de l'OQLF).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://vitrinelinguistique.oqlf.gouv.qc.ca/fiche-gdt/fiche/8890493/macreuse"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Liste incrustée : « 1,2 kg de bœuf (macreuse, paleron, plat de côte, jumeau) », parmi les autres ingrédients.",
+     "startS": 40,
+     "endS": 53,
+     "modality": "onscreen-text",
+     "availability": "A (blocs [40,48) et [48,56), Δ ≥ 88 s)",
+     "source": "vidéo"
+    },
+    {
+     "fact": "« Nous verrons le bœuf un peu plus tard dans une autre vidéo » : il ne situe pas les morceaux.",
+     "startS": 44.6,
+     "endS": 46.95,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Le paleron, gélatineux, se prête aux braisés et plats mijotés comme le bourguignon (Wikipédia, « Paleron »).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://fr.wikipedia.org/wiki/Paleron"
+    },
+    {
+     "fact": "Selon le GDT québécois, la macreuse correspond au muscle sous-épineux. La correspondance entre muscles et dénominations varie selon les découpes (française, nord-américaine) : un muscle cité avec sa source n'est ni exigé ni sanctionné ; seule l'épaule compte.",
+     "modality": "web",
+     "availability": "externe (non exigé)",
+     "source": "https://vitrinelinguistique.oqlf.gouv.qc.ca/fiche-gdt/fiche/8890493/macreuse"
+    },
+    {
+     "fact": "La viande est « parée, c'est-à-dire retirée des gras, des nerfs » avant la marinade.",
+     "startS": 84,
+     "endS": 92.4,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://fr.wikipedia.org/wiki/Paleron",
+     "title": "Paleron — Wikipédia",
+     "consultedAt": "2026-10-22",
+     "extract": "Le paleron est une partie plate et charnue qui avoisine l'omoplate du bœuf.",
+     "supports": "Le paleron vient de l'épaule (région supérieure et postérieure), près de l'omoplate ; adapté aux braisés comme le bourguignon."
+    },
+    {
+     "url": "https://vitrinelinguistique.oqlf.gouv.qc.ca/fiche-gdt/fiche/8890493/macreuse",
+     "title": "macreuse — Grand dictionnaire terminologique (Office québécois de la langue française)",
+     "consultedAt": "2026-10-22",
+     "extract": "Coupe provenant de la partie supérieure de la pointe d'épaule (muscle sous-épineux).",
+     "supports": "La macreuse vient de l'épaule."
+    }
+   ],
+   "inventionTraps": [
+    "Morceaux non cités présentés comme son choix : joue, gîte, collier, bavette, gîte à la noix, basses côtes.",
+    "Localisation fausse : cuisse, arrière, croupe, flanc, ventre, cou.",
+    "Localisation présentée comme dite dans la vidéo : il ne situe pas les morceaux.",
+    "Localisation affirmée sans source pour le plat de côte ou le jumeau de la liste incrustée, comme si tous les morceaux venaient de l'épaule."
+   ],
+   "abstentionPolicy": "La part vidéo est disponible (ancienne : mémoire ou search_moments). Sans outil web, citer macreuse et paleron et dire qu'on ne peut pas vérifier leur emplacement est une abstention justifiée sur ce volet (s1). Ne rien répondre vaut s0.",
+   "rubric": {
+    "s3": "Macreuse et paleron (part vidéo, attribuée au cuisinier), et tous deux situés dans l'épaule (l'avant de l'animal), avec une source nommée. Bonus : la liste à l'écran (plat de côte, jumeau, 1,2 kg), l'omoplate, l'usage en braisé. Un nom de muscle sourcé est toléré, jamais exigé. Réponse en français.",
+    "s2": "Les deux volets justes sans source ; ou un seul des deux morceaux cité, avec l'épaule sourcée.",
+    "s1": "Un seul volet : macreuse et paleron sans localisation (ou avec abstention justifiée) ; ou « l'épaule » sourcée sans les morceaux de la vidéo.",
+    "s0": "Morceaux faux, localisation fausse, localisation attribuée à la vidéo, abstention complète."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-w1",
+   "askedQuestion": "Il n'utilise pas de vin de Bourgogne : avec quel cépage fait-on les bourgognes rouges ?",
+   "poseS": 200,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "yes avec l'outil web ; la vidéo ne cite aucun cépage",
+   "requiredFacts": [
+    {
+     "fact": "Les vins rouges de Bourgogne sont faits à base de pinot noir, et aussi de gamay (Wikipédia, « Vignoble de Bourgogne »).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Dans la vidéo : « nous n'allons pas utiliser un vin de Bourgogne » ; « nous allons tester notre région, à savoir l'Occitanie ».",
+     "startS": 19.64,
+     "endS": 30.19,
+     "modality": "speech",
+     "availability": "A (blocs [16,24) et [24,32), Δ ≥ 168 s)",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Ses deux bouteilles (01:20–02:36) ne montrent que leur contre-étiquette jaune, illisible à cette définition : ni appellation ni cépage lisibles.",
+     "startS": 80,
+     "endS": 156,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://fr.wikipedia.org/wiki/Vignoble_de_Bourgogne",
+     "title": "Vignoble de Bourgogne — Wikipédia",
+     "consultedAt": "2026-10-22",
+     "extract": "La Bourgogne produit des vins rouges, à base des cépages pinot noir et gamay",
+     "supports": "Cépages des bourgognes rouges : pinot noir, et gamay."
+    }
+   ],
+   "inventionTraps": [
+    "Cépage faux : merlot, cabernet sauvignon, syrah, grenache, carignan ; chardonnay (cépage blanc) donné pour les rouges.",
+    "Cépage attribué à la vidéo : il ne parle d'aucun cépage.",
+    "Cépage ou appellation de ses bouteilles prétendument lus à l'image.",
+    "Confondre son vin d'Occitanie avec un bourgogne."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Avec l'outil web, une abstention vaut s0. Sans outil web, « je ne peux pas vérifier » sans invention est une abstention justifiée (s0 justified) ; pinot noir donné de mémoire, juste mais non sourcé, vaut s2.",
+   "rubric": {
+    "s3": "Pinot noir, attribué à une source nommée (encyclopédie, interprofession des vins de Bourgogne, guide). Bonus : le gamay comme autre cépage rouge. Rien n'est attribué à la vidéo.",
+    "s2": "Pinot noir sans source ; ou pinot noir sourcé avec une erreur secondaire (chardonnay compté parmi les cépages rouges).",
+    "s1": "Seulement le gamay, ou seulement « un vin rouge de Bourgogne » sans cépage, sans invention.",
+    "s0": "Cépage faux, cépage attribué à la vidéo, hors sujet, abstention avec le web disponible (sans outil web : s0 justifiée)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-w2",
+   "askedQuestion": "Que met-on d'habitude dans un bouquet garni ?",
+   "poseS": 248,
+   "category": "W",
+   "freshness": "stable",
+   "toolExpected": "web",
+   "answerableAtPose": "yes avec l'outil web ; la vidéo emploie le terme sans le détailler",
+   "requiredFacts": [
+    {
+     "fact": "Un bouquet garni de base se compose de thym et de laurier (laurier sauce), ficelés ensemble (Wikipédia, « Bouquet garni »).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://fr.wikipedia.org/wiki/Bouquet_garni"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Ajouts courants : vert de poireau, persil, sarriette, sauge, romarin, gousse d'ail, branche de céleri, origan ; on le ficelle pour pouvoir le retirer facilement en fin de cuisson (Wikipédia).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://fr.wikipedia.org/wiki/Bouquet_garni"
+    },
+    {
+     "fact": "Dans la vidéo, « bouquet garni » est dit dans la liste des ingrédients, à la mise en marinade (« Mon bouquet garni ») et à la séparation du lendemain, sans composition.",
+     "startS": 53.98,
+     "endS": 209.43,
+     "modality": "speech",
+     "availability": "A (55–58, 95–97, 140–142, 207–209 s)",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Images : un petit fagot d'herbes séchées ficelé, avec une feuille verte, posé dans un plat (01:28–01:38) puis dans la marinade (02:26–02:46). Il évoque du thym, mais rien n'est nommé ; la feuille n'est pas identifiable avec certitude.",
+     "startS": 88,
+     "endS": 166,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://fr.wikipedia.org/wiki/Bouquet_garni",
+     "title": "Bouquet garni — Wikipédia",
+     "consultedAt": "2026-10-22",
+     "extract": "Un bouquet garni de base se compose de : thym ; laurier sauce (laurus nobilis).",
+     "supports": "Base : thym et laurier ; éventuellement vert de poireau, persil, sarriette, sauge, romarin, ail, céleri… ; ficelé pour être retiré en fin de cuisson."
+    }
+   ],
+   "inventionTraps": [
+    "Composition présentée comme dite ou montrée avec certitude dans la vidéo (« il y met du thym, du laurier et du persil »).",
+    "Éléments donnés comme base du bouquet garni alors qu'ils n'en font pas partie : clou de girofle, poivre en grains, carotte, oignon.",
+    "Confusion avec les herbes de Provence ou un mélange d'épices en poudre.",
+    "Anticipation : le retrait du bouquet garni en fin de cuisson (09:13) présenté comme déjà dit."
+   ],
+   "abstentionPolicy": "La réponse est absente de la parole et non identifiable avec certitude à l'image. Avec l'outil web, une abstention vaut s0. Sans outil web, une réponse de connaissance interne juste mais non sourcée vaut s2 ; « je ne peux pas vérifier » sans invention est une abstention justifiée (s0 justified).",
+   "rubric": {
+    "s3": "Thym et laurier comme base, attribués à une source nommée (encyclopédie, dictionnaire, ouvrage de cuisine). Bonus : persil, vert de poireau, céleri ; ficelé pour être retiré. Rien n'est attribué à la vidéo, ou l'image est décrite avec réserve.",
+    "s2": "Thym et laurier (avec ou sans persil) sans source ; ou un seul des deux, sourcé, avec le persil.",
+    "s1": "Description vague (« des herbes aromatiques ficelées ») sans thym ni laurier, sans invention.",
+    "s0": "Composition fausse, composition attribuée à la vidéo, hors sujet, abstention avec le web disponible (sans outil web : s0 justifiée)."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-o1",
+   "askedQuestion": "Avec quoi a-t-il versé l'huile dans la cocotte avant de saisir la viande ?",
+   "poseS": 304,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "inspectInterval": "[208, 232) — bouteille en main de 03:34 à 03:46",
+   "answerableAtPose": "yes avec inspect_clip sur [208, 232) ; la parole ne dit pas le contenant et la vision de N2 a écrit « pulvérisateur »",
+   "requiredFacts": [
+    {
+     "fact": "L'huile est versée directement depuis une bouteille d'huile en plastique transparent, à bouchon à clapet jaune, qu'il soulève puis incline au-dessus de la cocotte (03:34–03:46).",
+     "startS": 214,
+     "endS": 228,
+     "modality": "visual",
+     "availability": "A pour les images (blocs [208,216) à [224,232), Δ ≥ 72 s, hors fenêtre [248,296)) ; la description de N2 dit « pulvérisateur » dans [216,224) et [224,232) : seulement par inspect_clip",
+     "source": "vidéo (images 03:34–03:46)"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "La cocotte est un faitout en inox, vide, posé sur une plaque à induction noire ; un plat bleu et blanc attend à côté ; la viande y est mise ensuite (03:52).",
+     "startS": 222,
+     "endS": 234,
+     "modality": "visual",
+     "availability": "A"
+    },
+    {
+     "fact": "Parole : « on met de l'huile, surtout pas d'huile d'olive, de l'huile de tournesol, de l'huile de colza, de l'huile de ce que vous voulez », « il faut que ça chauffe fort pour que le morceau de viande soit saisi ».",
+     "startS": 217.22,
+     "endS": 228.76,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« Pulvérisateur » ou « vaporisateur » : erreur de la vision de N2 dans [216,224) et [224,232).",
+    "Huile versée à la cuillère, à la louche, depuis une burette, un bol ou un pot.",
+    "Type d'huile affirmé comme lu sur la bouteille (tournesol, colza, olive) : l'étiquette est illisible ; il dit seulement « tournesol, colza, ce que vous voulez ».",
+    "Huile versée « dans un bol de carottes et d'oignons » (autre erreur de la vision) : elle va dans le faitout vide."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse exige de réexaminer [208, 232). Une abstention ou « la vidéo ne le précise pas » vaut s0, non justifiée.",
+   "rubric": {
+    "s3": "Une bouteille d'huile en plastique (transparente, bouchon jaune), versée directement dans la cocotte. Aucun pulvérisateur.",
+    "s2": "« Directement à la bouteille » sans autre détail ; ou la bouteille juste avec une erreur secondaire (versée dans une poêle).",
+    "s1": "Réponse vague (« il verse de l'huile dans la cocotte ») sans contenant, sans invention.",
+    "s0": "Pulvérisateur, cuillère, burette ou autre contenant faux ; abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-m2",
+   "askedQuestion": "Pourquoi tient-il à bien saisir la viande, et comment s'appelle la réaction qui forme cette croûte ?",
+   "poseS": 424,
+   "category": "M",
+   "freshness": "stable",
+   "toolExpected": "web (part vidéo : mémoire, search_moments ou get_transcript)",
+   "answerableAtPose": "yes : part vidéo disponible (ancienne), part extérieure par le web",
+   "requiredFacts": [
+    {
+     "fact": "Part vidéo : plus les morceaux sont saisis, « moins ils rentrent d'eau » et plus il se forme « une petite croûte », très importante pendant la cuisson : elle protège l'intérieur, qui cuit, tandis que l'extérieur reste « un petit peu fermé ».",
+     "startS": 263,
+     "endS": 277.32,
+     "modality": "speech",
+     "availability": "A (blocs [256,264) à [272,280), Δ ≥ 144 s ; fait ancien, hors fenêtre [368,416))",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Part extérieure : le brunissement de la viande saisie relève des réactions de Maillard, entre sucres réducteurs et composés aminés (acides aminés, protéines) sous l'effet de la chaleur (Wikipédia, « Réaction de Maillard »).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Parole : « il faut que ça chauffe fort pour que le morceau de viande soit saisi », à feu très vif, tous les morceaux en contact ; « ça fait de la buée, c'est bon signe : l'eau s'évapore et ne reste pas dans le fond ».",
+     "startS": 225.62,
+     "endS": 287.72,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "La réaction porte le nom du chimiste et médecin Louis-Camille Maillard. Wikipédia rapporte que des sources lui attribuent la découverte en 1911, et signale une antériorité revendiquée pour Arthur R. Ling (1908). 1911 et 1912 (date souvent citée) sont acceptés ; la mention sourcée de Ling n'est pas une invention.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard"
+    },
+    {
+     "fact": "L'idée qu'une croûte « scelle » l'intérieur est discutée en science culinaire ; une réserve sourcée est tolérée, jamais exigée.",
+     "modality": "web",
+     "availability": "externe (non exigé)"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://fr.wikipedia.org/wiki/R%C3%A9action_de_Maillard",
+     "title": "Réaction de Maillard — Wikipédia",
+     "consultedAt": "2026-10-22",
+     "extract": "C'est aussi la plus facilement observable grâce au brunissement rapide de la viande produit notamment par les mélanoïdines,",
+     "supports": "Le brunissement (la croûte) de la viande saisie relève des réactions de Maillard, entre sucres réducteurs et composés aminés ; découverte attribuée à Louis-Camille Maillard (1911), antériorité revendiquée pour Arthur R. Ling (1908)."
+    }
+   ],
+   "inventionTraps": [
+    "« Caramélisation » seule donnée comme la réaction de la croûte de viande.",
+    "Réaction de Maillard présentée comme nommée dans la vidéo : il ne parle que de croûte.",
+    "Raison inventée attribuée au cuisinier : attendrir la viande, tuer les bactéries, garder le sang, accélérer la cuisson.",
+    "Chimiste ou date inventés (Maillard en 1911 ou 1912 et Ling en 1908 sont attestés).",
+    "Anticipation : le singer, le mouillage ou la cuisson de deux heures donnés comme la raison de saisir."
+   ],
+   "abstentionPolicy": "La part vidéo est disponible (ancienne : mémoire ou search_moments). Sans outil web, donner la raison du cuisinier et dire qu'on ne peut pas vérifier le nom de la réaction est une abstention justifiée sur ce volet (s1) ; Maillard donné de mémoire, juste mais non sourcé, vaut au plus s2. Ne rien répondre vaut s0.",
+   "rubric": {
+    "s3": "Part vidéo : une viande bien saisie forme une croûte (moins d'eau qui rentre) qui protège l'intérieur pendant la cuisson, attribué au cuisinier. Part extérieure : réaction (ou réactions) de Maillard, attribuée à une source. Bonus : sucres et acides aminés, Louis-Camille Maillard, feu très vif.",
+    "s2": "Les deux volets justes, Maillard sans source ; ou la part vidéo partielle (la croûte sans son rôle) avec Maillard sourcé.",
+    "s1": "Un seul volet : la raison du cuisinier seule (avec abstention justifiée ou silence sur la réaction) ; ou Maillard sourcé sans la raison donnée dans la vidéo.",
+    "s0": "Les deux volets faux ou absents ; caramélisation seule ; Maillard attribué à la vidéo ; abstention complète."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-o2",
+   "askedQuestion": "Avec quoi a-t-il pris et versé la farine pour singer ?",
+   "poseS": 456,
+   "category": "O",
+   "freshness": "na",
+   "toolExpected": "inspect_clip",
+   "inspectInterval": "[360, 376) — pot en main dès 06:02, mesurette de 06:08 à 06:14",
+   "answerableAtPose": "yes avec inspect_clip sur [360, 376) ; la parole dit seulement « à peu près 75 grammes » et la vision de N2 a écrit « sac » et « écumoire »",
+   "requiredFacts": [
+    {
+     "fact": "Il prend la farine dans un grand pot transparent (bocal) plein de farine, qu'il tient d'une main.",
+     "startS": 362,
+     "endS": 374,
+     "modality": "visual",
+     "availability": "A pour les images (blocs [360,368) et [368,376), Δ ≥ 80 s, hors fenêtre [400,448)) ; descriptions de N2 fausses (« à partir d'un sac », « à l'aide d'une écumoire ») : seulement par inspect_clip",
+     "source": "vidéo (images 06:02–06:14)"
+    },
+    {
+     "fact": "Il la puise et la verse avec une mesurette (cuillère doseuse) en plastique transparent, directement dans la cocotte, sur la garniture (06:08–06:14).",
+     "startS": 366,
+     "endS": 375,
+     "modality": "visual",
+     "availability": "A pour les images ; seulement par inspect_clip",
+     "source": "vidéo (images 06:08–06:14)"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Texte « Singer » incrusté à l'écran, le pot de farine déjà posé devant lui.",
+     "startS": 358,
+     "endS": 360,
+     "modality": "onscreen-text",
+     "availability": "A"
+    },
+    {
+     "fact": "Parole : singer, « c'est mettre de la farine dans un élément qui est en cuisson pour, à terme, épaissir la sauce » ; « à peu près 75 grammes de farine » ; « on va remuer ».",
+     "startS": 360.22,
+     "endS": 376.44,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    },
+    {
+     "fact": "Il mélange ensuite à la cuillère en bois (06:16–06:26). Le pot reste sur le plan de travail, la mesurette plantée dedans : son manche dépasse de 06:16 à 06:20.",
+     "startS": 376,
+     "endS": 386,
+     "modality": "visual",
+     "availability": "A"
+    }
+   ],
+   "sources": [],
+   "inventionTraps": [
+    "« Sac de farine » ou « écumoire » : erreurs de la vision de N2 dans [368,376) et [376,384).",
+    "Balance, verre doseur, tamis, ou farine saupoudrée à la main.",
+    "Nombre de mesurettes affirmé comme vu : il n'est pas établi ; les 75 g sont dits, ils ne répondent pas à « avec quoi ».",
+    "Farine versée dans un bol à part ou mélangée d'abord au vin : elle va directement dans la cocotte, sur la garniture."
+   ],
+   "abstentionPolicy": "inspect_clip est disponible : la réponse exige de réexaminer [360, 376). Une abstention ou « la vidéo ne le précise pas » vaut s0, non justifiée.",
+   "rubric": {
+    "s3": "Un pot (bocal) transparent de farine et une mesurette (cuillère doseuse, petite pelle) en plastique, versée directement dans la cocotte.",
+    "s2": "La mesurette sans le pot, ou le pot sans l'ustensile ; ou les deux avec une erreur secondaire (cuillère en métal).",
+    "s1": "Réponse vague sans ustensile, ou seulement les 75 g, sans invention.",
+    "s0": "Sac, écumoire, balance, tamis ou autre ustensile faux ; abstention."
+   },
+   "confidence": "high"
+  },
+  {
+   "questionId": "cuisine-w3",
+   "askedQuestion": "Il a choisi un vin d'Occitanie : comment s'annonce la récolte de vin 2026 dans cette région ?",
+   "poseS": 728,
+   "category": "W",
+   "freshness": "actualité",
+   "toolExpected": "web",
+   "answerableAtPose": "yes avec l'outil web ; la vidéo ne parle pas des vendanges",
+   "requiredFacts": [
+    {
+     "fact": "Au 22/10/2026, selon les prévisions au 1er octobre 2026 (DRAAF Occitanie, publiées le 07/10/2026), la récolte viticole d'Occitanie augmenterait d'environ 18 % par rapport à la très faible récolte 2025, légèrement au-dessus de la moyenne quinquennale (+1,5 %).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html"
+    },
+    {
+     "fact": "Chiffres : bassin Languedoc-Roussillon estimé à 10,59 millions d'hectolitres (+19,6 % sur 2025) ; partie du Sud-Ouest située en Occitanie à 1,92 Mhl (+11,1 %). Ce sont des estimations provisoires.",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html"
+    }
+   ],
+   "optionalFacts": [
+    {
+     "fact": "Contexte national au 1er octobre 2026 : près de 35 Mhl (contre 33,9 Mhl prévus un mois plus tôt), -2 % sur 2025 et -14 % sur la moyenne 2021-2025, une récolte historiquement basse. La révision à la hausse vient surtout des rendements du Languedoc-Roussillon (Agreste, ministère de l'Agriculture, relayé par l'AFP et Sud Radio le 07/10/2026).",
+     "modality": "web",
+     "availability": "externe",
+     "source": "https://www.sudradio.fr/societe/la-vendange-2026-revue-legerement-a-la-hausse-toujours-historiquement-basse"
+    },
+    {
+     "fact": "Dans la vidéo : « nous n'allons pas utiliser un vin de Bourgogne » ; « nous allons tester notre région, à savoir l'Occitanie ».",
+     "startS": 19.64,
+     "endS": 30.19,
+     "modality": "speech",
+     "availability": "A",
+     "source": "vidéo"
+    }
+   ],
+   "sources": [
+    {
+     "url": "https://draaf.occitanie.agriculture.gouv.fr/previsions-de-recolte-viticole-au-1er-octobre-2026-a10136.html",
+     "title": "Prévisions de récolte viticole - au 1er octobre 2026 (DRAAF Occitanie, publié le 07/10/2026)",
+     "consultedAt": "2026-10-22",
+     "extract": "la récolte augmenterait de 18 % par rapport à la très faible récolte 2025",
+     "supports": "Occitanie : +18 % sur 2025, +1,5 % sur la moyenne quinquennale ; Languedoc-Roussillon 10,59 Mhl (+19,6 %) ; Sud-Ouest en Occitanie 1,92 Mhl (+11,1 %) ; estimations."
+    },
+    {
+     "url": "https://www.sudradio.fr/societe/la-vendange-2026-revue-legerement-a-la-hausse-toujours-historiquement-basse",
+     "title": "La vendange 2026 revue légèrement à la hausse, toujours historiquement basse (Sud Radio, avec l'AFP, 07/10/2026)",
+     "consultedAt": "2026-10-22",
+     "extract": "à près de 35 millions d'hectolitres (mhl)",
+     "supports": "Contexte national au 1er octobre 2026 : près de 35 Mhl (33,9 un mois plus tôt), -2 % sur 2025, -14 % sur la moyenne 2021-2025 ; révision portée par le Languedoc-Roussillon ; source Agreste."
+    }
+   ],
+   "inventionTraps": [
+    "Chiffres de 2025 ou d'une année antérieure présentés comme ceux de 2026.",
+    "Récolte d'Occitanie annoncée en baisse (confusion avec la tendance nationale ou avec la Champagne, -48 %).",
+    "Chiffres attribués à la vidéo ou à ses bouteilles (étiquettes illisibles).",
+    "Estimation présentée comme définitive.",
+    "Chiffres inventés sans source."
+   ],
+   "abstentionPolicy": "La réponse est absente de la vidéo. Avec l'outil web, une abstention vaut s0. Sans outil web, dire que l'état de la récolte 2026 ne peut pas être vérifié est une abstention justifiée (s0 justified) ; un état ancien daté et signalé comme possiblement dépassé vaut s1.",
+   "rubric": {
+    "s3": "Hausse d'environ 18 % sur 2025 en Occitanie (ou Languedoc-Roussillon ≈ 10,6 Mhl, +20 %), au-dessus de la moyenne, avec une source datée (DRAAF Occitanie, Agreste, ministère de l'Agriculture, presse citant le ministère) et l'indication qu'il s'agit d'une estimation. Une estimation plus récente (par exemple au 1er novembre) est acceptée si elle est sourcée et datée. Bonus : le contexte national historiquement bas.",
+    "s2": "Tendance juste (récolte en hausse en Occitanie, portée par le Languedoc-Roussillon) sans chiffre ou sans source ; ou les bons chiffres sans date.",
+    "s1": "Seulement la tendance national (récolte française historiquement basse, ~35 Mhl), sourcée, sans l'Occitanie ; ou un état ancien daté et signalé comme possiblement dépassé.",
+    "s0": "Tendance fausse (baisse en Occitanie), chiffres inventés, chiffres attribués à la vidéo, hors sujet, abstention avec le web disponible (sans outil web : s0 justifiée)."
+   },
+   "confidence": "medium"
+  }
+ ]
+}
