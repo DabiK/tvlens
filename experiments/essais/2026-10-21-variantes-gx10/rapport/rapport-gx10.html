@@ -1,0 +1,540 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>TVLens sur GX10 - rapport v5 final</title><style>@page{size:A4;margin:0}*{box-sizing:border-box}body{margin:0;background:#e8eeed;color:#223238;font-family:Arial,sans-serif;font-size:10.5pt;line-height:1.4}.page{width:210mm;min-height:297mm;padding:18mm 18mm 19mm;background:white;margin:8mm auto;position:relative;break-after:page}.kicker{border-top:2px solid #1d756b;padding-top:12px;color:#1d756b;font-size:8pt;letter-spacing:1px;font-weight:bold}h1{font-size:26pt;line-height:1.12;white-space:pre-line;margin:16px 0 10px;letter-spacing:-.5px}h2{font-size:13pt;color:#1d756b;margin:20px 0 8px}p{margin:9px 0}.deck{font-size:11pt;color:#617275;margin-bottom:19px}.box{background:#edf5f2;border-left:3px solid #1d756b;padding:12px 14px;margin:14px 0}.source{font-size:8pt;color:#667477;line-height:1.35;margin:8px 0 14px}.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:15px 0}.card{border:1px solid #d9e5e0;border-radius:6px;padding:13px}.value{font-size:23pt;font-weight:bold;color:#1d756b}.label{font-size:10pt;font-weight:bold;margin:5px 0}.detail{font-size:9pt;color:#617275;line-height:1.35}table{width:100%;border-collapse:collapse;font-size:9.2pt;line-height:1.35;table-layout:fixed;margin:10px 0}td,th{padding:9px 8px;text-align:left;vertical-align:top;border-bottom:1px solid #dce5e2;white-space:pre-line}th{font-size:8.5pt;color:#1d756b;background:#edf5f2}tr.best td{background:#f3f7f5}.ref{font-size:8pt;color:#667477}footer{position:absolute;bottom:10mm;left:18mm;right:18mm;border-top:1px solid #dce5e2;padding-top:6px;display:flex;justify-content:space-between;font-size:8pt;color:#667477}a{color:inherit;text-decoration:none}.source-links{display:none}@media print{body{background:#fff}.page{margin:0;height:297mm;min-height:0}.source-links{display:none}}@media screen{.source-links{display:block;font-size:8pt;color:#667477;line-height:1.6}}
+.annex table{font-size:8.2pt}.annex td,.annex th{padding:6px}.page:last-of-type{break-after:auto}.scope{font-size:7.8pt;color:#617275;margin-bottom:5px;font-weight:bold}.box{white-space:pre-line}.source-links{display:none!important}body{font-size:10.2pt;line-height:1.25}h2{font-size:12.4pt;margin:16px 0 7px}p{margin:7px 0}.deck{font-size:10.5pt;margin-bottom:14px}table{font-size:9pt;line-height:1.25}td,th{padding:7px 6px}.box{margin:10px 0}.detail{font-size:8.5pt}.label{font-size:9.5pt}.source{font-size:7.8pt;margin:7px 0 10px}.page:nth-of-type(4) td,.page:nth-of-type(4) th{padding:5px 6px}</style></head><body>
+<section class="page">
+<div class="kicker">TVLENS / GX10 / 20-22 OCTOBRE 2026</div>
+<h1>La vidéo répond plus vite.
+Le web entre dans le produit.</h1>
+<p class="deck">TVLens répond aux questions du spectateur sur la vidéo qu’il regarde. Ses modèles ont tourné sur la GX10, un ordinateur IA local (puce NVIDIA GB10, environ 120 Go de mémoire). Au départ : 17,5 s par réponse, les 48 dernières secondes en mémoire, aucun accès au web.</p>
+<div class="cards"><div class="card"><div class="scope">Dans le produit · 30 questions</div><div class="value">17,5 → 5,7 s</div><div class="label">Délai médian vidéo [1]</div><div class="detail">Départ → vision sans résumé de frise. Avec ce résumé, la recette rapide répond en 7,1 s.</div></div><div class="card"><div class="scope">Dans le produit · 60 questions</div><div class="value">28 → 40 /60</div><div class="label">Réponses justes avec mémoire [2]</div><div class="detail">Sans journal → journal du produit. Vision sans résumé de frise ; médiane de 6,2 s.</div></div><div class="card"><div class="scope">Hors ligne · 30 questions web</div><div class="value">8 → 29 /30</div><div class="label">Besoins de web détectés [3]</div><div class="detail">Mots-clés → décision du modèle (0,65 s). 30/30 avec un titre vidéo, inconnu du produit.</div></div><div class="card"><div class="scope">Dans le produit · 18 questions web</div><div class="value">0 → 8 /18</div><div class="label">14/18 avec le titre · hors ligne [4]</div><div class="detail">Réponses justes : sans web → F1 sans titre. H4b fournit le titre de la vidéo, encore inconnu du produit.</div></div></div>
+<p class="source">Les mesures vidéo rapides et F1 retirent le résumé de sujet, écrit par la vision à chaque bloc pour alimenter la frise sur l’écran TV. Le rétablir sans ralentir reste non résolu. Décision web hors ligne : 3 à 4 recherches inutiles sur 60 questions vidéo selon l’exécution.</p>
+<h2>Trois changements expliquent le gain</h2>
+<p class="p">Un modèle de réponse plus rapide (Gemma 4), une vision mise en pause pendant la réponse, et un journal des passages anciens que le modèle peut citer. Ce journal condense ce qui précède les 48 dernières secondes, seule fenêtre vidéo directement fournie au modèle.</p>
+<div class="box">Acquis : vitesse, mémoire et premiers résultats web dans le produit. F1, sur 102 questions : vidéo 44/60 contre 39/60 sans web ; web 8/18, vidéo + web 5/12. Limite : 13 blocs de vision perdus.</div>
+<p class="p">Le levier principal du web est le titre de la source : 14/18 avec le titre, contre 11/18 pour Codex. Ce gain est mesuré hors ligne, dans un autre paquet de notation ; il reste à l’intégrer au produit.</p>
+<p class="source">Notation par des modèles évaluateurs, contre des réponses attendues également préparées par des modèles. Accord avec un évaluateur d’une autre famille : 46/51, soit 90 %. Ce n’est pas une validation humaine.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>1 / 20</span></footer></section>
+<section class="page">
+<div class="kicker">02 / CONCLUSION</div>
+<h1>Ce qui est prouvé.
+Ce qui reste à démontrer.</h1>
+<p class="deck">Le produit complet a été mesuré. Il apporte le web sans régression vidéo observée ; la qualité web et la continuité de la vision restent à améliorer.</p>
+<h2>Prouvé · dans le produit, noté par des modèles</h2>
+<p class="p">Vitesse : 17,5 → 7,1 s de médiane ; 5,7 s sans résumé de frise. Les réponses justes en moins de 15 s passent de 3 à 20 sur 30. Une répétition confirme le gain de délai.</p>
+<p class="p">Mémoire : 28 → 40 réponses justes sur 60 ; faits anciens : 0 → 9 sur 19. Le journal coûte 1,2 s de médiane en plus, avec une vision sans résumé de frise.</p>
+<p class="p">Web, en partie : F1 obtient 8/18 sur le web et 5/12 en vidéo + web. La vidéo ne régresse pas : 44/60 contre 39/60 sans web, 7 inventions contre 11 dans le même paquet. Mais 5 questions web ou mixtes sur 30 dépassent 14 s, et 13 blocs de vision sont perdus.</p>
+<h2>Pas encore prouvé · ce qui reste à faire</h2>
+<p class="p">Priorité : ticket « titre de la source ». Hors ligne, il porte le web de 8/18 à 14/18 et les mixtes de 5/11 à 7/11, avec 2 inventions contre 5. Le produit ne connaît pas encore ce titre ; il faut le lui fournir puis mesurer le gain dans le produit.</p>
+<p class="p">Mesurer T316 et T317, intégrés après F1 : extraction du texte utile et limite de temps web. Rétablir le résumé de frise sans ralentir, réduire les pertes de vision, puis tester le téléviseur et les longues sessions. La configuration testée reste sur une branche de travail, sans livraison sur la version principale.</p>
+<h2>Écarté dans la forme testée</h2>
+<p class="p">Résumé calculé à part : 8,1 s au lieu de 6,2 s, avec 14 tranches de 8 s non décrites. Les appels d’outils en plusieurs tours atteignent 156 s de médiane sur une vidéo, pour 18/30 justes contre 20/30. Sélection élaborée du texte web : au mieux autant que le début de page, avec plus d’inventions.</p>
+<div class="box">Comment lire les chiffres
+Jeux : 30 questions vidéo pour la vitesse ; 60 pour la mémoire ; 42 extérieures (18 web, 12 vidéo + web, 12 relectures d’images). Six vidéos : Kennedy, Spring, Tears of Steel, une recette, le CNRS et Artemis.
+« Juste » : note ≥ 2/3, sans invention. Attendus et évaluateurs sont des modèles.
+Dans le produit : vidéos rejouées dans TVLens. Hors ligne : requêtes capturées rejouées pour isoler une brique. Les délais ne sont pas interchangeables.
+Bruit : un rejeu change 7 à 8 verdicts et le score de 1 à 4 points sur 30.</div>
+<p class="source">Sources : essais vidéo et mémoire (page 3), F1 et H4b (pages 4–5). Une seule exécution de F1 et de H4b ; aucune validation humaine des scores.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>2 / 20</span></footer></section>
+<section class="page">
+<div class="kicker">03 / VIDÉO ET MÉMOIRE</div>
+<h1>Répondre vite, puis retrouver
+les passages oubliés.</h1>
+<p class="deck">Chaque tableau utilise le même questionnaire. Les jeux de 30 et de 60 questions ne se comparent pas directement.</p>
+<h2>La vitesse : modèle, pause de vision et transcription</h2>
+<table><colgroup><col style="width:40.0%"><col style="width:14.000000000000002%"><col style="width:16.0%"><col style="width:16.0%"><col style="width:14.000000000000002%"></colgroup>
+<tr><th>Configuration</th><th>Justes</th><th>Justes
+&lt; 15 s</th><th>Toutes
+&lt; 15 s</th><th>Médiane</th></tr>
+<tr><td>Configuration de départ</td><td>16/30</td><td>3/30</td><td>7/30</td><td>17,5 s</td></tr>
+<tr><td>Recette rapide</td><td>21/30</td><td>20/30</td><td>28/30</td><td>7,1 s</td></tr>
+<tr><td>Vision sans résumé de frise</td><td>21/30</td><td>21/30</td><td>30/30</td><td>5,7 s</td></tr>
+</table>
+<p class="p">La recette rapide utilise Gemma 4 (modèle de réponse), met la vision en pause pendant la question et emploie Whisper small (transcription du son). La version allégée reprend cette recette, mais Gemma 3 (modèle de vision) n’écrit plus le résumé de frise.</p>
+<div class="box">Rejouées à l’identique : recette rapide, 17/30 en 8,5 s ; vision sans résumé, 22/30 en 5,2 s. Le gain de délai se reproduit ; le nombre de réponses justes varie jusqu’à 4.</div>
+<h2>La mémoire : des faits anciens enfin citables</h2>
+<table><colgroup><col style="width:37.0%"><col style="width:15.0%"><col style="width:17.0%"><col style="width:16.0%"><col style="width:15.0%"></colgroup>
+<tr><th>Configuration</th><th>Justes</th><th>Faits
+anciens</th><th>Inventions</th><th>Médiane</th></tr>
+<tr><td>Sans journal</td><td>28/60</td><td>0/19</td><td>16/60</td><td>5,0 s</td></tr>
+<tr><td>Journal expérimental¹</td><td>38/60</td><td>6/19</td><td>9/60</td><td>6,3 s</td></tr>
+<tr><td>Journal du produit (J6)</td><td>40/60</td><td>9/19</td><td>10/60</td><td>6,2 s</td></tr>
+</table>
+<p class="source">¹ Journal expérimental (injecté par l’outil de mesure). Toutes les réponses arrivent sous 15 s. Faits anciens : éléments sortis de la fenêtre des 48 dernières secondes.</p>
+<p class="p">TVLens refuse une réponse qui ne cite pas le passage qui la justifie. Le journal expérimental faisait ainsi rejeter 8 réponses ; celui du produit n’en fait rejeter aucune. Il reste 10 inventions, une de plus que l’objectif fixé avant l’essai (9).</p>
+<p class="p">Face au journal expérimental, l’écart de 2 réponses est dans le bruit. Le gain opérationnel est la fin des rejets de citation. Dix des 19 questions anciennes échouent encore.</p>
+<p class="source">Sources [1–2] : experiments/essais/2026-10-21-flux-6-videos-gx10/README.md ; 2026-10-22-variantes-nuit-gx10/README.md ; 2026-10-22-flux-60-questions-gx10/README.md ; 2026-10-22-journal-produit-gx10/README.md. J6 est renoté à 38/60 dans le paquet C1 (page 6), contre 40 dans sa première notation. Dans le paquet F1, J6 obtient 39/60 (page 5).</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>3 / 20</span></footer></section>
+<section class="page">
+<div class="kicker">04 / WEB ET OUTILS</div>
+<h1>Le titre de la vidéo
+change le résultat du web.</h1>
+<p class="deck">Le parcours va des pages fournies hors ligne au produit complet. Le titre est le principal levier mesuré ; son intégration reste à faire.</p>
+<table><colgroup><col style="width:28.000000000000004%"><col style="width:19.0%"><col style="width:53.0%"></colgroup>
+<tr><th>Étape</th><th>Cadre</th><th>Résultat mesuré</th></tr>
+<tr><td>H1 · Fournir des pages</td><td>Hors ligne</td><td>0 → 26/60 justes ; 30 questions web ou mixtes répétées deux fois.</td></tr>
+<tr><td>H2 · Décider par le modèle</td><td>Hors ligne</td><td>8 → 29/30 besoins web détectés sans titre ; 30/30 avec titre.</td></tr>
+<tr><td>H4 · De vraies pages</td><td>Hors ligne</td><td>Début de page : web 12/18 ; vidéo + web 2/12. Pages collectées à l’avance.</td></tr>
+<tr><td>F1 · Produit complet</td><td>Dans le produit</td><td>Journal + recherche en direct, sans titre : web 8/18 ; vidéo + web 5/12.</td></tr>
+<tr><td>H4b · Avec le titre</td><td>Hors ligne</td><td>Requêtes de F1 : web 14/18 ; vidéo + web 7/11.</td></tr>
+<tr><td>C1 · Codex (à distance)</td><td>Hors ligne¹</td><td>Recherche web en direct : web 11/18 ; vidéo + web 4/12.</td></tr>
+</table>
+<p class="source">H2 mesure la détection, pas la justesse. ¹ C1 reçoit les contextes vidéo capturés. Contextes et paquets de notation diffèrent selon l’étape : ce parcours n’est pas un classement contrôlé.</p>
+<h2>Avec le titre : huit réponses gagnées, aucune perdue</h2>
+<p class="p">H4b rejoue les 29 questions où F1 avait cherché : 18 web et 11 mixtes. Journal, consigne et extrait ciblé restent identiques ; seules changent les pages, retrouvées avec le titre dans la requête.</p>
+<div class="box">Même paquet de notation : web 8/18 → 14/18 ; mixtes 5/11 → 7/11 ; inventions 5 → 2 sur 29. Huit gains, aucune perte (+8/−0). Le produit ne connaît pas encore le titre : ticket « titre de la source » à réaliser.</div>
+<h2>Les étapes précédentes restent utiles, avec leurs limites</h2>
+<p class="p">H1 : inventions de 2 à 8 sur 60, dont 5 sur des pièges d’actualité. H2 : décision en 0,65 s de médiane ; 3 à 4 recherches inutiles sur 60 questions vidéo sans titre, selon l’exécution.</p>
+<p class="p">H4 : début de page et début + extrait font autant, 14/30, avec 3 contre 6 inventions. Le gain antérieur de l’extrait (29 contre 24 sur 60) disparaît. Les trois autres méthodes font moins bien ; le début seul reste la référence.</p>
+<p class="p">Appeler des outils puis répondre en plusieurs tours atteint 156 s de médiane sur Spring. Relire d’anciennes images : 4/24 justes, 10 inventions.</p>
+<p class="source">Sources [3–4] : README.md des essais decision-web-hors-ligne, web-outils-hors-ligne et web-reel-texte du 22/10, sous experiments/essais/. Détails H4 et H2b en annexe.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>4 / 20</span></footer></section>
+<section class="page">
+<div class="kicker">05 / PRODUIT COMPLET</div>
+<h1>Le web fonctionne.
+La vision en paie encore le coût.</h1>
+<p class="deck">F1 réunit journal et recherche web, dans TVLens, sur 102 questions. Il utilise le début de page et l’extrait ciblé, sans titre vidéo ni résumé de frise. T316 et T317 sont absents de cette exécution.</p>
+<h2>La vidéo ne régresse pas dans cet essai</h2>
+<table><colgroup><col style="width:46.0%"><col style="width:27.0%"><col style="width:27.0%"></colgroup>
+<tr><th>Vidéo · même paquet de notation</th><th>Sans web (J6)</th><th>Avec web (F1)</th></tr>
+<tr><td>Réponses justes</td><td>39/60</td><td>44/60</td></tr>
+<tr><td>Faits anciens / mixtes / récents</td><td>9/19 · 7/8 · 23/33</td><td>10/19 · 8/8 · 26/33</td></tr>
+<tr><td>Inventions</td><td>11/60</td><td>7/60</td></tr>
+<tr><td>Délai médian, attente comprise</td><td>6,2 s</td><td>7,6 s</td></tr>
+</table>
+<p class="p">F1 gagne 8 questions et en perd 3 face à J6 : aucune régression observée, sans preuve d’un gain général. Quatre recherches sont lancées sur les 60 questions vidéo. Le délai médian augmente de 1,4 s.</p>
+<h2>Web : un délai propre mesuré, hors file d’attente</h2>
+<table><colgroup><col style="width:30.0%"><col style="width:16.0%"><col style="width:18.0%"><col style="width:20.0%"><col style="width:16.0%"></colgroup>
+<tr><th>Questions</th><th>Justes</th><th>Médiane</th><th>90e centile¹</th><th>&gt; 14 s</th></tr>
+<tr><td>Web seul</td><td>8/18</td><td>12,2 s</td><td>15,2 s</td><td>3/18</td></tr>
+<tr><td>Vidéo + web</td><td>5/12</td><td>10,6 s</td><td>15,0 s</td><td>2/12</td></tr>
+<tr><td>Vidéo</td><td>44/60</td><td>7,0 s</td><td>10,3 s</td><td>0/60</td></tr>
+</table>
+<p class="source">¹ Environ 90 % des réponses arrivent avant ce délai. Mesure : metrics.totalMs, hors file ; centiles recalculés par rang. Posées juste après une question vidéo, les questions web ou mixtes attendent aussi avant traitement ; ce temps s’ajoute au délai perçu.</p>
+<div class="box">Limites mesurées : 5 inventions web ou mixtes sur 30, au-delà du plafond prévu (4). Cinq réponses dépassent 14 s. La vision perd 13 blocs, contre 0 pour J6 : autant de tranches vidéo non décrites. Une réponse est rejetée pour citation invalide.</div>
+<h2>Des améliorations intégrées, encore non mesurées</h2>
+<p class="p">T316 extrait le texte principal et fixe une échéance de 14 s ; T317 la limite aux questions qui cherchent sur le web. Leur effet reste non mesuré : arrêter une réponse trop longue ne garantit pas une bonne réponse.</p>
+<p class="source">Source : experiments/essais/2026-10-22-produit-complet-web-gx10/README.md, notation-video/, notation-web/ et bruts/. Une exécution sur six vidéos. Critères préalables et résultats en annexe ; les 12 relectures d’images donnent 0/12.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>5 / 20</span></footer></section>
+<section class="page">
+<div class="kicker">06 / LOCAL CONTRE CODEX (À DISTANCE)</div>
+<h1>Le local progresse.
+Les paquets de notation comptent.</h1>
+<p class="deck">C1 compare des réponses aux mêmes contextes vidéo. F1 ajoute une mesure dans le produit ; H4b teste ensuite le titre hors ligne. Chaque essai n’a qu’une exécution.</p>
+<table><colgroup><col style="width:46.0%"><col style="width:18.0%"><col style="width:18.0%"><col style="width:18.0%"></colgroup>
+<tr><th>Essai / cadre</th><th>Vidéo</th><th>Web seul</th><th>Vidéo + web</th></tr>
+<tr><td>Local J6 (produit) / H4 (hors ligne) · C1</td><td>38/60</td><td>12/18</td><td>2/12</td></tr>
+<tr><td>Codex C1 · hors ligne, web en direct</td><td>42/60</td><td>11/18</td><td>4/12</td></tr>
+<tr><td>F1 · dans le produit, sans titre</td><td>44/60</td><td>8/18</td><td>5/12</td></tr>
+<tr><td>H4b · hors ligne, avec titre</td><td>Non rejoué</td><td>14/18</td><td>7/11</td></tr>
+</table>
+<p class="source">J6 a été exécuté dans le produit ; sa réponse est renotée dans C1. H4 fournit des pages collectées à l’avance. Codex n’a aucun outil vidéo pour revoir les images : 0/12 en relecture, comme F1. H4b ne reprend que les 29 questions où F1 a cherché.</p>
+<h2>Trois comparaisons à garder séparées</h2>
+<p class="p">Paquet C1 : vidéo locale 38/60 contre 42/60 pour Codex ; inventions 12 contre 7. Codex gagne 8 questions et en perd 4 ; l’écart n’est pas statistiquement établi. Sur web + mixtes : 6 inventions locales contre 2. La différence de justesse reste compatible avec le bruit.</p>
+<p class="p">Paquet F1 : vidéo 44/60 contre 39/60 pour J6, avec 7 inventions contre 11. Ce 44/60 ne se compare pas directement au 42/60 de C1. J6 a reçu 40/60 initialement, puis 38/60 dans C1 et 39/60 dans F1 : la notation varie.</p>
+<p class="p">Paquet H4b : avec titre, 14/18 sur le web dépasse les 11/18 de Codex ; ce constat utilise deux paquets distincts. La comparaison contrôlée est H4b contre F1, renotés ensemble : +8/−0 sur 29 questions, 2 inventions contre 5. Les mixtes H4b portent sur 11 questions, contre 12 pour Codex.</p>
+<h2>Le délai web complet ne confirme pas l’avantage estimé</h2>
+<p class="p">Codex : médiane de 5,5 s en vidéo et 10,8 s en web + mixtes, démarrage de l’outil inclus. F1 : délai propre de 12,2 s en web et 10,6 s en mixtes, hors file. Les périmètres diffèrent ; aucun avantage de vitesse web du produit local n’est démontré.</p>
+<div class="box">C1 : mêmes contextes capturés (J6 pour la vidéo, J2 pour les questions extérieures), réponses anonymisées et notées ensemble. Codex gpt-6-luna, raisonnement faible, recherche web intégrée en direct, exécuté sur le Mac. Le titre devient le levier prioritaire du local, sans établir une supériorité générale sur Codex.</div>
+<p class="source">Sources : experiments/essais/2026-10-23-comparatif-codex-local/ ; archives F1 et H4b du 22/10. Protocole et détail des paquets de notation en annexe.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>6 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Vitesse et perception
+Les premières explorations</h1>
+<p class="deck">Types : produit = chaîne TVLens ; hors ligne = brique isolée ; étude = préparation ou analyse. Verdicts : Adopté = choix retenu pour la suite, sans valoir livraison ; Référence = témoin ou point de comparaison ; Répétition = rejeu identique ; Écarté = non poursuivi ; En cours = verdict ouvert ; Reporté = non exécuté, différé. Sauf mention contraire, les délais sont des médianes.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>Sans code
+[a]</td><td>Préparer la GX10 et rejouer un court extrait français.</td><td>produit</td><td>20,6 et
+23,7 s</td><td>2 réponses ;
+1 abstention.</td><td>Référence</td></tr>
+<tr><td>Sans code
+[b]</td><td>Nuit : comparer cinq et trois images sur des blocs figés.</td><td>hors ligne</td><td>Comparaison
+initiale</td><td>Qualité non notée dans le bilan technique.</td><td>Référence</td></tr>
+<tr><td>Sans code
+[c]</td><td>Nuit : autoriser ou suspendre les nouveaux appels vision pendant une question.</td><td>produit</td><td>Effet du
+démarrage
+à froid</td><td>Non isolée de façon fiable dans le premier bilan.</td><td>Référence</td></tr>
+<tr><td>Sans code
+[d]</td><td>Comparer les moteurs Ollama et vLLM pour le texte ; reprise après incident Docker.</td><td>hors ligne</td><td>Piles non
+équivalentes</td><td>Non notée ; pas de gagnant produit.</td><td>Écarté</td></tr>
+<tr><td>Sans code
+[e]</td><td>Comparer Ollama et vLLM sur la vision Qwen ; reprise du lot Qwen incluse.</td><td>hors ligne</td><td>Ollama plus
+rapide sur
+cette sonde</td><td>Non notée ; configurations différentes.</td><td>Écarté</td></tr>
+<tr><td>Sans code
+[f]</td><td>StreamingVLM : quatre pilotes d’une autre chaîne vidéo, avec reprises techniques.</td><td>hors ligne</td><td>Pas de cadence
+continue
+établie</td><td>Non notée.</td><td>Écarté</td></tr>
+<tr><td>Sans code
+[g]</td><td>Étendre les réglages de transcription aux trois autres vidéos.</td><td>produit</td><td>Voir bilans
+par vidéo</td><td>45 réponses acquises ; notation reprise ensuite.</td><td>Adopté</td></tr>
+<tr><td>Sans code
+[h]</td><td>Confirmer la pause de vision par des exécutions alternées.</td><td>produit</td><td>Gain variable
+selon vidéo</td><td>Qualité non notée dans ce bilan technique.</td><td>Adopté</td></tr>
+<tr><td>Sans code
+[i]</td><td>Comparer cinq et trois images par bloc, sans changer de modèle.</td><td>hors ligne</td><td>Environ 1,5 s gagnée à la première exécution</td><td>Non notée dans cette confirmation.</td><td>Écarté</td></tr>
+<tr><td>Sans code
+[j]</td><td>Simuler une sélection des images, sans supprimer d’appel réel.</td><td>étude</td><td>Aucun gain
+réel mesuré</td><td>142 blocs candidats sur 667 ; qualité non notée.</td><td>Écarté</td></tr>
+</table>
+<p class="source">Fichiers dans experiments/essais/ : [a] 2026-10-20-preparation-gx10/README.md; [b] 2026-10-20-nuit-gx10/README.md; [c] 2026-10-21-consolidation-gx10/README.md; [d] 2026-10-21-reprise-docker-gx10/README.md; [e] 2026-10-20-vision-vllm-gx10/README.md; [f] 2026-10-21-incident-streaming-queue/BILAN.md; [g] 2026-10-21-corpus-etendu-gx10/README.md; [h] 2026-10-21-confirmation-pause-vision-gx10/BILAN.md; [i] 2026-10-21-confirmation-images-gx10/BILAN.md; [j] 2026-10-21-shadow-selection-gx10/README.md.</p>
+<p class="p">À retenir : ces explorations orientent la suite. Les incidents et leurs reprises restent rattachés à leur essai ; une exécution réussie ne constitue pas une mesure de pertinence.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>7 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Vitesse et perception
+Transcrire et décrire</h1>
+<p class="deck">Les réglages de transcription précèdent les modèles de vision. Pour la vision, la vitesse est un délai par bloc ; la justesse est une note sur 3, distincte des réponses aux questions.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>Sans code</td><td>Transcription Whisper base : référence des premiers lots.</td><td>hors ligne</td><td>Référence</td><td>Référence pour comparer les transcriptions.</td><td>Référence</td></tr>
+<tr><td>Sans code</td><td>Transcription Whisper small, à la place de base.</td><td>hors ligne</td><td>Environ égale</td><td>Spring : 4/5 justes contre 2/5 ; ailleurs comparable.</td><td>Adopté</td></tr>
+<tr><td>Sans code</td><td>Transcription Whisper large-v3-turbo, à la place de base.</td><td>hors ligne</td><td>1 à 2 s
+plus lente</td><td>Kennedy et Artemis : 5/5 ; Spring : 2/5.</td><td>Écarté</td></tr>
+<tr><td>E3-réf.</td><td>Gemma 3, cinq images : référence des descriptions.</td><td>hors ligne</td><td>6,7 s/bloc</td><td>Justesse 1,57/3 ;
+27/36 blocs avec invention.</td><td>Référence</td></tr>
+<tr><td>E3-a</td><td>Vision Qwen 2B.</td><td>hors ligne</td><td>8,2 s/bloc</td><td>Non notée ; format de sortie invalide 16/36.</td><td>Écarté</td></tr>
+<tr><td>E3-b</td><td>Vision Qwen 4B.</td><td>hors ligne</td><td>17,0 s/bloc</td><td>Non notée ; format invalide 8/36.</td><td>Écarté</td></tr>
+<tr><td>E3-c</td><td>Vision Qwen 8B.</td><td>hors ligne</td><td>15,9 s/bloc</td><td>Non notée ; format invalide 3/36.</td><td>Écarté</td></tr>
+<tr><td>E3-d</td><td>Vision Gemma 4 avec raisonnement.</td><td>hors ligne</td><td>13,7 s/bloc</td><td>Non notée ; format valide 36/36.</td><td>Écarté</td></tr>
+<tr><td>E3-e</td><td>Vision Qwen 30B-A3B.</td><td>hors ligne</td><td>11,3 s/bloc</td><td>Non notée ; format valide 36/36.</td><td>Écarté</td></tr>
+<tr><td>E3-f</td><td>Gemma 3 avec trois images au lieu de cinq. Terminé au rattrapage.</td><td>hors ligne</td><td>5,6 s/bloc</td><td>Justesse 1,60/3 ;
+21/36 blocs avec invention.</td><td>Écarté</td></tr>
+<tr><td>E3b</td><td>Gemma 4 avec raisonnement désactivé.</td><td>hors ligne</td><td>4,2 s/bloc</td><td>Justesse 2,58/3 ;
+4/36 blocs avec invention.</td><td>Référence</td></tr>
+</table>
+<p class="source">Source commune : experiments/essais/2026-10-21-variantes-gx10/README.md. Sources : 2026-10-21-vision-hors-ligne-gx10/README.md.</p>
+<p class="p">À retenir : Gemma 4 sans raisonnement gagne sur les descriptions isolées. Son essai dans la chaîne complète ne gagne pourtant pas de réponse juste face à la recette rapide.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>8 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Vitesse et perception
+La chaîne vidéo complète</h1>
+<p class="deck">Ces essais rejouent les vidéos dans TVLens. Les réglages intermédiaires restent visibles pour comprendre comment la référence rapide a été obtenue.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>E1</td><td>Mesurer la configuration de départ, sans modification.</td><td>produit</td><td>17,5 s</td><td>16/30 justes ;
+7 rapides, dont
+3 justes (&lt; 15 s).</td><td>Référence</td></tr>
+<tr><td>E4-G</td><td>Remplacer le modèle de réponse par Gemma 4, sur trois vidéos.</td><td>produit</td><td>9,1 à 12,2 s
+selon vidéo</td><td>9/15 justes.</td><td>Adopté</td></tr>
+<tr><td>E4-GP</td><td>Ajouter la pause de vision pendant les questions.</td><td>produit</td><td>5,2 à 7,2 s
+selon vidéo</td><td>8/15 justes ;
+toutes &lt; 15 s.</td><td>Adopté</td></tr>
+<tr><td>E4-GPS</td><td>Ajouter la transcription Whisper small.</td><td>produit</td><td>5,2 à 9,4 s
+selon vidéo</td><td>10/15 justes ;
+toutes &lt; 15 s.</td><td>Adopté</td></tr>
+<tr><td>E5-GPS</td><td>Recette rapide : Gemma 4, pause vision, Whisper small ; six vidéos.</td><td>produit</td><td>7,1 s</td><td>21/30 justes ;
+5 inventions.</td><td>Adopté</td></tr>
+<tr><td>E5-GPSV</td><td>Recette rapide avec la vision Gemma 4 sans raisonnement.</td><td>produit</td><td>6,8 s</td><td>20/30 justes ;
+5 inventions.</td><td>Écarté</td></tr>
+<tr><td>N1</td><td>Rejouer la recette rapide à l’identique.</td><td>produit</td><td>8,5 s</td><td>17/30 justes ;
+8 statuts changent.</td><td>Répétition</td></tr>
+<tr><td>N2</td><td>Vision allégée : retirer le résumé de sujet de la recette rapide.</td><td>produit</td><td>5,7 s</td><td>21/30 justes ;
+4 inventions.</td><td>Référence</td></tr>
+<tr><td>N6</td><td>Rejouer la vision allégée à l’identique.</td><td>produit</td><td>5,2 s</td><td>22/30 justes ;
+7 statuts changent.</td><td>Répétition</td></tr>
+<tr><td>J1</td><td>Combiner vision Gemma 4 et retrait du résumé de sujet. Reporté ; non exécuté.</td><td>étude</td><td>Non mesurée</td><td>Non mesurée.</td><td>Reporté</td></tr>
+</table>
+<p class="source">[1] Source commune : experiments/essais/2026-10-21-variantes-gx10/README.md. Sources : 2026-10-21-flux-6-videos-gx10/README.md ; 2026-10-22-variantes-nuit-gx10/README.md.</p>
+<p class="p">À retenir : la vision allégée donne la référence de vitesse. Les répétitions confirment le délai tout en montrant que le score de pertinence peut varier. Les trois vidéos de la première recette sont réutilisées dans son extension à six vidéos.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>9 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Modèle de questions
+Choisir le bon compromis</h1>
+<p class="deck">Les modèles sont d’abord comparés seuls, puis le choix est vérifié dans TVLens. « Gardée » signifie ici : réponse juste dont les citations sont acceptées par le produit.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>E2-réf.</td><td>Qwen 27B : référence hors ligne.</td><td>hors ligne</td><td>9,2 s</td><td>17/30 gardées ;
+5 inventions.</td><td>Référence</td></tr>
+<tr><td>E2-a</td><td>Qwen 27B avec prédiction de plusieurs éléments de texte à la fois (MTP).</td><td>hors ligne</td><td>9,3 s</td><td>17/30 gardées ;
+aucun gain.</td><td>Écarté</td></tr>
+<tr><td>E2-b</td><td>Qwen 35B-A3B : modèle qui n’active qu’une partie de ses paramètres.</td><td>hors ligne</td><td>3,5 s</td><td>18/30 gardées ;
+8 inventions.</td><td>Écarté</td></tr>
+<tr><td>E2-c</td><td>Même Qwen avec accélération MTP.</td><td>hors ligne</td><td>3,1 s</td><td>18/30 gardées ;
+7 inventions.</td><td>Écarté</td></tr>
+<tr><td>E2-d</td><td>Gemma 4, version 26B-A4B.</td><td>hors ligne</td><td>4,6 s</td><td>20/30 gardées ;
+4 inventions.</td><td>Adopté</td></tr>
+<tr><td>E2-e</td><td>Qwen accéléré avec raisonnement plus long.</td><td>hors ligne</td><td>17,7 s</td><td>8/30 gardées ;
+8/30 sorties invalides.</td><td>Écarté</td></tr>
+<tr><td>E2-x</td><td>Qwen dans un autre format de poids, incompatible avec la pile Linux testée. Abandonné sans essai.</td><td>hors ligne</td><td>Non mesurée</td><td>Non mesurée.</td><td>Écarté</td></tr>
+<tr><td>G3</td><td>Désactiver MTP, l’accélération qui prédit plusieurs éléments de texte à la fois.</td><td>hors ligne</td><td>18,4 s sans ;
+10,4 s avec</td><td>Même longueur de sortie ; qualité non renotée.</td><td>Référence</td></tr>
+<tr><td>N4</td><td>Vérifier Qwen 35B-A3B accéléré dans TVLens, avec pause et Whisper small.</td><td>produit</td><td>6,1 s</td><td>18/30 justes ;
+7 inventions.</td><td>Écarté</td></tr>
+</table>
+<p class="source">Source commune : experiments/essais/2026-10-21-variantes-gx10/README.md. Sources : 2026-10-21-questions-hors-ligne-gx10/README.md.</p>
+<p class="p">À retenir : Gemma 4 offre le meilleur compromis testé. Le modèle le plus rapide seul invente davantage. L’accélération MTP était déjà active dans la référence : l’activer à nouveau n’ajoute rien.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>10 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Mémoire
+Comparer les formes du journal</h1>
+<p class="deck">Ces essais hors ligne isolent l’accès aux passages anciens. Les scores à 60 réponses peuvent compter deux exécutions des mêmes 30 questions.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>G2-A</td><td>Sans journal : référence du premier test mémoire.</td><td>hors ligne</td><td>10,5 s</td><td>38/60 justes ;
+14 inventions.</td><td>Référence</td></tr>
+<tr><td>G2-b</td><td>Ajouter un journal compact des passages anciens.</td><td>hors ligne</td><td>13,4 s</td><td>47/60 justes ;
+6 inventions.</td><td>Référence</td></tr>
+<tr><td>G2-c</td><td>Retrouver six passages anciens par proximité de sens.</td><td>hors ligne</td><td>11,0 s</td><td>41/60 justes ;
+11 inventions.</td><td>Écarté</td></tr>
+<tr><td>G5-A</td><td>Sans journal : référence du second test mémoire.</td><td>hors ligne</td><td>4,2 s</td><td>45/60 justes ;
+13 inventions.</td><td>Référence</td></tr>
+<tr><td>G5-B</td><td>Journal complet, placé avant les passages récents.</td><td>hors ligne</td><td>5,5 s</td><td>49/60 justes ;
+7 inventions.</td><td>Adopté</td></tr>
+<tr><td>G5-C</td><td>Une entrée par sujet ; plusieurs changements simultanés. Retiré avant exécution.</td><td>hors ligne</td><td>Non mesurée</td><td>Non mesurée.</td><td>Écarté</td></tr>
+<tr><td>G5-D</td><td>Limiter le journal à 3 000 caractères.</td><td>hors ligne</td><td>4,7 s</td><td>46/60 justes ;
+12 inventions.</td><td>Écarté</td></tr>
+<tr><td>G5-E</td><td>Placer le journal après les passages récents.</td><td>hors ligne</td><td>5,5 s</td><td>45/60 justes ;
+12 inventions.</td><td>Écarté</td></tr>
+<tr><td>G5-F</td><td>Essayer sans journal, puis avec journal seulement en cas d’abstention. Calculé sans nouvel appel.</td><td>hors ligne</td><td>4,3 s
+reconstituées</td><td>45/60 justes ;
+14 inventions.</td><td>Écarté</td></tr>
+</table>
+<p class="source">Source commune : experiments/essais/2026-10-21-variantes-gx10/README.md. Sources : 2026-10-21-serie-g-gx10/README.md ; 2026-10-22-journal-hors-ligne-gx10/README.md.</p>
+<p class="p">À retenir : le journal complet est le meilleur candidat. Attendre une abstention ne suffit pas : sans le fait ancien, le modèle peut inventer au lieu de refuser de répondre.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>11 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Mémoire
+Du journal expérimental au produit</h1>
+<p class="deck">Ces essais vérifient le journal dans la chaîne vidéo et isolent les problèmes de citation. Ils utilisent d’abord 30 questions, puis un jeu élargi à 60.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>N3</td><td>Ajouter le journal seul à la recette rapide.</td><td>produit</td><td>9,1 s</td><td>21/30 justes ;
+4/6 faits anciens.</td><td>Écarté</td></tr>
+<tr><td>N5</td><td>Ajouter le journal à la vision allégée. Terminé en deux lots.</td><td>produit</td><td>6,8 s</td><td>22/30 justes ;
+4 inventions.</td><td>Référence</td></tr>
+<tr><td>J2</td><td>Vision allégée sans journal, sur 60 questions.</td><td>produit</td><td>5,0 s</td><td>28/60 justes ;
+0/19 anciennes ;
+16 inventions.</td><td>Référence</td></tr>
+<tr><td>J3</td><td>Même recette avec journal expérimental (injecté par l’outil de mesure).</td><td>produit</td><td>6,3 s</td><td>38/60 justes ;
+6/19 anciennes ;
+9 inventions.</td><td>Référence</td></tr>
+<tr><td>J6</td><td>Journal construit dans le produit, avec passages anciens citables.</td><td>produit</td><td>6,2 s</td><td>40/60 justes ;
+9/19 anciennes ;
+10 inventions.</td><td>Adopté</td></tr>
+<tr><td>J2bis</td><td>Répéter à l’identique la référence sans journal. Retiré avant exécution.</td><td>étude</td><td>Non mesurée</td><td>Non mesurée.</td><td>Écarté</td></tr>
+<tr><td>J3bis</td><td>Répéter à l’identique le journal expérimental (injecté par l’outil de mesure). Retiré avant exécution.</td><td>étude</td><td>Non mesurée</td><td>Non mesurée.</td><td>Écarté</td></tr>
+</table>
+<p class="source">[2] Source commune : experiments/essais/2026-10-21-variantes-gx10/README.md. Sources : 2026-10-22-flux-60-questions-gx10/README.md ; 2026-10-22-journal-produit-gx10/README.md.</p>
+<p class="p">À retenir : le journal du produit supprime les rejets de citation et améliore la justesse vidéo sans web. Il reste 10 inventions, soit une de plus que le maximum prévu. La branche produit n’est pas une preuve de livraison sur la branche principale.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>12 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Résumé de sujet
+Préserver la frise sans ralentir</h1>
+<p class="deck">Le résumé de sujet sert aux cartes de la frise TV. L’enlever accélère la vision ; ces essais cherchent à conserver cette fonction autrement.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>G4-a</td><td>Retirer le résumé cumulatif des descriptions visuelles.</td><td>hors ligne</td><td>5,2 s/bloc
+contre 6,7</td><td>Non notée ; descriptions courtes peu changées.</td><td>Référence</td></tr>
+<tr><td>G4-b</td><td>Limiter ce résumé à 300 caractères.</td><td>hors ligne</td><td>6,5 s/bloc</td><td>Non notée ; retards extrêmes réduits.</td><td>Écarté</td></tr>
+<tr><td>J4</td><td>Calculer le résumé après chaque bloc, en arrière-plan, sans journal.</td><td>produit</td><td>6,3 s par
+réponse</td><td>Non notée ;
+106 tranches de 8 s non décrites.</td><td>Écarté</td></tr>
+<tr><td>J5</td><td>Avec journal expérimental, calculer le résumé tous les quatre blocs ou au changement de sujet. Interrompu ; remplacé.</td><td>produit</td><td>Non
+consolidée</td><td>Non notée.</td><td>Écarté</td></tr>
+<tr><td>J5b</td><td>Avec journal du produit, calculer le résumé tous les quatre blocs ou au changement de sujet.</td><td>produit</td><td>8,1 s par
+réponse</td><td>Non notée ;
+14 tranches de 8 s non décrites.</td><td>Écarté</td></tr>
+</table>
+<p class="source">Source commune : experiments/essais/2026-10-21-variantes-gx10/README.md. Sources : 2026-10-21-serie-g-gx10/README.md ; 2026-10-22-resume-asynchrone-gx10/README.md.</p>
+<p class="p">À retenir : le calcul en parallèle concurrence encore la vision sur la même machine. Les deux versions terminées échouent sur la cadence ; aucune note de qualité du résumé ne doit leur être attribuée. La vision allégée est une référence expérimentale, pas la suppression décidée d’une fonction TV.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>13 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Web et outils
+Faire appeler les bons outils</h1>
+<p class="deck">Ces essais séparent le mécanisme d’appel des outils de la qualité des réponses. Un appel réussi ne prouve pas que le modèle répond juste.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>G1-b</td><td>Retirer le format de sortie imposé au premier tour pour autoriser les outils.</td><td>hors ligne</td><td>5,1 s au
+premier tour</td><td>20/20 appels outil ;
+0/40 avec format imposé.</td><td>Référence</td></tr>
+<tr><td>G1-c</td><td>Témoin : répondre sans outil disponible.</td><td>hors ligne</td><td>11,3 s</td><td>20/20 sorties valides ; qualité non notée.</td><td>Référence</td></tr>
+<tr><td>E6-GPSVT</td><td>Recette rapide + vision Gemma 4 ; outils au premier tour, réponse au second.</td><td>produit</td><td>Spring :
+156 s</td><td>18/30 justes ;
+17 justes &lt; 15 s.</td><td>Écarté</td></tr>
+<tr><td>E7-GPSVJT</td><td>Même chaîne à deux tours, avec journal mémoire.</td><td>produit</td><td>11,8 s ;
+Spring : 146 s</td><td>17/30 justes ;
+3 erreurs.</td><td>Écarté</td></tr>
+<tr><td>H1-A</td><td>Questions web : produit initial, sans pages.</td><td>hors ligne</td><td>3,4 s</td><td>0/60 justes ;
+2 inventions.</td><td>Référence</td></tr>
+<tr><td>H1-A2</td><td>Autoriser une réponse web, mais sans fournir de pages.</td><td>hors ligne</td><td>3,0 s</td><td>3/60 justes.</td><td>Écarté</td></tr>
+<tr><td>H1-B</td><td>Fournir trois passages de pages collectées pour les tests, retrouvés depuis la question.</td><td>hors ligne</td><td>4,9 s</td><td>26/60 justes ;
+8 inventions.</td><td>Référence</td></tr>
+<tr><td>H1-C</td><td>Laisser le modèle demander lui-même la recherche, en deux tours.</td><td>hors ligne</td><td>Boucles et
+sorties invalides</td><td>Non notée.</td><td>Écarté</td></tr>
+<tr><td>H1-O0</td><td>Questions sur des images anciennes, sans journal.</td><td>hors ligne</td><td>3,1 s</td><td>0/24 justes.</td><td>Référence</td></tr>
+<tr><td>H1-OJ</td><td>Même jeu d’images anciennes avec journal.</td><td>hors ligne</td><td>4,3 s</td><td>0/24 justes.</td><td>Écarté</td></tr>
+<tr><td>H1-OI</td><td>Journal + outil qui relit un ancien extrait vidéo.</td><td>hors ligne</td><td>8,7 s</td><td>4/24 justes ;
+10 inventions.</td><td>Écarté</td></tr>
+</table>
+<p class="source">Source commune : experiments/essais/2026-10-21-variantes-gx10/README.md. Sources : 2026-10-22-web-outils-hors-ligne-gx10/README.md.</p>
+<p class="p">À retenir : fournir les preuves avant la réponse aide davantage que multiplier les tours d’outils. Les 60 réponses web et les 24 réponses sur images anciennes sont respectivement 30 et 12 questions répétées deux fois.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>14 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Web et outils
+Décider et préparer la recherche</h1>
+<p class="deck">Ces essais évaluent la décision de chercher puis le texte fourni depuis des pages collectées pour les tests. La vitesse indiquée concerne l’étape testée, pas le web complet.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>S1</td><td>Installer SearXNG, le moteur de recherche hébergé sur la GX10.</td><td>étude</td><td>3,0 s par
+requête test</td><td>50 résultats ;
+qualité non notée.</td><td>Adopté</td></tr>
+<tr><td>H2-P</td><td>Faire décider le modèle et écrire la requête, sans titre de vidéo.</td><td>hors ligne</td><td>Décision :
+0,65 s pour
+le lot H2</td><td>29/30 besoins détectés ; 3-4/60 recherches inutiles.</td><td>Adopté</td></tr>
+<tr><td>H2-PT</td><td>Même décision avec le titre de la vidéo.</td><td>hors ligne</td><td>Même lot
+de décision</td><td>30/30 détectés ;
+3/60 recherches inutiles.</td><td>Référence</td></tr>
+<tr><td>H2-PQ</td><td>Répondre avec les pages retrouvées par la requête sans titre.</td><td>hors ligne</td><td>4,3 s</td><td>21/58 justes ;
+4 inventions.</td><td>Écarté</td></tr>
+<tr><td>H2-PTQ</td><td>Répondre avec les pages retrouvées par la requête avec titre.</td><td>hors ligne</td><td>4,6 s</td><td>26/60 justes ;
+6 inventions.</td><td>Référence</td></tr>
+<tr><td>H2b-FQ</td><td>Fusionner les passages retrouvés par la requête du modèle et la question brute.</td><td>hors ligne</td><td>4,3 s</td><td>21/60 justes ;
+5 inventions.</td><td>Écarté</td></tr>
+<tr><td>H2b-PH</td><td>Fournir le début de trois pages, jusqu’à 2 500 caractères chacune.</td><td>hors ligne</td><td>5,3 s</td><td>24/60 justes ;
+2 inventions.</td><td>Référence</td></tr>
+<tr><td>H2b-PW</td><td>Début de page et extrait contenant les mots de la question.</td><td>hors ligne</td><td>5,7 s</td><td>29/60 justes ;
+3 inventions.</td><td>Référence</td></tr>
+<tr><td>T1</td><td>Intégrer la recherche, les pages et la validation des sources dans le produit (tickets 308-311). Code intégré sur branche.</td><td>produit</td><td>Pas de mesure
+propre</td><td>Pas de score propre.</td><td>Adopté</td></tr>
+<tr><td>T314</td><td>Intégrer la décision de chercher par le modèle. Code intégré sur branche.</td><td>produit</td><td>Pas de mesure
+propre</td><td>Évaluée hors ligne ci-dessus.</td><td>Adopté</td></tr>
+</table>
+<p class="source">[3] experiments/essais/2026-10-22-decision-web-hors-ligne-gx10/README.md ; notation-h2b/notes.json ; bruts-h2b/calls.jsonl.gz. SearXNG et intégrations : registre 2026-10-21-variantes-gx10/README.md.</p>
+<p class="p">La décision de chercher est utile sans titre vidéo. L’avantage de l’extrait ciblé sur les pages des premiers tests ne se confirme pas sur les vraies pages collectées pour H4.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>15 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Web et outils
+Choisir le texte des vraies pages</h1>
+<p class="deck">H4 est hors ligne : 30 questions, une exécution par variante, après collecte des pages. Ses délais ne comptent que la réponse, sans décision ni recherche.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>H4-V0</td><td>Fournir le début de chaque page réelle.</td><td>hors ligne</td><td>6,2 s</td><td>14/30 justes ;
+3 inventions.</td><td>Référence</td></tr>
+<tr><td>H4-V1</td><td>Début de page + extrait ciblé par les mots de la question.</td><td>hors ligne</td><td>6,2 s</td><td>14/30 justes ;
+6 inventions.</td><td>Écarté</td></tr>
+<tr><td>H4-V2</td><td>Fusionner deux recherches et sélectionner un extrait.</td><td>hors ligne</td><td>6,4 s</td><td>12/30 justes ;
+6 inventions.</td><td>Écarté</td></tr>
+<tr><td>H4-V3</td><td>Classer les passages par mots communs, méthode BM25.</td><td>hors ligne</td><td>5,2 s</td><td>10/30 justes ;
+8 inventions.</td><td>Écarté</td></tr>
+<tr><td>H4-V4</td><td>Classer les passages selon leur proximité de sens.</td><td>hors ligne</td><td>5,6 s</td><td>8/30 justes ;
+7 inventions.</td><td>Écarté</td></tr>
+<tr><td>T315</td><td>Intégrer le début de page accompagné d’un extrait ciblé. Code intégré sur branche.</td><td>produit</td><td>Pas de mesure
+propre</td><td>Pas de gain sur vraies pages dans cette exécution.</td><td>Écarté</td></tr>
+<tr><td>Sans code</td><td>Étudier la recherche inversée d’image pour retrouver une source depuis une image. Étude seule ; non exécuté.</td><td>étude</td><td>Non mesurée</td><td>Aucun cas utile identifié dans le jeu actuel.</td><td>Écarté</td></tr>
+</table>
+<p class="source">[4] experiments/essais/2026-10-22-web-reel-texte-gx10/README.md ; notation/ ; bruts/. Recherche inversée : étude de campagne, sans essai.</p>
+<p class="p">Le début de page reste la référence simple. « Écarté » pour l’extrait ciblé est une recommandation issue de H4, pas une suppression du code : F1 et H4b conservent cet extrait. La recherche inversée reste hors de cette campagne.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>16 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Web et outils
+Le produit complet et le titre</h1>
+<p class="deck">F1 est terminé et mesuré dans le produit. H4b isole ensuite le titre hors ligne. Une intégration de code sans essai ne vaut pas résultat mesuré.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>F1</td><td>Terminé : journal + web sur 102 questions ; sans titre ni résumé de frise.</td><td>produit</td><td>Web : 12,2 s
+hors file</td><td>Vidéo 44/60 ; web 8/18 ; mixtes 5/12. 13 blocs de vision perdus.</td><td>Référence</td></tr>
+<tr><td>H4b</td><td>Terminé : remplacer les pages par celles retrouvées avec le titre ; 29 requêtes de F1.</td><td>hors ligne</td><td>Délai produit
+non mesuré</td><td>Web 14/18 ; mixtes 7/11 ; 2 inventions contre 5 ; +8/−0.</td><td>Adopté</td></tr>
+<tr><td>T316</td><td>Intégré après F1 : extraction du texte principal (Readability) et échéance de 14 s.</td><td>produit</td><td>Non mesurée</td><td>Non mesurée dans le produit. Absent de F1.</td><td>En cours</td></tr>
+<tr><td>T317</td><td>Intégré après F1 : limiter l’échéance aux questions qui cherchent sur le web.</td><td>produit</td><td>Non mesurée</td><td>Non mesurée dans le produit. Absent de F1.</td><td>En cours</td></tr>
+<tr><td>F1b</td><td>Abandonné : seconde exécution conditionnelle avec fusion et extrait ciblé. Non exécuté.</td><td>produit</td><td>Non mesurée</td><td>Non mesurée.</td><td>Écarté</td></tr>
+<tr><td>Titre de
+la source</td><td>Ticket à faire : rendre le titre disponible dans le produit, puis mesurer son effet.</td><td>étude</td><td>Non mesurée</td><td>Gain isolé dans H4b ; pas encore dans le produit.</td><td>En cours</td></tr>
+</table>
+<p class="source">[4] Sources : experiments/essais/2026-10-22-produit-complet-web-gx10/README.md ; 2026-10-22-web-reel-texte-gx10/README.md, H4b. F1b : registre 2026-10-21-variantes-gx10/README.md.</p>
+<p class="p">F1 prouve un premier usage du web sans régression vidéo observée, avec des pertes de vision. H4b désigne le titre comme priorité. « Adopté » exprime le choix pour la suite, sans valoir livraison ; T316 et T317 attendent encore une mesure.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>17 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / MATRICE DE TOUS LES ESSAIS</div>
+<h1>Oracles et méthode
+Construire et contrôler la mesure</h1>
+<p class="deck">Ces travaux préparent les réponses attendues et contrôlent les mesures. Ils ne produisent donc pas de score de qualité du produit.</p>
+<table><colgroup><col style="width:10.5%"><col style="width:29.5%"><col style="width:10.5%"><col style="width:13.0%"><col style="width:24.5%"><col style="width:12.0%"></colgroup>
+<tr><th>Code</th><th>Ce qui change</th><th>Type</th><th>Vitesse</th><th>Pertinence</th><th>Verdict</th></tr>
+<tr><td>Sans code</td><td>Relecture initiale : geler les fiches et anonymiser les réponses.</td><td>étude</td><td>Sans objet</td><td>Attendus provisoires ; validation nécessaire.</td><td>Référence</td></tr>
+<tr><td>Sans code</td><td>Vérifier les preuves des fiches directement dans les médias.</td><td>étude</td><td>Sans objet</td><td>8 questions :
+5 confirmées,
+3 à corriger.</td><td>Référence</td></tr>
+<tr><td>Oracle v2</td><td>Préparer transcriptions et images, puis faire rédiger et arbitrer les réponses attendues.</td><td>étude</td><td>Sans objet</td><td>30 attendus :
+21 confirmés,
+8 corrigés, 1 mal posé.</td><td>Référence</td></tr>
+<tr><td>Sans code</td><td>Noter les réponses anonymisées ; rechercher les pistes techniques.</td><td>étude</td><td>Sans objet</td><td>Grille commune, sans validation humaine.</td><td>Référence</td></tr>
+<tr><td>O60 / v3</td><td>Étendre le jeu vidéo de 30 à 60 questions.</td><td>étude</td><td>Sans objet</td><td>30 nouvelles :
+15 acceptées,
+15 corrigées.</td><td>Référence</td></tr>
+<tr><td>O4 / v4</td><td>Préparer les questions web et outils, avec des pages conservées.</td><td>étude</td><td>Sans objet</td><td>42 questions ;
+51/54 pages disponibles.</td><td>Référence</td></tr>
+<tr><td>Sans code</td><td>Consolider les campagnes initiales et réanalyser les ablations sans relancer de modèle.</td><td>étude</td><td>Recalculs
+hors machine</td><td>Distingue vitesse, pertes et qualité non notée.</td><td>Référence</td></tr>
+<tr><td>Sans code</td><td>Audit indépendant des fichiers, chiffres et traces de la première nuit.</td><td>étude</td><td>Sans objet</td><td>Limites de comparaison et de notation signalées.</td><td>Référence</td></tr>
+<tr><td>Audit juges</td><td>Faire renoter à l’aveugle par une autre famille de modèles.</td><td>étude</td><td>Sans objet</td><td>46/51 mêmes statuts pertinent ou non.</td><td>Référence</td></tr>
+<tr><td>Revues</td><td>Relire périodiquement les résultats, la méthode et l’ordre des essais. Effectuées pendant la campagne.</td><td>étude</td><td>Sans objet</td><td>Contrôle méthodologique ; pas un score produit.</td><td>Référence</td></tr>
+</table>
+<p class="source">Sources : 2026-10-21-oracle-notation-recherche-gx10/README.md ; 2026-10-21-preuves-medias-fiches-gx10/README.md ; 2026-10-22-oracle-60-questions-gx10/README.md ; 2026-10-22-oracle-v4-web-outils-gx10/README.md ; 2026-10-21-variantes-gx10/revues/README.md.</p>
+<p class="p">À retenir : les attendus et les évaluateurs sont eux-mêmes des modèles. Les contrôles renforcent la comparaison, sans établir une vérité humaine. Les notes et les données brutes restent les preuves à conserver pour clore le dossier.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>18 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / COMPARAISON CLOUD ET NOTATION</div>
+<h1>C1 · Contexte identique,
+notation commune</h1>
+<p class="deck">La comparaison C1 utilise des contextes capturés et une recherche à distance en direct. Elle ne rejoue pas toute la chaîne vidéo dans Codex.</p>
+<h2>Vidéo par âge des faits · paquet C1</h2>
+<table><colgroup><col style="width:56.00000000000001%"><col style="width:22.0%"><col style="width:22.0%"></colgroup>
+<tr><th>Faits nécessaires</th><th>Local J6</th><th>Codex C1</th></tr>
+<tr><td>Récents · 33 questions</td><td>22/33</td><td>24/33</td></tr>
+<tr><td>Mixtes · 8 questions</td><td>7/8</td><td>7/8</td></tr>
+<tr><td>Anciens · 19 questions</td><td>9/19</td><td>11/19</td></tr>
+<tr><td>Total</td><td>38/60</td><td>42/60</td></tr>
+</table>
+<p class="p">« Mixtes » désigne ici l’âge des faits vidéo, pas la catégorie vidéo + web. Les contextes sont identiques à ceux reçus par le local : J6 pour la vidéo, J2 pour les 42 questions extérieures. Codex n’a pas les outils vidéo de TVLens ; son 0/12 ne mesure donc pas une capacité à relire des images.</p>
+<p class="p">C1 : Codex gpt-6-luna, raisonnement faible, recherche web intégrée ; codex exec lancé sur le Mac le 22/10 vers 22:15 UTC. Une recherche est lancée pour 13/18 questions web et 8/12 questions mixtes. Médiane : 5,5 s en vidéo ; 10,8 s en web + mixtes, 90e centile 19,2 s, démarrage de l’outil inclus.</p>
+<h2>Les renotations ne remplacent pas les scores initiaux</h2>
+<table><colgroup><col style="width:40.0%"><col style="width:30.0%"><col style="width:30.0%"></colgroup>
+<tr><th>Paquet de notation</th><th>J6 vidéo
+justes / inventions</th><th>H4 web + mixtes
+justes / inventions</th></tr>
+<tr><td>Notation initiale de chaque essai</td><td>40/60 · 10</td><td>14/30 · 3</td></tr>
+<tr><td>C1</td><td>38/60 · 12</td><td>14/30 · 6</td></tr>
+<tr><td>F1</td><td>39/60 · 11</td><td>14/30 · 5</td></tr>
+</table>
+<p class="p">Chaque paquet anonymise les réponses comparées, selon la règle « note ≥ 2/3 sans invention ». Face-à-face vidéo C1 : +8/−4 pour Codex, p = 0,388 (test binomial bilatéral sur 12 désaccords ; une petite valeur de p indique un résultat peu probable si aucun système n’a l’avantage). F1 et H4b sont notés dans d’autres paquets : ils ne permettent pas un nouveau face-à-face contrôlé contre la vidéo C1.</p>
+<p class="p">L’ancienne estimation locale d’environ 8,6 s additionnait trois médianes séparées : décision 0,65 s, collecte des pages 1,7 s, réponse 6,2 s. Ce n’est pas une médiane de bout en bout. F1 fournit désormais un délai propre mesuré : 12,2 s sur le web seul.</p>
+<p class="source">Quota Codex : moins de 1 % selon le suivi de campagne ; jauge hebdomadaire arrondie à 8 % avant et après, sans mesure de coût. Sources : experiments/essais/2026-10-23-comparatif-codex-local/ (README.md, notation-video/, notation-web/, bruts/). Renotation F1 : notation-video/ et notation-web/ de son archive.</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>19 / 20</span></footer></section>
+<section class="page annex">
+<div class="kicker">ANNEXE / VALIDATION PRODUIT ET TITRE</div>
+<h1>F1 et H4b · Ce qui a été testé</h1>
+<p class="deck">F1 est terminé. H4b teste ensuite le titre en conservant les requêtes de réponse de F1. T316 et T317 ne sont mesurés dans aucun de ces deux essais.</p>
+<h2>F1 · Configuration et critères fixés avant le départ</h2>
+<p class="p">Branche essai/f1-journal-web, révision cfa0bf8 : journal du produit + recherche SearXNG + décision par le modèle + début de page et extrait ciblé (T315). Vision sans résumé de frise, aucun titre vidéo. Les branches journal et web sont réunies pour l’essai, sans fusion dans main. Les 102 questions comprennent 60 vidéo et 42 extérieures.</p>
+<table><colgroup><col style="width:40.0%"><col style="width:28.000000000000004%"><col style="width:32.0%"></colgroup>
+<tr><th>Critère</th><th>Seuil préalable</th><th>Résultat F1</th></tr>
+<tr><td>Justesse web + mixtes avec source validée</td><td>≥ 12/30</td><td>13/30 · atteint</td></tr>
+<tr><td>Inventions web + mixtes</td><td>≤ 4/30</td><td>5/30 · non atteint</td></tr>
+<tr><td>Justesse vidéo</td><td>≥ 37/60 (J6 initial − 3)</td><td>44/60 · atteint</td></tr>
+<tr><td>Recherches inutiles en vidéo</td><td>≤ 5/60</td><td>4/60 · atteint</td></tr>
+<tr><td>Médiane web + mixtes hors file</td><td>≤ 15 s</td><td>11,6 s · atteint</td></tr>
+</table>
+<p class="p">Le seuil vidéo avait été fixé sur J6 à 40/60. La comparaison finale renote J6 à 39/60, avec 11 inventions contre 7 pour F1. F1 gagne 8 questions et en perd 3 (p ≈ 0,23). Les 7 inventions extérieures de F1 se répartissent en 5 web ou mixtes et 2 relectures d’images ; ces dernières donnent 0/12. Les 13 réponses web ou mixtes justes ont une source validée.</p>
+<h2>H4b · Isoler le titre, hors ligne</h2>
+<p class="p">Les 29 requêtes où F1 avait cherché sont rejouées : 18 web et 11 mixtes. Les pages viennent des requêtes H2 avec titre ; journal, consigne et sélection T315 sont conservés. Titres des pages YouTube du corpus, nom de fichier pour Kennedy. Une question mixte sans recherche dans F1 reste hors du rejeu.</p>
+<table><colgroup><col style="width:48.0%"><col style="width:26.0%"><col style="width:26.0%"></colgroup>
+<tr><th>Même paquet H4b</th><th>F1 sans titre</th><th>H4b avec titre</th></tr>
+<tr><td>Web seul</td><td>8/18</td><td>14/18</td></tr>
+<tr><td>Vidéo + web</td><td>5/11</td><td>7/11</td></tr>
+<tr><td>Inventions, toutes catégories</td><td>5/29</td><td>2/29</td></tr>
+</table>
+<p class="p">Huit gains, aucune perte : artemis-w2, cnrs-w2, cnrs-w3, cuisine-m1, cuisine-w1, spring-m2, spring-w2, tears-w2. Test binomial bilatéral : p = 0,0078. Aucun délai produit avec titre n’est mesuré. Le ticket « titre de la source » reste à faire.</p>
+<p class="source">Sources : experiments/essais/2026-10-22-produit-complet-web-gx10/ (README.md, plans/, notation-video/, notation-web/, bruts/) ; 2026-10-22-web-reel-texte-gx10/ (README.md, notation-h4b/, bruts-h4b/).</p>
+<footer><span>TVLens · Campagne GX10 · 23 octobre 2026</span><span>20 / 20</span></footer></section>
+</body></html>
