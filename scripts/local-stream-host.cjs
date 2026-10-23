@@ -27,6 +27,8 @@ function observedWebRetrieval(report, config, factory = createWebRetrieval) {
     return port;
   };
 }
+// A client that knows nothing of the source starts with an empty body, as the TV does.
+const startBody = ({ sourceTitle }) => (sourceTitle === undefined ? '{}' : JSON.stringify({ sourceTitle }));
 async function createHost(options, dependencies, loaded, report) {
   const root = path.join(options.outputDir, 'data'), sourceClock = dependencies.clock || realClock;
   await fs.mkdir(root, { mode: 0o700 });
@@ -64,7 +66,7 @@ async function createHost(options, dependencies, loaded, report) {
   };
   try {
     await server.listen(0, '127.0.0.1');
-    const start = await bounded(signal => exchange('/v1/session/start', { raw: '{}', signal }), REQUEST_MS, sourceClock, options.signal);
+    const start = await bounded(signal => exchange('/v1/session/start', { raw: startBody(loaded.scenario), signal }), REQUEST_MS, sourceClock, options.signal);
     if (start.status !== 200) throw Object.assign(Error('Démarrage de session refusé.'), { code: start.value.code });
     report.sessionId = start.value.id;
     report.clocks = { monotonicOriginMs: origin, wallOriginMs: wallOrigin, sessionOriginMs: 0,

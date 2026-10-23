@@ -166,8 +166,21 @@ function pageExcerpt(text, terms) {
 // The key under which two spellings of the same query are compared.
 const queryKey = question => normalizeText(retrievalQuery(question));
 
+// A work's title, or the name of a captured window, fits well within this; longer, it is no title any more, and it would
+// outweigh a decision message of a few hundred characters.
+const SOURCE_TITLE_MAX_CHARS = 200;
+
+// The title of what is watched comes from a window name or from a client: it is held to one line, a control character
+// counting as a space and an invisible format character (bidi, zero width) as nothing. Empty, there is no title.
+function cleanSourceTitle(value) {
+  if (typeof value !== 'string') return null;
+  const cleaned = value.replace(/\p{Cc}/gu, ' ').replace(/\p{Cf}/gu, '').replace(/\s+/g, ' ').trim();
+  return clipText(cleaned, SOURCE_TITLE_MAX_CHARS).trim() || null;
+}
+
 module.exports = {
   WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS, WEB_QUERY_MAX_CHARS,
   WEB_PAGE_READ_MAX_CHARS, WEB_EXCERPT_HEAD_CHARS, WEB_EXCERPT_WINDOW_CHARS,
-  normalizeText, callsForWeb, retrievalQuery, queryKey, clipText, wordsOf, searchTerms, pageExcerpt,
+  SOURCE_TITLE_MAX_CHARS,
+  normalizeText, callsForWeb, retrievalQuery, queryKey, clipText, wordsOf, searchTerms, pageExcerpt, cleanSourceTitle,
 };

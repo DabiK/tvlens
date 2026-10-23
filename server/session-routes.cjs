@@ -54,7 +54,9 @@ function createSessionRoutes({ runtime }) {
       pattern: /^\/v1\/media\/(moment-\d+)$/,
       handler: (context) => serveMedia(runtime, context, undefined, context.params[0]),
     },
-    { method: "POST", path: "/v1/session/start", handler: async ({ send }) => send(200, await runtime.start()) },
+    // Un client qui connaît ce qui est regardé peut le nommer dans le corps, à chaque démarrage ou reprise ; un corps vide
+    // démarre comme avant et laisse le titre tel quel.
+    { method: "POST", path: "/v1/session/start", handler: async ({ body, send }) => send(200, await runtime.start(body)) },
     {
       method: "POST", path: "/v1/session/pause",
       handler: async ({ send }) => {

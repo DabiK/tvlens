@@ -47,6 +47,8 @@ class HeadlessSessionLifecycle {
     this.lastEnd = null;
     // Le transport oublie sa numérotation dès que la capture peut avoir changé, même sur la même session.
     this.captureEpoch = 0;
+    // Title of what is watched, as declared by the last start that named it: an archive opened has none until then.
+    this.sourceTitle = null;
     this.transition = Promise.resolve();
   }
   // Les transitions passent une par une : une ouverture ne s'entrelace jamais avec une fin ou une suppression.
@@ -75,13 +77,20 @@ class HeadlessSessionLifecycle {
     this.deep.restore(jobs);
     this.session = session;
     this.fresh = false;
+    this.sourceTitle = null;
     this.captureEpoch++;
     this.onAdopt(session);
+  }
+  // Only for the session still loaded: a question decided once the host has moved on gets no title of another session.
+  sourceTitleOf(sessionId) {
+    return this.session !== null && this.session.id === sessionId ? this.sourceTitle : null;
   }
   moving() {
     return Boolean(this.ending || this.releasing || this.closing);
   }
-  start() {
+  // A declared title names the session this call starts or resumes, replacing the one it had, the session already
+  // capturing included; without one, the title stays as it is. A refused start changes nothing.
+  start({ sourceTitle } = {}) {
     return this.exclusive(async () => {
       if (this.closing) throw refusal(400, "Session en cours de fermeture.", "session-closing");
       let session = this.session;
@@ -109,6 +118,7 @@ class HeadlessSessionLifecycle {
         this.captureEpoch++;
         if (stopped) this.publish();
       }
+      if (sourceTitle !== undefined) this.sourceTitle = sourceTitle;
       return this.described(session);
     });
   }

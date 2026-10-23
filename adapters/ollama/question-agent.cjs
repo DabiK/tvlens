@@ -7,7 +7,8 @@ const { DECISION_FORMAT, decisionMessages, readDecision } = require('../web-deci
 const { readMessage, readAnswer } = require('./question-response.cjs');
 const { TVLENS_QUESTION_IMAGES_ABSENT, IMAGES_ABSENT_MESSAGE } = require('../../core/video-tools.cjs');
 const { QUESTION_TIMEOUT_MS } = require('../../core/deep-ask.cjs');
-const { WEB_DOCUMENT_LIMIT, callsForWeb, retrievalQuery, searchTerms, pageExcerpt } = require('../../core/web-retrieval.cjs');
+const { WEB_DOCUMENT_LIMIT, callsForWeb, retrievalQuery, searchTerms, pageExcerpt, cleanSourceTitle }
+  = require('../../core/web-retrieval.cjs');
 const { sourceKey } = require('../external-links.cjs');
 const TVLENS_OLLAMA_TOOL_REFUSED = 'TVLENS_OLLAMA_TOOL_REFUSED';
 const TVLENS_OLLAMA_TOOL_BUDGET = 'TVLENS_OLLAMA_TOOL_BUDGET';
@@ -74,12 +75,15 @@ class OllamaQuestionAgent {
   #transport;
   #retrieval;
   #webTrigger;
-  constructor({ now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout, retrieval, webTrigger = DEFAULT_WEB_TRIGGER, ...options } = {}) {
+  #getSourceTitle;
+  constructor({ now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout, retrieval, webTrigger = DEFAULT_WEB_TRIGGER,
+    getSourceTitle, ...options } = {}) {
     if (!WEB_TRIGGERS.includes(webTrigger)) throw Object.assign(Error('Déclencheur web local invalide (auto, always ou model).'), {
       code: TVLENS_OLLAMA_WEB_TRIGGER_INVALID,
     });
     this.#retrieval = retrieval;
     this.#webTrigger = webTrigger;
+    this.#getSourceTitle = getSourceTitle;
     const fetchImpl = options.fetchImpl || fetch;
     this.#transport = options.fetchImpl ? 'injected' : 'http';
     this.#client = new OllamaHttpClient({ ...options, fetchImpl: (...args) => {
@@ -212,24 +216,38 @@ class OllamaQuestionAgent {
   }
 
   // The model's query serves the retrieval only: the answer keeps the viewer's question. Without a usable decision the
-  // rule decides, on the raw question.
+  // rule decides, on the raw question. The result says whether the decision had a source title, never which one.
   async #decideAndRetrieve(input, usage) {
+    const sourceTitle = this.#sourceTitle(input);
     const started = this.#now();
-    const decision = await this.#decide(input, usage);
-    const decisionMs = this.#now() - started;
-    if (decision?.web === false) return { pages: [], retrieval: { decision: 'no-web', decisionMs } };
+    const decision = await this.#decide(input, usage, sourceTitle);
+    const decided = { decisionMs: this.#now() - started, ...(sourceTitle && { sourceTitleGiven: true }) };
+    if (decision?.web === false) return { pages: [], retrieval: { decision: 'no-web', ...decided } };
     const modelQuery = decision ? retrievalQuery(decision.query) : '';
-    if (modelQuery) return this.#retrieve(input, modelQuery, { decision: 'web', query: modelQuery, decisionMs });
-    if (!callsForWeb(input.question)) return { pages: [], retrieval: { decision: 'failed', decisionMs } };
+    if (modelQuery) return this.#retrieve(input, modelQuery, { decision: 'web', query: modelQuery, ...decided });
+    if (!callsForWeb(input.question)) return { pages: [], retrieval: { decision: 'failed', ...decided } };
     const query = retrievalQuery(input.question);
-    return this.#retrieve(input, query, { decision: 'failed', query, decisionMs });
+    return this.#retrieve(input, query, { decision: 'failed', query, ...decided });
+  }
+
+  // Asked of the host at each decision for the question's own session: a question decided once the host has moved on
+  // gets no title of another session.
+  #sourceTitle(input) {
+    const sessionId = input.context?.sessionId;
+    if (typeof this.#getSourceTitle !== 'function' || typeof sessionId !== 'string') return null;
+    try {
+      return cleanSourceTitle(this.#getSourceTitle(sessionId));
+    } catch {
+      // A failing host only costs the title: the decision goes on as without one, and the host's error is not published.
+      return null;
+    }
   }
 
   // A short call without tools under its own delay. Its error or delay only costs the decision; a cancelled question stops.
   // A late reply, once the wait is over, counts nothing.
-  async #decide(input, usage) {
+  async #decide(input, usage, sourceTitle) {
     const outcome = await this.#abandonable(signal => this.#client.chat({ format: DECISION_FORMAT, think: false, signal,
-      messages: decisionMessages({ question: input.question, passages: input.context?.passages }),
+      messages: decisionMessages({ question: input.question, passages: input.context?.passages, sourceTitle }),
       options: { num_predict: WEB_DECISION_MAX_TOKENS } }), input.signal, WEB_DECISION_TIMEOUT_MS);
     input.signal.throwIfAborted();
     // The provider's error is not published: anything but a reply is no decision.

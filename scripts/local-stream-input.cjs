@@ -4,6 +4,7 @@ const { validateRemote } = require('../adapters/remote-media.cjs');
 const { validateOllamaConfig } = require('../adapters/ollama/http-client.cjs');
 const { validateEmbeddingTimeout } = require('../adapters/embeddings/ollama-embeddings.cjs');
 const { validateLocalWeb } = require('../runtime/local-web-retrieval.cjs');
+const { SOURCE_TITLE_MAX_CHARS, cleanSourceTitle } = require('../core/web-retrieval.cjs');
 
 const HASH = /^[a-f0-9]{64}$/;
 const MAX_TIMER_MS = 2147483647;
@@ -139,6 +140,9 @@ async function loadScenario(file) {
   validateConfig(scenario.config, scenario.selectedModels);
   check(scenario.surveillance === undefined || typeof scenario.surveillance.instruction === 'string'
     && scenario.surveillance.instruction.trim(), 'CONFIG_INVALID');
+  // Declared, the title is sent as is when the session starts: within the server's bound, and a title once cleaned.
+  check(scenario.sourceTitle === undefined || typeof scenario.sourceTitle === 'string'
+    && scenario.sourceTitle.length <= SOURCE_TITLE_MAX_CHARS && cleanSourceTitle(scenario.sourceTitle) !== null, 'SOURCE_TITLE_INVALID');
   const index = await referenced(base, scenario.index);
   const provenance = await provenanceOf(scenario, base, index);
   const templates = await templatesOf(index, path.dirname(path.resolve(base, scenario.index.path)));

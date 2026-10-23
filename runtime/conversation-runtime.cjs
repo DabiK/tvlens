@@ -25,14 +25,19 @@ function questionTimeout(value) {
   return value;
 }
 
-function createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, createWebRetrieval, codexBinary, selectedModels, quota }) {
+// Only the composed local agent reads the host's source title, for its web decision; an injected agent or Codex never does.
+function createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, createWebRetrieval, getSourceTitle, codexBinary,
+  selectedModels, quota }) {
   if (!['codex', 'local'].includes(backend))
     throw domainError(TVLENS_QUESTIONS_BACKEND_INVALID, 'Backend de questions inconnu (codex ou local).');
   if (backend === 'local') validateOllamaConfig(config.localQuestions);
   // Codex keeps its own web: the local retrieval settings only concern the local agent.
   if (backend === 'local' && config.localWeb) validateLocalWeb(config.localWeb);
   if (agent) return agent;
-  if (backend === 'local') return new LocalAgent(localAgentOptions(config, createWebRetrieval));
+  if (backend === 'local') {
+    const options = localAgentOptions(config, createWebRetrieval);
+    return new LocalAgent(typeof getSourceTitle === 'function' ? { ...options, getSourceTitle } : options);
+  }
   return new CodexAgent({ binary: codexBinary || 'codex', authHome: config.codexAuthHome,
     model: selectedModels?.codexModel, reasoningEffort: config.chatReasoningEffort || 'low', quota });
 }
@@ -59,6 +64,8 @@ function createConversationRuntime({
   onPublicationError = createPublicationDiagnostic(),
   // Late-bound by the host: the surveillance runtime is composed after the conversation.
   getInstruction,
+  // Late-bound by the host too: the title of what is watched in a session, by its identifier, or nothing.
+  getSourceTitle,
 }) {
   // Les deux hôtes composent les questions au démarrage, avant de créer une session de perception.
   normalizeThink(config.localVlm?.think, 'TVLENS_LOCAL_VLM_THINK');
@@ -66,7 +73,7 @@ function createConversationRuntime({
   const timeoutMs = questionTimeout(config.questionTimeoutMs);
   const backend = config.questionsBackend ?? 'codex';
   const conversationAgent = createQuestionAgent({ backend, config, agent, CodexAgent, LocalAgent, createWebRetrieval,
-    codexBinary, selectedModels, quota });
+    getSourceTitle, codexBinary, selectedModels, quota });
   const makeTools = (signal, onProgress, scope = {}) => {
     const session = getSession();
     if (!session?.memory || !session.memoryMedia || !session.search || !session.inspector)

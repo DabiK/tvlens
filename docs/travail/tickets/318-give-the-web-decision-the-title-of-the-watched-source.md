@@ -1,7 +1,7 @@
 ---
 id: T318
 titre: Give the web decision the title of the watched source
-statut: a-faire
+statut: termine
 bloque_par: T317
 adr: oui
 installe: non
@@ -79,3 +79,29 @@ Aucune décision n'est attendue.
 
 - 23/10, orchestrateur : ticket préparé depuis H2 et H4b. Accord du propriétaire relayé par la session expériences ;
   le ticket est traité par elle avec des sous-agents dans un worktree, pas par la boucle.
+- 23/10, orchestrateur (session expériences, à la demande de Dabi : sous-agents plutôt que la boucle, worktree
+  `../tvlens-t318`, branche `feat/titre-source`) — exploration faite (`.harness-state/tickets/T318/exploration.md`) :
+  - chaîne : DeepAsk → `OllamaQuestionAgent.answer`/`#decide` → `decisionMessages` (ligne « Titre de la source » déjà
+    prise en charge) ;
+  - coutures : composition `getSourceTitle` à côté de `getInstruction`, mais transmis aux options de l'agent local ;
+    nettoyage pur et borne nommée dans `core/web-retrieval.cjs` ;
+  - serveur : titre porté par le coordinateur de session, validé avant `lifecycle.start`, code de refus public ;
+  - Mac : titre rattaché à la session chargée, et non au nom capturé global ; rejeux : `sourceTitle` validé dans le
+    scénario et envoyé au démarrage ;
+  - ADR 0069 (0063–0068 pris sur d'autres branches), qui amende 0067 et cite 0042 ;
+  - 4 écarts déclarés dans `ecarts.md` : sans corps, preuve Mac, requête qui contient le titre, chemin de l'agent.
+- 23/10, implémentation (implémenteur, une passe) : `node scripts/check.mjs` complet vert, 161 fichiers et 3 201 tests
+  JS, 71 tests Python, `cas_de_test_produit` passé de 1 759 à 1 772. ADR 0069 écrite par l'orchestrateur, ADR 0067
+  amendée.
+- 23/10, relecture 1 (`node scripts/loop/reviewed-state.mjs record --ticket T318`, relecteur neuf) : à corriger,
+  1 bloquant et 3 mineurs. Bloquant : sur le Mac, le titre reste figé au premier démarrage (reprise d'archive, reprise
+  sur une autre source). Mineurs : titre ignoré au démarrage d'une session déjà chargée, ADR sans fichier de tests
+  serveur, plusieurs instructions par ligne dans les tests. Écarts 1 à 4 acceptés.
+- 23/10, correction (implémenteur) : le titre suit la source capturée à chaque démarrage ou reprise sur le Mac ; un
+  titre fourni au démarrage serveur s'applique à la session démarrée ou reprise ; une instruction par ligne.
+  `node scripts/check.mjs` vert, 3 204 tests.
+- 23/10, relecture 2 (relecture de correction, relecteur neuf) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre,
+  NON CORRIGÉS 0.
+- 23/10, orchestrateur : `node scripts/check.mjs` complet relancé sur l'état relu : vert, 3 204 tests JS, 71 tests
+  Python. Verdict TERMINÉ. Intégration hors boucle, à la demande de Dabi : commit sur `feat/titre-source`, puis rebase
+  de la branche web (T308–T318) sur `main`.

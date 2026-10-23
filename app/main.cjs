@@ -167,6 +167,8 @@ app.whenReady().then(async () => {
     getSession: () => loaded?.runtime,
     // The viewer's standing instruction reaches a chat turn as a trusted field (late-bound: the surveillance is composed below).
     getInstruction: () => activeInstruction(surveillance, loaded?.runtime.watch.id),
+    // The name of the window or screen captured for the question's session, while it is the one loaded.
+    getSourceTitle: id => (loaded && loaded.runtime.id === id ? loaded.sourceTitle : null),
     agent: videoAgent, codexBinary, config, selectedModels, quota,
     onPublicationError,
     onChange: state => {
@@ -340,8 +342,9 @@ app.whenReady().then(async () => {
     });
     return runtime;
   };
+  // A session loaded has captured nothing yet: an archive opened is only read, so it has no source title.
   const adopt = (runtime, name, at, fresh = false) => {
-    loaded = { runtime, title: name, startedAt: at, fresh };
+    loaded = { runtime, title: name, startedAt: at, fresh, sourceTitle: null };
     saved.transcriber = runtime.transcriber;
     recapConsumer?.close();
     recapConsumer = createLivingRecapRuntime({
@@ -353,6 +356,11 @@ app.whenReady().then(async () => {
       onError: onPublicationError,
       silent: runtime.readOnly,
     });
+  };
+  // The source title follows what the loaded session really captures: the source chosen each time its capture starts or
+  // resumes, an archive and another window included. Called once the capture runs, never on a refused resume.
+  const captureStarted = () => {
+    loaded.sourceTitle = captureSources.capturedSourceName();
   };
   // L'horloge et la cadence du manifeste avancent même sans analyse prête.
   // En pause, aucun de ces faits ne change : la fenêtre garde le dernier état publié.
@@ -457,6 +465,7 @@ app.whenReady().then(async () => {
         publishStorage();
         throw error;
       });
+      captureStarted();
       send('sessions:changed');
       return { id: loaded.runtime.watch.id, elapsedMs: loaded.runtime.watch.now(), segmentMs };
     }
@@ -470,6 +479,7 @@ app.whenReady().then(async () => {
     runtime.store.manifest = { ...runtime.store.manifest, title: name };
     recap.reset(id); recapAdapter = newRecapAdapter();
     adopt(runtime, name, at, true);
+    captureStarted();
     captureRefreshTimer = setInterval(refreshCapture, 5000);
     loaded.runtime.watch.emit();
     // Never for an archive that is only being read: opening one warms nothing up.
@@ -541,6 +551,7 @@ app.whenReady().then(async () => {
       publishStorage();
       throw error;
     });
+    captureStarted();
     clearInterval(captureRefreshTimer); captureRefreshTimer = setInterval(refreshCapture, 5000);
     // Same as at the start: never for an archive that is only being read.
     warmUp({ chat: videoAgent, perception: loaded.runtime.perception, sessionId: loaded.runtime.watch.id });

@@ -154,6 +154,15 @@ locales utilisent les trois outils vidéo ; avec un port de récupération web, 
 que la règle juge web reçoit des pages lues dans ses données non fiables et ne cite qu’elles (ADR 0066). Avec le
 déclencheur `model`, un appel court du modèle décide avant la règle s’il faut chercher et écrit la requête ; la
 règle reprend s’il échoue, et la réponse garde la question du spectateur.
+Cet appel reçoit aussi le titre de la source quand l’hôte le connaît : la composition accepte `getSourceTitle`, lié
+tard par l’hôte et transmis au seul agent local, qui le lit à chaque décision pour la session de la question, puis le
+nettoie et le borne (`cleanSourceTitle`, `core/web-retrieval.cjs`). Le Mac rend le nom de la source réellement
+capturée par la session chargée, posé à chaque démarrage ou reprise de capture (archive ou autre fenêtre comprises),
+et `null` tant qu’elle n’a rien capturé, comme une archive ouverte en lecture. Le serveur rend le `sourceTitle`
+facultatif déclaré à `POST /v1/session/start` (code de refus `invalid-source-title`) : il nomme la session démarrée
+ou reprise par cet appel, même déjà en capture, et remplace son titre ; `{}` le laisse tel quel, et une archive
+ouverte ou reprise n’en a pas avant un démarrage qui en donne un. Le titre ne sert qu’à la décision ; le résultat dit
+seulement s’il était présent (ADR 0069).
 Les pages sont lues par Readability, avec repli sur l’extraction par motifs, et une question qui cherche vraiment
 sur le web est bornée à 14 s depuis son entrée dans l’agent, décision et récupération comprises ; une question qui ne
 cherche pas garde le plafond général. Avec `model`, l’échéance ne coupe qu’une fois la question classée « cherche » :
@@ -485,3 +494,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0068](adr/0068-la-recherche-web-locale-lit-les-pages-avec-readability-et-borne-la-question-a-14-s.md) :
   Les pages web sont lues par Readability, repli par motifs ; décision 1,5 s, récupération 5 s, question qui cherche sur le web 14 s.
+
+- [ADR 0069](adr/0069-la-decision-web-recoit-le-titre-de-la-source-quand-l-hote-le-connait.md) :
+  La décision web reçoit le titre de la source quand l’hôte le connaît (fenêtre capturée sur le Mac, titre déclaré au serveur).

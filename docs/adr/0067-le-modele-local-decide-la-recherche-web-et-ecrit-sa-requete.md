@@ -2,7 +2,7 @@
 
 - Date : 2026-10-22
 - Ticket : `docs/travail/tickets/314-let-the-local-model-decide-the-web-search-and-write-its-query.md`
-- Statut : acceptée ; amende l'ADR 0066
+- Statut : acceptée ; amende l'ADR 0066 ; amendée par l'ADR 0069 (titre de la source)
 
 ## Contexte
 
@@ -23,8 +23,8 @@ sans intention, `OllamaQuestionAgent` fait d'abord un appel de décision, puis s
 - L'appel est séparé de la réponse, sans outil, au format JSON `{web, query}`, avec `num_predict: 80`, `think: false` et
   les autres paramètres du client (`chat` accepte des options et `think` par appel, sans modifier les paramètres
   fixes). Le message système et le message utilisateur (question, titre de source facultatif, trois passages récents
-  coupés à 600 caractères) sont ceux mesurés par H2, dans `adapters/web-decision-prompt.cjs`. Aucun titre de source
-  n'est encore transmis : le produit ne le connaît pas dans le contexte de la question.
+  coupés à 600 caractères) sont ceux mesurés par H2, dans `adapters/web-decision-prompt.cjs`. Le titre de source vient
+  de l'hôte quand il le connaît (ADR 0069).
 - `web: false` : aucune récupération. `web: true` avec une requête non vide : la récupération reçoit cette requête,
   bornée par `retrievalQuery`. Sortie illisible, requête vide, erreur ou délai propre dépassé
   (`WEB_DECISION_TIMEOUT_MS`, 5 s, ramené à 1,5 s par l'ADR 0068, dans l'échéance de la question) : la règle `callsForWeb` décide sur la question brute,
@@ -54,7 +54,7 @@ Les questions qui renvoient à la vidéo (« ce film », « il ») partent avec 
 d'un appel court par question de chat. Les passages récents, données non fiables, entrent dans l'appel de décision ;
 avec un port de résidence `hybrid`, une requête écrite à partir des passages sort de la machine, là où seule la
 question brute sortait. Un corpus figé qui déclare des requêtes exactes ne retrouve pas celles du modèle et retombe
-sur son classement lexical. Le titre de la source, qui améliore la requête dans H2, reste à faire arriver de l'hôte.
+sur son classement lexical. Le titre de la source, qui améliore la requête dans H2 et H4b, arrive de l'hôte depuis l'ADR 0069.
 
 ## Protégée par
 

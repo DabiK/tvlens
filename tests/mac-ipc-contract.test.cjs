@@ -11,6 +11,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const sharp = require('sharp');
 const { shape } = require('./helpers/source-shape.cjs');
 const { emptyArchive } = require('./helpers/empty-archive.cjs');
+const { createCaptureSources } = require('../app/capture-sources.cjs');
 
 // Le vrai hôte et le vrai preload communiquent avec Electron simulé : agents contrôlés, disque temporaire
 // et minuteries virtuelles. La fenêtre native, la capture matérielle et le renderer ne sont pas exercés.
@@ -267,6 +268,7 @@ async function launch(userData, {
       '../runtime/session-runtime.cjs': ['createSessionRuntime', wrap.session],
       '../runtime/surveillance-runtime.cjs': ['createSurveillanceRuntime', wrap.surveillance],
       '../runtime/publication-diagnostic.cjs': ['createPublicationDiagnostic', wrap.diagnostic],
+      './capture-sources.cjs': ['createCaptureSources', wrap.captureSources],
     };
     const factory = factories[request];
     if (factory?.[1]) {
@@ -1442,6 +1444,84 @@ test('on the Mac host a question reaches the chat agent with the instruction of 
   assert.equal((await host.stopSurveillance()).enabled, false, 'the explicit stop channel stops surveillance');
   await question('Après l’arrêt ?');
   assert.deepEqual(seen, [['Avant toute consigne ?', undefined], ['Pendant la surveillance ?', instruction], ['Après l’arrêt ?', undefined]]);
+});
+
+// The host and the source title it gives its conversation. Given windows, the real capture sources list them, as
+// desktopCapturer would, instead of the single source of the simulated mode.
+async function sourceTitleHost(launch, windows) {
+  let getSourceTitle;
+  const wrap = {
+    conversation: (built, options) => {
+      getSourceTitle = options.getSourceTitle;
+      return built;
+    },
+  };
+  if (windows) {
+    const desktopCapturer = { getSources: async () => windows };
+    wrap.captureSources = (built, options) => createCaptureSources({ ...options, smoke: false, desktopCapturer });
+  }
+  const host = await launch({ wrap });
+  assert.equal(host.started, true, host.failures.join(' '));
+  assert.equal(typeof getSourceTitle, 'function');
+  return { host, getSourceTitle };
+}
+// As the renderer does before each start or resume: the list of sources first, then the choice.
+async function chooseSource(host, id) {
+  await host.capture.sources();
+  await host.capture.select(id);
+}
+const WINDOWS = [{ id: 'window:1', name: 'Sintel' }, { id: 'window:2', name: 'Cosmos Laundromat' }];
+
+test('on the Mac host questions are told the captured source name for the loaded session only, never for an archive or without capture', async t => {
+  const { launch } = await stage(t);
+  const { host, getSourceTitle } = await sourceTitleHost(launch);
+  const uncaptured = await host.start();
+  assert.equal(getSourceTitle(uncaptured.id), null, 'no source was chosen');
+  await host.stop();
+  await host.newSession();
+  await chooseSource(host, 'test-source');
+  const a = await host.start();
+  assert.equal(getSourceTitle(a.id), 'Vidéo de démonstration');
+  assert.equal(getSourceTitle(uncaptured.id), null, 'another session');
+  assert.equal(getSourceTitle(undefined), null);
+  await capture(host, a.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  await host.stop();
+  assert.equal(getSourceTitle(a.id), 'Vidéo de démonstration', 'a stopped session keeps its source');
+  await host.newSession();
+  assert.equal(getSourceTitle(a.id), null, 'no session is loaded');
+  assert.equal((await host.openSession(a.id)).readOnly, true);
+  assert.equal(getSourceTitle(a.id), null, 'an archive opened again has no source');
+});
+
+test('on the Mac host a session paused then resumed on another window gives its questions the name of that window', async t => {
+  const { launch } = await stage(t);
+  const { host, getSourceTitle } = await sourceTitleHost(launch, WINDOWS);
+  await chooseSource(host, 'window:1');
+  const session = await host.start();
+  assert.equal(getSourceTitle(session.id), 'Sintel');
+  await host.stop();
+  await chooseSource(host, 'window:2');
+  assert.equal(getSourceTitle(session.id), 'Sintel', 'a choice alone captures nothing yet');
+  assert.equal((await host.start()).id, session.id, 'the same session resumes');
+  assert.equal(getSourceTitle(session.id), 'Cosmos Laundromat');
+});
+
+test('on the Mac host an archive has no source title until its capture resumes, then the name of the window chosen for it', async t => {
+  const { launch } = await stage(t);
+  const { host, getSourceTitle } = await sourceTitleHost(launch, WINDOWS);
+  await chooseSource(host, 'window:1');
+  const session = await host.start();
+  await capture(host, session.id);
+  await until(t, analysed(host, 1), 'one analysed passage');
+  await host.stop();
+  await host.newSession();
+  assert.equal((await host.openSession(session.id)).readOnly, true);
+  assert.equal(getSourceTitle(session.id), null, 'an archive only read has captured nothing');
+  await chooseSource(host, 'window:2');
+  assert.equal(getSourceTitle(session.id), null, 'a choice alone captures nothing yet');
+  assert.equal((await host.resumeSession()).id, session.id);
+  assert.equal(getSourceTitle(session.id), 'Cosmos Laundromat');
 });
 
 test('on the Mac host both agents are warmed up with the id of the session when it starts or resumes, never when an archive is only read', async t => {

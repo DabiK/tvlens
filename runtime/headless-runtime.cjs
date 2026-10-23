@@ -22,6 +22,7 @@ const { DiskGuard } = require("../adapters/disk-guard.cjs");
 const { createCaptureIntake, READ_ONLY } = require("./capture-intake.cjs");
 const { refusal } = require("./errors.cjs");
 const { SEGMENT_LIMITS } = require("./segment-contract.cjs");
+const { SOURCE_TITLE_MAX_CHARS } = require("../core/web-retrieval.cjs");
 const { SessionLibrary } = require("../adapters/session-library.cjs");
 const {
   SimulatedSurveillanceAgent,
@@ -53,6 +54,14 @@ function createHeadlessIntake(host) {
     setTimer: host.options.setPreparationTimer,
     clearTimer: host.options.clearPreparationTimer,
   });
+}
+
+// Optional: a client that knows what is watched may name it when it starts. Absent, it stays absent, so that the
+// coordinator leaves the title as it is. The refusal never quotes what was sent.
+function declaredSourceTitle(sourceTitle) {
+  if (sourceTitle === undefined) return undefined;
+  if (typeof sourceTitle === "string" && sourceTitle.length <= SOURCE_TITLE_MAX_CHARS) return sourceTitle;
+  throw refusal(400, "Titre de la source invalide.", "invalid-source-title");
 }
 
 function createHeadlessLifecycle(host, conversation) {
@@ -134,6 +143,8 @@ class HeadlessRuntime {
       // surveillance is composed just below).
       getInstruction: () =>
         activeInstruction(this.surveillance, this.session?.id),
+      // The title declared at the start of the question's session, if it is still the one loaded (late-bound too).
+      getSourceTitle: (sessionId) => this.lifecycle?.sourceTitleOf(sessionId) ?? null,
       onChange: (state) => {
         const session = this.session;
         if (session) {
@@ -384,8 +395,9 @@ class HeadlessRuntime {
       throw refusal(400, "Session obsolète.", "stale-session");
     return this.session;
   }
-  start() {
-    return this.lifecycle.start();
+  // Validated before the coordinator: no session is born of a refused start.
+  start({ sourceTitle } = {}) {
+    return this.lifecycle.start({ sourceTitle: declaredSourceTitle(sourceTitle) });
   }
   pause() {
     return this.lifecycle.pause();

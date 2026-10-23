@@ -82,6 +82,30 @@ test('local web retrieval is composed from its configuration and an invalid one 
   assert.equal(Object.hasOwn(calls[3][1], 'webTrigger'), false);
 });
 
+test('only the composed local agent receives the host\'s source title, and only as a function', () => {
+  const received = [];
+  function LocalAgent(options) {
+    received.push(options);
+    return this;
+  }
+  function CodexAgent(options) {
+    received.push(options);
+    return this;
+  }
+  const getSourceTitle = () => 'Sintel';
+  const local = localConfig();
+  const compose = (config, options) => createConversationRuntime({ config, selectedModels: {}, LocalAgent, CodexAgent, ...options });
+  compose(local, { getSourceTitle });
+  assert.deepEqual(received[0], { ...local.localQuestions, getSourceTitle });
+  compose(local, { getSourceTitle: 'Sintel' });
+  assert.equal(received[1], local.localQuestions);
+  compose({ questionsBackend: 'codex' }, { getSourceTitle });
+  assert.equal(Object.hasOwn(received[2], 'getSourceTitle'), false);
+  const injected = {};
+  assert.equal(compose(local, { agent: injected, getSourceTitle }).agent, injected);
+  assert.equal(received.length, 3);
+});
+
 test('the default web retrieval factory builds the corpus or SearXNG port without reading or fetching', () => {
   const received = [];
   function LocalAgent(options) { received.push(options); return this; }
@@ -1076,11 +1100,11 @@ const filmState = { id: 'session', elapsedMs: 16000, history: [], segments: [
     observation: { summary: 'Générique de Tears of Steel.', transcript: 'Vous regardez Tears of Steel, un film du Blender Institute.' } },
 ] };
 // The local agent composed from its configuration with the model trigger, around a fake retrieval port; agent options
-// (an injected clock) are added to what the composition passes.
-function modelStage(t, url, retrieval, agentOptions) {
+// (an injected clock) are added to what the composition passes, and composition options (a host's title) to the stage.
+function modelStage(t, url, retrieval, agentOptions, compositionOptions = {}) {
   const config = { ...localConfig(url), localWeb: { backend: 'corpus', corpus: '/unused', trigger: 'model' } };
   const LocalAgent = agentOptions && function (options) { return new OllamaQuestionAgent({ ...options, ...agentOptions }); };
-  const s = stage(t, url, { config, createWebRetrieval: () => retrieval.port, ...(LocalAgent && { LocalAgent }) });
+  const s = stage(t, url, { config, createWebRetrieval: () => retrieval.port, ...(LocalAgent && { LocalAgent }), ...compositionOptions });
   s.replace(structuredClone(filmState));
   return s;
 }
@@ -1268,6 +1292,85 @@ test('the decision counts as a provider request and its thinking enters the ques
   assert.equal(job.metrics.calls.providerRequests, 2);
   assert.equal(job.metrics.thinkingChars, 5);
   assert.equal(job.result.thinkingChars, 5);
+});
+
+const SOURCE_TITLE = 'Sintel';
+const TITLE_LINE = `Titre de la source : ${SOURCE_TITLE}\n`;
+// One film question under the model trigger, its decision for the web: the decision call, the answer call and the job.
+async function filmDecision(t, compositionOptions) {
+  const retrieval = fakeRetrieval(async () => ({ documents: [structuredClone(FILM_PAGE)], limits: [] }));
+  const server = await backend(t, (request, res) => reply(res, isDecision(request) ? decision(true) : filmAnswer));
+  const s = modelStage(t, server.url, retrieval, undefined, compositionOptions);
+  const job = s.ask(FILM_QUESTION);
+  await job.done;
+  assert.equal(job.status, 'done', job.message);
+  const [decided, answered] = server.requests.map(request => request.body);
+  assert.equal(server.requests.length, 2);
+  return { s, job, decided, answered, retrieval };
+}
+const withoutTimes = ({ elapsedMs, decisionMs, ...retrieval }) => retrieval;
+
+test('with the model trigger, the decision call names the title the host gives for the question\'s session and is otherwise unchanged', async t => {
+  const untitled = await filmDecision(t);
+  const asked = [];
+  const getSourceTitle = sessionId => {
+    asked.push(sessionId);
+    return ` ${SOURCE_TITLE}\n`;
+  };
+  const titled = await filmDecision(t, { getSourceTitle });
+  assert.ok(titled.decided.messages[1].content.includes(TITLE_LINE));
+  const userWithTitle = untitled.decided.messages[1].content.replace('\nPassages récents', `\n${TITLE_LINE}Passages récents`);
+  assert.deepEqual(titled.decided, { ...untitled.decided, messages: [untitled.decided.messages[0], { role: 'user', content: userWithTitle }] });
+  assert.deepEqual(asked, ['session']);
+  assert.deepEqual(withoutTimes(titled.job.result.retrieval), { ...withoutTimes(untitled.job.result.retrieval), sourceTitleGiven: true });
+});
+
+test('the host\'s title is read again at each decision', async t => {
+  const retrieval = fakeRetrieval(async () => ({ documents: [structuredClone(FILM_PAGE)], limits: [] }));
+  const server = await backend(t, (request, res) => reply(res, isDecision(request) ? decision(true) : filmAnswer));
+  let title = SOURCE_TITLE;
+  const s = modelStage(t, server.url, retrieval, undefined, { getSourceTitle: () => title });
+  await s.ask(FILM_QUESTION).done;
+  title = 'Cosmos Laundromat';
+  await s.ask(FILM_QUESTION).done;
+  const decisions = server.requests.filter(isDecision).map(request => request.body.messages[1].content);
+  assert.equal(decisions.length, 2);
+  assert.ok(decisions[0].includes(TITLE_LINE));
+  assert.ok(decisions[1].includes('Titre de la source : Cosmos Laundromat\n'));
+});
+
+const NO_TITLE_HOSTS = {
+  'no title': () => null,
+  'an undefined title': () => undefined,
+  'a blank title': () => ' \n\u200b ',
+  'a title that is not a string': () => ({ title: SOURCE_TITLE }),
+  'a title of another session only': sessionId => (sessionId === 'previous-session' ? SOURCE_TITLE : null),
+  'a failing host': () => { throw Error(`PRIVATE_HOST_ERROR ${SOURCE_TITLE}`); },
+};
+for (const [label, getSourceTitle] of Object.entries(NO_TITLE_HOSTS)) {
+  test(`with ${label}, the decision call and the result are those of a host that gives no title`, async t => {
+    const untitled = await filmDecision(t);
+    const traces = [];
+    const hosted = await filmDecision(t, { getSourceTitle, onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+    assert.deepEqual(hosted.decided, untitled.decided);
+    assert.equal(hosted.decided.messages[1].content.includes('Titre de la source'), false);
+    assert.deepEqual(withoutTimes(hosted.job.result.retrieval), withoutTimes(untitled.job.result.retrieval));
+    assert.equal(Object.hasOwn(hosted.job.result.retrieval, 'sourceTitleGiven'), false);
+    assert.doesNotMatch(JSON.stringify([hosted.s.deep.snapshot(), traces]), /PRIVATE_HOST_ERROR|Sintel/);
+  });
+}
+
+test('the source title serves the decision only: neither the answer call, the answer, its sources, the snapshot nor the traces carry it', async t => {
+  const traces = [];
+  const titled = await filmDecision(t, { getSourceTitle: () => SOURCE_TITLE,
+    onTrace: (event, fields) => traces.push({ event, ...structuredClone(fields) }) });
+  assert.ok(titled.decided.messages[1].content.includes(TITLE_LINE));
+  assert.doesNotMatch(FILM_QUERY, /Sintel/);
+  assert.deepEqual(titled.retrieval.requests.map(request => request.query), [FILM_QUERY]);
+  assert.doesNotMatch(JSON.stringify(titled.answered), /Sintel/);
+  assert.deepEqual(titled.job.result.sources, [filmSource]);
+  assert.ok(traces.length > 0);
+  assert.doesNotMatch(JSON.stringify([titled.job.result, titled.s.deep.snapshot(), traces]), /Sintel/);
 });
 
 // An Ollama transport on the virtual clock that ignores its signal, as a stalled server would: each call answers after its

@@ -1426,6 +1426,55 @@ test('a replay with the model trigger reports the decision and its query, and a 
   assert.equal(declined.webResidence, null);
 });
 
+test('a scenario may declare the title of its source as a non-blank bounded string, any other form is refused with its code before any host', async t => {
+  const { SOURCE_TITLE_MAX_CHARS } = require('../core/web-retrieval.cjs');
+  for (const sourceTitle of [42, null, '', ' \n\u200b ', ['Sintel'], { title: 'Sintel' }, 'Sintel'.padEnd(SOURCE_TITLE_MAX_CHARS + 1, 'x')]) {
+    const f = await fixture(t);
+    f.scenario.sourceTitle = sourceTitle;
+    await f.save();
+    await assert.rejects(runReplay({ ...f.options, execute: true }, { createHost: () => assert.fail('an invalid title constructs no host') }),
+      error => error.code === 'TVLENS_REPLAY_SOURCE_TITLE_INVALID' && !/Sintel/.test(error.message));
+  }
+  for (const [sourceTitle, declared] of [['Sintel', true], [undefined, false]]) {
+    const f = await fixture(t);
+    if (sourceTitle !== undefined) f.scenario.sourceTitle = sourceTitle;
+    await f.save();
+    const report = await runReplay(f.options, { createHost: () => assert.fail('validation constructs no host') });
+    assert.equal(report.complete, true);
+    assert.equal(report.sourceTitleDeclared, declared);
+  }
+});
+
+test('a replay declaring the title of its source sends it at the start, its model decision receives it, and the report says so', async t => {
+  const realFetch = globalThis.fetch, starts = [];
+  t.mock.method(globalThis, 'fetch', (url, init) => {
+    if (String(url).endsWith('/v1/session/start')) starts.push(init.body);
+    return realFetch(url, init);
+  });
+  const createWebRetrieval = () => ({ residence: 'local', retrieve: async () => ({
+    documents: [{ ...WEB_PAGE, text: 'La hauteur de l’Etna dépasse trois mille mètres.' }], limits: [] }) });
+  const campaign = async sourceTitle => {
+    const f = await fixture(t), ollama = await decidingOllama(t, { web: true, query: 'hauteur Etna' });
+    f.scenario.config.localQuestions.url = ollama.url;
+    f.scenario.config.localWeb = { backend: 'corpus', corpus: 'web/corpus', trigger: 'model' };
+    f.scenario.questions[0].question = 'Quelle hauteur pour ce volcan ?';
+    if (sourceTitle !== undefined) f.scenario.sourceTitle = sourceTitle;
+    const report = await webCampaign(t, f, { runtimeOptions: { createWebRetrieval } });
+    const decided = ollama.calls.find(call => call.body.model === 'questions-fixture' && call.body.messages[0].role === 'system');
+    return { report, decision: decided.body.messages[1].content };
+  };
+  const titled = await campaign('Sintel');
+  assert.ok(titled.decision.includes('\nTitre de la source : Sintel\n'));
+  assert.equal(titled.report.sourceTitleDeclared, true);
+  assert.equal(titled.report.questions[0].web.retrieval.sourceTitleGiven, true);
+  assert.doesNotMatch(JSON.stringify([titled.report.questions, titled.report.diagnostics]), /Sintel/);
+  const untitled = await campaign();
+  assert.equal(untitled.decision.includes('Titre de la source'), false);
+  assert.equal(untitled.report.sourceTitleDeclared, false);
+  assert.equal(Object.hasOwn(untitled.report.questions[0].web.retrieval, 'sourceTitleGiven'), false);
+  assert.deepEqual(starts, ['{"sourceTitle":"Sintel"}', '{}']);
+});
+
 test('local selections preserve imported authentication without copying credentials into campaign outputs', async t => {
   const f = await fixture(t), ollama = await fakeOllama(t);
   f.scenario.config.localVlm.url = ollama.url;

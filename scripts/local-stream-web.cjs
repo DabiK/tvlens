@@ -22,7 +22,8 @@ function sourceValidationOf(validation) {
 }
 
 // Only these scalar facts are kept; a decision against the web or a failed one without the rule has no retrieval fields.
-const RETRIEVAL_FIELDS = ['residence', 'status', 'documents', 'elapsedMs', 'decision', 'query', 'decisionMs'];
+// A decision made with the source title says so, never the title itself.
+const RETRIEVAL_FIELDS = ['residence', 'status', 'documents', 'elapsedMs', 'decision', 'query', 'decisionMs', 'sourceTitleGiven'];
 
 // Read from the agent's own result: DeepAsk may refuse the answer and publish a result without them.
 function webRecordOf(result) {

@@ -13,7 +13,7 @@ async function runReplay(options, dependencies = {}) {
     complete: false, status: 'incomplete', inputs: loaded.inputs, code: await identity(dependencies.identityDependencies),
     provenance: loaded.provenance, plannedInterval: { startMs: 0, endMs: loaded.scenario.plannedDurationMs },
     parameters: loaded.scenario, roles: rolesOf(loaded.scenario.config), uploads: loaded.uploads, questions: loaded.questions,
-    webRetrieval: webSettingsOf(loaded.scenario.config), webResidence: null,
+    webRetrieval: webSettingsOf(loaded.scenario.config), webResidence: null, sourceTitleDeclared: loaded.scenario.sourceTitle !== undefined,
     clocks: null, shutdown: null, remaining: [], guardFailures: [], diagnostics: [], languages: [] };
   await fs.mkdir(options.outputDir, { mode: 0o700 });
   const writer = reportWriter(options.outputDir, report);

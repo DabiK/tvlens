@@ -81,7 +81,7 @@ const APPLICATION_CODES = new Set([
   "capture-changed", "capturing", "not-open", "not-found", "session-stopped",
   "unknown-view", "stale-session", "invalid-anchor", "invalid-captured-segment", "invalid-archive",
   "invalid-history-cursor", "invalid-history-limit", "invalid-surveillance-id",
-  "language-setting-busy", "surveillance-session-required",
+  "language-setting-busy", "surveillance-session-required", "invalid-source-title",
   TVLENS_CODEX_DISCONNECTED, TVLENS_CODEX_REQUEST_TIMEOUT, TVLENS_CODEX_REQUEST_CUT,
   TVLENS_CODEX_CONNECTION_LOST, TVLENS_CODEX_INPUT_REFUSED, TVLENS_CODEX_SESSION_CLOSED,
   TVLENS_CODEX_CONFINEMENT_REFUSED, TVLENS_CODEX_TOOL_REFUSED, TVLENS_CODEX_ROLE_REFUSED,

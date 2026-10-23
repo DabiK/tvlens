@@ -42,6 +42,7 @@ Un scénario version 1 contient :
 | `clips` | Liste ordonnée de `{id, block, occurrence, atMs, language}` |
 | `questions` | Liste de `{id, atMs, question}`, avec `cancelAtMs` facultatif |
 | `surveillance` | Facultatif : `{instruction}` ; rôle Codex distinct si activé |
+| `sourceTitle` | Facultatif : titre de ce qui est regardé, envoyé au démarrage de la session (voir plus bas) |
 
 `block` est la position dans l'index. `atMs` est le début prévu de cette occurrence ; l'envoi se
 déclenche à sa clôture, sans attendre uploads, analyses ou réponses précédents. Les intervalles ne
@@ -189,6 +190,15 @@ Aucun texte de page n'est recopié : la copie de `result` retire la citation `ev
 `webResidence` vaut `hybrid` dès qu'une question a récupéré par une voie qui sort de la machine (SearXNG) : la
 campagne est alors hybride. Sans relevé web, il vaut `null` ; une décision sans récupération ne change pas la
 résidence.
+
+Un scénario peut déclarer `sourceTitle`, le titre de ce qui est regardé : une chaîne d'au plus 200 caractères
+(`SOURCE_TITLE_MAX_CHARS` de `core/web-retrieval.cjs`) qui garde un titre une fois nettoyée (caractères de contrôle
+et de format retirés, espaces réduits). Toute autre forme est refusée avec `TVLENS_REPLAY_SOURCE_TITLE_INVALID`, avant
+tout hôte. Le runner l'envoie à `POST /v1/session/start` dans `{sourceTitle}` ; sans titre déclaré, le corps reste
+`{}`, comme pour la TV. Avec le déclencheur `model`, l'appel de décision le reçoit (ligne « Titre de la source »).
+Le rapport porte `sourceTitleDeclared` (vrai si le scénario en déclare un) et, pour chaque décision prise avec le
+titre, `sourceTitleGiven: true` dans `web.retrieval`. Le titre lui-même n'est recopié que dans `parameters`, avec le
+reste du scénario ; la requête écrite par le modèle peut le contenir, puisque c'est l'effet recherché.
 
 ## Transport, sorties et limites
 

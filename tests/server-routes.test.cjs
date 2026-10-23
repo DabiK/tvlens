@@ -233,7 +233,14 @@ test("session routes forward library identifiers without decoding and preserve l
   await expectCalls(routes, calls, [
     { method: "GET", path: "/v1/sessions", name: "sessions", args: [] },
     { method: "GET", path: "/v1/storage", name: "storageUsage", args: [] },
-    { method: "POST", path: "/v1/session/start", name: "start", args: [] },
+    { method: "POST", path: "/v1/session/start", name: "start", args: [{}] },
+    {
+      method: "POST",
+      path: "/v1/session/start",
+      body: { sourceTitle: "Sintel" },
+      name: "start",
+      args: [{ sourceTitle: "Sintel" }],
+    },
     {
       method: "POST",
       path: "/v1/session/pause",
@@ -1185,6 +1192,109 @@ async function applicationFixture(t, options = {}, serverOptions = {}) {
 function expectRefusal(actual, code, error, status = 400) {
   assert.deepEqual(actual, { status, value: { code, error } });
 }
+
+test('HTTP session start refuses a source title that is not a bounded string with a named code, before any session and without echoing it', async t => {
+  const { SOURCE_TITLE_MAX_CHARS } = require('../core/web-retrieval.cjs');
+  const f = await applicationFixture(t);
+  for (const sourceTitle of [42, null, true, ['PRIVATE_TITLE'], { title: 'PRIVATE_TITLE' }, 'PRIVATE_TITLE'.padEnd(SOURCE_TITLE_MAX_CHARS + 1, 'x')]) {
+    expectRefusal(await f.request('/v1/session/start', { sourceTitle }), 'invalid-source-title', 'Titre de la source invalide.');
+    assert.equal(f.runtime.session, null);
+  }
+  const withoutType = await f.raw('/v1/session/start', { method: 'POST' });
+  assert.deepEqual({ status: withoutType.status, value: await withoutType.json() },
+    { status: 415, value: { error: 'JSON requis.', code: 'json-required' } });
+  const withoutBody = await f.raw('/v1/session/start', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+  assert.deepEqual({ status: withoutBody.status, value: await withoutBody.json() },
+    { status: 400, value: { error: 'JSON invalide.', code: 'invalid-json' } });
+  assert.equal(f.runtime.session, null);
+  const started = await f.request('/v1/session/start', { sourceTitle: 'a'.repeat(SOURCE_TITLE_MAX_CHARS) });
+  assert.equal(started.status, 200);
+  assert.equal(started.value.id, f.runtime.session.id);
+});
+
+// A local question model that decides against the web and then answers that it cannot say: each decision's user
+// message is kept.
+async function decliningOllama(t) {
+  const decisions = [];
+  const server = http.createServer((req, res) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk)).on('end', () => {
+      const body = JSON.parse(Buffer.concat(chunks).toString());
+      const deciding = body.messages[0].role === 'system';
+      if (deciding) decisions.push(body.messages[1].content);
+      const content = deciding ? { web: false, query: '' }
+        : { answer: 'Je ne peux pas le dire.', kind: 'insufficient', citations: [], sources: [], limits: [] };
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ model: body.model, done: true, message: { role: 'assistant', content: JSON.stringify(content) } }));
+    });
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  t.after(() => new Promise(resolve => {
+    server.closeAllConnections();
+    server.close(resolve);
+  }));
+  return { url: `http://127.0.0.1:${server.address().port}`, decisions };
+}
+
+const DECLARED_TITLES = /Sintel|Cosmos Laundromat|Spring/;
+const titleLine = title => `\nTitre de la source : ${title}\n`;
+// The server host with the local agent under the model trigger. `ask` puts one question to a session over HTTP and hands
+// back the user message of its web decision; the title never reaches the job.
+async function localDecisionFixture(t) {
+  const ollama = await decliningOllama(t);
+  const f = await applicationFixture(t, { agent: undefined,
+    config: { questionsBackend: 'local', localQuestions: { url: ollama.url, model: 'questions-fixture' },
+      localWeb: { backend: 'corpus', corpus: '/unused', trigger: 'model' } },
+    createWebRetrieval: () => ({ residence: 'local', retrieve: async () => assert.fail('a declined decision retrieves nothing') }) });
+  const ask = async sessionId => {
+    const { status, value } = await f.request('/v1/questions', { sessionId, anchorMs: 0, question: 'Quand ce film est-il sorti ?' });
+    assert.equal(status, 200);
+    const job = f.runtime.deep.jobs.find(item => item.id === value.id);
+    await job.done;
+    assert.equal(job.status, 'done', job.message);
+    assert.doesNotMatch(JSON.stringify(job), DECLARED_TITLES);
+    return ollama.decisions.at(-1);
+  };
+  return { f, ask, decisions: ollama.decisions };
+}
+
+test('a title declared when a session starts reaches the web decision of its questions only, until another session is loaded', async t => {
+  const { f, ask, decisions } = await localDecisionFixture(t);
+  const titled = (await f.request('/v1/session/start', { sourceTitle: ' Sintel\n' })).value.id;
+  assert.equal((await f.request('/v1/session/start', {})).value.id, titled);
+  await ask(titled);
+  assert.equal((await f.request('/v1/session/end', {})).status, 200);
+  assert.equal((await f.request('/v1/sessions/' + titled + '/open', {})).status, 200);
+  await ask(titled);
+  assert.equal((await f.request('/v1/sessions/close', {})).status, 200);
+  const untitled = (await f.request('/v1/session/start', {})).value.id;
+  assert.notEqual(untitled, titled);
+  await ask(untitled);
+  assert.equal(decisions.length, 3);
+  assert.ok(decisions[0].includes(titleLine('Sintel')));
+  assert.deepEqual(decisions.slice(1).map(message => message.includes('Titre de la source')), [false, false]);
+});
+
+test('a title given to a start replaces the title of the session it keeps capturing or resumes, and an empty body leaves it', async t => {
+  const { f, ask } = await localDecisionFixture(t);
+  const start = async body => (await f.request('/v1/session/start', body)).value.id;
+  const id = await start({ sourceTitle: 'Sintel' });
+  assert.equal(await start({ sourceTitle: 'Cosmos Laundromat' }), id, 'the session still capturing');
+  assert.ok((await ask(id)).includes(titleLine('Cosmos Laundromat')));
+  assert.equal(await start({}), id);
+  assert.ok((await ask(id)).includes(titleLine('Cosmos Laundromat')), 'an empty body leaves the title');
+  expectRefusal(await f.request('/v1/session/start', { sourceTitle: 42 }), 'invalid-source-title', 'Titre de la source invalide.');
+  assert.ok((await ask(id)).includes(titleLine('Cosmos Laundromat')), 'a refused title leaves it too');
+  assert.equal((await f.request('/v1/session/pause', {})).status, 200);
+  assert.equal(await start({ sourceTitle: 'Spring' }), id, 'the paused session resumed by this start');
+  assert.ok((await ask(id)).includes(titleLine('Spring')));
+  assert.equal((await f.request('/v1/session/end', {})).status, 200);
+  assert.equal((await f.request(`/v1/sessions/${id}/open`, {})).status, 200);
+  assert.equal((await f.request(`/v1/sessions/${id}/resume`, {})).status, 200);
+  assert.equal((await ask(id)).includes('Titre de la source'), false, 'an archive resumed has no title until a start gives one');
+  assert.equal(await start({ sourceTitle: 'Sintel' }), id);
+  assert.ok((await ask(id)).includes(titleLine('Sintel')));
+});
 
 test('HTTP state requests classify the real view, language validator and concurrent language setting', async t => {
   const { deferred } = require('./helpers/wait.cjs');

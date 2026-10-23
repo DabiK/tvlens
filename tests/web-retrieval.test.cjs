@@ -2,8 +2,8 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const {
   WEB_DOCUMENT_LIMIT, WEB_TEXT_MAX_CHARS, WEB_QUERY_MAX_CHARS,
-  WEB_PAGE_READ_MAX_CHARS, WEB_EXCERPT_HEAD_CHARS, WEB_EXCERPT_WINDOW_CHARS,
-  normalizeText, callsForWeb, retrievalQuery, queryKey, clipText, searchTerms, pageExcerpt,
+  WEB_PAGE_READ_MAX_CHARS, WEB_EXCERPT_HEAD_CHARS, WEB_EXCERPT_WINDOW_CHARS, SOURCE_TITLE_MAX_CHARS,
+  normalizeText, callsForWeb, retrievalQuery, queryKey, clipText, searchTerms, pageExcerpt, cleanSourceTitle,
 } = require('../core/web-retrieval.cjs');
 
 test('questions that need the web are recognised', () => {
@@ -80,6 +80,23 @@ test('the retrieval query is bounded by the named length', () => {
 test('the retrieval query never ends on half of a surrogate pair', () => {
   const clipped = retrievalQuery('a'.repeat(WEB_QUERY_MAX_CHARS - 1) + '😀😀');
   assert.equal(clipped, 'a'.repeat(WEB_QUERY_MAX_CHARS - 1));
+});
+
+test('a source title keeps its words on one line, without control or invisible format characters', () => {
+  assert.equal(cleanSourceTitle('  Sintel \n Blender\tFoundation\r\n'), 'Sintel Blender Foundation');
+  assert.equal(cleanSourceTitle('Sin\u200btel\u202e — 2010\u0000\u0007'), 'Sintel — 2010');
+  assert.equal(cleanSourceTitle('Écran d’Été 😀'), 'Écran d’Été 😀');
+});
+
+test('an empty source title, or anything that is not a string, is no title', () => {
+  for (const value of ['', '   ', '\n\t', '\u200b\u2066', null, undefined, 42, { title: 'Sintel' }, ['Sintel']])
+    assert.equal(cleanSourceTitle(value), null, String(value));
+});
+
+test('a source title is bounded by the named length and never ends on half of a surrogate pair', () => {
+  assert.equal(cleanSourceTitle('a'.repeat(SOURCE_TITLE_MAX_CHARS + 50)), 'a'.repeat(SOURCE_TITLE_MAX_CHARS));
+  assert.equal(cleanSourceTitle('a'.repeat(SOURCE_TITLE_MAX_CHARS - 1) + '😀'), 'a'.repeat(SOURCE_TITLE_MAX_CHARS - 1));
+  assert.equal(cleanSourceTitle('a'.repeat(SOURCE_TITLE_MAX_CHARS - 1) + ' b'), 'a'.repeat(SOURCE_TITLE_MAX_CHARS - 1));
 });
 
 test('two spellings of a query share one key', () => {
