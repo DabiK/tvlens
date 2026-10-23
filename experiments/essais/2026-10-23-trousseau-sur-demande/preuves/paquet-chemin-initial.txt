@@ -1,0 +1,20 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '/private/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tvlens-package-startup-vspmXz'
+- '/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tvlens-package-startup-vspmXz'
+
+    at file:///Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/keychain-consent/check-startup.mjs:14:12 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '/private/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tvlens-package-startup-vspmXz',
+  expected: '/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tvlens-package-startup-vspmXz',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.12.0

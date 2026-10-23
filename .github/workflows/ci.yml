@@ -86,6 +86,8 @@ jobs:
         run: npm run package:mac -- --require-clean
       - name: Inspecter le paquet et charger son module natif
         run: npm run verify:mac -- dist/TVLens-darwin-arm64/TVLens.app --require-clean --report dist/package-report.json
+      - name: Ouvrir le paquet sans accès automatique au trousseau
+        run: npm run test:electron:package
       - name: Préparer le téléchargement
         run: |
           ditto -c -k --sequesterRsrc --keepParent dist/TVLens-darwin-arm64/TVLens.app dist/TVLens-mac-arm64.zip

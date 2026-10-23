@@ -50,3 +50,18 @@ Scripts : `scripts/smoke-config-access.mjs`, `scripts/smoke-setup.mjs`,
 `scripts/smoke-build-info.mjs`. Tests : `tests/config-access.test.cjs`,
 `tests/config-welcome.test.cjs`, `tests/mac-ipc-contract.test.cjs`.
 Les sorties brutes et l’écran réellement affiché sont dans [preuves](preuves/).
+
+### Contrôle du paquet et ressources de l’accueil
+
+La première ouverture du paquet a révélé que la liste explicite des ressources n’incluait pas
+le HTML et le CSS du nouvel accueil. L’inspection de l’ASAR a confirmé leur absence ; aucun ZIP
+n’avait été publié. Le test `the protected settings window and its local styles and scripts survive packaging`
+a reproduit le défaut avant correction, puis passe après ajout des deux fichiers à la liste autorisée.
+La garde reste restrictive. Un échec de chargement de cet accueil ne peut plus faire démarrer
+silencieusement l’app avec d’autres réglages. Les 67 tests de configuration, IPC et vérification
+d’archive passent après ce changement ; le contrôle modifié et les 7 tests de contenu passent aussi.
+
+Le script `scripts/smoke-package-startup.mjs` vérifie désormais l’application empaquetée elle-même,
+avec profil neuf puis cache factice conservé. Il rejoint la CI après construction et inspection.
+Une première assertion du script comparait `/var` à `/private/var`, alias macOS du même dossier ;
+elle compare désormais les chemins résolus, sans relâcher l’exigence d’un profil isolé.

@@ -1,0 +1,38 @@
+✔ the Mac package refuses research, tooling, other hosts and unknown root entries (0.452709ms)
+✔ private files and packager default exclusions remain excluded at any admitted depth (0.10525ms)
+✔ the actual copy filter covers the app import graph, HTML assets and the audio worklet (32.321041ms)
+✔ the copy hook writes the supplied identity only in the build directory (5.7815ms)
+✔ source links cannot pull files from outside the packaging roots (1.780042ms)
+✔ packaging seals ad hoc builds and only enables distribution signing with an explicit identity (3.007625ms)
+✖ the protected settings window and its local styles and scripts survive packaging (1.870333ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 6
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76.515792
+
+✖ failing tests:
+
+test at tests/package-content.test.cjs:106:1
+✖ the protected settings window and its local styles and scripts survive packaging (1.870333ms)
+  AssertionError [ERR_ASSERTION]: the actual window document must be included
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/tests/package-content.test.cjs:119:10)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -102,3 +102,24 @@ test('packaging seals ad hoc builds and only enables distribution signing with a
   assert.equal(distribution.optionsForFile().hardenedRuntime, true);
   assert.equal(distribution.optionsForFile().timestamp, undefined);
 });
+
+test('the protected settings window and its local styles and scripts survive packaging', async () => {
+  const { EventEmitter } = require('node:events');
+  const { showConfigWelcome } = require('../app/config-welcome.cjs');
+  class BrowserWindow extends EventEmitter {
+    constructor() {
+      super();
+      this.webContents = { mainFrame: {}, setWindowOpenHandler() {}, on() {} };
+    }
+    async loadFile(file) { this.file = file; }
+  }
+  const shown = showConfigWelcome({ BrowserWindow, ipcMain: { handle() {}, removeHandler() {} }, restore: async () => ({}) });
+  const ignore = copyFilter(root);
+  const page = path.relative(root, shown.window.file);
+  assert.equal(ignore('/' + page), false, 'the actual window document must be included');
+  const html = fs.readFileSync(shown.window.file, 'utf8');
+  for (const [, reference] of html.matchAll(/(?:src|href)="([^"]+)"/g)) {
+    const resource = path.posix.join(path.posix.dirname(page), reference);
+    assert.equal(ignore('/' + resource), false, `${page} needs ${resource}`);
+  }
+});

@@ -99,8 +99,12 @@ app.whenReady().then(async () => {
   const configPath = arg || (!app.isPackaged && (!smoke || liveInspection) ? path.join(__dirname, '..', '.env.local') : undefined);
   // The simulated and the fallback configuration keep the production default: a question may run five
   // minutes and must not withhold the visual description of what is captured meanwhile.
-  const startupConfig = await configAccess.startup(configPath).catch(() => ({
-    apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' }));
+  const startupConfig = await configAccess.startup(configPath).catch(error => {
+    // A failed welcome must not silently start with different providers than the saved configuration.
+    if (!configPath) throw error;
+    return { apiKey: '', model: 'google/gemini-2.5-flash-lite',
+      audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' };
+  });
   config = smoke && !liveInspection ? { ...startupConfig, apiKey: '', model: 'test/fake', visionDuringAsk: true } : startupConfig;
   const installation = new DesktopPreferences(app.getPath('userData'));
   const initialSetup = await installation.load().catch(() => ({ paths: {}, completed: false,

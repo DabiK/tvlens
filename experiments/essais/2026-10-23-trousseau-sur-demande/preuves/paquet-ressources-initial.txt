@@ -1,0 +1,15 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Target page, context or browser has been closed
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Retrouver mes réglages' }) to be visible[22m
+
+    at /Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/keychain-consent/check-startup.mjs:18:76 {
+  log: [
+    "  - waiting for getByRole('heading', { name: 'Retrouver mes réglages' }) to be visible"
+  ]
+}
+
+Node.js v24.12.0
