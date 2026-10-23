@@ -84,4 +84,8 @@ Temps propre d'une question, file d'attente exclue (champ `metrics.totalMs`) :
 - Le titre de la source (T318), puis le journal mémoire (T313) et l'échéance web portée à 30 s sur décision de Dabi, sont
   intégrés sur `main` (`dd945a5`). Le maximum de temps propre mesuré ici est de 16,6 s : les 30 s sont une marge
   produit, pas un optimum démontré. Aucune de ces versions n'a été rejouée en flux réel après F1.
+- Attente : chaque question W/M/O est posée juste après la question vidéo du même instant. Elle attend donc la fin de
+  celle-ci dans la file de DeepAsk, 6 à 8 s en médiane. D'où 12 W/M sur 30 au-delà de 20 s attente comprise, contre 5
+  au-delà de 14 s en temps propre. Une question isolée ne paie pas cette file ; l'échéance de 30 s porte sur le temps
+  propre, pas sur l'attente.
 

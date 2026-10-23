@@ -71,3 +71,23 @@ les URL, titres et tailles le sont.
 - Réserve : ce rejeu montre l'effet d'un ticket « titre de la source », depuis intégré sur `main` (T318, 23/10) mais
   non mesuré en flux réel. Les titres sont ceux des pages YouTube du corpus de test, et le nom du fichier pour Kennedy.
 
+## Diagnostic des 16 échecs du bras V0 (sans GPU)
+
+Un sous-agent a examiné, sur les traces et le texte des pages en cache, chacune des 16 questions W/M (6 W, 10 M) que le
+début de page (V0) rate, et leur a attribué une cause principale (scripts : [`diagnostic/`](diagnostic/)). Les deux
+notations, H4 et la renotation C1, donnent les mêmes 16 échecs.
+
+| Cause | Échecs | W | M | Réussis par Codex |
+| --- | ---: | ---: | ---: | ---: |
+| a. fait vidéo absent du contexte (6 passages récents, sans journal) | 5 | 0 | 5 | 0/5 |
+| b. recherche ratée : la requête vise la mauvaise œuvre faute de titre | 6 | 3 | 3 | 2/6 |
+| c. fait présent dans la page, mais au-delà des 2 500 premiers caractères | 2 | 1 | 1 | 1/2 |
+| d. fait donné au modèle, mais mal lu (volet manquant, mauvaise version) | 2 | 1 | 1 | 1/2 |
+| e. actualité : ancien plan donné comme actuel malgré la page | 1 | 1 | 0 | 1/1 |
+
+- Cause a : Codex, qui reçoit le même contexte, rate les 5 aussi. Le journal mémoire du produit vise ce cas ; F1, avec
+  journal, monte les mixtes à 5/12.
+- Cause b : avec le titre de la source (H4b), ces requêtes nomment la bonne œuvre ; c'est l'origine du ticket T318.
+- Questions d'actualité (7) : local 4/7, Codex 6/7. Les réponses sont rarement datées « au … », ce qui les plafonne à s2.
+- Limites : une exécution, une notation par modèles, et des gains annoncés qui sont des plafonds hors ligne.
+
