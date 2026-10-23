@@ -6,6 +6,6 @@ Paquet arm64 signé avec le Developer ID habituel ; signature et contenu vérifi
 
 ZIP : SHA-256 `364336b7fe5f1d11e319855f9a161ced71653784bb1637c067ca9b3f0be42323`.
 Préversion : https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.4
-Installateur prévu : v0.1.0-mac-installer.3. URL et empreinte épinglées dans le script ; liens du README et du guide mis à jour ensemble. Anciennes releases conservées.
+Installateur publié : https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-installer.3. URL et empreinte épinglées dans le script ; liens du README et du guide mis à jour ensemble. Anciennes releases conservées.
 
-21 tests installateur réussis ; contrôle des changements vert. Vérification publique finale à compléter après publication du script. Le provisionnement complet sur Mac vierge n’est pas testé ; les tests isolés couvrent les branches outils/modèle.
+21 tests installateur réussis ; contrôle des changements vert. Vérification publique réussie : script téléchargé identique au dépôt, ZIP retéléchargé avec empreinte attendue, réinstallation idempotente avec le script publié en mode --app-only --no-open dans une destination isolée déjà peuplée par ce ZIP. Signature vérifiée par le script, sortie 0. Aucun remplacement de l’app utilisateur. Le provisionnement complet sur Mac vierge n’est pas testé ; les tests isolés couvrent les branches outils/modèle.
