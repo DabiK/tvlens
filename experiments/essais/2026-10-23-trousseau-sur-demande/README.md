@@ -78,3 +78,13 @@ aucune capture demandée, et cache factice conservé après continuation.
 Archive `v0.1.0-mac-preview.3`, SHA-256 :
 `3e3df2ba5d843149558e69ba878f349d92b9adc36ed726c22691094f5293ca06`.
 Le script `v0.1.0-mac-installer.2` épingle cette archive ; les liens README et guide sont alignés.
+
+### Téléchargement public
+
+Le script a été téléchargé sans authentification depuis l’asset GitHub `v0.1.0-mac-installer.2`.
+Comparaison octet par octet avec la source : identique ; SHA-256 du script :
+`f544e4ef498006db3f4a6cea94951f4b059a3580ec5a97a1aac7e7d2325c75d6`.
+Son exécution `--yes --app-only --no-open` a téléchargé le ZIP public (135 Mio), contrôlé son
+empreinte et sa signature, puis reconnu l’app déjà construite dans la destination de validation.
+C’est une vérification publique et une réexécution idempotente, pas une nouvelle installation
+sur un Mac vierge. L’app active dans `/Applications` n’a pas été fermée ni remplacée.
