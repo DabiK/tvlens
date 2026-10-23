@@ -58,3 +58,5 @@
 | [2026-10-23-ci-livraison](2026-10-23-ci-livraison/) | CI Linux/Mac, contenu du paquet Mac et identité de construction : preuves de validation locale, limites de distribution et incidents. |
 
 - [23 octobre 2026 — Trousseau Mac sur demande](2026-10-23-trousseau-sur-demande/README.md) : accueil sans accès protégé, choix explicite, continuation et refus récupérable ; Electron réel avec profils et refus contrôlés.
+
+- [2026-10-23 — Réexamen en images individuelles et installation Mac](2026-10-23-reexamen-images-lisibles/README.md) : contrôles verts, paquet signé installé ; lecture par modèle et coût non mesurés.
