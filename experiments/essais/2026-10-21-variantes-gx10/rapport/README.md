@@ -8,3 +8,8 @@ Une relecture adverse par Claude Opus a précédé la version finale ([`../revue
 - [`rapport-gx10.html`](rapport-gx10.html) : la même version, autonome.
 - [`manques-v1.md`](manques-v1.md) : la liste des manques relevés à la première version, dont plusieurs sont comblés
   depuis (F1, H4, notations, archivage).
+
+Après le rapport (23/10, nuit) : le titre de la source (T318), le journal mémoire (T313) et l'échéance web de 30 s sont
+intégrés sur `main` (`dd945a5`). Le rapport les donne encore « à faire » ou « sur une branche » ; aucune de ces versions
+n'est mesurée en flux réel.
+

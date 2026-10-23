@@ -15,7 +15,7 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 > - Sans journal (N2), deux passages identiques sur 30 questions : 21/30 puis 22/30, médiane 5,7 puis 5,2 s, 30/30 sous
 >   15 s, aucun bloc perdu ([nuit](../2026-10-22-variantes-nuit-gx10/)).
 > - Réserves produit : `topicSummary` alimente le résumé cumulatif des cartes de la frise TV, il faut le calculer hors du
->   chemin critique (J4 et J5b négatifs) ; le journal n'est pas encore sur `main`.
+>   chemin critique (J4 et J5b négatifs). Le journal est sur `main` depuis le 23/10 (`dd945a5`), non remesuré en flux.
 
 ## Connaissance extérieure et outils
 

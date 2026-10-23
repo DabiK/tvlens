@@ -62,8 +62,9 @@ Temps propre d'une question, file d'attente exclue (champ `metrics.totalMs`) :
 
 ## Lecture
 
-- Activer le web ne dégrade pas les questions vidéo : 44/60 contre 39/60 sans web dans le même paquet, et moins
-  d'inventions. Ces questions coûtent 1,4 s de plus, à cause de l'appel de décision.
+- Aucune baisse n'est observée sur les questions vidéo avec le web : 44/60 contre 39/60 sans web dans le même paquet
+  (+8/−3, p ≈ 0,23), et moins d'inventions. Une seule exécution ne prouve pas la non-régression. Ces questions coûtent
+  1,4 s de plus, à cause de l'appel de décision, et 13 blocs de vision sont perdus (0 sans web).
 - Les questions mixtes profitent du journal (5/12, contre 2/12 hors ligne sans journal).
 - Les questions web restent faibles (8/18). Sans titre de la source, la requête du modèle vise souvent la mauvaise
   œuvre. L'essai [H4b](../2026-10-22-web-reel-texte-gx10/) le montre : avec le titre, les mêmes requêtes de F1
@@ -77,3 +78,10 @@ Temps propre d'une question, file d'attente exclue (champ `metrics.totalMs`) :
 - Une exécution, notée par des modèles.
 - T316 et T317 ne sont pas mesurés en flux réel.
 - Les questions W/M/O sont posées juste après une question vidéo ; leur délai de bout en bout inclut cette file.
+
+## Suite (23/10)
+
+- Le titre de la source (T318), puis le journal mémoire (T313) et l'échéance web portée à 30 s sur décision de Dabi, sont
+  intégrés sur `main` (`dd945a5`). Le maximum de temps propre mesuré ici est de 16,6 s : les 30 s sont une marge
+  produit, pas un optimum démontré. Aucune de ces versions n'a été rejouée en flux réel après F1.
+

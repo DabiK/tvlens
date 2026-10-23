@@ -68,6 +68,6 @@ les URL, titres et tailles le sont.
 - Le titre fait gagner 8 questions et n'en fait perdre aucune (p ≈ 0,008) : `artemis-w2`, `cnrs-w2`, `cnrs-w3`,
   `cuisine-m1`, `cuisine-w1`, `spring-m2`, `spring-w2`, `tears-w2`.
 - Avec le titre, le local dépasse Codex sur le web (C1 : W 11/18, M 4/12).
-- Réserve : le produit ne connaît pas encore le titre. Ce rejeu montre l'effet d'un ticket « titre de la source »,
-  qui reste à faire. Les titres sont ceux des pages YouTube du corpus de test, et le nom du fichier pour Kennedy.
+- Réserve : ce rejeu montre l'effet d'un ticket « titre de la source », depuis intégré sur `main` (T318, 23/10) mais
+  non mesuré en flux réel. Les titres sont ceux des pages YouTube du corpus de test, et le nom du fichier pour Kennedy.
 
