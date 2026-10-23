@@ -15,13 +15,13 @@ Mis à jour à chaque résultat. Chaque chiffre renvoie à son essai ; la versio
 > - Sans journal (N2), deux passages identiques sur 30 questions : 21/30 puis 22/30, médiane 5,7 puis 5,2 s, 30/30 sous
 >   15 s, aucun bloc perdu ([nuit](../2026-10-22-variantes-nuit-gx10/)).
 > - Réserves produit : `topicSummary` alimente le résumé cumulatif des cartes de la frise TV, il faut le calculer hors du
->   chemin critique (J4 négatif, J5b en cours) ; le journal n'est pas encore sur `main`.
+>   chemin critique (J4 et J5b négatifs) ; le journal n'est pas encore sur `main`.
 
 ## Connaissance extérieure et outils
 
 Catégorie à part, prioritaire depuis le 22/10 : W (web), M (vidéo + extérieur), O (relecture d'images). Point de départ
 établi dans le code : la voie locale refuse toute réponse extérieure et n'a aucun outil web (à confirmer par
-l'exploration ; confirmé). H1 (hors ligne) mesuré ; flux réel F1 à venir.
+l'exploration ; confirmé). Mesuré hors ligne (H1, H2, H2b, H4, H4b) et dans le produit complet en flux réel (F1).
 
 | Chiffre | Valeur | Source |
 | --- | --- | --- |
@@ -44,6 +44,7 @@ l'exploration ; confirmé). H1 (hors ligne) mesuré ; flux réel F1 à venir.
 | **Local contre Codex, mêmes contextes (C1)** | vidéo Codex 42/60, local 38/60 ; W 11/18 contre 12/18 ; M 4/12 contre 2/12 ; inventions 7 contre 12 (vidéo), 2 contre 6 (W+M) ; Codex 5,5 s et 10,8 s | [C1](../2026-10-23-comparatif-codex-local/) |
 | **Produit complet avec le web, flux réel (F1)** | vidéo **44/60** (J6 39 dans le même paquet), 7 inventions (11), 7,6 s ; W 8/18, M 5/12, O 0/12 ; question W 12,2 s médiane (temps propre), 5 W/M sur 30 au-delà de 14 s | [F1](../2026-10-22-produit-complet-web-gx10/) |
 | **Titre de la source dans la requête (H4b)** | W **14/18** contre 8/18, M 7/11 contre 5/11, 2 inventions contre 5 ; +8/−0 (p ≈ 0,008) | [H4b](../2026-10-22-web-reel-texte-gx10/) |
+| Échéance web de 14 s face à F1 | 5 W/M sur 30 au-delà de 14 s en temps propre (maximum 16,6 s), dont 2 réponses pertinentes perdues avec une échéance à 14 s ; avec attente comprise, 12 W/M sur 30 au-delà de 20 s (questions enchaînées) | F1, `metrics.totalMs` et notes |
 
 ## Matériel et configuration de référence
 
