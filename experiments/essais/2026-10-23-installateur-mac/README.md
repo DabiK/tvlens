@@ -64,3 +64,18 @@ vers l’ADR 0073 dans la section Décisions de l’architecture. Le lien est aj
 documentaires** repassent tous, et le contrôle des modifications réussit avec les 21 tests du script.
 La sortie initiale reste conservée : elle n’est pas présentée comme un contrôle complet vert.
 La CI GitHub doit confirmer le contrôle complet du commit corrigé sur Linux et Mac.
+
+## Installateur public
+
+Le commit `77796c891a18d95c804da3d0127fd7f7f157dd2e` est poussé sur `main`.
+Le tag [v0.1.0-mac-installer.1](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-installer.1)
+pointe sur ce commit et fournit `install-mac.sh` et `SHA256SUMS`.
+
+Le script téléchargé publiquement est identique octet pour octet au fichier du checkout :
+`07b1d3c53422c059bdb11c6f6bd568ca8a44b3b09c64c26be39a49917621cb33` (SHA-256).
+Son exécution réelle avec `--yes --no-open --destination …/dist/installer-validation` réussit,
+reconnaît la version installée et conserve outils/modèle. Sortie brute : `preuves/installateur-public.txt`.
+
+La première création du tag a été refusée par GitHub car son API exigeait le SHA complet, et non
+son abréviation ; aucune livraison n’avait été créée. La création avec le SHA complet a réussi.
+La CI du commit de livraison est suivie sur GitHub ; son résultat final est donné dans le bilan du chat.
