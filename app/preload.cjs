@@ -63,7 +63,7 @@ contextBridge.exposeInMainWorld('tvlens', {
   config: () => invoke('app:config'),
   setupStatus: () => invoke('setup:status'),
   setupChoose: key => invoke('setup:choose', key),
-  setupAction: name => invoke('setup:action', name),
+  setupAction: (name, ...options) => invoke('setup:action', name, ...options),
   importConfig: () => invoke('app:import-config'),
   newSession: () => invoke('watch:new'),
   onReset: on('watch:reset'),

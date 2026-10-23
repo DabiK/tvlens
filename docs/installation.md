@@ -382,3 +382,13 @@ Les réglages de cloisonnement des agents sont décrits dans
 [SECURITY.md](../SECURITY.md) : chacun retire un contrôle et ne sert qu'à diagnostiquer.
 
 Preuves, limites et ce qui n'a pas été essayé : [livrable de la nuit](night-features-delivery.md).
+
+## Choisir le modèle et la langue de transcription
+
+Dans **Réglages IA → Configurer ce Mac**, le sélecteur reste accessible même lorsqu’un modèle est
+installé. Il propose 33 variantes Whisper, leur taille et le compromis attendu. Les téléchargements
+vérifient le SHA-256 et expirent après une heure. Les modèles restent dans
+`~/Library/Application Support/TVLens/models/ggml-<identifiant>.bin`. Le défaut reste `base`.
+Choisis la langue des paroles, puis quitte et rouvre TVLens pour appliquer la configuration.
+Le [guide des modèles de transcription](transcription-models.md) décrit les variantes et alternatives.
+Le ZIP public preview.3 ne contient pas encore ce sélecteur ; il est disponible depuis les sources.

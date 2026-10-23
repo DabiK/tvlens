@@ -129,3 +129,60 @@ test('deferring screen permission does not bypass missing tools or a required re
   assert.equal((await missing.status()).canFinish, false);
   await assert.rejects(missing.action('finish'), { code: 'TVLENS_SETUP_INCOMPLETE' });
 });
+
+test('catalogue selection persists the requested model and language and survives reopening', async () => {
+  const installed = [];
+  const { service, writes } = fixture({}, { install: async (file, options) => { installed.push({ file, options }); return file; } });
+  const result = await service.action('download-model', { modelId: 'large-v3-turbo-q5_0', language: 'fr' });
+  assert.deepEqual(installed, [{ file: '/data/models/ggml-large-v3-turbo-q5_0.bin', options: { modelId: 'large-v3-turbo-q5_0' } }]);
+  assert.equal(result.restartRequired, true);
+  assert.equal(result.speech.selectedId, 'large-v3-turbo-q5_0');
+  assert.equal(result.speech.language, 'fr');
+  const reopened = fixture({ initial: writes[0] }).service;
+  assert.equal((await reopened.status()).restartRequired, false);
+  assert.equal((await reopened.status()).speech.selectedId, 'large-v3-turbo-q5_0');
+  await reopened.action('finish');
+  assert.equal((await reopened.status()).speech.language, 'fr');
+});
+
+test('unknown models and English-only models for French are refused before downloading or saving', async () => {
+  const { service, writes } = fixture({}, { install: () => assert.fail('download must not start') });
+  await assert.rejects(service.action('download-model', { modelId: '../../outside', language: 'fr' }),
+    { code: 'TVLENS_SPEECH_MODEL_INVALID' });
+  await assert.rejects(service.action('download-model', { modelId: 'small.en', language: 'fr' }),
+    { code: 'TVLENS_SPEECH_MODEL_LANGUAGE' });
+  await assert.rejects(service.action('speech-language', { language: 'invalid' }),
+    { code: 'TVLENS_TRANSCRIPTION_LANGUAGE_INVALID' });
+  assert.deepEqual(writes, []);
+});
+
+test('a failed model replacement preserves the active model and allows another attempt', async () => {
+  const initial = { paths: { whisperModel: '/data/models/ggml-base.bin' }, completed: true, transcriptionLanguage: 'fr' };
+  const { service, writes } = fixture({ initial }, { install: async () => { throw Error('interrompu'); } });
+  await assert.rejects(service.action('download-model', { modelId: 'small' }), /interrompu/);
+  const report = await service.status();
+  assert.equal(report.speech.selectedId, 'base');
+  assert.equal(report.restartRequired, false);
+  assert.equal(report.busy, false);
+  assert.deepEqual(writes, []);
+  await service.action('speech-language', { language: 'en' });
+  assert.equal(writes[0].paths.whisperModel, initial.paths.whisperModel);
+});
+
+test('English-only selection is explicit and cannot later accept a French language override', async () => {
+  const { service } = fixture({}, { install: async file => file });
+  await service.action('download-model', { modelId: 'small.en', language: 'en' });
+  await assert.rejects(service.action('speech-language', { language: 'fr' }), { code: 'TVLENS_SPEECH_MODEL_LANGUAGE' });
+  assert.equal((await service.status()).speech.language, 'en');
+});
+
+test('granting screen access after startup requires reopening before setup completion', async () => {
+  let permission = 'denied';
+  const { service } = fixture({ permission: () => permission }, { inspect: async input =>
+    checks.map(item => item.id === 'screen' ? { ...item, state: input.permission === 'granted' ? 'ready' : input.permission } : item) });
+  assert.equal((await service.status()).restartRequired, false);
+  permission = 'granted';
+  assert.equal((await service.status()).restartRequired, true);
+  await assert.rejects(service.action('finish'), { code: 'TVLENS_SETUP_INCOMPLETE' });
+  assert.equal((await fixture().service.status()).restartRequired, false);
+});

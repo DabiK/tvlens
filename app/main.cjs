@@ -112,6 +112,7 @@ app.whenReady().then(async () => {
   const resolvePaths = (value, preferences) => desktopPaths({ config: value, preferences,
     userData: app.getPath('userData'), packaged: app.isPackaged, environment: process.env, home: os.homedir() });
   Object.assign(config, resolvePaths(config, initialSetup.paths));
+  config.transcriptionLanguage = initialSetup.transcriptionLanguage || config.transcriptionLanguage || 'auto';
   // Reversible host settings, read from the environment of this start. Absent: the product default.
   // Mistyped: refused at start by the composition that uses it, never run under another value.
   const setting = name => process.env[name] ? Number(process.env[name]) : undefined;
@@ -328,6 +329,7 @@ app.whenReady().then(async () => {
       const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance };
       config = imported;
       Object.assign(config, host, resolvePaths(config, initialSetup.paths));
+      config.transcriptionLanguage = initialSetup.transcriptionLanguage || config.transcriptionLanguage || 'auto';
       config.model = selectedModels.observationModel;
       config.inspectionModel = selectedModels.inspectionModel;
       videoAgent.authHome = config.codexAuthHome;
@@ -355,7 +357,7 @@ app.whenReady().then(async () => {
   });
   handle('setup:status', () => setup.status());
   handle('setup:choose', key => setup.select(key));
-  handle('setup:action', name => setup.action(name));
+  handle('setup:action', (name, value) => setup.action(name, value));
   // ---- Loaded session: one at a time, live or reopened read-only -------------------------------
   let storageShown = null;
   const ingestions = new Set();

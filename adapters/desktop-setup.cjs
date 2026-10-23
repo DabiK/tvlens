@@ -2,6 +2,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { execFile } = require('node:child_process');
 const { executable } = require('./system-paths.cjs');
+const { validateTranscriptionLanguage } = require('../core/transcription-language.cjs');
 
 const PATH_KEYS = ['codexBinary', 'codexAuthHome', 'ffmpeg', 'whisperBinary', 'whisperModel'];
 const fail = code => Object.assign(new Error('Réglages d’installation illisibles ou invalides.'), { code });
@@ -35,16 +36,23 @@ class DesktopPreferences {
       if (!PATH_KEYS.includes(key) || typeof file !== 'string' || !path.isAbsolute(file) || file.includes('\0'))
         throw fail('TVLENS_SETUP_INVALID');
     }
-    return { paths: value.paths, completed: value.completed };
+    const language = value.transcriptionLanguage;
+    if (language !== undefined) validateTranscriptionLanguage(language);
+    return { paths: value.paths, completed: value.completed,
+      ...(language === undefined ? {} : { transcriptionLanguage: language }) };
   }
 
   async save(value) {
     // Only non-secret, explicitly selected paths and the completion flag enter this file.
     const paths = Object.fromEntries(PATH_KEYS.filter(key => value.paths[key]).map(key => [key, value.paths[key]]));
+    const language = value.transcriptionLanguage;
+    if (language !== undefined) validateTranscriptionLanguage(language);
+    const stored = { paths, completed: value.completed === true,
+      ...(language === undefined ? {} : { transcriptionLanguage: language }) };
     const temporary = this.file + '.tmp';
     try {
       await fs.mkdir(path.dirname(this.file), { recursive: true, mode: 0o700 });
-      await fs.writeFile(temporary, JSON.stringify({ paths, completed: value.completed === true }), { mode: 0o600 });
+      await fs.writeFile(temporary, JSON.stringify(stored), { mode: 0o600 });
       await fs.rename(temporary, this.file);
     } catch (error) {
       // Preserve the original failure even when the temporary location cannot be cleaned.

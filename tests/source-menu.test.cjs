@@ -34,3 +34,12 @@ test('a granted listing invites a choice, or says that no window was found, with
     placeholder: 'Aucune fenêtre trouvée', status: 'Écran autorisé · Aucune source', notice: '',
   });
 });
+
+test('an authorized native failure does not ask to grant access again', async () => {
+  const { describeSourceListing } = await menu();
+  const result = { permission: 'granted', sources: [], error: 'TVLENS_SOURCE_LIST_FAILED' };
+  const view = describeSourceListing({ result });
+  assert.match(view.status, /Écran autorisé/);
+  assert.match(view.notice, /capture.*indisponible/);
+  assert.doesNotMatch(view.notice, /autorise l’app/);
+});

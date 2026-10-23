@@ -84,3 +84,10 @@ test('Mac signature verification rejects a broken resource seal before executing
     await fs.writeFile(resource, 'modified');
     assert.throws(() => verifyMacSignature(app), { code: 'TVLENS_PACKAGE_SIGNATURE_INVALID' });
   });
+
+test('signature verification refuses a broken bundle before it can be installed', async () => {
+  const { verifyMacSignature } = await import('../scripts/verify-package.mjs');
+  assert.throws(() => verifyMacSignature('/tmp/TVLens.app', () => ({ status: 1, stderr: 'invalid resources' })),
+    { code: 'TVLENS_PACKAGE_SIGNATURE_INVALID' });
+  assert.deepEqual(verifyMacSignature('/tmp/TVLens.app', () => ({ status: 0 })), { integrity: 'verified', trust: 'not-assessed' });
+});

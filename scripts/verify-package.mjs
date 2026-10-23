@@ -144,8 +144,8 @@ export async function inspectArchive(archive, { root, expectedBuild }) {
   };
 }
 
-export function verifyMacSignature(appPath) {
-  const result = spawnSync(
+export function verifyMacSignature(appPath, run = spawnSync) {
+  const result = run(
     "/usr/bin/codesign",
     ["--verify", "--deep", "--strict", "--verbose=2", appPath],
     { encoding: "utf8", timeout: 30000 },

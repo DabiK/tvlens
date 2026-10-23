@@ -27,3 +27,6 @@
 .setup-footer .setup-actions { justify-content: flex-end; }
 .setup-footer .link { margin-right: auto; }
 .setup-primary { background: var(--lime); color: #142012; padding: 9px 16px; font-weight: 700; border-radius: 8px; }
+.speech-model-picker { margin: 14px 0; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+.speech-model-picker label { display: block; font-size: 12px; margin-bottom: 10px; }
+.speech-model-picker select { display: block; width: 100%; margin-top: 6px; }

@@ -1,0 +1,27 @@
+
+> tvlens@0.1.0 test:electron:config
+> node scripts/smoke-config-access.mjs
+
+{
+  "result": "PASS",
+  "results": [
+    {
+      "scenario": "fresh",
+      "result": "PASS",
+      "window": "setup",
+      "encryptedCachePreserved": false
+    },
+    {
+      "scenario": "saved-skip",
+      "result": "PASS",
+      "window": "setup",
+      "encryptedCachePreserved": true
+    },
+    {
+      "scenario": "saved-refused",
+      "result": "PASS",
+      "window": "setup",
+      "encryptedCachePreserved": true
+    }
+  ]
+}

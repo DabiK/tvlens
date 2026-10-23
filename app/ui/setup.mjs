@@ -1,7 +1,8 @@
 import { element as el } from './format.js';
 import { setupRows, setupSummary } from './setup-view.mjs';
+import { speechModelPicker } from './speech-model-picker.mjs';
 
-export function bindSetup({ bridge, get, refreshSources, prepare, clipboard = navigator.clipboard }) {
+export function bindSetup({ bridge, get, refreshSources, prepare, clipboard = navigator.clipboard, focusTarget = globalThis }) {
   const dialog = get('setup-dialog');
   let report, busy = false;
   const button = (label, run) => {
@@ -14,12 +15,12 @@ export function bindSetup({ bridge, get, refreshSources, prepare, clipboard = na
     if (busy) return;
     busy = true;
     get('setup-state').textContent = message;
-    for (const node of dialog.querySelectorAll('button')) node.disabled = true;
+    for (const node of dialog.querySelectorAll('button, select')) node.disabled = true;
     try { const value = await run(); if (value?.checks) paint(value); }
     catch (error) { get('setup-state').textContent = error.message || 'Opération indisponible. Réessaie.'; }
     finally {
       busy = false;
-      for (const node of dialog.querySelectorAll('button')) node.disabled = false;
+      for (const node of dialog.querySelectorAll('button, select')) node.disabled = false;
       get('setup-finish').disabled = !report?.canFinish;
     }
   }
@@ -48,6 +49,9 @@ export function bindSetup({ bridge, get, refreshSources, prepare, clipboard = na
   get('setup-later').onclick = close;
   dialog.addEventListener('cancel', event => { if (busy) event.preventDefault(); });
   dialog.addEventListener('close', () => refreshSources());
+  focusTarget.addEventListener('focus', () => {
+    if (dialog.open && !busy) void perform(() => bridge.setupStatus());
+  });
   get('setup-refresh').onclick = () => perform(() => bridge.setupStatus());
   get('setup-quit').onclick = () => perform(() => bridge.setupAction('quit'));
   get('setup-finish').onclick = () => perform(async () => {
@@ -84,10 +88,7 @@ function setupRow(item, { button, bridge, get, clipboard }) {
   } else {
     actions.append(button('Choisir un autre emplacement…', () => bridge.setupChoose(item.id)));
   }
-  if (item.id === 'whisperModel' && !item.good) actions.prepend(button('Télécharger le modèle · 142 Mio', async () => {
-    get('setup-state').textContent = 'Téléchargement depuis Hugging Face… Vérification SHA-256 avant installation. Cela peut prendre quelques minutes.';
-    return bridge.setupAction('download-model');
-  }));
+  if (item.id === 'whisperModel' && item.speech) node.append(speechModelPicker(item.speech, { button, bridge, get }));
   node.append(actions);
   if (item.path || item.command) {
     const details = el('details', 'setup-details');
