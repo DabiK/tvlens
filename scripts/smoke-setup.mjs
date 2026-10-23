@@ -26,6 +26,30 @@ try {
   await page.locator('#setup-open').click();
   await page.locator('#setup-dialog[open]').waitFor();
   await page.locator('#setup-later').click();
+  // Native permission is simulated; no macOS setting or real capture is changed.
+  await page.evaluate(async () => {
+    const { bindSetup } = await import('./ui/setup.mjs');
+    const original = await window.tvlens.setupStatus();
+    const report = { ...original, firstLaunch: true, ready: false, canObserve: false, canFinish: true,
+      checks: original.checks.map(item => item.id === 'screen' ? { ...item, state: 'denied' } : item) };
+    window.deferredFinish = false;
+    const fixture = bindSetup({ get: id => document.getElementById(id), refreshSources: async () => {}, prepare: async () => {},
+      bridge: { setupStatus: async () => report, setupAction: async name => {
+        if (name !== 'finish') throw Error('Action inattendue');
+        window.deferredFinish = true;
+        return { ...report, firstLaunch: false };
+      } } });
+    await fixture.start();
+  });
+  assert.equal(await page.locator('#setup-finish').textContent(), 'Continuer sans capture');
+  assert.equal(await page.locator('#setup-finish').isEnabled(), true);
+  await page.locator('#setup-refresh').click();
+  assert.equal(await page.locator('#setup-finish').isEnabled(), true);
+  assert.equal(await page.locator('#setup-progress').textContent(), '5 / 6 prérequis vérifiés');
+  await page.locator('#setup-finish').click();
+  assert.equal(await page.locator('#setup-dialog').isVisible(), false);
+  assert.equal(await page.evaluate(() => window.deferredFinish), true);
+  assert.equal(await page.locator('#setup-banner-text').textContent(), 'Capture indisponible · autorisation écran à vérifier');
   // A controlled missing-tool response exercises the same UI without probing or changing this Mac.
   await page.evaluate(async () => {
     const { bindSetup } = await import('./ui/setup.mjs');
@@ -48,7 +72,7 @@ try {
   assert.equal(await page.locator('#setup-dialog').isVisible(), false);
   assert.deepEqual(errors, []);
   console.log(JSON.stringify({ result: 'PASS', firstLaunch: true, completionPersisted: true,
-    reopen: true, missingDependencies: true, downloadFailureRecoverable: true }));
+    reopen: true, screenPermissionDeferred: true, missingDependencies: true, downloadFailureRecoverable: true }));
 } finally {
   await instance.close();
   if (userData) await fs.rm(userData, { recursive: true, force: true });

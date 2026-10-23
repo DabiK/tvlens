@@ -29,3 +29,11 @@ Tests des préférences et du diagnostic, sélection native, refus d’actions a
 
 Évolution : l’[ADR 0073](0073-un-installateur-mac-prepare-le-paquet-et-les-outils.md) ajoute un installateur externe guidé.
 L’assistant dans l’app conserve sa responsabilité de diagnostic et de configuration.
+
+## Autorisation écran différée
+
+La fin de l’assistant exige les outils et leur configuration effective, mais permet de reporter
+l’autorisation écran avec « Continuer sans capture ». Ce choix est mémorisé comme une fin
+d’assistant ; il ne transforme pas une permission refusée en permission accordée. Le diagnostic
+reste visible, les sources et la capture gardent leurs contrôles natifs. Cette séparation évite
+qu’un désaccord entre les réglages macOS et son API de permission bloque l’accès à l’application.

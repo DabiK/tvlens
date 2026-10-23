@@ -2,6 +2,7 @@
 
 | Dossier | Objet |
 | --- | --- |
+| [2026-10-23-installation-sans-capture](2026-10-23-installation-sans-capture/) | Autorisation écran différable : diagnostic App Use et contrôle Electron simulé, capture réelle non résolue. |
 | [2026-10-23-installateur-mac](2026-10-23-installateur-mac/) | Installateur GitHub : téléchargement, signature, installation et reprise réels ; modèle vérifié, limites Mac vierge et interface documentées. |
 | [2026-10-23-signature-paquet-mac](2026-10-23-signature-paquet-mac/) | Diagnostic du paquet déclaré endommagé, scellement réel et signature Developer ID ; ZIP sans notarisation choisi par le propriétaire, ouverture manuelle après téléchargement encore à valider. |
 | [2026-10-23-installation-mac-reelle](2026-10-23-installation-mac-reelle/) | Icône sobre, paquet installé dans Applications, assistant réel et recette de capture, transcription, question et conservation sur ce Mac. |

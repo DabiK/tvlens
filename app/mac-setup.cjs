@@ -37,7 +37,7 @@ function createMacSetup({ store, initial, resolvePaths, getConfig, environment, 
     const toolsReady = checks.filter(check => check.id !== 'screen').every(check => GOOD.has(check.state));
     startupReady ??= toolsReady;
     const restartRequired = changed || PATH_KEYS.some(key => paths[key] !== startup[key]) || (!startupReady && toolsReady);
-    return { firstLaunch: showOnStart && !settings.completed, checks, paths, ready,
+    return { firstLaunch: showOnStart && !settings.completed, checks, paths, ready, canFinish: toolsReady && !restartRequired,
       canObserve: checks.filter(check => REQUIRED.includes(check.id)).every(check => GOOD.has(check.state)),
       restartRequired, busy: pending, problem: initial.problem || null };
   }
@@ -81,7 +81,7 @@ function createMacSetup({ store, initial, resolvePaths, getConfig, environment, 
     }
     if (name === 'finish') return mutate(async () => {
       const current = await status();
-      if (!current.ready || current.restartRequired)
+      if (!current.canFinish)
         throw failure('TVLENS_SETUP_INCOMPLETE', 'Termine les étapes indiquées, puis vérifie à nouveau.');
       await save(settings.paths, true);
     });

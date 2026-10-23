@@ -20,7 +20,7 @@ export function bindSetup({ bridge, get, refreshSources, prepare, clipboard = na
     finally {
       busy = false;
       for (const node of dialog.querySelectorAll('button')) node.disabled = false;
-      get('setup-finish').disabled = !report?.ready || report?.restartRequired;
+      get('setup-finish').disabled = !report?.canFinish;
     }
   }
   function paint(value) {
@@ -29,10 +29,14 @@ export function bindSetup({ bridge, get, refreshSources, prepare, clipboard = na
     get('setup-checks').replaceChildren(...rows.map(item => setupRow(item, { button, bridge, get, clipboard })));
     get('setup-progress').textContent = `${rows.filter(item => item.good).length} / ${rows.length} prérequis vérifiés`;
     get('setup-state').textContent = value.problem || setupSummary(value);
-    get('setup-finish').disabled = !value.ready || value.restartRequired;
+    get('setup-finish').disabled = !value.canFinish;
+    get('setup-finish').textContent = value.canFinish && !value.ready ? 'Continuer sans capture' : 'Commencer';
     get('setup-quit').hidden = !value.restartRequired;
     get('setup-banner').hidden = value.ready && !value.restartRequired;
-    get('setup-banner-text').textContent = value.restartRequired ? 'Configuration enregistrée · réouverture nécessaire' : 'Installation à compléter';
+    let banner = 'Installation à compléter';
+    if (value.canFinish) banner = 'Capture indisponible · autorisation écran à vérifier';
+    if (value.restartRequired) banner = 'Configuration enregistrée · réouverture nécessaire';
+    get('setup-banner-text').textContent = banner;
   }
   async function open() {
     await prepare();

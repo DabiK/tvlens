@@ -66,7 +66,9 @@ Pour les Mac avec puce Apple (M1 et suivantes). Aucun compte GitHub, clone du d�
 1. Télécharger `TVLens-mac-arm64.zip` avec le lien ci-dessus, puis double-cliquer pour le décompresser.
 2. Déplacer `TVLens.app` dans **Applications**, puis l’ouvrir depuis le Finder. Si macOS bloque le premier lancement, consulter l’aide ci-dessous.
 3. L’assistant **Préparons ce Mac** s’ouvre. Il vérifie les outils locaux et guide les étapes manquantes. **Explorer pour le moment** permet de consulter l’application sans déclarer l’installation terminée.
-4. Après une installation externe, cliquer sur **Vérifier à nouveau**. Si des chemins ou le modèle ont changé, quitter puis rouvrir TVLens depuis Applications. **Commencer** mémorise la fin de l’assistant lorsque tous les prérequis sont vérifiés.
+4. Après une installation externe, cliquer sur **Vérifier à nouveau**. Si des chemins ou le modèle ont changé, quitter puis rouvrir TVLens depuis Applications. **Commencer** mémorise la fin de l’assistant lorsque tous les prérequis sont vérifiés. Si les outils sont prêts mais que macOS refuse encore l’accès écran, **Continuer sans capture** termine aussi l’assistant : l’application reste accessible et ne redemande pas cette étape à chaque lancement. La capture reste indisponible tant que macOS ne l’autorise pas.
+
+Le bouton **Continuer sans capture** décrit ici est disponible dans le code source actuel ; le ZIP preview.3 lié ci-dessus ne l’intègre pas encore.
 
 ### Si macOS bloque le premier lancement
 

@@ -29,6 +29,7 @@ export function setupRows(report) {
 export function setupSummary(report) {
   if (report.restartRequired) return 'Réglages enregistrés. Quitte TVLens, puis rouvre l’application depuis Applications.';
   if (report.ready) return 'Les prérequis sont vérifiés. Choisis ensuite une fenêtre et lance l’observation.';
+  if (report.canFinish) return 'Les outils sont prêts. Tu peux continuer sans capture et autoriser l’écran plus tard dans Configurer ce Mac.';
   if (report.canObserve) return 'Tu peux observer les images. Les étapes restantes complètent la transcription et le réexamen vidéo.';
   return 'Termine les étapes indispensables pour lancer l’observation. Tu peux aussi explorer l’application maintenant.';
 }

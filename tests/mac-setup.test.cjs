@@ -100,3 +100,32 @@ test('screen access is requested only after the explicit permission action', asy
   assert.equal((await service.status()).ready, true);
   assert.equal(opened.length, 1);
 });
+
+test('screen permission can be deferred persistently without claiming capture is ready', async () => {
+  for (const state of ['denied', 'restricted', 'unknown', 'not-determined']) {
+    const inspect = async () => checks.map(item => item.id === 'screen' ? { ...item, state } : item);
+    const { service, writes } = fixture({}, { inspect });
+    const report = await service.status();
+    assert.equal(report.canFinish, true);
+    assert.equal(report.ready, false);
+    assert.equal(report.canObserve, false);
+    const completed = await service.action('finish');
+    assert.equal(completed.firstLaunch, false);
+    assert.equal(completed.ready, false);
+    assert.equal(completed.canObserve, false);
+    const reopened = fixture({ initial: writes[0] }, { inspect }).service;
+    assert.equal((await reopened.status()).firstLaunch, false);
+    assert.equal((await reopened.status()).canObserve, false);
+  }
+});
+
+test('deferring screen permission does not bypass missing tools or a required restart', async () => {
+  const inspect = async () => checks.map(item => item.id === 'screen' ? { ...item, state: 'denied' } : item);
+  const { service } = fixture({}, { inspect });
+  assert.equal((await service.select('whisperModel')).canFinish, false);
+  await assert.rejects(service.action('finish'), { code: 'TVLENS_SETUP_INCOMPLETE' });
+  const missing = fixture({}, { inspect: async () => (await inspect()).map(item =>
+    item.id === 'codexBinary' ? { ...item, state: 'missing' } : item) }).service;
+  assert.equal((await missing.status()).canFinish, false);
+  await assert.rejects(missing.action('finish'), { code: 'TVLENS_SETUP_INCOMPLETE' });
+});
