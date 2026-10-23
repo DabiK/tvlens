@@ -70,3 +70,5 @@
 - [2026-10-23 — Intégration Mac sur main](2026-10-23-integration-main-mac/README.md) : catalogue Whisper, permissions et chat de surveillance intégrés aux corrections récentes ; contrôles complets et recettes Electron simulées réussis.
 
 - [2026-10-23 — Intégration accueil sur main](2026-10-23-integration-accueil-main/README.md) : conflits combinés, 3 359 tests JS et 71 tests Python verts, paquet Mac construit et vérifié.
+
+- [2026-10-23 — CI navigation et installation](2026-10-23-ci-navigation-installation/README.md) : parcours Electron adapté aux chapitres, installateur public et signature vérifiés.

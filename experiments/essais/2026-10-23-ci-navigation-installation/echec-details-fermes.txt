@@ -1,0 +1,285 @@
+
+> tvlens@0.1.0 test:electron
+> node scripts/smoke-electron.mjs
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#recap-panel .recap-source:not([disabled])').first()[22m
+[2m    2 × locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m    - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not visible[22m
+[2m  - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    9 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m    - attempting click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 20ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 500ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not visible[22m
+[2m  - retrying click action[22m
+[2m    - waiting 500ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m    - element was detached from the DOM, retrying[22m
+[2m      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m    - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not visible[22m
+[2m  - retrying click action[22m
+[2m    - waiting 500ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m  - element was detached from the DOM, retrying[22m
+[2m    - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not visible[22m
+[2m    - retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not visible[22m
+[2m  - retrying click action[22m
+[2m    - waiting 500ms[22m
+
+    at /Users/Dabi/.codex/worktrees/inspection-readable-images/tvlens/scripts/smoke-electron.mjs:171:76 {
+  log: [
+    "  - waiting for locator('#recap-panel .recap-source:not([disabled])').first()",
+    '    2 × locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>',
+    '    - attempting click action',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 20ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '    - element was detached from the DOM, retrying',
+    '    - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>',
+    '  - attempting click action',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '    - element was detached from the DOM, retrying',
+    '      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>',
+    '    - attempting click action',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 20ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '    - element was detached from the DOM, retrying',
+    '      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>',
+    '    - attempting click action',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 20ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 100ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '      - waiting 500ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    '    - element was detached from the DOM, retrying',
+    '      - locator resolved to <button class="reference recap-source" title="Revoir le passage de 00:01 à 00:03">00:01 ↗</button>',
+    '    - attempting click action',
+    '      - waiting for element to be visible, enabled and stable',
+    '      - element is not visible',
+    '    - retrying click action',
+    '    - waiting for element to be visible, enabled and stable',
+    '    - element is not visible',
+    '  - retrying click action',
+    '    - waiting 20ms',
+    '    2 × waiting for element to be visible, enabled and stable',
+    ... 66 more items
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.12.0

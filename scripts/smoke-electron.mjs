@@ -32,6 +32,13 @@ try {
   assert.equal(await page.locator('#float-conversation h2').textContent(), 'Conversation');
   assert.equal(await page.locator('#nav-memory').isVisible(), true);
   assert.equal(await page.locator('#nav-watch').isVisible(), true, 'Surveillance has its own tab');
+  assert.equal(await page.locator('#home-live-tab').getAttribute('aria-selected'), 'true');
+  await page.locator('#choose-source').click();
+  await page.waitForSelector('#source-picker-grid .source-choice');
+  assert.equal(await page.locator('#source-picker-dialog').isVisible(), true);
+  await page.locator('#source-picker-grid .source-choice').first().click();
+  assert.equal(await page.locator('#source-picker-dialog').isVisible(), false);
+  assert.equal(await page.evaluate(() => window.tvlens.state()), null, 'Selecting a source starts no capture');
   assert.equal(await page.locator('#chat-intro .suggestion').count(), 3, 'An empty conversation offers questions to start from');
   // The ceiling of a question and the retention are read from the host: nothing on screen states them by itself.
   const configuration = await page.evaluate(() => window.tvlens.config());
@@ -71,7 +78,9 @@ try {
   assert.match(await page.locator('#float-record').getAttribute('aria-label'),/pause/);
   assert.equal(await page.locator('#float-status').textContent(), 'En direct');
   await page.screenshot({path:'/tmp/tvlens-floating-record.png'});
-  await menuClick(page,'float-full');
+  assert.equal(await page.locator('#float-full').isVisible(), true, 'Return is visible without opening the menu');
+  assert.equal(await page.locator('#float-menu-toggle').getAttribute('aria-expanded'), 'false');
+  await page.locator('#float-full').click();
   await page.waitForFunction(() => document.querySelectorAll('.moment').length >= 2, { timeout: 15000 });
   // The first passage is the captured case. Its file is kept as it came, its video is said unreadable instead of
   // available, and it is analysed from its images like any other passage.
@@ -143,7 +152,7 @@ try {
   assert.equal(await page.locator('#recap-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),true,'Compact recap fits its dialog');
   await page.screenshot({path:'/tmp/tvlens-recap-small.png'});
   await page.locator('#close-recap').click();
-  await menuClick(page,'float-full');
+  await page.locator('#float-full').click();
   await page.waitForFunction(()=>!document.body.classList.contains('floating'));
   assert.equal(await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].isAlwaysOnTop()),false);
   let state = await page.evaluate(() => window.tvlens.state());
@@ -152,11 +161,15 @@ try {
   assert.equal(living.sessionId,state.id);
   assert.ok(living.chapters.length>0);
   for(const chapter of living.chapters)for(const source of chapter.sources)assert.ok(state.segments.some(s=>s.id===source.id),'Recap citations refer to actual source passages');
-  await page.locator('#nav-memory').click();
+  await page.locator('#nav-live').click();
+  await page.locator('#home-chapters-tab').click();
+  assert.equal(await page.locator('#recap-panel').isVisible(), true, 'Chapters are available from home');
   // Replay goes through the media protocol. The recap offers none for the passage recorded without a frame, and
   // every source it does offer has to play: a failure here is a defect, reported with what the disk holds.
   const recapSources=page.locator('#recap-panel .recap-source');
   assert.ok(await recapSources.evaluateAll(nodes=>nodes.some(node=>node.disabled&&/résumé/.test(node.textContent))),'The passage without a frame is offered as a summary, not as a video');
+  const playableChapter = page.locator('#recap-panel .chapter-details').filter({ has: page.locator('.recap-source:not([disabled])') }).first();
+  await playableChapter.locator('summary').first().click();
   await page.locator('#recap-panel .recap-source:not([disabled])').first().click();
   try {
     await page.waitForFunction(()=>document.querySelector('#replay').readyState>=2);
@@ -344,7 +357,7 @@ try {
   assert.ok(await page.locator('#float-menu-toggle').getAttribute('data-badge'), 'The floating bar carries the dot of the tab');
   await page.waitForTimeout(1000);
   assert.deepEqual([await page.locator('#float-toast').evaluate(el=>el.hidden), await stackCards()], [true, 0], 'A signal never becomes the one-line bar');
-  await menuClick(page,'float-full');
+  await page.locator('#float-full').click();
   await page.waitForFunction(()=>!document.body.classList.contains('floating'));
   await page.locator('#question').focus();
   await page.waitForTimeout(1000);
@@ -389,7 +402,7 @@ try {
   assert.equal(await stackCards(), 0, 'The collapsed bar shows the line, not the stack');
   await page.locator('#float-toast').click();
   await page.waitForFunction(key=>document.body.classList.contains('floating-expanded')&&[...document.querySelectorAll('#watch-stack .watch-card')].some(card=>card.dataset.key===key), firstCardKey);
-  await menuClick(page,'float-full');
+  await page.locator('#float-full').click();
   await page.waitForFunction(()=>!document.body.classList.contains('floating'));
   // It leaves by itself after the chosen duration (eight seconds here); other cards may follow it.
   await page.waitForFunction(key=>![...document.querySelectorAll('#watch-stack .watch-card')].some(card=>card.dataset.key===key), firstCardKey, { timeout: 30000 });
@@ -465,7 +478,7 @@ try {
   await page.waitForFunction(() => document.querySelector('#mode').textContent === 'EN PAUSE');
   const archivedState = await page.evaluate(() => window.tvlens.state());
   const archivedJobs = (await page.evaluate(()=>window.tvlens.deepState())).jobs.length;
-  await menuClick(page,'float-full');
+  await page.locator('#float-full').click();
   await page.locator('#nav-memory').click();
   await page.locator('#new-session').click();
   await waitState(page,async()=>await window.tvlens.state()===null);
@@ -499,7 +512,9 @@ try {
   opened = await page.evaluate(() => window.tvlens.state());
   assert.deepEqual([opened.accepting, opened.segments.length, opened.elapsedMs], [false, archivedState.segments.length, openedAtMs], 'Opening an archive never restarts the capture, and its clock stays where it stopped');
   // Its thumbnails and its videos are served from disk: the previews held in memory are gone with the first session.
-  await page.locator('#nav-memory').click();
+  await page.locator('#nav-live').click();
+  await page.locator('#home-chapters-tab').click();
+  await page.locator('.home-passages summary').click();
   await page.waitForFunction(()=>[...document.querySelectorAll('#timeline img.moment-image')].some(img=>img.getAttribute('src').startsWith('tvlens-media://')&&img.complete&&img.naturalWidth>0));
   if (archivedState.segments.length > 40) assert.match(await page.locator('#timeline-older').textContent(), /passages? plus anciens?/, 'A long session draws its recent passages and names the rest');
   // An archive states its own retention, read from its state: a durable one says "until deleted" wherever it is opened.

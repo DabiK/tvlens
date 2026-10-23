@@ -1,0 +1,28 @@
+{
+  "build": {
+    "name": "tvlens",
+    "version": "0.1.0",
+    "commit": "dc5341dd4f777124daf76d809cec92410b89a2de",
+    "commitDate": "2026-10-23T19:17:49+02:00",
+    "dirty": false
+  },
+  "files": "4784 fichiers vérifiés",
+  "sourceFiles": 186,
+  "signature": {
+    "integrity": "verified",
+    "trust": "not-assessed"
+  },
+  "native": {
+    "build": {
+      "name": "tvlens",
+      "version": "0.1.0",
+      "commit": "dc5341dd4f777124daf76d809cec92410b89a2de",
+      "commitDate": "2026-10-23T19:17:49+02:00",
+      "dirty": false
+    },
+    "sharp": "0.35.5",
+    "electron": "44.4.5"
+  },
+  "asarBytes": 21079857,
+  "asarSha256": "5213ee46b02f4d11389a95f82dec02c0b735114bf93b08a12b864abc05f1bbbb"
+}

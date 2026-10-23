@@ -1,0 +1,6 @@
+
+> tvlens@0.1.0 test:electron
+> node scripts/smoke-electron.mjs
+
+{"result":"PASS","segments":25,"audio":"16kHz WAV","replay":"WebM via range protocol","passageWithoutFrame":{"id":"moment-1","bytes":110,"holdsMedia":false,"announced":"vidéo illisible","analysed":true,"replayOffered":false,"hasAudio":true},"archivedVolume":{"elapsedMs":55350.15425,"passages":31,"stored":30,"bytes":4040186},"ask":"cited answer","verification":"fake success + error","freshness":"short label above a finished answer, whole sentence in the detail block","surveillance":"simulated agent: activation answered as a restoration then listening, signal in the panel and the history only, sourced card bottom left and in the collapsed bar, no interruption by a question, banner when the history is not saved","sessions":"archive, read-only open with its own retention, explicit resume, single deletion","screenshot":"/tmp/tvlens-smoke.png"}
+{"result":"PASS","storage":"capture refused below the floor, persistent banner, nothing deleted","screenshot":"/tmp/tvlens-storage-blocked.png"}

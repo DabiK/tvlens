@@ -1,0 +1,8 @@
+✔ règles par fichier
+✔ format
+✔ lint
+✔ gel du lint
+✔ cliquet
+    Mesures améliorées : lignes_longues_prod : 388 → 383, lignes_longues_tests : 1581 → 1580, cas_de_test_produit : 1759 → 1927
+✔ tests JS
+check : vert

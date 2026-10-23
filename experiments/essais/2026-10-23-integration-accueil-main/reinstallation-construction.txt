@@ -1,0 +1,7 @@
+
+> tvlens@0.1.0 package:mac
+> node scripts/package.mjs --out /tmp/tvlens-main-restart --sign-identity Developer ID Application: Dabi Keita (NNBW4BZ8T4)
+
+Packaging app for platform darwin arm64 using electron v44.4.5
+WARNING: Could not find icon "/Users/Dabi/.codex/worktrees/inspection-readable-images/tvlens/assets/macos/tvlens.icns" with extension ".icon", skipping this app icon format
+Paquet Mac construit : /tmp/tvlens-main-restart/TVLens-darwin-arm64

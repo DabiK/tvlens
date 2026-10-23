@@ -13,3 +13,7 @@ Les conflits combinent les vignettes sur demande avec le diagnostic de capture n
 - Aucune recette visuelle ou fournisseur réel supplémentaire. Les limites de validation du sélecteur et du bouton flottant restent celles des dossiers précédents.
 
 Les sorties brutes sont jointes dans ce dossier.
+
+## Réinstallation après demande de redémarrage
+
+La première réouverture a révélé une ancienne interface dans `/Applications/TVLens.app`. Le commit `dc5341d` a été reconstruit avec la signature Developer ID habituelle, vérifié, installé puis relancé. La version précédente est conservée dans `~/Library/Application Support/TVLens-update-backups/before-main-restart/TVLens.app`. L’arbre d’accessibilité de la nouvelle fenêtre confirme Accueil, Nouvelle session, En ce moment sélectionné, Chapitres et le choix de source avec aperçu. Aucune capture ni requête fournisseur lancée par l’agent.
