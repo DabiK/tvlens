@@ -2,8 +2,8 @@
 # Compatible with the Bash 3.2 shipped by macOS. No repository or Node.js required.
 set -euo pipefail
 
-APP_RELEASE='v0.1.0-mac-preview.2'
-APP_SHA256='3c96c6aa94f62e89dc689f8d161a815eb313a6157cc1666ad6eb98a2963d2162'
+APP_RELEASE='v0.1.0-mac-preview.3'
+APP_SHA256='3e3df2ba5d843149558e69ba878f349d92b9adc36ed726c22691094f5293ca06'
 MODEL_SHA256='60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe'
 APP_URL="https://github.com/DabiK/tvlens/releases/download/$APP_RELEASE/TVLens-mac-arm64.zip"
 MODEL_URL='https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin'

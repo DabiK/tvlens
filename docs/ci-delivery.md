@@ -74,9 +74,14 @@ Décision : [ADR 0066](adr/0066-la-livraison-controle-le-paquet-et-son-identite.
 
 ## Téléchargement depuis le README
 
-La [préversion Mac 0.1.0](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.2) fournit un [ZIP directement téléchargeable](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip), accompagné de `SHA256SUMS` et `package-report.json`. Elle reste disponible indépendamment de l’expiration des artefacts Actions et ne nécessite pas de compte GitHub.
+La [préversion Mac 0.1.0](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.3) fournit un [ZIP directement téléchargeable](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.3/TVLens-mac-arm64.zip), accompagné de `SHA256SUMS` et `package-report.json`. Elle reste disponible indépendamment de l’expiration des artefacts Actions et ne nécessite pas de compte GitHub.
 
-La préversion 2 est une publication manuelle depuis le commit propre `d190c322e238c714444023d9aa829109e0237982`, signée avec un Developer ID existant mais sans notarisation, par choix explicite du propriétaire. Elle corrige la signature incomplète de la préversion 1. Le paquet est construit avec `package:mac -- --require-clean --sign-identity …`, puis inspecté avec `verify:mac -- --require-clean`. Le ZIP publié ne provient pas de l’artefact CI. Le rapport de [signature et téléchargement](../experiments/essais/2026-10-23-signature-paquet-mac/README.md) distingue les contrôles locaux, la CI et l’ouverture manuelle.
+La préversion 3 est construite depuis le commit propre `7d312794fc73c6838a190e88c3af31a0b40213f7`.
+Elle diffère l’accès au trousseau après explication et choix. Le paquet signé a été ouvert avec
+un profil neuf et un cache factice conservé ; voir le [rapport dédié](../experiments/essais/2026-10-23-trousseau-sur-demande/README.md).
+Le nouveau contrôle `test:electron:package` ouvre le paquet après sa construction dans la CI.
+
+Historique : la préversion 2 est une publication manuelle depuis le commit propre `d190c322e238c714444023d9aa829109e0237982`, signée avec un Developer ID existant mais sans notarisation, par choix explicite du propriétaire. Elle corrige la signature incomplète de la préversion 1. Le paquet est construit avec `package:mac -- --require-clean --sign-identity …`, puis inspecté avec `verify:mac -- --require-clean`. Le ZIP publié ne provient pas de l’artefact CI. Le rapport de [signature et téléchargement](../experiments/essais/2026-10-23-signature-paquet-mac/README.md) distingue les contrôles locaux, la CI et l’ouverture manuelle.
 
 Pour la prochaine version, publier sous un nouveau tag, conserver les anciennes archives et mettre à jour ensemble les liens du README et du guide Mac. Ne pas remplacer silencieusement un ZIP déjà publié. Les outils Codex, FFmpeg et Whisper restent externes à cette préversion.
 
@@ -91,7 +96,7 @@ Après un premier lancement bloqué, l’utilisateur autorise cette seule applic
 ## Installateur Mac depuis le README
 
 `scripts/install-mac.sh` est autonome (Bash 3.2), livré séparément du ZIP sous le tag
-`v0.1.0-mac-installer.1`. Il installe la préversion 2 existante ; cette étape ne reconstruit pas l’app.
+`v0.1.0-mac-installer.2`. Il installe la préversion 3 avec le parcours de trousseau sur demande.
 Le script épingle son URL, son SHA-256 et le Team ID/bundle ID attendus. Il contrôle la signature
 complète avant toute installation, et ne supprime pas la quarantaine.
 

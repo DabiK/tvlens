@@ -1,0 +1,41 @@
+✔ published documentation indexes the local documents and decisions with existing targets (34.129167ms)
+✔ documentation inventory accepts a complete tree and ignores historical assertions (197.2725ms)
+✔ documentation inventory diagnoses a newly added top-level document (317.526ms)
+✔ documentation inventory excludes ignored documents from every category (286.541709ms)
+✔ documentation inventory counts a new document under docs before its commit (296.617042ms)
+✔ documentation inventory diagnoses an archive index and accepts its link (239.663458ms)
+✔ documentation inventory requires a sentence and link for each added decision (239.918416ms)
+✔ documentation inventory diagnoses an absent link target (278.069875ms)
+✔ reference links reject existing untracked and ignored files and directories (196.237209ms)
+✔ reference links accept tracked targets outside docs and their parent directories (201.645958ms)
+✔ architecture map diagnoses every missing runtime owner (404.561584ms)
+✔ reference pages reject test counts and branch or deployment assertions (486.663709ms)
+✔ installer help works without dependencies or platform checks (6.299334ms)
+✔ installer rejects unsupported machines before downloading (3.685209ms)
+✔ installer rejects an unknown argument before any changes (3.352292ms)
+✔ installer refuses corrupt downloads before extracting or replacing (25.89625ms)
+✔ installer refuses an unexpected signature and preserves the installed app (27.428083ms)
+✔ installer preserves the installed app on a network failure (16.287084ms)
+✔ installer replaces an app in a path with spaces and removes staging files (55.978916ms)
+✔ installer restores the previous app when final rename fails (62.133584ms)
+✔ installer refuses to replace an app while TVLens is running (47.855417ms)
+✔ installer can be repeated without replacing an identical running app (179.12675ms)
+✔ installer respects an existing installation lock (17.892ms)
+✔ installer never follows an app destination symlink (4.147458ms)
+✔ installer leaves existing models and preferences untouched (7.561125ms)
+✔ installer removes a corrupt model download without replacing the model (33.730959ms)
+✔ installer skips Homebrew entirely when tools already exist (5.328584ms)
+✔ installer installs only missing tools with the official formula and cask names (16.085542ms)
+✔ installer reports a tool still absent after Homebrew rather than claiming success (7.370875ms)
+✔ installer validates the actual signing requirement on macOS (34.958167ms)
+✔ installer rejects root and Rosetta independently of the host platform (13.252791ms)
+✔ installer cancels before network access when confirmation is declined (9.024208ms)
+✔ installer commits a model only after its checksum matches (41.787666ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3209.906792

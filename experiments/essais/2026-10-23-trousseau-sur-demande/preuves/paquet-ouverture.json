@@ -1,0 +1,31 @@
+{
+  "result": "PASS",
+  "results": [
+    {
+      "saved": false,
+      "result": "PASS",
+      "packaged": true,
+      "build": {
+        "name": "tvlens",
+        "version": "0.1.0",
+        "commit": "7d312794fc73c6838a190e88c3af31a0b40213f7",
+        "commitDate": "2026-10-23T11:12:12+02:00",
+        "dirty": false
+      },
+      "captureRequested": false
+    },
+    {
+      "saved": true,
+      "result": "PASS",
+      "packaged": true,
+      "build": {
+        "name": "tvlens",
+        "version": "0.1.0",
+        "commit": "7d312794fc73c6838a190e88c3af31a0b40213f7",
+        "commitDate": "2026-10-23T11:12:12+02:00",
+        "dirty": false
+      },
+      "captureRequested": false
+    }
+  ]
+}

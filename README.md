@@ -12,9 +12,9 @@ Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis dir
 
 [Voir la démo vidéo](https://youtu.be/jOrcdLZsqT8) · [Installer sur Mac](#installer-sur-mac) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/server-installation.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
 
-**[Installer TVLens sur Mac](#installer-sur-mac)** · [ZIP pour installation manuelle](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip)
+**[Installer TVLens sur Mac](#installer-sur-mac)** · [ZIP pour installation manuelle](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.3/TVLens-mac-arm64.zip)
 
-[Version 0.1.0 · préversion Mac](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.2) · Mac avec puce Apple (M1 et suivantes)
+[Version 0.1.0 · préversion Mac](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.3) · Mac avec puce Apple (M1 et suivantes)
 
 </div>
 
@@ -28,7 +28,7 @@ Ouvre **Terminal** (via Spotlight), copie ce bloc entier puis appuie sur Entrée
   tvlens_installer="$(mktemp -t tvlens-install)" || exit 1
   trap 'rm -f "$tvlens_installer"' EXIT
   curl --fail --location --proto '=https' --proto-redir '=https' \
-    https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.1/install-mac.sh \
+    https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.2/install-mac.sh \
     --output "$tvlens_installer" && /bin/bash "$tvlens_installer"
 )
 ```
@@ -42,12 +42,16 @@ Ensuite, l’assistant **Préparons ce Mac** te guide pour **connecter Codex à 
 **autoriser l’écran et le son**. Homebrew peut demander ton mot de passe Mac et l’installation
 d’outils Apple ; prévois plusieurs minutes au premier passage.
 
+Au premier lancement, l’app n’accède pas au trousseau. Si des réglages protégés existent déjà,
+elle explique leur déverrouillage et permet de continuer sans les charger. L’import avancé
+propose aussi une utilisation temporaire, sans trousseau.
+
 **Cette préversion est signée mais non notarisée.** Si macOS bloque son ouverture :
 **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, puis **Ouvrir**.
 Le script ne désactive aucune protection macOS. Le parcours sans aucune exception Gatekeeper
 nécessiterait une version notarisée ; ce n’est pas le mode de distribution choisi ici.
 
-**Installation manuelle :** [télécharger le ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip),
+**Installation manuelle :** [télécharger le ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.3/TVLens-mac-arm64.zip),
 le décompresser et glisser **TVLens.app** dans **Applications**.
 L’assistant indique alors les outils à préparer. Pour remplacer l’ancienne préversion signalée
 « endommagée », utilise ce ZIP ou le script. Tes sessions et réglages restent conservés.

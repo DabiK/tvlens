@@ -65,3 +65,16 @@ Le script `scripts/smoke-package-startup.mjs` vérifie désormais l’applicatio
 avec profil neuf puis cache factice conservé. Il rejoint la CI après construction et inspection.
 Une première assertion du script comparait `/var` à `/private/var`, alias macOS du même dossier ;
 elle compare désormais les chemins résolus, sans relâcher l’exigence d’un profil isolé.
+
+### Paquet signé final
+
+Construction depuis `7d312794fc73c6838a190e88c3af31a0b40213f7`, checkout propre,
+avec `package:mac --require-clean --sign-identity`, puis `verify:mac --require-clean` : réussite.
+Le paquet est signé Developer ID, sans notarisation. Le smoke `smoke-package-startup.mjs` a
+ensuite passé les deux scénarios sur cette application empaquetée (`app.isPackaged=true`), avec
+identité propre vérifiée, profil temporaire isolé résolu par `realpath`, assistant visible,
+aucune capture demandée, et cache factice conservé après continuation.
+
+Archive `v0.1.0-mac-preview.3`, SHA-256 :
+`3e3df2ba5d843149558e69ba878f349d92b9adc36ed726c22691094f5293ca06`.
+Le script `v0.1.0-mac-installer.2` épingle cette archive ; les liens README et guide sont alignés.

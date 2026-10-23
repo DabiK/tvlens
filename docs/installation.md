@@ -35,7 +35,7 @@ Un fichier `.command` ou `.pkg` non notarisé ne garantirait pas davantage une o
 
 ### Options et reprise
 
-Après avoir [téléchargé le script](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.1/install-mac.sh),
+Après avoir [téléchargé le script](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.2/install-mac.sh),
 les options suivantes s’utilisent dans Terminal :
 
 ```sh
@@ -59,7 +59,7 @@ N’efface pas les dossiers `.tvlens-install.*` si une erreur mentionne une anci
 
 ## Depuis le paquet Mac (sans dépôt ni Node.js)
 
-**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip)** · [Détails de la préversion](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.2)
+**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.3/TVLens-mac-arm64.zip)** · [Détails de la préversion](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.3)
 
 Pour les Mac avec puce Apple (M1 et suivantes). Aucun compte GitHub, clone du dépôt ou Node.js n’est nécessaire. Le ZIP contient directement `TVLens.app` ; les archives « Source code » de GitHub sont réservées au développement.
 
@@ -72,7 +72,7 @@ Pour les Mac avec puce Apple (M1 et suivantes). Aucun compte GitHub, clone du d�
 
 Cette préversion possède une signature Developer ID valide, mais n’est pas notarisée par Apple. Après avoir tenté de l’ouvrir, aller dans **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, puis confirmer **Ouvrir**, uniquement pour le fichier téléchargé ci-dessus. macOS mémorise cette exception pour l’app ; aucune connexion Apple ni commande Terminal n’est nécessaire. [Instructions Apple](https://support.apple.com/fr-fr/102445). Les permissions écran et son demandées ensuite servent à observer la vidéo choisie.
 
-La préversion 1 présentait un défaut de signature susceptible de déclencher « TVLens est endommagé ». Retélécharger la préversion 2 avec le lien ci-dessus et remplacer l’ancienne `TVLens.app` dans Applications. Les sessions et réglages sont conservés séparément du paquet. Ne pas retirer la quarantaine ni désactiver Gatekeeper pour contourner une archive défectueuse.
+La préversion 1 présentait un défaut de signature susceptible de déclencher « TVLens est endommagé ». Retélécharger la dernière préversion avec le lien ci-dessus et remplacer l’ancienne `TVLens.app` dans Applications. Les sessions et réglages sont conservés séparément du paquet. Ne pas retirer la quarantaine ni désactiver Gatekeeper pour contourner une archive défectueuse.
 
 ### Préparer les outils avec l’assistant
 
