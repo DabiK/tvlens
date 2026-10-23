@@ -12,7 +12,7 @@ sans clone, Node.js ni compte GitHub. Tu peux [lire le script](../scripts/instal
 
 Le script annonce ses actions et demande confirmation, puis :
 
-1. Télécharge la préversion Mac 2, vérifie son SHA-256 épinglé et sa signature Developer ID TVLens.
+1. Télécharge la préversion Mac 4, vérifie son SHA-256 épinglé et sa signature Developer ID TVLens.
 2. Prépare uniquement les outils absents : Codex, Whisper et FFmpeg ; installe Homebrew s’il manque.
 3. Télécharge le modèle base avec vérification SHA-256 si aucun modèle non vide n’occupe son emplacement standard.
 4. Installe TVLens dans `/Applications` si ce dossier est accessible, sinon dans `~/Applications`, puis demande son ouverture.
@@ -35,7 +35,7 @@ Un fichier `.command` ou `.pkg` non notarisé ne garantirait pas davantage une o
 
 ### Options et reprise
 
-Après avoir [téléchargé le script](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.2/install-mac.sh),
+Après avoir [téléchargé le script](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.3/install-mac.sh),
 les options suivantes s’utilisent dans Terminal :
 
 ```sh
@@ -59,7 +59,7 @@ N’efface pas les dossiers `.tvlens-install.*` si une erreur mentionne une anci
 
 ## Depuis le paquet Mac (sans dépôt ni Node.js)
 
-**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.3/TVLens-mac-arm64.zip)** · [Détails de la préversion](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.3)
+**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.4/TVLens-mac-arm64.zip)** · [Détails de la préversion](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.4)
 
 Pour les Mac avec puce Apple (M1 et suivantes). Aucun compte GitHub, clone du dépôt ou Node.js n’est nécessaire. Le ZIP contient directement `TVLens.app` ; les archives « Source code » de GitHub sont réservées au développement.
 

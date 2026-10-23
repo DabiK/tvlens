@@ -72,3 +72,5 @@
 - [2026-10-23 — Intégration accueil sur main](2026-10-23-integration-accueil-main/README.md) : conflits combinés, 3 359 tests JS et 71 tests Python verts, paquet Mac construit et vérifié.
 
 - [2026-10-23 — CI navigation et installation](2026-10-23-ci-navigation-installation/README.md) : parcours Electron adapté aux chapitres, installateur public et signature vérifiés.
+
+- [2026-10-23 — Préversion Mac 4](2026-10-23-preversion-mac-4/README.md) : paquet signé depuis le main validé, installateur 3 et liens publics mis à jour.

@@ -74,9 +74,11 @@ Décision : [ADR 0066](adr/0066-la-livraison-controle-le-paquet-et-son-identite.
 
 ## Téléchargement depuis le README
 
-La [préversion Mac 0.1.0](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.3) fournit un [ZIP directement téléchargeable](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.3/TVLens-mac-arm64.zip), accompagné de `SHA256SUMS` et `package-report.json`. Elle reste disponible indépendamment de l’expiration des artefacts Actions et ne nécessite pas de compte GitHub.
+La [préversion Mac 0.1.0](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.4) fournit un [ZIP directement téléchargeable](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.4/TVLens-mac-arm64.zip), accompagné de `SHA256SUMS` et `package-report.json`. Elle reste disponible indépendamment de l’expiration des artefacts Actions et ne nécessite pas de compte GitHub.
 
-La préversion 3 est construite depuis le commit propre `7d312794fc73c6838a190e88c3af31a0b40213f7`.
+La préversion 4 est construite depuis le commit propre `c09c4717f02adf8898882ff94daf8fcf8dddd69c`, validé par la CI. Elle inclut les chapitres en carrousel, le sélecteur de source avec aperçus, le retour visible du mode flottant, les réglages de transcription et le réexamen en images lisibles. Son paquet Developer ID a été vérifié et ouvert avec des profils isolés.
+
+Historique : la préversion 3 est construite depuis le commit propre `7d312794fc73c6838a190e88c3af31a0b40213f7`.
 Elle diffère l’accès au trousseau après explication et choix. Le paquet signé a été ouvert avec
 un profil neuf et un cache factice conservé ; voir le [rapport dédié](../experiments/essais/2026-10-23-trousseau-sur-demande/README.md).
 Le nouveau contrôle `test:electron:package` ouvre le paquet après sa construction dans la CI.
@@ -96,7 +98,7 @@ Après un premier lancement bloqué, l’utilisateur autorise cette seule applic
 ## Installateur Mac depuis le README
 
 `scripts/install-mac.sh` est autonome (Bash 3.2), livré séparément du ZIP sous le tag
-`v0.1.0-mac-installer.2`. Il installe la préversion 3 avec le parcours de trousseau sur demande.
+`v0.1.0-mac-installer.3`. Il installe la préversion 4 avec les chapitres sur l’accueil et le sélecteur de source visuel.
 Le script épingle son URL, son SHA-256 et le Team ID/bundle ID attendus. Il contrôle la signature
 complète avant toute installation, et ne supprime pas la quarantaine.
 

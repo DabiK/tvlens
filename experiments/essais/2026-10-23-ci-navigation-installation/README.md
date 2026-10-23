@@ -13,4 +13,10 @@ Le parcours ouvre désormais Chapitres puis Explorer les passages avant la relec
 - ZIP public préversion 3 téléchargé : SHA-256 `3e3df2ba5d843149558e69ba878f349d92b9adc36ed726c22691094f5293ca06`, extraction et signature Team ID/bundle ID vérifiées avec la fonction de l’installateur.
 - Limite : la commande publique cible encore la préversion 3, pas le main actuel. Aucun remplacement de l’application utilisateur ni installation Homebrew effectué lors de cette vérification.
 
-Résultat GitHub de la correction à confirmer après push.
+CI GitHub confirmée verte sur `c09c471` : [run 40013652187](https://github.com/DabiK/tvlens/actions/runs/40013652187), qualité Linux, qualité Mac, paquet Apple Silicon et statut CI complète réussis. Rapport brut dans `github-run.json`.
+
+## Vérifications complémentaires
+
+Les autres commandes du job Mac passent localement : identité, assistant, configuration, construction propre, vérification du paquet et ouverture du paquet avec profil neuf/cache factice. Construction `c09c471`, signature ad hoc de validation.
+
+Le script public non modifié a terminé avec `--yes --app-only --no-open --destination /tmp/tvlens-installer-validation/extracted`, après dépôt du ZIP extrait identique dans cette destination : chemin réel de réinstallation idempotente, empreinte et signature contrôlées. Ce test ne démontre pas une première installation des dépendances sur un Mac vierge ; les chemins de remplacement/échec sont couverts par les 21 tests isolés.
