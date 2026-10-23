@@ -1,0 +1,2 @@
+dist/developer-id-validation/TVLens-darwin-arm64/TVLens.app: rejected
+source=Unnotarized Developer ID

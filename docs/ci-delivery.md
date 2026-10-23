@@ -43,7 +43,9 @@ S’y ajoutent `package.json`, l’identité générée et les dépendances de p
 
 Les autres racines sont exclues, dont `docs`, `tests`, `scripts`, `experiments`, `design`, `server`, `mcp`, `tv`, les médias et le harnais. Les fichiers cachés, configurations privées usuelles, clés, sessions et moments gardés sont exclus. Un nouveau fichier statique utile nécessite une modification explicite de la liste et un test. Cette politique de chemins ne remplace pas la relecture du contenu du code et des dépendances.
 
-`verify:mac` vérifie chaque source livrée octet par octet contre le checkout, le manifeste et l’identité, puis compare le dossier `app.asar.unpacked` à l’inventaire de l’archive. Il lance ensuite **le binaire Electron du paquet en mode Node**, charge son lecteur d’identité et produit un PNG avec son `sharp`. Il ne démarre ni session ni fournisseur. Le rapport conserve l’inventaire, la taille et l’empreinte SHA-256 de l’ASAR.
+`verify:mac` vérifie chaque source livrée octet par octet contre le checkout, le manifeste et l’identité, puis compare le dossier `app.asar.unpacked` à l’inventaire de l’archive. Avant d’exécuter le paquet, il exige une signature intègre avec `codesign --verify --deep --strict`. Il lance ensuite **le binaire Electron du paquet en mode Node**, charge son lecteur d’identité et produit un PNG avec son `sharp`. Il ne démarre ni session ni fournisseur. Le rapport conserve l’inventaire, la taille, l’empreinte SHA-256 de l’ASAR et l’intégrité de la signature ; la confiance Gatekeeper y reste explicitement non évaluée.
+
+La construction scelle toute l’application, y compris ses ressources et modules natifs. Par défaut, elle emploie une signature ad hoc sans certificat ni accès au compte Apple. Une erreur de signature bloque le build. Une distribution Developer ID se construit explicitement avec `npm run package:mac -- --require-clean --sign-identity 'Developer ID Application: NOM (TEAM)'` : hardened runtime, horodatage et droit JIT requis par Electron. La signature seule ne remplace ni la notarisation Apple, ni l’agrafage du ticket, ni une évaluation Gatekeeper du paquet final.
 
 Cette sonde native ne remplace pas une recette de l’application installée via Finder, avec autorisations et vraie capture audio/vidéo. Le smoke UI utilise encore les sources, pas la `.app` empaquetée.
 
@@ -74,3 +76,11 @@ La [préversion Mac 0.1.0](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-m
 Cette première publication est manuelle : paquet construit depuis le commit propre `0c0fcbd305321fe7d0360d7510fccf6004710027`, avec `package:mac -- --require-clean`, puis inspecté avec `verify:mac -- --require-clean`. Les contrôles locaux complets et les recettes Electron de cette révision sont consignés dans le [rapport d’intégration](../experiments/essais/2026-10-23-installation-mac-reelle/README.md). Le job qualité Mac GitHub a réussi ; le statut global du [run de cette révision](https://github.com/DabiK/tvlens/actions/runs/39885144148) se consulte séparément. Le ZIP publié ne provient pas de l’artefact CI.
 
 Pour la prochaine version, publier sous un nouveau tag, conserver les anciennes archives et mettre à jour ensemble les liens du README et du guide Mac. Ne pas remplacer silencieusement un ZIP déjà publié. Les outils Codex, FFmpeg et Whisper restent externes à cette préversion.
+
+### Signature et ouverture manuelle de la préversion
+
+Le propriétaire a choisi de conserver un ZIP GitHub sans notarisation Apple. Le certificat Developer ID reste dans le Trousseau du Mac de construction et sert à sceller le paquet ; aucun envoi au service de notarisation n’est prévu. La CI continue à utiliser une signature ad hoc sans identifiants privés.
+
+Pour la distribution manuelle, construire depuis un commit propre avec `--sign-identity`, vérifier le paquet avec `verify:mac --require-clean`, puis créer le ZIP avec `ditto -c -k --sequesterRsrc --keepParent`. Conserver son empreinte et le rapport, publier sous un nouveau tag et vérifier le téléchargement public. Un résultat `source=Unnotarized Developer ID` de Gatekeeper reste attendu : il ne faut pas présenter cette archive comme approuvée par Apple.
+
+Après un premier lancement bloqué, l’utilisateur autorise cette seule application dans **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, puis confirme l’ouverture. Cette exception est distincte des autorisations écran et son. Ne pas désactiver Gatekeeper ni retirer automatiquement la quarantaine. Voir [l’aide Apple](https://support.apple.com/fr-fr/102445).

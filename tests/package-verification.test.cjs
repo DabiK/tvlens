@@ -60,3 +60,27 @@ test('the archive verifier refuses stray files next to unpacked native modules',
   await fs.writeFile(path.join(archive + '.unpacked', 'private.txt'), 'private');
   await assert.rejects(inspectArchive(archive, { root, expectedBuild: build }), { code: 'TVLENS_PACKAGE_INVALID' });
 });
+
+test('Mac signature verification rejects a broken resource seal before executing the application',
+  { skip: process.platform !== 'darwin' }, async t => {
+    const { spawnSync } = require('node:child_process');
+    const { verifyMacSignature } = await import('../scripts/verify-package.mjs');
+    const folder = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-signed-bundle-'));
+    t.after(() => fs.rm(folder, { recursive: true, force: true }));
+    const app = path.join(folder, 'Fixture.app');
+    await fs.mkdir(path.join(app, 'Contents/MacOS'), { recursive: true });
+    await fs.mkdir(path.join(app, 'Contents/Resources'));
+    await fs.copyFile('/usr/bin/true', path.join(app, 'Contents/MacOS/Fixture'));
+    await fs.chmod(path.join(app, 'Contents/MacOS/Fixture'), 0o755);
+    await fs.writeFile(path.join(app, 'Contents/Info.plist'), `<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0"><dict><key>CFBundleExecutable</key><string>Fixture</string>
+<key>CFBundleIdentifier</key><string>dev.tvlens.signature-fixture</string>
+<key>CFBundlePackageType</key><string>APPL</string></dict></plist>`);
+    const resource = path.join(app, 'Contents/Resources/content.txt');
+    await fs.writeFile(resource, 'original');
+    const sign = spawnSync('/usr/bin/codesign', ['--force', '--sign', '-', app], { encoding: 'utf8' });
+    assert.equal(sign.status, 0, sign.stderr);
+    assert.deepEqual(verifyMacSignature(app), { integrity: 'verified', trust: 'not-assessed' });
+    await fs.writeFile(resource, 'modified');
+    assert.throws(() => verifyMacSignature(app), { code: 'TVLENS_PACKAGE_SIGNATURE_INVALID' });
+  });

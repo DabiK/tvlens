@@ -86,3 +86,19 @@ test('source links cannot pull files from outside the packaging roots', t => {
   fs.symlinkSync('../outside.cjs', path.join(folder, 'app/linked.cjs'));
   assert.throws(() => copyFilter(folder), { code: 'TVLENS_PACKAGE_SOURCE_LINK' });
 });
+
+test('packaging seals ad hoc builds and only enables distribution signing with an explicit identity', async () => {
+  const { packagerOptions } = await import('../scripts/package.mjs');
+  const local = packagerOptions().osxSign;
+  assert.equal(local.identity, '-');
+  assert.equal(local.identityValidation, false);
+  assert.equal(local.continueOnError, false);
+  assert.equal(local.preEmbedProvisioningProfile, false);
+  assert.equal(local.optionsForFile().hardenedRuntime, false);
+  const distribution = packagerOptions({ signingIdentity: 'Developer ID Application: Fixture' }).osxSign;
+  assert.equal(distribution.identity, 'Developer ID Application: Fixture');
+  assert.equal(distribution.identityValidation, true);
+  assert.equal(distribution.continueOnError, false);
+  assert.equal(distribution.optionsForFile().hardenedRuntime, true);
+  assert.equal(distribution.optionsForFile().timestamp, undefined);
+});

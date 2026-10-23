@@ -1,0 +1,18 @@
+✔ the Mac package refuses research, tooling, other hosts and unknown root entries (0.387833ms)
+✔ private files and packager default exclusions remain excluded at any admitted depth (0.094583ms)
+✔ the actual copy filter covers the app import graph, HTML assets and the audio worklet (29.632333ms)
+✔ the copy hook writes the supplied identity only in the build directory (4.207ms)
+✔ source links cannot pull files from outside the packaging roots (1.984458ms)
+✔ packaging seals ad hoc builds and only enables distribution signing with an explicit identity (2.498958ms)
+✔ the archive verifier reads construction and verifies every shipped source byte (37.842542ms)
+✔ the archive verifier refuses leaked files, dev dependencies, missing assets, drift and stale identity (61.195959ms)
+✔ the archive verifier refuses stray files next to unpacked native modules (10.257584ms)
+✔ Mac signature verification rejects a broken resource seal before executing the application (27.567416ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 164.608416

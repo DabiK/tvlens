@@ -144,6 +144,21 @@ export async function inspectArchive(archive, { root, expectedBuild }) {
   };
 }
 
+export function verifyMacSignature(appPath) {
+  const result = spawnSync(
+    "/usr/bin/codesign",
+    ["--verify", "--deep", "--strict", "--verbose=2", appPath],
+    { encoding: "utf8", timeout: 30000 },
+  );
+  if (result.status !== 0)
+    throw Object.assign(
+      new Error("La signature du paquet Mac est absente ou invalide."),
+      { code: "TVLENS_PACKAGE_SIGNATURE_INVALID" },
+    );
+  // Integrity is distinct from Developer ID trust and notarization.
+  return { integrity: "verified", trust: "not-assessed" };
+}
+
 export function probeNativeRuntime(appPath) {
   const archive = path.join(appPath, "Contents/Resources/app.asar");
   const program = `
@@ -201,6 +216,7 @@ async function main() {
     });
   const archive = path.join(appPath, "Contents/Resources/app.asar");
   const report = await inspectArchive(archive, { root, expectedBuild });
+  report.signature = verifyMacSignature(appPath);
   const native = probeNativeRuntime(appPath);
   requireEqual(
     native.build,

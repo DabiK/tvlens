@@ -10,6 +10,7 @@ export function packagerOptions({
   root = ROOT,
   out = path.join(root, "dist"),
   build,
+  signingIdentity = "-",
 } = {}) {
   return {
     dir: root,
@@ -19,6 +20,19 @@ export function packagerOptions({
     arch: "arm64",
     appBundleId: "dev.tvlens.capture",
     icon: path.join(root, "assets/macos/tvlens.icns"),
+    // Seal the final bundle; Electron's linker signature does not cover our resources.
+    osxSign: {
+      identity: signingIdentity,
+      identityValidation: signingIdentity !== "-",
+      continueOnError: false,
+      preAutoEntitlements: false,
+      preEmbedProvisioningProfile: false,
+      optionsForFile: () => ({
+        hardenedRuntime: signingIdentity !== "-",
+        timestamp: signingIdentity === "-" ? "none" : undefined,
+        entitlements: ["com.apple.security.cs.allow-jit"],
+      }),
+    },
     overwrite: true,
     prune: true,
     asar: { unpackDir: "node_modules/@img" },
@@ -42,6 +56,7 @@ export async function buildMac({
   out,
   requireClean = false,
   packageApp,
+  signingIdentity = "-",
 } = {}) {
   const build = await describeBuild({ root });
   if (requireClean && build.dirty)
@@ -52,16 +67,21 @@ export async function buildMac({
       { code: "TVLENS_PACKAGE_DIRTY" },
     );
   const packager = packageApp || (await import("@electron/packager")).packager;
-  return packager(packagerOptions({ root, out, build }));
+  return packager(packagerOptions({ root, out, build, signingIdentity }));
 }
 
 async function main() {
   const { values } = parseArgs({
-    options: { out: { type: "string" }, "require-clean": { type: "boolean" } },
+    options: {
+      out: { type: "string" },
+      "require-clean": { type: "boolean" },
+      "sign-identity": { type: "string" },
+    },
   });
   const paths = await buildMac({
     out: values.out && path.resolve(values.out),
     requireClean: values["require-clean"],
+    signingIdentity: values["sign-identity"],
   });
   for (const directory of paths)
     console.log(`Paquet Mac construit : ${directory}`);

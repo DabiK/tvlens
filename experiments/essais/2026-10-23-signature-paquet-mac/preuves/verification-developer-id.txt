@@ -1,0 +1,32 @@
+
+> tvlens@0.1.0 verify:mac
+> node scripts/verify-package.mjs dist/developer-id-validation/TVLens-darwin-arm64/TVLens.app --report /tmp/tvlens-developer-id-report.json
+
+{
+  "build": {
+    "name": "tvlens",
+    "version": "0.1.0",
+    "commit": "4a423f1f4bcf54259c88f8910f1bf5eee3a6df70",
+    "commitDate": "2026-10-23T04:14:57+02:00",
+    "dirty": true
+  },
+  "files": "4770 fichiers vérifiés",
+  "sourceFiles": 172,
+  "signature": {
+    "integrity": "verified",
+    "trust": "not-assessed"
+  },
+  "native": {
+    "build": {
+      "name": "tvlens",
+      "version": "0.1.0",
+      "commit": "4a423f1f4bcf54259c88f8910f1bf5eee3a6df70",
+      "commitDate": "2026-10-23T04:14:57+02:00",
+      "dirty": true
+    },
+    "sharp": "0.35.5",
+    "electron": "44.4.5"
+  },
+  "asarBytes": 21024429,
+  "asarSha256": "684a518be559989b6390f8210d7b9b870a881045ee9100217e0c0983e357f7f8"
+}

@@ -1,0 +1,14 @@
+Executable=/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/developer-id-validation/TVLens-darwin-arm64/TVLens.app/Contents/MacOS/TVLens
+Identifier=dev.tvlens.capture
+Format=app bundle with Mach-O thin (arm64)
+CodeDirectory v=20500 size=446 flags=0x10000(runtime) hashes=3+7 location=embedded
+Signature size=8971
+Authority=Developer ID Application: Dabi Keita (NNBW4BZ8T4)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=23 Oct 2026 at 04:24:33
+Info.plist entries=32
+TeamIdentifier=NNBW4BZ8T4
+Runtime Version=26.5.0
+Sealed Resources version=2 rules=13 files=27
+Internal requirements count=1 size=180

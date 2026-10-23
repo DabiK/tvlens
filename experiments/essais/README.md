@@ -2,6 +2,7 @@
 
 | Dossier | Objet |
 | --- | --- |
+| [2026-10-23-signature-paquet-mac](2026-10-23-signature-paquet-mac/) | Diagnostic du paquet déclaré endommagé, scellement réel et signature Developer ID ; ZIP sans notarisation choisi par le propriétaire, ouverture manuelle après téléchargement encore à valider. |
 | [2026-10-23-installation-mac-reelle](2026-10-23-installation-mac-reelle/) | Icône sobre, paquet installé dans Applications, assistant réel et recette de capture, transcription, question et conservation sur ce Mac. |
 | [2026-10-23-premier-lancement-mac](2026-10-23-premier-lancement-mac/) | Assistant de configuration Mac : recette Electron avec dépendances simulées, contrôles et construction du paquet ; limites de qualification sur Mac vierge. |
 | [2026-10-18-copie-b-g3-mac](2026-10-18-copie-b-g3-mac/) | Essai G3 de la copie B sur Mac ; voir son rapport. |

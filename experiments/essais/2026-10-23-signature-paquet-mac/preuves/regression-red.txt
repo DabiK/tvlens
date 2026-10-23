@@ -1,0 +1,21 @@
+✔ the archive verifier reads construction and verifies every shipped source byte (50.753709ms)
+✔ the archive verifier refuses leaked files, dev dependencies, missing assets, drift and stale identity (87.406583ms)
+✔ the archive verifier refuses stray files next to unpacked native modules (16.383958ms)
+✖ Mac signature verification rejects a broken resource seal before executing the application (21.135708ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 220.106791
+
+✖ failing tests:
+
+test at tests/package-verification.test.cjs:64:1
+✖ Mac signature verification rejects a broken resource seal before executing the application (21.135708ms)
+  TypeError: verifyMacSignature is not a function
+      at TestContext.<anonymous> (/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/tests/package-verification.test.cjs:83:22)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)
