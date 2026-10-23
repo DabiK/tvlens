@@ -1,0 +1,7 @@
+
+> tvlens@0.1.0 package:mac
+> node scripts/package.mjs --require-clean --out dist/release
+
+Packaging app for platform darwin arm64 using electron v44.4.5
+WARNING: Could not find icon "/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/assets/macos/tvlens.icns" with extension ".icon", skipping this app icon format
+Paquet Mac construit : /Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/release/TVLens-darwin-arm64

@@ -6,10 +6,20 @@ Ce guide décrit l’app Mac autonome. Le **companion LG rooté** utilise la mê
 
 ## Depuis le paquet Mac (sans dépôt ni Node.js)
 
-1. Télécharger l’artefact Mac Apple Silicon d’un run vert dans [GitHub Actions](https://github.com/DabiK/tvlens/actions/workflows/ci.yml). Décompresser l’artefact puis `TVLens-mac-arm64.zip`.
-2. Déplacer `TVLens.app` dans **Applications**, puis l’ouvrir depuis le Finder. Le paquet actuel n’est pas signé pour la distribution ni notarisé ; macOS peut en refuser l’ouverture. Ce parcours ne contourne pas Gatekeeper.
+**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.1/TVLens-mac-arm64.zip)** · [Détails de la préversion](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.1)
+
+Pour les Mac avec puce Apple (M1 et suivantes). Aucun compte GitHub, clone du dépôt ou Node.js n’est nécessaire. Le ZIP contient directement `TVLens.app` ; les archives « Source code » de GitHub sont réservées au développement.
+
+1. Télécharger `TVLens-mac-arm64.zip` avec le lien ci-dessus, puis double-cliquer pour le décompresser.
+2. Déplacer `TVLens.app` dans **Applications**, puis l’ouvrir depuis le Finder. Si macOS bloque le premier lancement, consulter l’aide ci-dessous.
 3. L’assistant **Préparons ce Mac** s’ouvre. Il vérifie les outils locaux et guide les étapes manquantes. **Explorer pour le moment** permet de consulter l’application sans déclarer l’installation terminée.
 4. Après une installation externe, cliquer sur **Vérifier à nouveau**. Si des chemins ou le modèle ont changé, quitter puis rouvrir TVLens depuis Applications. **Commencer** mémorise la fin de l’assistant lorsque tous les prérequis sont vérifiés.
+
+### Si macOS bloque le premier lancement
+
+Cette préversion n’a pas de signature de distribution Apple. Après avoir tenté de l’ouvrir, aller dans **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, uniquement si le fichier vient bien du téléchargement TVLens ci-dessus. [Instructions Apple](https://support.apple.com/fr-fr/102445). Les permissions écran et son demandées ensuite servent à observer la vidéo choisie.
+
+### Préparer les outils avec l’assistant
 
 Le parcours reste accessible dans **Réglages IA → Configurer ce Mac**, et par le bandeau d’installation incomplète. Une installation déjà terminée est revérifiée au lancement ; un outil supprimé est signalé sans masquer les sessions conservées.
 
@@ -89,7 +99,7 @@ peuvent être sauvegardés chiffrés avec le stockage macOS. Aucun secret n'est 
 
 ## App macOS et permissions
 
-La [CI et construction Mac](ci-delivery.md) décrit les contrôles du paquet, le ZIP de validation téléchargeable et ses limites. La distribution avec signature Apple et installation guidée reste à réaliser.
+La [CI et construction Mac](ci-delivery.md) décrit les contrôles du paquet, le ZIP de validation téléchargeable et ses limites. La préversion téléchargeable inclut l’assistant ; l’intégration des outils externes dans le paquet reste à réaliser.
 
 ```sh
 npm run package:mac

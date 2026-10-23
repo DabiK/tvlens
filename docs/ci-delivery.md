@@ -63,6 +63,14 @@ Le packager génère l’identité dans sa copie de travail, sans écrire à la 
 
 Après succès des deux plateformes et du smoke Mac, GitHub conserve pendant 14 jours un artefact nommé `TVLens-mac-arm64-<SHA>`. Il contient `TVLens-mac-arm64.zip`, `SHA256SUMS` et `package-report.json`. Le ZIP créé avec `ditto` conserve la structure et les permissions de la `.app` ; télécharger des fichiers d’application bruts via l’upload d’artefacts pourrait les perdre.
 
-Il s’agit d’une construction de validation Apple Silicon, sans signature de distribution Developer ID ni notarisation. Aucun GitHub Release, DMG, mise à jour automatique ou déploiement n’est réalisé. L’assistant de premier lancement vérifie les outils et guide leur installation ; le modèle Whisper peut être téléchargé depuis l’application. FFmpeg, Whisper et Codex restent des outils externes, conformément au [guide Mac](installation.md). Le ZIP n’est pas encore une distribution signée ou une installation entièrement automatique.
+Il s’agit d’une construction de validation Apple Silicon, sans signature de distribution Developer ID ni notarisation. Le workflow ne publie pas de GitHub Release et ne produit pas de DMG ni de mise à jour automatique. L’assistant de premier lancement vérifie les outils et guide leur installation ; le modèle Whisper peut être téléchargé depuis l’application. FFmpeg, Whisper et Codex restent des outils externes, conformément au [guide Mac](installation.md). Le ZIP n’est pas encore une distribution signée ou une installation entièrement automatique.
 
 Décision : [ADR 0066](adr/0066-la-livraison-controle-le-paquet-et-son-identite.md).
+
+## Téléchargement depuis le README
+
+La [préversion Mac 0.1.0](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.1) fournit un [ZIP directement téléchargeable](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.1/TVLens-mac-arm64.zip), accompagné de `SHA256SUMS` et `package-report.json`. Elle reste disponible indépendamment de l’expiration des artefacts Actions et ne nécessite pas de compte GitHub.
+
+Cette première publication est manuelle : paquet construit depuis le commit propre `0c0fcbd305321fe7d0360d7510fccf6004710027`, avec `package:mac -- --require-clean`, puis inspecté avec `verify:mac -- --require-clean`. Les contrôles locaux complets et les recettes Electron de cette révision sont consignés dans le [rapport d’intégration](../experiments/essais/2026-10-23-installation-mac-reelle/README.md). Le job qualité Mac GitHub a réussi ; le statut global du [run de cette révision](https://github.com/DabiK/tvlens/actions/runs/39885144148) se consulte séparément. Le ZIP publié ne provient pas de l’artefact CI.
+
+Pour la prochaine version, publier sous un nouveau tag, conserver les anciennes archives et mettre à jour ensemble les liens du README et du guide Mac. Ne pas remplacer silencieusement un ZIP déjà publié. Les outils Codex, FFmpeg et Whisper restent externes à cette préversion.

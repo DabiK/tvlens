@@ -10,9 +10,25 @@ Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis dir
 
 **App macOS · Companion LG · Frise de session · Chat & sources · Serveur privé Tailscale**
 
-[Voir la démo vidéo](https://youtu.be/jOrcdLZsqT8) · [Essayer sur Mac](docs/installation.md) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/server-installation.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
+[Voir la démo vidéo](https://youtu.be/jOrcdLZsqT8) · [Installer sur Mac](#installer-sur-mac) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/server-installation.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
+
+**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.1/TVLens-mac-arm64.zip)**
+
+[Version 0.1.0 · préversion Mac](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.1) · Mac avec puce Apple (M1 et suivantes)
 
 </div>
+
+## Installer sur Mac
+
+1. **[Télécharger le ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.1/TVLens-mac-arm64.zip)**, puis double-cliquer dessus pour le décompresser.
+2. Glisser **TVLens.app** dans **Applications** et l’ouvrir.
+3. Suivre **Préparons ce Mac** : l’assistant vérifie la configuration, propose le téléchargement du modèle et guide les autorisations de capture.
+
+L’application se télécharge directement, sans compte GitHub, sans cloner le dépôt et sans installer Node.js.
+**Pour cette préversion**, Codex connecté à un compte, FFmpeg et Whisper restent nécessaires ; l’assistant indique comment les installer s’ils manquent.
+Le paquet proposé est pour **Apple Silicon**, pas pour les Mac Intel.
+
+→ [Aide au premier lancement et configuration](docs/installation.md) · [Versions et téléchargements](https://github.com/DabiK/tvlens/releases)
 
 ## TVLens en 58 secondes
 
@@ -112,7 +128,12 @@ Le serveur VPS écoute uniquement sur son adresse Tailscale, avec authentificati
 
 → [Installer sur son serveur Linux](docs/server-installation.md) · [Mesures du VPS et retour au Mac](docs/vps-deployment.md) · [Tailscale sur la LG](docs/lg-tailscale.md)
 
-## Essayer sur Mac
+## Développer sur Mac
+
+Pour utiliser l’application, privilégier le [ZIP prêt à ouvrir](#installer-sur-mac). Les commandes suivantes servent au développement.
+
+<details>
+<summary>Installer et lancer depuis les sources</summary>
 
 Depuis un clone du dépôt (`git clone https://github.com/DabiK/tvlens.git`, puis `cd tvlens`) :
 
@@ -137,6 +158,8 @@ npm run open:mac
 La clé OpenRouter est **facultative** et sert uniquement aux embeddings texte. Sans clé, la recherche temporelle et lexicale reste disponible. Les identifiants restent hors du dépôt.
 
 → [Installation, modèles et dépannage](docs/installation.md)
+
+</details>
 
 ## Installer le companion sur une TV LG
 

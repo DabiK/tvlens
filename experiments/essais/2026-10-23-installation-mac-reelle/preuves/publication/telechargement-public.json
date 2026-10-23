@@ -1,0 +1,11 @@
+{
+  "url": "https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.1/TVLens-mac-arm64.zip",
+  "tag": "v0.1.0-mac-preview.1",
+  "commit": "0c0fcbd305321fe7d0360d7510fccf6004710027",
+  "authenticatedDownload": false,
+  "bytes": 140492269,
+  "sha256": "5101097fdf067dce5416f8df04c3279c31344e62c5a13cd38bc66db4ad1f5c6f",
+  "matchesUploadedArchive": true,
+  "zipIntegrity": "ok",
+  "nativeIconMatches": true
+}
