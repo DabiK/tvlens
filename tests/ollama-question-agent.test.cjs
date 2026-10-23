@@ -1428,7 +1428,7 @@ test('a decision of 960 ms, a retrieval of 2 500 ms and an answer of 5 700 ms gi
   assert.equal(clock.armed, 0);
 });
 
-test('a stalled decision ends at 1 500 ms, a stalled retrieval at 6 500 ms, and the answer without pages comes before 14 s', async t => {
+test('a stalled decision ends at 1 500 ms, a stalled retrieval at 6 500 ms, and the answer without pages comes before 30 s', async t => {
   const clock = manualClock();
   const transport = stalledTransport(clock, body => (decides(body) ? { delayMs: Infinity } : { delayMs: 5000, content: insufficientAnswer }));
   const retrieval = fakeRetrieval(() => new Promise(() => {}));
@@ -1444,7 +1444,7 @@ test('a stalled decision ends at 1 500 ms, a stalled retrieval at 6 500 ms, and 
   assert.deepEqual([retrieval.requests[0].signal.aborted, transport.calls.length], [true, 2], 'the answer starts at 6 500 ms');
   await clock.advance(5000);
   const { at, value } = await bounded(outcome.promise);
-  assert.ok(at === 11500 && at < 14000, `answered at ${at}`);
+  assert.ok(at === 11500 && at < WEB_QUESTION_TIMEOUT_MS, `answered at ${at}`);
   assert.equal(value.kind, 'insufficient');
   assert.ok(value.limits.includes(WEB_RETRIEVAL_FAILED_LIMIT));
   assert.deepEqual(value.retrieval, { residence: 'local', status: 'failed', documents: 0, elapsedMs: 5000, decision: 'failed',
@@ -1499,7 +1499,7 @@ test('a stalled decision on a question the rule keeps off the web ends at 1 500 
 const TIMEOUT_CODE = 'TVLENS_OLLAMA_QUESTION_TIMEOUT';
 
 for (const webTrigger of ['auto', 'always', 'model']) {
-  test(`with the ${webTrigger} trigger, an answer that never ends, deaf to its signal, fails at 14 s with the question timeout`, async t => {
+  test(`with the ${webTrigger} trigger, an answer that never ends, deaf to its signal, fails at 30 s with the question timeout`, async t => {
     const clock = manualClock();
     const transport = stalledTransport(clock, body => (decides(body) ? { delayMs: 0, content: decision(true) }
       : { delayMs: Infinity, content: insufficientAnswer, thinking: 'LATE_THINKING' }));
@@ -1525,7 +1525,7 @@ for (const webTrigger of ['auto', 'always', 'model']) {
   });
 }
 
-test('the wait in the internal queue spends the same 14 s budget as the steps of the question', async t => {
+test('the wait in the internal queue spends the same 30 s budget as the steps of the question', async t => {
   const clock = manualClock();
   const transport = stalledTransport(clock, (body, n) => (n === 1 ? { delayMs: 10_000, content: insufficientAnswer } : { delayMs: Infinity }));
   const { ask } = timedAgent(t, { clock, transport, retrieval: fakeRetrieval(), webTrigger: 'auto' });
@@ -1670,10 +1670,10 @@ test('a failed decision, a failed retrieval and a question past its deadline sta
   assert.equal(clock.armed, 0);
 });
 
-// Slower than the 14 s web deadline, far below the general ceiling: live video-only questions reached 12.6 s.
-const SLOW_ANSWER_MS = 20_000;
+// Past the web deadline, far below the general ceiling: live video-only questions reached 12.6 s.
+const SLOW_ANSWER_MS = WEB_QUESTION_TIMEOUT_MS + 10_000;
 
-test('with the auto trigger, a video-only question answered after 20 s is rendered by DeepAsk without the web deadline', async t => {
+test('with the auto trigger, a video-only question answered after 40 s is rendered by DeepAsk without the web deadline', async t => {
   const clock = manualClock();
   const transport = stalledTransport(clock, () => ({ delayMs: SLOW_ANSWER_MS, content: answer() }));
   const retrieval = fakeRetrieval();
@@ -1698,7 +1698,7 @@ const NO_SEARCH_DECISIONS = {
   'an unreadable decision': { decisionReply: { delayMs: 0, content: 'pas une décision' }, recorded: 'failed', decisionMs: 0 },
 };
 for (const [label, { decisionReply, recorded, decisionMs }] of Object.entries(NO_SEARCH_DECISIONS)) {
-  test(`with the model trigger, ${label} on a question the rule keeps off the web lets an answer after 20 s through`, async t => {
+  test(`with the model trigger, ${label} on a question the rule keeps off the web lets an answer after 40 s through`, async t => {
     const clock = manualClock();
     const transport = stalledTransport(clock, body => (decides(body) ? decisionReply : { delayMs: SLOW_ANSWER_MS, content: insufficientAnswer }));
     const retrieval = fakeRetrieval();
@@ -1715,11 +1715,11 @@ for (const [label, { decisionReply, recorded, decisionMs }] of Object.entries(NO
   });
 }
 
-// Long enough for a second question to wait past its 14 s behind the first one.
-const QUEUED_PAST_DEADLINE_MS = 15_000;
+// Long enough for a second question to wait past its web deadline behind the first one.
+const QUEUED_PAST_DEADLINE_MS = WEB_QUESTION_TIMEOUT_MS + 1_000;
 
 for (const searches of [true, false]) {
-  test(`with the model trigger, a question queued past 14 s ${searches ? 'stops once it decides to search'
+  test(`with the model trigger, a question queued past 30 s ${searches ? 'stops once it decides to search'
     : 'still answers once it decides not to search'}`, async t => {
     const clock = manualClock();
     const transport = stalledTransport(clock, (body, n) => {
@@ -1731,7 +1731,7 @@ for (const searches of [true, false]) {
     const first = watch(clock, ask(FILM_QUESTION));
     const queued = watch(clock, ask(FILM_QUESTION));
     await clock.advance(WEB_QUESTION_TIMEOUT_MS);
-    assert.equal(queued.settled, undefined, 'unclassified at 14 s, the queued question waits');
+    assert.equal(queued.settled, undefined, 'unclassified at 30 s, the queued question waits');
     await clock.advance(QUEUED_PAST_DEADLINE_MS - WEB_QUESTION_TIMEOUT_MS);
     assert.equal((await bounded(first.promise)).value?.kind, 'insufficient');
     const { at, value, error } = await bounded(queued.promise);

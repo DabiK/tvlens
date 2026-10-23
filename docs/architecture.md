@@ -164,10 +164,11 @@ ou reprise par cet appel, même déjà en capture, et remplace son titre ; `{}` 
 ouverte ou reprise n’en a pas avant un démarrage qui en donne un. Le titre ne sert qu’à la décision ; le résultat dit
 seulement s’il était présent (ADR 0069).
 Les pages sont lues par Readability, avec repli sur l’extraction par motifs, et une question qui cherche vraiment
-sur le web est bornée à 14 s depuis son entrée dans l’agent, décision et récupération comprises ; une question qui ne
+sur le web est bornée à 30 s depuis son entrée dans l’agent, décision et récupération comprises ; une question qui ne
 cherche pas garde le plafond général. Avec `model`, l’échéance ne coupe qu’une fois la question classée « cherche » :
-une question non classée à 14 s, en file ou pendant sa décision, peut finir plus tard (fin de file, plus jusqu’à 1,5 s
-de décision), et derrière un travail bloqué elle attend le plafond général (ADR 0068).
+une question non classée à 30 s, en file ou pendant sa décision, peut finir plus tard (fin de file, plus jusqu’à 1,5 s
+de décision), et derrière un travail bloqué elle attend le plafond général (ADR 0068, échéance portée de 14 à 30 s le
+23/10 après l’essai F1).
 Ce choix ne sélectionne ni embeddings ni inspection.
 L’identité composée de l’agent accompagne les métriques et les traces, même en cas de refus.
 `DeepAsk` fige l’ancrage et le préfixe admissible à l’envoi, accepte cinq questions en attente,
@@ -490,7 +491,8 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0067](adr/0067-le-modele-local-decide-la-recherche-web-et-ecrit-sa-requete.md) :
   Avec le déclencheur `model`, un appel court décide la recherche et écrit la requête ; la règle reprend s’il échoue.
 - [ADR 0068](adr/0068-la-recherche-web-locale-lit-les-pages-avec-readability-et-borne-la-question-a-14-s.md) :
-  Les pages web sont lues par Readability, repli par motifs ; décision 1,5 s, récupération 5 s, question qui cherche sur le web 14 s.
+  Les pages web sont lues par Readability, repli par motifs ; décision 1,5 s, récupération 5 s, question qui cherche sur le web
+  30 s (14 s jusqu’à l’amendement du 23/10).
 - [ADR 0069](adr/0069-la-decision-web-recoit-le-titre-de-la-source-quand-l-hote-le-connait.md) :
   La décision web reçoit le titre de la source quand l’hôte le connaît (fenêtre capturée sur le Mac, titre déclaré au serveur).
 - [ADR 0072](adr/0072-les-questions-locales-recoivent-un-condense-citable-des-passages-anciens.md) :

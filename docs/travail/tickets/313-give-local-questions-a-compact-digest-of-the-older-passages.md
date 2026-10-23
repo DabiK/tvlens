@@ -156,7 +156,7 @@ Rien au-dessus de cette ligne ne se modifie pendant le traitement.
   `runtime/conversation-runtime.cjs` (option si `backend === 'local'`), tests dans `tests/older-passage-digest.test.cjs`
   et `tests/conversation-runtime.test.cjs`. Rouge vu à chaque incrément (mutations temporaires pour DeepAsk) ;
   `node scripts/check.mjs` rapporté vert par l'implémenteur (3050 tests JS, 71 Python).
-- 22/10, ADR : `docs/adr/0072-les-questions-locales-recoivent-un-condense-citable-des-passages-anciens.md`, lié depuis
+- 22/10, ADR : `docs/adr/0064-les-questions-locales-recoivent-un-condense-citable-des-passages-anciens.md`, lié depuis
   `docs/architecture.md` ; `node --test tests/documentation-index.test.cjs` vert.
 - 22/10, relecture 1 (`relecture-1.md`) : à corriger, 0 bloquant, 3 mineurs. Écarts `media-evidence.cjs` et sujet
   normalisé acceptés. Corrections : cas `recap` rendu discriminant (130 passages, rouge vu sur une garde mutée) ;
@@ -172,3 +172,13 @@ Rien au-dessus de cette ligne ne se modifie pendant le traitement.
 - Écart accepté, critère 1 : le sujet absent est comparé comme un sujet vide (topic ?? ''), comme le prototype qui lisait get('topic', '').
 - Non vérifié : aucun essai réel avec le vrai agent Ollama ni sur la GX10 ; l'effet de la citabilité et le poids du condensé (environ 2 500 à 3 000 jetons au plafond) face à numCtx restent à mesurer hors boucle, proxy sans réécriture.
 - Question pour le propriétaire : un visuel fait uniquement de blancs reçoit une ligne « Image » vide, comme dans le prototype et le texte du ticket ; à rogner si l'essai réel le montre gênant.
+
+### Intégration sur main
+
+- 23/10, intégration sur main (session expériences, décision de Dabi) : cherry-pick des deux commits de
+  `feat/journal-memoire-local` sur `origin/main` (recherche web T308–T318 comprise), dans le worktree `../tvlens-t318`,
+  branche `feat/journal-et-echeance`. L'ADR 0064 devient 0072 : main a pris 0065 à 0071. Conflits résolus :
+  `docs/architecture.md` (lien d'ADR), `scripts/quality/baseline.json` (plancher de main gardé, 1759) et l'index des
+  tickets. `node --test` sur le condensé, la composition, l'agent local, DeepAsk et les rejeux : 196 tests verts ;
+  `node scripts/check.mjs` complet sur l'état intégré (journal + recherche web + échéance web portée à 30 s) : vert, 3 274
+  tests JS, 71 tests Python.

@@ -2,7 +2,8 @@
 
 - Date : 2026-10-22
 - Ticket : `docs/travail/tickets/316-extract-readable-pages-and-bound-local-web-latency.md`
-- Statut : acceptée ; amende les ADR 0070 et 0067
+- Statut : acceptée ; amende les ADR 0070 et 0067 ; échéance portée à 30 s le 23/10 par le propriétaire, essai F1
+  (voir « Amendement du 23/10 »)
 
 ## Contexte
 
@@ -61,6 +62,22 @@ l'analyse.
   question brute. Récupération abandonnée : réponse sans pages, comme l'ADR 0070.
 - Les délais internes de SearXNG (5 s pour la recherche, 4 s par page) restent des protections secondaires sous le
   budget de 5 s de la récupération entière. L'attente dans la file de DeepAsk reste hors de ce budget.
+
+## Amendement du 23/10
+
+`WEB_QUESTION_TIMEOUT_MS` passe de 14 000 à 30 000 ms, sur décision du propriétaire. Dans l'essai F1 en flux réel
+(`experiments/essais/2026-10-22-produit-complet-web-gx10/`), 5 questions web ou mixtes sur 30 dépassaient 14 s de
+temps propre (16,6 s au plus), et une échéance de 14 s aurait perdu 2 réponses pertinentes
+(`experiments/essais/2026-10-21-variantes-gx10/CHIFFRES.md`). Au pire de la décision et de la récupération, 23,5 s
+restent pour répondre ; la visée de 15 s ne vaut plus pour une question qui cherche sur le web. Le reste de la
+décision ne change pas, budgets de la décision (1,5 s) et de la récupération (5 s) compris : là où ce document dit
+14 s pour l'échéance de la question, lire 30 s. Les tests lisent la constante exportée ; ceux qui prouvent qu'une
+question qui ne cherche pas n'est pas coupée font répondre 10 s après l'échéance (40 s) et attendre en file 1 s
+après elle (31 s), pour la dépasser vraiment.
+
+Effet de bord connu, cosmétique : DeepAsk publie « La recherche continue » au bout de 30 s de traitement
+(`QUESTION_PROGRESS_MS`, `core/deep-ask.cjs`). Une question qui cherche et atteint l'échéance peut donc l'afficher
+juste avant son erreur `TVLENS_OLLAMA_QUESTION_TIMEOUT`.
 
 ## Alternatives écartées
 

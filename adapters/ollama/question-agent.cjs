@@ -23,10 +23,11 @@ const WEB_RETRIEVAL_TIMEOUT_MS = 5_000;
 // The model's decision took 0.65 s at the median and 0.96 s at most over 408 calls: 540 ms of margin over that maximum.
 // Past it the rule decides instead.
 const WEB_DECISION_TIMEOUT_MS = 1_500;
-// One deadline for a whole local question that searches the web, from its entry in the agent: at worst the decision and
-// the retrieval above leave 7.5 s to answer, against 4.3 to 5.7 s at the median with pages; the last second up to the
-// 15 s aim of the product is for rendering and scheduling, a margin that was not measured.
-const WEB_QUESTION_TIMEOUT_MS = 14_000;
+// One deadline for a whole local question that searches the web, from its entry in the agent. The owner raised it from
+// 14 s to 30 s on 23/10 after a live-stream measure on the GX10: 5 of 30 web or mixed questions took more than 14 s of their own
+// time (16.6 s at most), and 14 s would have lost 2 relevant answers. At worst the decision and the retrieval above leave
+// 23.5 s to answer.
+const WEB_QUESTION_TIMEOUT_MS = 30_000;
 // A boolean and a query of a few keywords: the decision never needs a long generation.
 const WEB_DECISION_MAX_TOKENS = 80;
 const WEB_RETRIEVAL_FAILED_LIMIT = 'La recherche web locale n’a pas abouti.';
@@ -129,8 +130,8 @@ class OllamaQuestionAgent {
     return this.#withinWebDeadline(queued, signal, this.#searchesAtEntry(input.question));
   }
 
-  // Only a question that really searches the web owes the 14 s: a video-only one keeps the general ceiling, as without
-  // a port, since a busy GPU alone brings it close to 14 s. With the model trigger this is known only once decided.
+  // Only a question that really searches the web owes the web deadline, which bounds what the web adds: a video-only
+  // one keeps the general ceiling, as without a port. With the model trigger this is known only once decided.
   #searchesAtEntry(question) {
     if (this.#webTrigger === 'model') return undefined;
     return this.#webTrigger === 'always' || callsForWeb(question);
@@ -149,8 +150,9 @@ class OllamaQuestionAgent {
     } finally { deadline.clear(); }
   }
 
-  // The 14 s count from the entry whether or not the question is classified yet; they stop it only once it searches.
-  // A question still unclassified at 14 s is stopped when it turns to search, before the port or the answer is called.
+  // The deadline counts from the entry whether or not the question is classified yet; it stops it only once it
+  // searches. A question still unclassified at its deadline is stopped when it turns to search, before the port or the
+  // answer is called.
   #webDeadline(searching) {
     const controller = new AbortController();
     let expired = false;
