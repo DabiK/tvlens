@@ -244,6 +244,14 @@ mais la disponibilité réelle dépend du compte. Les modèles doivent accepter 
 images. Les anciens identifiants OpenRouter de perception sont migrés vers Luna.
 Les changements de perception prennent effet dans une nouvelle session.
 
+Le réexamen demandé par le chat sélectionne au plus **12 images individuelles** par demande,
+avec un **grand côté limité à 1280 pixels**, sans agrandir une source plus petite. Il conserve les
+repères temporels et la diversité des instants ; les images ne sont plus réduites dans des
+planches de six cellules. Si la vidéo ne peut pas être décodée, il utilise les images conservées
+à la capture (768 pixels de large pour la capture Mac actuelle), avec une limite signalée.
+Ce changement préserve davantage de détails, sans garantir la lecture de tout texte : la qualité
+de la capture reste déterminante. Son coût en tokens et sa qualité OCR n’ont pas été mesurés.
+
 - Images et texte de transcription sont envoyés à Codex, avec les extraits utiles
   de conversation et de mémoire. Les outils web consultent des sources externes.
 - L'audio brut est transcrit sur le Mac avec Whisper, puis conservé avec sa session

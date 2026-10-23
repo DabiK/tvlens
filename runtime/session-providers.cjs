@@ -111,7 +111,7 @@ function createSessionInspection(
           model: inspectorModel,
           ffmpeg: config.ffmpeg,
           strategy: make.inspectionStrategy(
-            smoke ? strategy : "sheets-diverse",
+            smoke ? strategy : "frames-diverse",
           ),
         });
   // The inspector can outlive its runtime in a question or external MCP context. A late re-examination

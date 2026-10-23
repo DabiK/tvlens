@@ -200,7 +200,7 @@ test("inspection selects smoke, live and local models and keeps its cache revoca
           media: options.store,
           model: built.inspectorModel,
           ffmpeg: "ffmpeg-test",
-          strategy: { name: smoke ? "requested-strategy" : "sheets-diverse" },
+          strategy: { name: smoke ? "requested-strategy" : "frames-diverse" },
         },
       ]);
   }

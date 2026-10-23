@@ -231,7 +231,7 @@ test('an unreachable dedicated inspection returns a named failure without callin
   assert.equal(f.leases(), 0);
 });
 
-test('real tools send contact sheets to fake Ollama, admit bounded evidence and preserve provenance through cache and revocation', async t => {
+test('real tools send individual images to fake Ollama, admit bounded evidence and preserve provenance through cache and revocation', async t => {
   const f = await bench(t);
   const tools = f.tools();
   const first = await tools.call('inspect_clip', request);
@@ -245,8 +245,9 @@ test('real tools send contact sheets to fake Ollama, admit bounded evidence and 
   assert.equal(f.agents.length, 1);
   assert.equal(f.calls[0].model, 'vision-local');
   assert.equal(f.calls[0].messages[0].images.length, 1);
-  const sheet = await sharp(Buffer.from(f.calls[0].messages[0].images[0], 'base64')).metadata();
-  assert.deepEqual([sheet.width, sheet.height], [1200, 868]);
+  const image = await sharp(Buffer.from(f.calls[0].messages[0].images[0], 'base64')).metadata();
+  assert.deepEqual([image.width, image.height], [120, 80], 'the source image is neither tiled nor enlarged');
+  assert.match(f.calls[0].messages[0].content, /vue individuelle/);
   assert.match(f.calls[0].messages[0].content, /Paroles du passage/);
   const diagnostic = tools.toolMetrics[0].inspection;
   assert.deepEqual(Object.fromEntries(Object.keys(f.identity).map(key => [key, diagnostic[key]])), f.identity);

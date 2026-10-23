@@ -30,7 +30,12 @@ class ClipInspector {
         // draws nothing, is treated the same way afterwards. A missing decoder or an interruption is never taken for that.
         if(s.mediaReason!=='unreadable') {
           try {
-            await run(this.ffmpeg,['-hide_banner','-loglevel','error','-ss',String((begin-s.startMs)/1000),'-i',this.media.file(s.id,'webm'),'-t',String((end-begin)/1000),'-vf',`fps=${fps},scale=768:768:force_original_aspect_ratio=decrease:force_divisible_by=2`,'-frames:v',String(Math.max(1,cap-count)),'-q:v','3',prefix],signal);
+            const scale = this.strategy.extractionScale || 'scale=768:768:force_original_aspect_ratio=decrease:force_divisible_by=2';
+            await run(this.ffmpeg, [
+              '-hide_banner', '-loglevel', 'error', '-ss', String((begin-s.startMs)/1000),
+              '-i', this.media.file(s.id,'webm'), '-t', String((end-begin)/1000),
+              '-vf', `fps=${fps},${scale}`, '-frames:v', String(Math.max(1,cap-count)), '-q:v', '3', prefix,
+            ], signal);
             const files=(await fs.readdir(dir)).filter(f => f.startsWith(`${i}-`)).sort();
             for(let j=0;j<files.length;j++) { const atMs=begin+(j+0.5)*1000/fps; if(atMs>end || count>=cap) break; frames.push({atMs,dataUrl:'data:image/jpeg;base64,'+(await fs.readFile(path.join(dir,files[j]))).toString('base64')}); count++; }
           } catch(error) { signal?.throwIfAborted(); if(error?.code!==DECODE_FAILED) throw error; frames.length=0; count=before; }

@@ -1,3 +1,4 @@
+const { IndividualFrameStrategy } = require('./individual-frame-strategy.cjs');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const sharp = require('sharp');
@@ -84,6 +85,7 @@ async function makeSheet(frames,roi,offset,signal){
   return {dataUrl:'data:image/jpeg;base64,'+output.toString('base64'),times:frames.map(f=>f.atMs),numbers:frames.map((_,i)=>offset+i+1),region:roi,width:(CELL+GAP)*3+GAP,height:(CELL+LABEL+GAP)*2+GAP};
 }
 function inspectionStrategy(name='native-slow'){
+  if(name==='frames-diverse')return new IndividualFrameStrategy();
   if(name==='native-slow')return new NativeVideoStrategy();
   if(['sheets','sheets-diverse','sheets-crop'].includes(name))return new ContactSheetStrategy({crop:name==='sheets-crop',diverse:name!=='sheets'});
   throw new Error('Stratégie de réexamen inconnue.');
