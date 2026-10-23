@@ -10,6 +10,6 @@
     ℹ fail 0
 ✔ tests Python
     Ran 71 tests in 65.408s
-    
+
     OK
 check : vert
