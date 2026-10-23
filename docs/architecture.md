@@ -498,4 +498,7 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 - [ADR 0072](adr/0072-les-questions-locales-recoivent-un-condense-citable-des-passages-anciens.md) :
   Une question de chat locale reçoit, avant ses passages récents, un condensé citable et plafonné des passages plus anciens.
 
+- [ADR 0073](adr/0073-un-installateur-mac-prepare-le-paquet-et-les-outils.md) :
+  Un installateur externe prépare le paquet signé et les outils ; l’assistant conserve le diagnostic et les autorisations personnelles.
+
 L’assistant de premier lancement est composé dans `app/mac-setup.cjs` : sondes locales et préférences non secrètes dans `adapters/desktop-setup.cjs`, téléchargement explicite vérifié dans `adapters/speech-model-download.cjs`, présentation dans `app/ui/setup.mjs`. La configuration des agents reste fixée au lancement ; voir [ADR 0071](adr/0071-le-premier-lancement-mac-verifie-et-guide.md).

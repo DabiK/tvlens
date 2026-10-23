@@ -26,3 +26,6 @@ Aucune signature Apple, notarisation, mise à jour automatique ou installation s
 ## Contrôles
 
 Tests des préférences et du diagnostic, sélection native, refus d’actions arbitraires, concurrence d’installation, reprise après téléchargement, empreinte invalide, demande explicite d’autorisation et import préservant le compte. Le smoke Electron couvre le premier affichage, la persistance de fin, la réouverture, les dépendances absentes et l’erreur de téléchargement récupérable ; il rejoint le job Mac de CI.
+
+Évolution : l’[ADR 0073](0073-un-installateur-mac-prepare-le-paquet-et-les-outils.md) ajoute un installateur externe guidé.
+L’assistant dans l’app conserve sa responsabilité de diagnostic et de configuration.

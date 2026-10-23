@@ -1,0 +1,21 @@
+[
+  {
+    "command": [
+      "/bin/bash",
+      "-n",
+      "scripts/install-mac.sh"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "shellcheck",
+      "scripts/install-mac.sh"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

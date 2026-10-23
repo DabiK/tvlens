@@ -1,0 +1,40 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "name": "règles par fichier",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "format",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "gel du lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "cliquet",
+      "status": "ok",
+      "detail": "Mesures améliorées : lignes_longues_prod : 388 → 387, cas_de_test_produit : 1759 → 1867"
+    },
+    {
+      "name": "tests JS (174 fichier(s))",
+      "status": "ko",
+      "detail": "✖ published documentation indexes the local documents and decisions with existing targets (28.277125ms)\nℹ tests 3297\nℹ pass 3296\nℹ fail 1\n✖ failing tests:\n✖ published documentation indexes the local documents and decisions with existing targets (28.277125ms)\n\n✖ failing tests:\n\ntest at tests/documentation-index.test.cjs:121:1\n✖ published documentation indexes the local documents and decisions with existing targets (28.277125ms)\n  AssertionError [ERR_ASSERTION]: Compléter les liens et les phrases indiqués dans les diagnostics.\n  + actual - expected\n  \n  + 'docs/architecture.md : ajouter une phrase et un lien vers adr/0073-un-installateur-mac-prepare-le-paquet-et-les-outils.md dans la section Décisions.'\n  - ''\n  \n      at TestContext.<anonymous> (/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/tests/documentation-index.test.cjs:122:10)\n      at Test.runInAsyncScope (node:async_hooks:214:14)\n      at Test.run (node:internal/test_runner/test:1106:25)\n      at Test.start (node:internal/test_runner/test:1003:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: 'docs/architecture.md : ajouter une phrase et un lien vers adr/0073-un-installateur-mac-prepare-le-paquet-et-les-outils.md dans la section Décisions.',\n    expected: '',\n    operator: 'strictEqual',\n    diff: 'simple'\n  }"
+    },
+    {
+      "name": "tests Python",
+      "status": "ok",
+      "detail": "Ran 71 tests in 66.595s\n\nOK"
+    }
+  ]
+}

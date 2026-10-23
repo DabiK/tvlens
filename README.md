@@ -12,7 +12,7 @@ Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis dir
 
 [Voir la démo vidéo](https://youtu.be/jOrcdLZsqT8) · [Installer sur Mac](#installer-sur-mac) · [Companion TV](docs/lg-timeline.md) · [Déployer le serveur](docs/server-installation.md) · [Architecture](docs/architecture.md) · [Documentation](docs/README.md)
 
-**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip)**
+**[Installer TVLens sur Mac](#installer-sur-mac)** · [ZIP pour installation manuelle](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip)
 
 [Version 0.1.0 · préversion Mac](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.2) · Mac avec puce Apple (M1 et suivantes)
 
@@ -20,17 +20,39 @@ Un compagnon de visionnage avec une mémoire audiovisuelle — sur Mac, puis dir
 
 ## Installer sur Mac
 
-1. **[Télécharger le ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip)**, puis double-cliquer dessus pour le décompresser.
-2. Glisser **TVLens.app** dans **Applications** et l’ouvrir.
-3. Si macOS bloque l’ouverture : **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, puis confirmer **Ouvrir**.
-4. Suivre **Préparons ce Mac** : l’assistant vérifie la configuration, propose le téléchargement du modèle et guide les autorisations de capture.
+**Mac avec puce Apple (M1 et suivantes), macOS 15 ou plus récent.**
+Ouvre **Terminal** (via Spotlight), copie ce bloc entier puis appuie sur Entrée :
 
-L’application se télécharge directement, sans compte GitHub, sans cloner le dépôt et sans installer Node.js.
-**Pour cette préversion**, Codex connecté à un compte, FFmpeg et Whisper restent nécessaires ; l’assistant indique comment les installer s’ils manquent.
-Le paquet proposé est pour **Apple Silicon**, pas pour les Mac Intel. Il est signé mais non notarisé : l’autorisation manuelle ci-dessus peut être nécessaire au premier lancement.
-Si tu avais téléchargé la préversion 1 signalée « endommagée », retélécharge ce nouveau ZIP et remplace l’ancienne app.
+```sh
+(
+  tvlens_installer="$(mktemp -t tvlens-install)" || exit 1
+  trap 'rm -f "$tvlens_installer"' EXIT
+  curl --fail --location --proto '=https' --proto-redir '=https' \
+    https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.1/install-mac.sh \
+    --output "$tvlens_installer" && /bin/bash "$tvlens_installer"
+)
+```
 
-→ [Aide au premier lancement et configuration](docs/installation.md) · [Versions et téléchargements](https://github.com/DabiK/tvlens/releases)
+Confirme la préparation proposée. Le script installe **TVLens**, prépare les outils manquants
+(**Codex, FFmpeg, Whisper**, avec Homebrew si nécessaire), puis télécharge le modèle vocal.
+Il vérifie l’empreinte du ZIP et la signature TVLens avant de remplacer une application existante.
+Aucun compte GitHub, dépôt, Node.js ou compte Apple n’est nécessaire.
+
+Ensuite, l’assistant **Préparons ce Mac** te guide pour **connecter Codex à ton compte** et
+**autoriser l’écran et le son**. Homebrew peut demander ton mot de passe Mac et l’installation
+d’outils Apple ; prévois plusieurs minutes au premier passage.
+
+**Cette préversion est signée mais non notarisée.** Si macOS bloque son ouverture :
+**Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, puis **Ouvrir**.
+Le script ne désactive aucune protection macOS. Le parcours sans aucune exception Gatekeeper
+nécessiterait une version notarisée ; ce n’est pas le mode de distribution choisi ici.
+
+**Installation manuelle :** [télécharger le ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip),
+le décompresser et glisser **TVLens.app** dans **Applications**.
+L’assistant indique alors les outils à préparer. Pour remplacer l’ancienne préversion signalée
+« endommagée », utilise ce ZIP ou le script. Tes sessions et réglages restent conservés.
+
+→ [Aide et options de l’installateur](docs/installation.md) · [Lire le script](scripts/install-mac.sh)
 
 ## TVLens en 58 secondes
 
@@ -132,7 +154,7 @@ Le serveur VPS écoute uniquement sur son adresse Tailscale, avec authentificati
 
 ## Développer sur Mac
 
-Pour utiliser l’application, privilégier le [ZIP prêt à ouvrir](#installer-sur-mac). Les commandes suivantes servent au développement.
+Pour utiliser l’application, privilégier le [parcours d’installation](#installer-sur-mac). Les commandes suivantes servent au développement.
 
 <details>
 <summary>Installer et lancer depuis les sources</summary>

@@ -1,0 +1,20 @@
+✔ published documentation indexes the local documents and decisions with existing targets (31.27625ms)
+✔ documentation inventory accepts a complete tree and ignores historical assertions (124.987709ms)
+✔ documentation inventory diagnoses a newly added top-level document (129.376167ms)
+✔ documentation inventory excludes ignored documents from every category (128.049084ms)
+✔ documentation inventory counts a new document under docs before its commit (145.656875ms)
+✔ documentation inventory diagnoses an archive index and accepts its link (156.542833ms)
+✔ documentation inventory requires a sentence and link for each added decision (182.858708ms)
+✔ documentation inventory diagnoses an absent link target (247.424208ms)
+✔ reference links reject existing untracked and ignored files and directories (183.488375ms)
+✔ reference links accept tracked targets outside docs and their parent directories (192.691083ms)
+✔ architecture map diagnoses every missing runtime owner (563.604375ms)
+✔ reference pages reject test counts and branch or deployment assertions (428.58475ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2544.789958

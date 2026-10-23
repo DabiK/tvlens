@@ -65,7 +65,7 @@ Le packager génère l’identité dans sa copie de travail, sans écrire à la 
 
 Après succès des deux plateformes et du smoke Mac, GitHub conserve pendant 14 jours un artefact nommé `TVLens-mac-arm64-<SHA>`. Il contient `TVLens-mac-arm64.zip`, `SHA256SUMS` et `package-report.json`. Le ZIP créé avec `ditto` conserve la structure et les permissions de la `.app` ; télécharger des fichiers d’application bruts via l’upload d’artefacts pourrait les perdre.
 
-Il s’agit d’une construction de validation Apple Silicon, sans signature de distribution Developer ID ni notarisation. Le workflow ne publie pas de GitHub Release et ne produit pas de DMG ni de mise à jour automatique. L’assistant de premier lancement vérifie les outils et guide leur installation ; le modèle Whisper peut être téléchargé depuis l’application. FFmpeg, Whisper et Codex restent des outils externes, conformément au [guide Mac](installation.md). Le ZIP n’est pas encore une distribution signée ou une installation entièrement automatique.
+Il s’agit d’une construction de validation Apple Silicon, sans signature de distribution Developer ID ni notarisation. Le workflow ne publie pas de GitHub Release et ne produit pas de DMG ni de mise à jour automatique. L’assistant de premier lancement vérifie les outils et guide leur installation ; le modèle Whisper peut être téléchargé depuis l’application. FFmpeg, Whisper et Codex restent des outils externes, conformément au [guide Mac](installation.md). Ce ZIP de CI utilise une signature ad hoc ; la distribution manuelle signée et son installateur sont décrits ci-dessous.
 
 Décision : [ADR 0066](adr/0066-la-livraison-controle-le-paquet-et-son-identite.md).
 
@@ -84,3 +84,22 @@ Le propriétaire a choisi de conserver un ZIP GitHub sans notarisation Apple. Le
 Pour la distribution manuelle, construire depuis un commit propre avec `--sign-identity`, vérifier le paquet avec `verify:mac --require-clean`, puis créer le ZIP avec `ditto -c -k --sequesterRsrc --keepParent`. Conserver son empreinte et le rapport, publier sous un nouveau tag et vérifier le téléchargement public. Un résultat `source=Unnotarized Developer ID` de Gatekeeper reste attendu : il ne faut pas présenter cette archive comme approuvée par Apple.
 
 Après un premier lancement bloqué, l’utilisateur autorise cette seule application dans **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, puis confirme l’ouverture. Cette exception est distincte des autorisations écran et son. Ne pas désactiver Gatekeeper ni retirer automatiquement la quarantaine. Voir [l’aide Apple](https://support.apple.com/fr-fr/102445).
+
+## Installateur Mac depuis le README
+
+`scripts/install-mac.sh` est autonome (Bash 3.2), livré séparément du ZIP sous le tag
+`v0.1.0-mac-installer.1`. Il installe la préversion 2 existante ; cette étape ne reconstruit pas l’app.
+Le script épingle son URL, son SHA-256 et le Team ID/bundle ID attendus. Il contrôle la signature
+complète avant toute installation, et ne supprime pas la quarantaine.
+
+Les tests `tests/mac-installer.test.cjs` font partie du contrôle complet Linux et Mac. Ils couvrent
+les erreurs de transfert, empreinte et signature, la restauration, la concurrence, la réexécution,
+les chemins avec espaces et la conservation des données. Les dépendances réseau et système sont
+substituées dans ces tests ; la recette réelle est consignée séparément dans
+[le rapport d’installation](../experiments/essais/2026-10-23-installateur-mac/README.md).
+
+Pour livrer une nouvelle version : construire et vérifier le ZIP signé, le publier sous un nouveau
+tag, puis mettre à jour URL/empreinte dans le script et relancer les tests ainsi que la recette réelle.
+Publier le script sous un nouveau tag d’installateur avec son `SHA256SUMS`, puis mettre à jour ensemble
+le bloc du README et le guide Mac. Ne jamais remplacer un installateur déjà publié par un contenu différent.
+Le script et le ZIP ont chacun leur version : les artefacts de CI restent des paquets de validation.

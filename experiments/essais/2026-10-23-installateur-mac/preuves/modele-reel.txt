@@ -1,0 +1,6 @@
+3/4 — Préparation du modèle vocal…
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100  1137  100  1137    0     0   8766      0 --:--:-- --:--:-- --:--:--  8813
+  0  141M    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 79  141M   79  112M    0     0  81.9M      0  0:00:01  0:00:01 --:--:--  118M100  141M  100  141M    0     0  88.3M      0  0:00:01  0:00:01 --:--:--  120M
+SHA-256 du modèle téléchargé : conforme

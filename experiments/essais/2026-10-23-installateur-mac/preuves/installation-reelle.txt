@@ -1,0 +1,19 @@
+TVLens v0.1.0-mac-preview.2 → /Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/installer-validation/TVLens.app
+Préparation : outils manquants via Homebrew (Codex, FFmpeg, Whisper) et modèle vocal (~142 Mio).
+Homebrew peut demander ton mot de passe Mac et les outils de développement Apple.
+Les outils et modèles déjà présents sont conservés. Aucun compte ni réglage TVLens n’est modifié.
+Le paquet est signé, sans notarisation : macOS peut encore demander une autorisation d’ouverture.
+1/4 — Téléchargement et vérification de TVLens…
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+ 66  135M   66 90.5M    0     0  85.1M      0  0:00:01  0:00:01 --:--:-- 85.1M100  135M  100  135M    0     0  95.4M      0  0:00:01  0:00:01 --:--:--  126M
+2/4 — Préparation des outils…
+Outils présents ; l’assistant vérifiera leur fonctionnement et la connexion Codex.
+3/4 — Préparation du modèle vocal…
+Modèle existant conservé ; aucun modèle personnalisé n’est remplacé.
+4/4 — Installation de l’application…
+Application installée : /Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/installer-validation/TVLens.app
+Ouvre TVLens → Préparons ce Mac pour terminer la connexion Codex et les autorisations écran/son.
+Si macOS bloque : Réglages Système → Confidentialité et sécurité → Ouvrir quand même.
+Aucune protection macOS n’a été désactivée. Une ouverture demandée ne garantit pas une ouverture autorisée.

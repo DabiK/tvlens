@@ -1,0 +1,29 @@
+✔ installer help works without dependencies or platform checks (7.602292ms)
+✔ installer rejects unsupported machines before downloading (3.832375ms)
+✔ installer rejects an unknown argument before any changes (2.744916ms)
+✔ installer refuses corrupt downloads before extracting or replacing (29.975208ms)
+✔ installer refuses an unexpected signature and preserves the installed app (23.113708ms)
+✔ installer preserves the installed app on a network failure (10.792125ms)
+✔ installer replaces an app in a path with spaces and removes staging files (34.846916ms)
+✔ installer restores the previous app when final rename fails (35.444334ms)
+✔ installer refuses to replace an app while TVLens is running (22.818958ms)
+✔ installer can be repeated without replacing an identical running app (51.3985ms)
+✔ installer respects an existing installation lock (8.874583ms)
+✔ installer never follows an app destination symlink (2.821208ms)
+✔ installer leaves existing models and preferences untouched (3.111916ms)
+✔ installer removes a corrupt model download without replacing the model (15.386167ms)
+✔ installer skips Homebrew entirely when tools already exist (2.594667ms)
+✔ installer installs only missing tools with the official formula and cask names (6.014416ms)
+✔ installer reports a tool still absent after Homebrew rather than claiming success (2.731042ms)
+✔ installer validates the actual signing requirement on macOS (23.869542ms)
+✔ installer rejects root and Rosetta independently of the host platform (7.170875ms)
+✔ installer cancels before network access when confirmation is declined (2.877667ms)
+✔ installer commits a model only after its checksum matches (16.206083ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 345.814125

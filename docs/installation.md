@@ -4,6 +4,59 @@
 
 Ce guide décrit l’app Mac autonome. Le **companion LG rooté** utilise la même logique avec capture sur TV : voir [la frise et les commandes](lg-timeline.md). Pour héberger le moteur sur Linux sans Electron, suivre [le guide serveur Linux/Tailscale](server-installation.md). Les scripts Homebrew ci-dessous ne sont pas l’installation Linux.
 
+## Installation guidée recommandée
+
+Sur **Mac Apple Silicon, macOS 15 ou plus récent**, utilise le bloc à copier dans Terminal
+du [README](../README.md#installer-sur-mac). Il télécharge un script complet avant de l’exécuter,
+sans clone, Node.js ni compte GitHub. Tu peux [lire le script](../scripts/install-mac.sh) auparavant.
+
+Le script annonce ses actions et demande confirmation, puis :
+
+1. Télécharge la préversion Mac 2, vérifie son SHA-256 épinglé et sa signature Developer ID TVLens.
+2. Prépare uniquement les outils absents : Codex, Whisper et FFmpeg ; installe Homebrew s’il manque.
+3. Télécharge le modèle base avec vérification SHA-256 si aucun modèle non vide n’occupe son emplacement standard.
+4. Installe TVLens dans `/Applications` si ce dossier est accessible, sinon dans `~/Applications`, puis demande son ouverture.
+
+Homebrew peut demander un mot de passe administrateur et les outils Apple de ligne de commande.
+Prévois plusieurs minutes et de l’espace disque pour Homebrew et ses dépendances. Le script ne lance
+aucune inférence. Les téléchargements ont une limite de quinze minutes par tentative, avec deux nouvelles tentatives.
+Une préparation Homebrew interrompue peut se reprendre en relançant le script.
+
+**À terminer dans l’app :** connexion personnelle Codex, autorisation écran et son, puis **Vérifier à nouveau**.
+Les chemins personnalisés, comptes, sessions et réglages existants restent inchangés ; les outils sont
+recherchés dans le PATH, `~/.local/bin`, `/opt/homebrew/bin` et `/usr/local/bin`.
+Un outil exclusivement renseigné par un chemin personnalisé dans TVLens peut donc être installé aussi
+à l’emplacement standard ; le choix personnalisé reste prioritaire dans l’app.
+Le diagnostic de l’app vérifie l’exécution des outils : leur seule présence ne suffit pas.
+
+Le script n’est pas une notarisation. Une confirmation **Ouvrir quand même** peut rester nécessaire
+([détails ci-dessous](#si-macos-bloque-le-premier-lancement)). Aucune protection macOS n’est désactivée.
+Un fichier `.command` ou `.pkg` non notarisé ne garantirait pas davantage une ouverture sans alerte.
+
+### Options et reprise
+
+Après avoir [téléchargé le script](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-installer.1/install-mac.sh),
+les options suivantes s’utilisent dans Terminal :
+
+```sh
+# Seulement l’application, sans préparer les outils ni le modèle
+/bin/bash ~/Downloads/install-mac.sh --app-only
+# Préparer sans ouvrir l’application à la fin
+/bin/bash ~/Downloads/install-mac.sh --no-open
+# Utiliser le dossier Applications personnel
+/bin/bash ~/Downloads/install-mac.sh --destination "$HOME/Applications"
+```
+
+`--yes` accepte la préparation annoncée, mais n’évite ni les demandes Homebrew ni les autorisations macOS.
+Ne lance pas le script avec `sudo`. Tu peux le relancer : une version identique et correctement signée
+est conservée. Pour remplacer une autre version, quitte TVLens auparavant. Un échec de téléchargement
+ou de signature conserve l’app existante ; un échec de remplacement restaure l’ancienne app.
+Les outils déjà ajoutés par Homebrew restent installés si une étape ultérieure échoue.
+
+Si le message `[LOCK]` persiste **après avoir vérifié qu’aucune installation ne tourne**, supprime uniquement
+le dossier vide `.tvlens-install-lock` dans le dossier Applications choisi, avec `rmdir`, puis réessaie.
+N’efface pas les dossiers `.tvlens-install.*` si une erreur mentionne une ancienne app à restaurer.
+
 ## Depuis le paquet Mac (sans dépôt ni Node.js)
 
 **[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.2/TVLens-mac-arm64.zip)** · [Détails de la préversion](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.2)
@@ -44,7 +97,8 @@ Les boutons **Choisir un autre emplacement…** ouvrent un sélecteur natif pour
 
 Le modèle téléchargé est conservé dans `~/Library/Application Support/TVLens/models/ggml-base.bin`. Sans chemin explicite, une app empaquetée cherche désormais son modèle à cet emplacement, quel que soit son répertoire de lancement. Les lancements de développement conservent `.local/models` par défaut.
 
-La connexion se fait dans Codex lui-même. TVLens ne demande ni mot de passe ni clé obligatoire : OpenRouter reste facultatif et l’import chiffré de `.env.local` reste disponible pour les réglages avancés. Homebrew et les outils ne sont pas installés automatiquement ; l’assistant fournit les commandes et les liens officiels.
+La connexion se fait dans Codex lui-même. TVLens ne demande ni mot de passe ni clé obligatoire : OpenRouter reste facultatif et l’import chiffré de `.env.local` reste disponible pour les réglages avancés. L’installateur recommandé prépare Homebrew et les outils après confirmation.
+L’assistant dans l’app fournit aussi les commandes et liens officiels pour le parcours manuel.
 
 Références d’installation : [Codex CLI](https://developers.openai.com/codex/cli/), [Homebrew](https://brew.sh/), [formule Whisper](https://formulae.brew.sh/formula/whisper.cpp). `whisper.cpp` est le nom actuel de la formule anciennement appelée `whisper-cpp`.
 
@@ -74,7 +128,7 @@ Sur Mac, `npm start` rouvre l'app par macOS, qui la tient alors pour responsable
 sans cela, le son du système n'est pas capté (ADR 0065). La commande rend la main aussitôt, et les journaux de
 l'app vont dans `~/Library/Logs/TVLens/main.log`. L'environnement du terminal lui est transmis.
 
-`setup:speech` installe `whisper-cpp` si nécessaire et télécharge le modèle
+`setup:speech` installe `whisper.cpp` si nécessaire et télécharge le modèle
 multilingue `ggml-base.bin` (environ 142 Mio) dans `.local/models`, avec vérification
 SHA-256. Cette installation n'est pas un appel d'inférence payant. Whisper peut
 initialiser/compiler Metal au premier lancement : cette première transcription
@@ -101,7 +155,7 @@ peuvent être sauvegardés chiffrés avec le stockage macOS. Aucun secret n'est 
 
 ## App macOS et permissions
 
-La [CI et construction Mac](ci-delivery.md) décrit les contrôles du paquet, le ZIP de validation téléchargeable et ses limites. La préversion téléchargeable inclut l’assistant ; l’intégration des outils externes dans le paquet reste à réaliser.
+La [CI et construction Mac](ci-delivery.md) décrit les contrôles du paquet, le ZIP de validation téléchargeable et ses limites. La préversion inclut l’assistant ; l’installateur guidé prépare les outils à côté de l’app, sans les embarquer dans son paquet.
 
 ```sh
 npm run package:mac

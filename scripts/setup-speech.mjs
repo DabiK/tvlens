@@ -6,7 +6,7 @@ const model=path.resolve(process.env.TVLENS_WHISPER_MODEL || fileURLToPath(new U
 const binary=systemPaths.executable('whisper-cli',{override:process.env.TVLENS_WHISPER_BINARY});
 if(spawnSync(binary,['--help'],{stdio:'ignore'}).error){
  if(process.platform!=='darwin')throw Error('Installe whisper.cpp et ajoute whisper-cli au PATH, ou définis TVLENS_WHISPER_BINARY. Voir docs/server-installation.md.');
- const result=spawnSync('brew',['install','whisper-cpp'],{stdio:'inherit',env:{...process.env,HOMEBREW_NO_AUTO_UPDATE:'1'}});
+ const result=spawnSync('brew',['install','whisper.cpp'],{stdio:'inherit',env:{...process.env,HOMEBREW_NO_AUTO_UPDATE:'1'}});
  if(result.status!==0)throw Error('Installe whisper.cpp avec Homebrew ou définis TVLENS_WHISPER_BINARY.');
 }
 async function hash(file){const h=createHash('sha256');for await(const b of createReadStream(file))h.update(b);return h.digest('hex');}
