@@ -13,11 +13,12 @@
   <header class="topbar">
     <strong class="brand">TV<span>Lens</span></strong>
     <nav class="main-nav" aria-label="Navigation principale">
-      <button id="nav-live" class="nav-item active" aria-current="page"><span>Direct</span></button>
-      <button id="nav-memory" class="nav-item">◷ <span>Mémoire</span></button>
+      <button id="nav-live" class="nav-item active" aria-current="page"><span>Accueil</span></button>
+      <button id="nav-memory" class="nav-item">◷ <span>Bibliothèque</span></button>
       <button id="nav-watch" class="nav-item"><span>Surveillance</span><i id="watch-badge" class="nav-badge" hidden></i></button>
     </nav>
     <div class="top-actions">
+      <button id="new-session" class="new-session-button" title="La session actuelle reste dans la bibliothèque jusqu’à sa suppression.">＋ Nouvelle session</button>
       <button id="nav-search" class="icon-button" aria-label="Rechercher un passage" title="Rechercher un passage">⌕</button>
       <button id="float-mode" class="icon-button" aria-label="Mode flottant" title="Mode flottant">▣</button>
       <button id="models" class="icon-button" aria-label="Réglages IA" title="Réglages IA">⚙</button>
@@ -55,20 +56,31 @@
   </div>
   <main>
     <section class="workspace">
-      <section class="hero" aria-label="Vidéo en cours">
-        <div class="source-row"><label class="sr-only" for="source">Fenêtre ou écran à regarder</label><select id="source"><option value="">Recherche des fenêtres…</option></select><button id="refresh" class="secondary" title="Actualiser les sources" aria-label="Actualiser les sources">↻</button><button id="start" hidden disabled>Aperçu</button></div>
-        <div class="monitor"><video id="preview" autoplay muted playsinline aria-label="Aperçu de la source choisie"></video><div class="preview-empty"><span class="preview-icon">▣</span><h1>Qu’est-ce qu’on regarde ?</h1><p>Choisis une fenêtre et lance l’observation.</p></div></div>
+      <section class="hero" aria-label="Session en cours">
+        <div class="home-heading"><p class="eyebrow">TA SESSION</p><h1>Le fil de ton visionnage</h1></div>
+        <div class="home-capture"><div class="source-row"><label class="sr-only" for="source">Fenêtre ou écran à regarder</label><select id="source"><option value="">Recherche des fenêtres…</option></select><button id="refresh" class="secondary" title="Actualiser les sources" aria-label="Actualiser les sources">↻</button><button id="start" hidden disabled>Aperçu</button></div>
         <div class="monitor-footer"><details class="coverage-details"><summary id="coverage-summary">Prêt à observer</summary><div><span id="mode" class="badge">PRÊT À REGARDER</span> · <span id="elapsed" class="time">00:00</span><p id="live-state">Capture inactive</p><div class="sound"><label for="meter">Audio</label><meter id="meter" min="0" max="1" value="0">0</meter></div></div></details><div class="session-controls"><button id="observe" disabled>Lancer l’observation</button><button id="stop" class="secondary" disabled>Mettre en pause</button></div></div>
-        <div class="context-row"><div><p class="eyebrow">EN CE MOMENT</p><p id="current-context">Le contexte apparaîtra avec les premières observations.</p></div><button id="keep-moment" class="secondary">☆ Garder ce moment</button></div>
-        <div id="empty" class="sr-only"><span id="state" role="status" aria-live="polite">En attente d’autorisation</span></div>
-      </section>
-      <section id="memory-section" class="memory-section" hidden><div class="section-heading memory-heading"><h1>Mémoire</h1><div><button id="nav-saved" class="secondary">☆ Moments gardés</button><button id="new-session" class="link" title="La session actuelle reste dans Sessions jusqu’à sa suppression.">Nouvelle session</button></div></div>
+        </div>
+        <div class="home-tabs" role="tablist" aria-label="Vue de la session">
+          <button id="home-chapters-tab" role="tab" aria-selected="true" aria-controls="home-chapters" class="active">Chapitres</button>
+          <button id="home-live-tab" role="tab" aria-selected="false" aria-controls="home-live">En ce moment</button>
+        </div>
+        <section id="home-chapters" role="tabpanel" aria-labelledby="home-chapters-tab">
         <section id="recap-panel" class="recap-panel" aria-labelledby="recap-title">
-          <div class="section-heading"><div><p class="eyebrow">LE FIL DE TA VIDÉO</p><h2 id="recap-title">Jusqu’ici</h2></div><button id="open-recap-all" class="link">Tous les chapitres ↗</button></div>
+          <div class="section-heading"><div><p class="eyebrow">LE FIL DE TA VIDÉO</p><h2 id="recap-title">Le fil de la vidéo</h2></div><button id="open-recap-all" class="link">Tous les chapitres ↗</button></div>
           <div id="recap-content"><p class="hint">Le résumé se construit au fil des passages analysés.</p></div>
         </section>
-        <div class="section-heading"><div><p class="eyebrow">TON HISTOIRE EN COURS</p><h2>Moments récents</h2></div><button id="open-library" class="link">Tout voir ↗</button></div><p id="memory-status" class="hint">Les passages apparaîtront après quelques secondes de capture.</p><div id="timeline" class="moment-rail"></div><p id="timeline-older" class="hint" hidden></p>
-        <div class="section-heading saved-heading"><h2>Moments gardés</h2><button id="saved-all" class="link">Tout voir ↗</button></div><div id="saved-rail" class="saved-rail"><p class="placeholder">Garde un moment pour le retrouver ici.</p></div>
+        <details class="home-passages"><summary>Tous les passages de cette session</summary><div class="section-heading"><div><p class="eyebrow">PASSAGES OBSERVÉS</p><h2>Moments récents</h2></div><button id="open-library" class="link">Tout voir ↗</button></div><p id="memory-status" class="hint">Les passages apparaîtront après quelques secondes de capture.</p><div id="timeline" class="moment-rail"></div><p id="timeline-older" class="hint" hidden></p>
+        </details>
+        </section>
+        <section id="home-live" role="tabpanel" aria-labelledby="home-live-tab" hidden>
+        <div class="monitor"><video id="preview" autoplay muted playsinline aria-label="Aperçu de la source choisie"></video><div class="preview-empty"><span class="preview-icon">▣</span><h1>Qu’est-ce qu’on regarde ?</h1><p>Choisis une fenêtre et lance l’observation.</p></div></div>
+
+        <div class="context-row"><div><p class="eyebrow">EN CE MOMENT</p><p id="current-context">Le contexte apparaîtra avec les premières observations.</p></div><button id="keep-moment" class="secondary">☆ Garder ce moment</button></div>
+        </section>
+        <div id="empty" class="sr-only"><span id="state" role="status" aria-live="polite">En attente d’autorisation</span></div>
+      </section>
+      <section id="memory-section" class="memory-section" hidden><div class="section-heading memory-heading"><h1>Bibliothèque</h1><div><button id="nav-saved" class="secondary">☆ Moments gardés</button></div></div>
         <section id="sessions-panel" class="sessions-panel" aria-labelledby="sessions-title">
           <div class="section-heading saved-heading"><div><p class="eyebrow">SUR CE MAC</p><h2 id="sessions-title">Sessions</h2></div><button id="refresh-sessions" class="link">Actualiser</button></div>
           <p id="storage-line" class="hint" data-state="unknown"></p>
@@ -76,6 +88,7 @@
           <div id="sessions-list" class="sessions-list"></div>
           <p id="sessions-empty" class="placeholder" hidden></p>
         </section>
+        <div class="section-heading saved-heading"><h2>Moments gardés</h2><button id="saved-all" class="link">Tout voir ↗</button></div><div id="saved-rail" class="saved-rail"><p class="placeholder">Garde un moment pour le retrouver ici.</p></div>
       </section>
       <section id="watch-section" class="watch-section" aria-labelledby="watch-title" hidden>
         <div class="section-heading memory-heading"><div><p class="eyebrow">EN CONTINU</p><h1 id="watch-title">Surveillance</h1></div><button id="close-watch" class="secondary">Revenir à la conversation</button></div>

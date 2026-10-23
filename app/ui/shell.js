@@ -6,10 +6,13 @@ export class ViewingShell {
     this.root = root;
     this.get = id => root.getElementById(id);
     this.view = 'direct';
+    this.homeView = 'chapters';
     this.onShow = () => {};
     this.get('nav-live').onclick = () => this.show('direct');
     this.get('nav-memory').onclick = () => this.show('memory');
     this.get('nav-watch').onclick = () => this.show('watch');
+    this.get('home-chapters-tab').onclick = () => this.showHome('chapters');
+    this.get('home-live-tab').onclick = () => this.showHome('live');
     // Keep one conversation DOM tree in both modes so focus, drafts and history survive.
     const conversation = this.get('float-conversation');
     conversation.insertBefore(root.querySelector('.quick-actions'), this.get('ask-form'));
@@ -23,12 +26,34 @@ export class ViewingShell {
     setIcon(this.get('float-chat'), 'chat', 'Demander');
     this.bookmarkFeedback(false);
     this.show('direct');
+    this.showHome('chapters');
   }
   bookmarkFeedback(saved) {
     setIcon(this.get('float-keep'), saved ? 'check' : 'bookmark');
     this.get('float-keep').title = saved ? 'Moment conservé' : 'Garder ce moment';
   }
-  /** direct: video and chat; memory: recap, passages, saved sessions; watch: surveillance beside the chat. */
+  // Switching home panels never moves or rebuilds the conversation or its draft.
+  showHome(view) {
+    this.homeView = view;
+    for (const name of ['chapters', 'live']) {
+      const selected = name === view;
+      this.get(`home-${name}`).hidden = !selected;
+      const tab = this.get(`home-${name}-tab`);
+      tab.classList.toggle('active', selected);
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      tab.onkeydown = event => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        let next = name === 'chapters' ? 'live' : 'chapters';
+        if (event.key === 'Home') next = 'chapters';
+        if (event.key === 'End') next = 'live';
+        this.showHome(next);
+        this.get(`home-${next}-tab`).focus();
+      };
+    }
+  }
+  /** direct: chapters or current video and chat; memory: saved moments and sessions. */
   show(view) {
     this.view = view;
     this.root.body.dataset.view = view;

@@ -3,6 +3,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { LivingRecap } = require('../core/living-recap.cjs');
 const { CodexRecap } = require('../adapters/codex-recap.cjs');
+const { createMacDocument } = require('./helpers/mac-document.cjs');
 
 // F09: a session too long for one synthesis is refused for its size, said as such, and attempted again only once
 // what a synthesis is sent has changed. Offline: the real adapter behind the real core, composed as app/main.cjs
@@ -221,12 +222,6 @@ test('a new session or a reopened archive starts unblocked: opening stays silent
   assert.equal(late.snapshot().status, 'capacity');
 });
 
-// Just enough of a document for the recap view: a node keeps what the view sets on it.
-function page() {
-  return { createElement: tag => ({ tag, className: '', textContent: '', dataset: {}, attributes: {}, children: [],
-    setAttribute(name, value) { this.attributes[name] = value; }, append(...nodes) { this.children.push(...nodes); },
-    replaceChildren(...nodes) { this.children = nodes; }, querySelectorAll: () => [] }) };
-}
 const marked = (node, name) => [...(node.className.split(' ').includes(name) ? [node] : []), ...node.children.flatMap(child => marked(child, name))];
 const texts = (node, name) => marked(node, name).map(found => found.textContent);
 // What the window keeps of the recap it shows when a new recap state arrives: the rule is a function of the module.
@@ -264,7 +259,7 @@ async function reception(sessionId = 's') {
 
 test('the Mémoire view says a ceiling as a ceiling, with or without an earlier recap, and goes on showing that recap', async t => {
   const { renderRecapView } = await import('../app/ui/recap-view.js');
-  globalThis.document = page(); t.after(() => { delete globalThis.document; });
+  globalThis.document = createMacDocument(); t.after(() => { delete globalThis.document; });
   const render = (state, segments) => {
     const panel = document.createElement('div'), dialog = document.createElement('div');
     renderRecapView({ state, session: { id: 's', history: [], segments }, targets: [[panel, false], [dialog, true]], replay() {}, notice() {} });
@@ -272,10 +267,16 @@ test('the Mémoire view says a ceiling as a ceiling, with or without an earlier 
   };
   const host = await overCapacity(), ready = host.states.find(state => state.status === 'ready');
   const shown = await reception(); shown.receive(ready); shown.receive(host.recap.snapshot());
-  for (const target of Object.values(render(shown.state(), host.passages))) {
+  for (const [name, target] of Object.entries(render(shown.state(), host.passages))) {
     assert.deepEqual(texts(target, 'recap-status'), ['Session trop longue pour la synthèse automatique · Le résumé n’est plus mis à jour. 100 passages en attente d’intégration au résumé.']);
-    assert.equal(marked(target, 'recap-status')[0].attributes.role, 'status');
-    assert.deepEqual([texts(target, 'recap-error'), texts(target, 'recap-overview'), texts(target, 'recap-summary')], [[REFUSED], [ready.overview], ['La session continue.']]);
+    assert.equal(marked(target, 'recap-status')[0].role, 'status');
+    assert.deepEqual([texts(target, 'recap-error'), texts(target, 'recap-overview')], [[REFUSED], [ready.overview]]);
+    const card = marked(target, 'recap-chapter')[0];
+    const summary = card.children.filter(child => child.className === 'recap-summary');
+    assert.deepEqual(summary.map(node => node.textContent), ['La session continue.']);
+    if (name === 'panel') {
+      assert.deepEqual(texts(marked(card, 'chapter-details')[0], 'recap-summary'), ['La session continue.']);
+    }
     assert.deepEqual(texts(target, 'recap-chapter-link'), ['00:00 · Chapitre a ↗'], 'the chapter of the last recap is still there, and still replayable');
   }
   // The first synthesis of a session already too long: no recap, and no promise that one is on its way.

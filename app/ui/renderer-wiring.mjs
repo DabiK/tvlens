@@ -261,7 +261,7 @@ class RendererWiring {
       this.session?.id,
       this.recapState?.sessionId,
       cited
-        .map((source) => (this.passages.get(source.id)?.available ? 1 : 0))
+        .map((source) => `${Boolean(this.passages.get(source.id)?.available)}:${this.preview?.(source.id) || ""}`)
         .join(""),
     ].join("|");
     if (key === this.recapKey) return;
@@ -275,6 +275,8 @@ class RendererWiring {
       ],
       replay: (...args) => this.replay(...args),
       notice: this.notice,
+      preview: this.preview,
+      askChapter: this.askChapter,
     });
   }
 

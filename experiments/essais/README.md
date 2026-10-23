@@ -60,3 +60,5 @@
 - [23 octobre 2026 — Trousseau Mac sur demande](2026-10-23-trousseau-sur-demande/README.md) : accueil sans accès protégé, choix explicite, continuation et refus récupérable ; Electron réel avec profils et refus contrôlés.
 
 - [2026-10-23 — Réexamen en images individuelles et installation Mac](2026-10-23-reexamen-images-lisibles/README.md) : contrôles verts, paquet signé installé ; lecture par modèle et coût non mesurés.
+
+- [2026-10-23 — Accueil avec cartes de chapitres](2026-10-23-accueil-chapitres/README.md) : aperçu Electron isolé, archive réelle copiée, bascule et brouillon vérifiés.

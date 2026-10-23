@@ -183,6 +183,13 @@ function drawSessionChrome() {
 const wiring = createRendererWiring({
   bridge, window, document, get: $, shell,
   configuration: () => configuration, library: () => library, preview: previewOf,
+  askChapter: chapter => {
+    const question = $('question');
+    const prompt = `À propos du chapitre « ${chapter.title || 'Chapitre'} » (${formatTime(chapter.startMs)} – ${formatTime(chapter.endMs)}) : `;
+    question.value = question.value.trim() ? `${question.value}\n${prompt}` : prompt;
+    question.focus();
+    updateButtons();
+  },
   chatOptions: () => ({ cancelling, pendingQuestion, pendingQuestionAt, forceBottom }),
   mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),
   watchOptions: () => ({ registry: surveillanceRegistry, filter: watchFilter, historyLimit }),

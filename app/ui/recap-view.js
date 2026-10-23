@@ -2,8 +2,10 @@ import { element as el, formatTime } from './format.js';
 import { unavailableNote } from './sessions-view.mjs';
 import { agreeText, plural } from './text.mjs';
 
+const carousels = new WeakMap();
+
 /** Renders recap snapshots; all playback and notification effects are injected. */
-export function renderRecapView({ state, session, targets, replay, notice }) {
+export function renderRecapView({ state, session, targets, replay, notice, preview = () => null, askChapter }) {
   const sameSession = Boolean(state?.sessionId && state.sessionId === session?.id);
   // One lookup per render: a film has hundreds of passages and a chapter cites several of them.
   const passages = new Map(sameSession ? [...(session.history || []), ...session.segments].map(passage => [passage.id, passage]) : []);
@@ -30,9 +32,9 @@ export function renderRecapView({ state, session, targets, replay, notice }) {
     statusNode.setAttribute('role', 'status');
     const nodes = [statusNode];
     if (state?.error) nodes.push(el('p', 'recap-error', state.error));
-    if (state?.overview) nodes.push(el('p', 'recap-overview', state.overview));
+    if (state?.overview) nodes.push(recapOverview(state.overview, expanded, expandedSources));
     const rail = el('div', 'recap-chapters');
-    for (const chapter of expanded ? chapters : chapters.slice(-3)) {
+    for (const chapter of chapters) {
       const card = el('article', 'recap-chapter');
       const sources = chapter.sources || [];
       const firstPlayable = sources.find(source => recapSource(source));
@@ -69,11 +71,121 @@ export function renderRecapView({ state, session, targets, replay, notice }) {
       }
       if (sources.length > 3) { extraSources.append(extraReferences); references.append(extraSources); }
       if (!firstPlayable) card.append(el('small', 'hint recap-expired', `Résumé conservé · ${sources.length ? unavailable(sources[0]).short : 'vidéo indisponible'}`));
-      card.append(references); rail.append(card);
+      if (expanded) card.append(references);
+      else decorateChapter(card, { chapter, sources, recapSource, preview, references, expandedSources, askChapter });
+      rail.append(card);
     }
     if (chapters.length) nodes.push(rail);
     // Sentences of the core, some still written "N passage(s)": agreed here, wording untouched.
     if (state?.limits?.length) nodes.push(el('p', 'hint recap-limits', agreeText(state.limits.join(' '))));
-    target.replaceChildren(...nodes);
+    mountRecap(target, nodes, expanded ? null : rail, state?.sessionId);
   }
+}
+
+/** A compact home card keeps the full summary and all replay references one click away. */
+function decorateChapter(card, { chapter, sources, recapSource, preview, references, expandedSources, askChapter }) {
+  card.classList.add('home-chapter');
+  const cover = el('div', 'chapter-cover');
+  const imageSource = sources.find(source => {
+    const passage = recapSource(source);
+    return passage && passage.hasImages !== false && preview(source.id);
+  });
+  const fallback = el('span', 'chapter-cover-empty', 'Aperçu indisponible');
+  cover.append(fallback);
+  if (imageSource) {
+    const image = el('img', 'chapter-image');
+    image.alt = '';
+    image.loading = 'lazy';
+    image.src = preview(imageSource.id);
+    image.onerror = () => { image.hidden = true; fallback.hidden = false; };
+    fallback.hidden = true;
+    cover.append(image);
+  }
+  cover.append(el('span', 'chapter-time', `${formatTime(chapter.startMs)} – ${formatTime(chapter.endMs)}`));
+  card.insertBefore(cover, card.firstChild);
+  const details = el('details', 'recap-extra-sources chapter-details');
+  details.dataset.chapterId = `detail:${chapter.id}`;
+  details.open = expandedSources.has(details.dataset.chapterId);
+  details.append(el('summary', '', 'Explorer les passages ↗'), el('p', 'recap-summary', chapter.summary || ''), references);
+  card.append(details);
+  if (askChapter) {
+    const ask = el('button', 'chapter-ask', 'Questionner');
+    ask.onclick = () => askChapter(chapter);
+    card.append(ask);
+  }
+}
+
+function recapOverview(text, expanded, expandedSources) {
+  const overview = el(expanded ? 'p' : 'span', 'recap-overview', text);
+  if (expanded) return overview;
+  const details = el('details', 'recap-extra-sources home-overview');
+  details.dataset.chapterId = 'overview';
+  details.open = expandedSources.has('overview');
+  const summary = el('summary');
+  const label = el('span', 'overview-toggle', details.open ? 'Réduire' : 'Lire la suite');
+  details.ontoggle = () => { label.textContent = details.open ? 'Réduire' : 'Lire la suite'; };
+  summary.append(overview, label);
+  details.append(summary);
+  return details;
+}
+
+function mountRecap(target, nodes, rail, sessionId) {
+  const previous = carousels.get(target);
+  if (previous?.rail.clientWidth) previous.position = previous.rail.scrollLeft;
+  const position = previous && previous.sessionId === sessionId ? previous.position : 0;
+  previous?.observer?.disconnect();
+  carousels.delete(target);
+  target.replaceChildren(...nodes);
+  if (!rail?.children.length) return;
+  const controls = el('div', 'chapter-carousel-controls');
+  controls.append(el('span', 'hint', `${plural(rail.children.length, 'chapitre')} · Du début à maintenant`));
+  const back = el('button', 'secondary chapter-previous', '←');
+  const next = el('button', 'secondary chapter-next', '→');
+  back.setAttribute('aria-label', 'Voir le chapitre précédent');
+  next.setAttribute('aria-label', 'Voir le chapitre suivant');
+  controls.append(back, next);
+  target.insertBefore(controls, rail);
+  rail.tabIndex = 0;
+  rail.setAttribute('role', 'region');
+  rail.setAttribute('aria-label', 'Chapitres de la session, défilement horizontal');
+  const entry = { rail, sessionId, position, observer: null };
+  let restorePosition = true;
+  const update = () => {
+    // Hidden panels have no width: wait for their first layout before restoring their position.
+    if (restorePosition && rail.clientWidth) {
+      rail.scrollLeft = position || 0;
+      restorePosition = false;
+    }
+    if (rail.clientWidth) entry.position = rail.scrollLeft;
+    back.disabled = rail.scrollLeft <= 1;
+    next.disabled = rail.scrollWidth <= rail.clientWidth + rail.scrollLeft + 1;
+  };
+  back.onclick = () => moveChapter(rail, -1, update);
+  next.onclick = () => moveChapter(rail, 1, update);
+  rail.onscroll = update;
+  rail.onfocus = update;
+  rail.onkeydown = event => {
+    if (event.target !== rail || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    if (event.key === 'Home') rail.scrollLeft = 0;
+    else if (event.key === 'End') rail.scrollLeft = rail.scrollWidth;
+    else moveChapter(rail, event.key === 'ArrowLeft' ? -1 : 1, update);
+    update();
+  };
+  const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+  observer?.observe(rail);
+  entry.observer = observer;
+  carousels.set(target, entry);
+  update();
+}
+
+function moveChapter(rail, direction, update) {
+  const origin = rail.children[0].offsetLeft;
+  const offsets = [...rail.children].map(card => card.offsetLeft - origin);
+  const maximum = Math.max(0, rail.scrollWidth - rail.clientWidth);
+  let destination;
+  if (direction > 0) destination = offsets.find(offset => offset > rail.scrollLeft + 1) ?? maximum;
+  else destination = offsets.reverse().find(offset => offset < rail.scrollLeft - 1) ?? 0;
+  rail.scrollLeft = Math.min(maximum, Math.max(0, destination));
+  update();
 }

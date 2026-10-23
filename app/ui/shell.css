@@ -105,3 +105,62 @@ body[data-health=pending] .coverage-details > summary::before, body[data-health=
 body[data-health=idle] .coverage-details > summary::before, body[data-health=idle] .chat-health > summary::before { background: var(--muted); }
 
 body.floating #float-transcription-warning { flex-shrink: 1; min-width: 45px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* The session story is the landing view; capture stays reachable above both panels. */
+.topbar { grid-template-columns: auto 1fr auto; gap: 16px; }
+.main-nav { justify-self: center; }
+.new-session-button { white-space: nowrap; font-size: 12px; padding: 10px 13px; border-radius: 10px; background: var(--lime); color: #14231c; }
+.home-heading { margin: 0 0 12px; }
+.home-heading h1 { font-size: 25px; margin: 6px 0 0; letter-spacing: -.035em; }
+.home-capture { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.home-capture .source-row { min-width: 0; flex: 1; margin: 0; gap: 7px; }
+.home-capture .source-row select { min-width: 0; width: 100%; font-size: 12px; }
+.home-capture .monitor-footer { margin: 0; align-items: center; }
+.home-capture .session-controls button { font-size: 11px; padding: 10px; white-space: nowrap; }
+.home-capture .coverage-details > summary { font-size: 11px; max-width: 150px; }
+.home-tabs { display: flex; gap: 24px; border-bottom: 1px solid var(--line); margin: 14px 0 0; }
+.home-tabs button { background: transparent; color: var(--muted); padding: 13px 0; border-radius: 0; border-bottom: 2px solid transparent; }
+.home-tabs button.active { border-bottom-color: var(--lime); color: var(--lime); }
+#home-live { padding-top: 20px; }
+#home-chapters .recap-panel { margin: 0; padding-top: 14px; border: 0; }
+#home-chapters .recap-panel .eyebrow { display: none; }
+#home-chapters .recap-panel h2 { font-size: 18px; }
+#home-chapters .recap-status { font-size: 11px; margin: 10px 0; }
+.home-overview { border: 1px solid var(--line); background: #ffffff04; border-radius: 12px; padding: 11px 14px; }
+.home-overview > summary { list-style: none; cursor: pointer; }
+.home-overview > summary::-webkit-details-marker { display: none; }
+.home-overview .recap-overview { display: block; }
+#home-chapters .home-overview .recap-overview { margin: 0; font-size: 12px; line-height: 1.6; }
+.home-overview:not([open]) .recap-overview { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.overview-toggle { display: block; margin-top: 5px; color: var(--lime); font-size: 10px; }
+#home-chapters .recap-chapters {
+  display: flex; gap: 15px; overflow-x: auto; scroll-snap-type: x mandatory;
+  align-items: flex-start; margin-top: 8px; padding: 3px 0 12px; scrollbar-width: thin;
+}
+#home-chapters .home-chapter { flex: 0 0 min(85%, 370px); scroll-snap-align: start; }
+.chapter-carousel-controls { display: flex; align-items: center; gap: 7px; margin-top: 12px; }
+.chapter-carousel-controls .hint { flex: 1; font-size: 11px; }
+.chapter-carousel-controls button { width: 32px; height: 30px; border-radius: 8px; padding: 0; }
+#home-chapters .recap-chapters:focus-visible { outline: 2px solid var(--lime); outline-offset: 3px; }
+#home-chapters .home-chapter { padding: 0; border: 1px solid var(--line); border-radius: 13px; overflow: hidden; background: #102630; }
+.home-chapter .chapter-cover { position: relative; height: 115px; background: #15343e; display: grid; place-items: center; overflow: hidden; }
+.chapter-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.chapter-cover-empty { color: var(--muted); font-size: 11px; }
+.chapter-time { position: absolute; bottom: 9px; left: 10px; border-radius: 5px; padding: 4px 7px; background: #071820dd; font-size: 10px; }
+#home-chapters .home-chapter h3 { padding: 14px 14px 0; font-size: 14px; }
+.home-chapter > .recap-summary { padding: 0 14px; font-size: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.home-chapter > .recap-expired { display: block; margin: 10px 14px; }
+.chapter-details { border-top: 1px solid var(--line); padding: 11px 14px; margin-top: 14px; }
+.chapter-details > summary { color: var(--ink); font-size: 11px; cursor: pointer; }
+.chapter-details .recap-summary { font-size: 12px; }
+.chapter-ask { display: block; margin: 0 14px 12px auto; padding: 5px 0; background: transparent; color: var(--lime); font-size: 11px; }
+.home-passages { border-top: 1px solid var(--line); padding-top: 16px; margin-top: 8px; }
+.home-passages > summary { color: var(--muted); font-size: 12px; cursor: pointer; }
+.home-passages .section-heading { margin-top: 20px; }
+@media (max-width: 1100px) {
+  .nav-item { min-width: 90px; }
+  .home-capture { flex-wrap: wrap; }
+  .home-capture .source-row { flex-basis: 100%; }
+  .home-capture .monitor-footer { width: 100%; }
+  .home-chapter .chapter-cover { height: 90px; }
+}
