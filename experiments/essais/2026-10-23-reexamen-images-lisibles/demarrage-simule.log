@@ -1,0 +1,35 @@
+
+> tvlens@0.1.0 test:electron:package
+> node scripts/smoke-package-startup.mjs
+
+{
+  "result": "PASS",
+  "results": [
+    {
+      "saved": false,
+      "result": "PASS",
+      "packaged": true,
+      "build": {
+        "name": "tvlens",
+        "version": "0.1.0",
+        "commit": "a57d1b084895c660050599c5a3e2b6a5da67553b",
+        "commitDate": "2026-10-23T15:08:08+02:00",
+        "dirty": false
+      },
+      "captureRequested": false
+    },
+    {
+      "saved": true,
+      "result": "PASS",
+      "packaged": true,
+      "build": {
+        "name": "tvlens",
+        "version": "0.1.0",
+        "commit": "a57d1b084895c660050599c5a3e2b6a5da67553b",
+        "commitDate": "2026-10-23T15:08:08+02:00",
+        "dirty": false
+      },
+      "captureRequested": false
+    }
+  ]
+}
