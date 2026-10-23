@@ -1,0 +1,5 @@
+
+> tvlens@0.1.0 test:electron:identity
+> node scripts/smoke-build-info.mjs
+
+{"result":"PASS","build":null,"label":"Construction inconnue"}

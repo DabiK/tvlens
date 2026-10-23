@@ -1,0 +1,125 @@
+✔ the bridge exposes exactly the names of the contract, on its channels, and says errors in the host’s own words (1.362375ms)
+✔ every bridge call has its handler, every event its listener, and the host no longer purges, preempts or knows Auto (123.529625ms)
+✔ the Mac host keeps CoreAudio Tap on and the disabled features it is given as they are on each platform (10.543417ms)
+✔ retired Mac retention options cannot expire media and capture refreshes the manifest before analysis finishes (16.654ms)
+✔ invalid retired Mac retention values are ignored at startup (6.965ms)
+✔ the Mac IPC host publishes both default smoke lanes with the simulated observations (6.401625ms)
+▶ the Mac surveillance interval diagnoses a refused runtime tick and calls the next tick even if its journal throws
+  ✔ throwing diagnostic: false (3.789875ms)
+  ✔ throwing diagnostic: true (3.2645ms)
+✔ the Mac surveillance interval diagnoses a refused runtime tick and calls the next tick even if its journal throws (7.266125ms)
+✔ the Mac composition journals a refused surveillance state and delivers its current state after the window recovers (4.973ms)
+✔ an empty Mac archive survives closing without resume or archive writes (4.951875ms)
+✔ an empty Mac archive survives closing after explicit resume and pause (5.057042ms)
+✔ Mac state IPC ignores renderer arguments and reads its own current projection (3.154792ms)
+✔ a Mac session is archived instead of purged, listed, reopened read-only without a write, resumed only explicitly, and deleted alone (354.992625ms)
+✔ a question neither suspends nor cancels the surveillance; quitting archives, and the next start finds the session and its registry (188.848083ms)
+✔ Mac ingestion keeps its original EIO refusal when the full-disk pause cannot save (4.282333ms)
+✔ Mac ingestion keeps its original TVLENS_STORAGE_FULL refusal when the full-disk pause cannot save (3.85925ms)
+✔ a Mac disk refusal still pending in the pause of A cannot pause the newly loaded B (5.96325ms)
+✔ host settings come from the environment; a full disk stops capture, refuses start and resume and deletes nothing; a mistyped setting refuses the launch (282.82925ms)
+✔ an archive kept until deletion keeps that contract on a Mac host set to a rolling window: reopened, resumed and swept, its start is still there and can be re-examined (695.846791ms)
+✔ ending a Mac session archives it and closes its runtime even when adapters fail to close: the failure goes to the journal and a new session starts (55.515833ms)
+✔ a Mac session whose final state the disk refuses is not left as an archive that lies: the journal names the file, the runtime is closed, the session is listed as cut short and reopens on its last confirmed state, and a new one starts (55.011333ms)
+✔ a passage search belongs to the session that asked: its thumbnails are that session’s, and an answer that arrives once another session is loaded is refused (58.022917ms)
+✔ the loaded Mac session is pushed every five seconds while it captures, and not at all once a durable session is paused; the retired setting cannot expire paused media (516.301041ms)
+✔ on the Mac host the draft of an answer reaches the window each time it moves and the disk at most once a second, its last state included when the answer stalls; ending the session saves the final state at once and leaves nothing to write later (142.202625ms)
+✔ a question is at rest on disk once the write that carries its figures has landed, not as soon as it is published or said finished: held, that write leaves its temporary file in the folder and the store unsettled; landed, the archive holds the answer and nothing else new, and no save follows (121.282041ms)
+ℹ pendant la retenue de la dernière écriture, le fichier sur disque dit déjà : done
+✔ Mac chat overlap still counts an active question of another session without raising asking (37.542791ms)
+✔ Mac question publications only mark the identified session as pending (4.081375ms)
+✔ releasing a Mac question keeps its deferred resumption on A after the host adopts B (6.183041ms)
+✔ the Mac composition journals failed state deliveries and still saves completed questions (28.678625ms)
+✔ a Mac question raises asking while audio continues and vision follows its setting (false) (50.497958ms)
+✔ a Mac question raises asking while audio continues and vision follows its setting (true) (53.603167ms)
+✔ on the Mac host a question reaches the chat agent with the instruction of the surveillance active on the session, and none otherwise (39.14ms)
+✔ on the Mac host both agents are warmed up with the id of the session when it starts or resumes, never when an archive is only read (32.7355ms)
+✔ Mac IPC reads and pushes share the public projection without legacy snapshots (4.042583ms)
+✔ Mac projection retains textless queues, acquired usage, save failures, history and storage through IPC (7.22225ms)
+✔ Mac session switching detaches publications before draining and before reopening the same identity (6.539166ms)
+✔ Mac startup exposes transcription availability before capture and publishes its coded cause with session states (3.612708ms)
+✔ Mac recap follows passage events without session state publications and waits for both lanes (36.475167ms)
+✔ Mac closing detaches recap before capture drains and preserves the archived chapters through a late analysis (57.256917ms)
+✔ Mac quitting saves a completed synthesis while session closing waits for the current transition (28.087709ms)
+✖ Mac configuration imports keep the same persisted account in diagnostics and provider clients (3.83225ms)
+✔ first launch is explicit and completing a verified setup persists the completion flag (0.716958ms)
+✔ a missing complementary dependency allows exploration but does not claim a complete installation (0.228458ms)
+✔ file selection persists only the selected path and requests reopening before completing setup (0.21025ms)
+✔ unknown actions and paths cannot execute commands or open caller supplied URLs (0.104833ms)
+✔ a running session and a concurrent download prevent installation changes (0.127375ms)
+✔ cancelled selection leaves completion and settings intact (0.067875ms)
+✔ simulation never probes tools or downloads a model (0.497625ms)
+✖ screen access is requested only after the explicit permission action (0.363958ms)
+✔ a verified download is stored atomically and a matching model is reused without network (12.314042ms)
+✔ a wrong digest leaves the previous model intact and removes partial files (2.200375ms)
+✔ network errors and cancelled downloads leave no model and no partial files (1.1225ms)
+✖ an unusable destination returns a coded message without internal disk paths (1.083ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 51
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3155.066916
+
+✖ failing tests:
+
+test at tests/mac-ipc-contract.test.cjs:1851:1
+✖ Mac configuration imports keep the same persisted account in diagnostics and provider clients (3.83225ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + null
+  - '/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tvlens-mac-host-16OsJc/chosen-account'
+
+      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/mac-ipc-contract.test.cjs:1864:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: null,
+    expected: '/var/folders/z8/n530j3q94c71tjp1kw64df0h0000gn/T/tvlens-mac-host-16OsJc/chosen-account',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/mac-setup.test.cjs:89:1
+✖ screen access is requested only after the explicit permission action (0.363958ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 1
+
+      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/mac-setup.test.cjs:96:10)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/speech-model-download.test.cjs:46:1
+✖ an unusable destination returns a coded message without internal disk paths (1.083ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'EEXIST'
+  - 'TVLENS_MODEL_DOWNLOAD_FAILED'
+
+      at Object.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/speech-model-download.test.cjs:51:12)
+      at expectedException (node:assert:578:17)
+      at expectsError (node:assert:703:21)
+      at strict.rejects (node:assert:769:3)
+      at async TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/speech-model-download.test.cjs:50:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'EEXIST',
+    expected: 'TVLENS_MODEL_DOWNLOAD_FAILED',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

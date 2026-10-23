@@ -18,6 +18,7 @@ export function packagerOptions({
     platform: "darwin",
     arch: "arm64",
     appBundleId: "dev.tvlens.capture",
+    icon: path.join(root, "assets/macos/tvlens.icns"),
     overwrite: true,
     prune: true,
     asar: { unpackDir: "node_modules/@img" },

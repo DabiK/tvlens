@@ -1,5 +1,6 @@
 import { createRendererWiring } from './ui/renderer-wiring.mjs';
 import { buildLabel } from './ui/build-info.mjs';
+import { bindSetup } from './ui/setup.mjs';
 import { element as el, formatTime, action } from './ui/format.js';
 import { ViewingShell } from './ui/shell.js';
 import { createBrowserCaptureController } from './ui/browser-capture.mjs';
@@ -291,7 +292,6 @@ $('replay-dialog').onclose = () => { $('replay').pause(); $('replay').removeAttr
 $('replay').onvolumechange = () => { if (wiring.session?.accepting) $('replay').muted = true; };
 $('replay').onerror = () => { $('replay-note').textContent = 'Ce passage ne peut pas être lu : sa vidéo n’est plus disponible.'; };
 bridge.config().then(setConfig).catch(error => notice(reason(error)));
-refresh();
 
 $('models').onclick=async()=>{try{const value=await bridge.models();const choices=await bridge.modelChoices();$('codex-models').replaceChildren(...choices.map(m=>new Option(m.name,m.id)));$('codex-model').value=value.codexModel;$('observation-model').value=value.observationModel;$('inspection-model').value=value.inspectionModel;$('models-status').textContent='';$('models-dialog').showModal();}catch(e){notice(reason(e));}};
 $('close-models').onclick=()=>$('models-dialog').close();
@@ -538,3 +538,8 @@ $('open-recap').onclick = $('open-recap-all').onclick = () => openRecap().catch(
 $('close-recap').onclick = () => $('recap-dialog').close();
 wiring.bind(actions);
 drawState();
+const installation = bindSetup({ bridge, get: $, refreshSources: refresh, prepare: async () => {
+  $('models-dialog').close();
+  if (floatingMode) await changeWindowMode(false);
+} });
+installation.start();

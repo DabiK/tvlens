@@ -1,0 +1,102 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { createMacSetup } = require('../app/mac-setup.cjs');
+
+const paths = { codexBinary: '/bin/codex', codexAuthHome: '/account', ffmpeg: '/bin/ffmpeg',
+  whisperBinary: '/bin/whisper-cli', whisperModel: '/models/base.bin' };
+const checks = Object.keys(paths).map(id => ({ id, state: id === 'whisperModel' ? 'present' : 'ready' }))
+  .concat({ id: 'screen', state: 'ready' });
+
+function fixture(extra = {}, dependencies = {}) {
+  const writes = [], opened = [];
+  const service = createMacSetup({ store: { save: async value => writes.push(value) }, initial: { paths: {}, completed: false },
+    resolvePaths: (_config, preferences) => ({ ...paths, ...preferences }), getConfig: () => ({}), environment: {},
+    permission: () => 'granted', choose: async () => ({ canceled: false, filePaths: ['/chosen/base.bin'] }),
+    openExternal: async url => opened.push(url), quit: () => {}, isBusy: () => false, userData: '/data', ...extra,
+  }, { inspect: async () => structuredClone(checks), access: async () => true, ...dependencies });
+  return { service, writes, opened };
+}
+
+test('first launch is explicit and completing a verified setup persists the completion flag', async () => {
+  const { service, writes } = fixture();
+  const first = await service.status();
+  assert.equal(first.firstLaunch, true);
+  assert.equal(first.ready, true);
+  assert.equal(first.restartRequired, false);
+  assert.equal((await service.action('finish')).firstLaunch, false);
+  assert.deepEqual(writes, [{ paths: {}, completed: true }]);
+});
+
+test('a missing complementary dependency allows exploration but does not claim a complete installation', async () => {
+  const { service } = fixture({}, { inspect: async () => checks.map(item => item.id === 'whisperModel' ? { ...item, state: 'missing' } : item) });
+  assert.equal((await service.status()).canObserve, true);
+  assert.equal((await service.status()).ready, false);
+  await assert.rejects(service.action('finish'), { code: 'TVLENS_SETUP_INCOMPLETE' });
+});
+
+test('file selection persists only the selected path and requests reopening before completing setup', async () => {
+  const { service, writes } = fixture();
+  const selected = await service.select('whisperModel');
+  assert.equal(selected.paths.whisperModel, '/chosen/base.bin');
+  assert.equal(selected.restartRequired, true);
+  assert.deepEqual(writes, [{ paths: { whisperModel: '/chosen/base.bin' }, completed: false }]);
+  await assert.rejects(service.action('finish'), { code: 'TVLENS_SETUP_INCOMPLETE' });
+  const reopened = fixture({ initial: writes[0] }).service;
+  assert.equal((await reopened.status()).restartRequired, false);
+  assert.equal((await reopened.action('finish')).firstLaunch, false);
+});
+
+test('unknown actions and paths cannot execute commands or open caller supplied URLs', async () => {
+  const { service, opened, writes } = fixture();
+  await assert.rejects(service.action('https://attacker.invalid'), { code: 'TVLENS_SETUP_ACTION_INVALID' });
+  await assert.rejects(service.action('toString'), { code: 'TVLENS_SETUP_ACTION_INVALID' });
+  await assert.rejects(service.select('apiKey'), { code: 'TVLENS_SETUP_PATH_INVALID' });
+  assert.deepEqual(opened, []);
+  assert.deepEqual(writes, []);
+  await service.action('permissions');
+  assert.deepEqual(opened, ['x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture']);
+});
+
+test('a running session and a concurrent download prevent installation changes', async () => {
+  const active = fixture({ isBusy: () => true }).service;
+  await assert.rejects(active.select('whisperModel'), { code: 'TVLENS_SETUP_SESSION_ACTIVE' });
+  let release, entered;
+  const started = new Promise(resolve => { entered = resolve; });
+  const held = new Promise(resolve => { release = resolve; });
+  const { service, writes } = fixture({}, { install: async destination => { entered(destination); await held; return destination; } });
+  const downloading = service.action('download-model');
+  assert.equal(await started, '/data/models/ggml-base.bin');
+  await assert.rejects(service.select('whisperModel'), { code: 'TVLENS_SETUP_BUSY' });
+  release();
+  assert.equal((await downloading).restartRequired, true);
+  assert.equal(writes[0].paths.whisperModel, '/data/models/ggml-base.bin');
+});
+
+test('cancelled selection leaves completion and settings intact', async () => {
+  const { service, writes } = fixture({ initial: { paths: {}, completed: true }, choose: async () => ({ canceled: true }) });
+  const report = await service.select('ffmpeg');
+  assert.equal(report.firstLaunch, false);
+  assert.equal(report.restartRequired, false);
+  assert.deepEqual(writes, []);
+});
+
+test('simulation never probes tools or downloads a model', async () => {
+  const { service } = fixture({ simulated: true }, { inspect: () => assert.fail('real probe'), install: () => assert.fail('real download') });
+  assert.equal((await service.status()).ready, true);
+  await assert.rejects(service.action('download-model'), { code: 'TVLENS_SETUP_SIMULATED' });
+});
+
+test('screen access is requested only after the explicit permission action', async () => {
+  let permission = 'not-determined', requests = 0;
+  const { service, opened } = fixture({ permission: () => permission, requestScreen: async () => { requests++; permission = 'granted'; } },
+    { inspect: async input => checks.map(item => {
+      if (item.id !== 'screen') return item;
+      return { ...item, state: input.permission === 'granted' ? 'ready' : input.permission };
+    }) });
+  assert.equal((await service.status()).ready, false);
+  assert.equal(requests, 0);
+  await service.action('permissions');
+  assert.equal(requests, 1);
+  assert.equal((await service.status()).ready, true);
+  assert.equal(opened.length, 1);
+});

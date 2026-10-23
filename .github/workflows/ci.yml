@@ -80,6 +80,7 @@ jobs:
         run: |
           npm run test:electron
           npm run test:electron:identity
+          npm run test:electron:setup
       - name: Construire depuis un dépôt propre
         run: npm run package:mac -- --require-clean
       - name: Inspecter le paquet et charger son module natif

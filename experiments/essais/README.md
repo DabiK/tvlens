@@ -2,6 +2,8 @@
 
 | Dossier | Objet |
 | --- | --- |
+| [2026-10-23-installation-mac-reelle](2026-10-23-installation-mac-reelle/) | Icône sobre, paquet installé dans Applications, assistant réel et recette de capture, transcription, question et conservation sur ce Mac. |
+| [2026-10-23-premier-lancement-mac](2026-10-23-premier-lancement-mac/) | Assistant de configuration Mac : recette Electron avec dépendances simulées, contrôles et construction du paquet ; limites de qualification sur Mac vierge. |
 | [2026-10-18-copie-b-g3-mac](2026-10-18-copie-b-g3-mac/) | Essai G3 de la copie B sur Mac ; voir son rapport. |
 | [2026-10-19-repetition-copie-c-mac](2026-10-19-repetition-copie-c-mac/) | Répétition de la copie C sur Mac ; voir son rapport. |
 | [2026-10-20-preparation-gx10](2026-10-20-preparation-gx10/) | SSH/Tailscale, service et six vidéos prêts ; rejeu local FR de trois minutes complet, deux réponses et une abstention ; délais encore à optimiser. |

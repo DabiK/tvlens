@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "steps": [
+    {
+      "name": "règles par fichier",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "format",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "gel du lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "cliquet",
+      "status": "ok",
+      "detail": "Mesures améliorées : lignes_longues_prod : 388 → 387, cas_de_test_produit : 1633 → 1680, cas_de_test_harnais : 453 → 455"
+    }
+  ]
+}

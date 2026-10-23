@@ -1,0 +1,7 @@
+{
+  "chat": "défaut du CLI Codex",
+  "vision": "gpt-6-luna",
+  "inspection": "gpt-6-luna",
+  "transcription": "Whisper base local",
+  "buildLabel": "TVLens 0.1.0 · c7f04f4624de · modifiée"
+}

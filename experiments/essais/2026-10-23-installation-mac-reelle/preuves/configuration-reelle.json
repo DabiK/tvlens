@@ -1,0 +1,11 @@
+{
+  "preferences": {
+    "paths": {
+      "whisperModel": "/Users/Dabi/Library/Application Support/TVLens/models/ggml-base.bin"
+    },
+    "completed": true
+  },
+  "modelBytes": 147951465,
+  "modelSha256": "60ed5bc3dd14eea856493d334349b405782ddcaf0028d4b5df4088345fba2efe",
+  "processes": "90453 /Applications/TVLens.app/Contents/MacOS/TVLens"
+}

@@ -1,0 +1,38 @@
+✔ a Finder launch stores its default speech model under application data rather than the working directory (0.570583ms)
+✔ tools installed after a missing first check can be discovered from a Finder compatible search path (2.651834ms)
+✔ installation preferences survive a fresh launch without persisting provider credentials (2.328583ms)
+✔ diagnosis distinguishes absent tools, unsuccessful login, model presence and denied screen access (0.170042ms)
+✖ saving preferences into an unusable directory returns a coded message without internal paths (1.162458ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34.248958
+
+✖ failing tests:
+
+test at tests/desktop-setup.test.cjs:60:1
+✖ saving preferences into an unusable directory returns a coded message without internal paths (1.162458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'EEXIST'
+  - 'TVLENS_SETUP_WRITE_FAILED'
+
+      at Object.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/desktop-setup.test.cjs:67:12)
+      at expectedException (node:assert:578:17)
+      at expectsError (node:assert:703:21)
+      at strict.rejects (node:assert:769:3)
+      at async TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/desktop-setup.test.cjs:66:3)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'EEXIST',
+    expected: 'TVLENS_SETUP_WRITE_FAILED',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

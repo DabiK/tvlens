@@ -1,0 +1,40 @@
+{
+  "ok": true,
+  "steps": [
+    {
+      "name": "règles par fichier",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "format",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "gel du lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "cliquet",
+      "status": "ok",
+      "detail": "Mesures améliorées : lignes_longues_prod : 388 → 387, cas_de_test_produit : 1759 → 1822"
+    },
+    {
+      "name": "tests JS (172 fichier(s))",
+      "status": "ok",
+      "detail": "ℹ tests 3251\nℹ pass 3251\nℹ fail 0"
+    },
+    {
+      "name": "tests Python",
+      "status": "ok",
+      "detail": "Ran 71 tests in 69.692s\n\nOK"
+    }
+  ]
+}

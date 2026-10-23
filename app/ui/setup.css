@@ -1,0 +1,29 @@
+#setup-dialog { width: min(760px, calc(100vw - 40px)); max-width: 760px; padding: 0; max-height: calc(100vh - 48px); border-radius: 18px; overflow: auto; }
+.setup-header { padding: 27px 30px 22px; background: #18281f; border-bottom: 1px solid var(--line); }
+.setup-header h2 { font-size: 34px; font-weight: 600; letter-spacing: -.045em; margin: 5px 0 10px; }
+.setup-header > p:not(.eyebrow) { color: #c4d0c8; max-width: 54ch; font-size: 13px; margin: 0 0 13px; }
+.setup-progress { font: 11px Menlo, monospace; color: var(--lime); }
+.setup-body { padding: 12px 30px 24px; }
+.setup-privacy { font-size: 12px; line-height: 1.65; color: var(--muted); margin-bottom: 20px; }
+.setup-checks { list-style: none; padding: 0; margin: 0; }
+.setup-check { padding: 17px 0; border-top: 1px solid var(--line); }
+.setup-check-heading { display: flex; gap: 16px; justify-content: space-between; align-items: center; }
+.setup-check h3 { font-size: 15px; font-weight: 600; margin: 0; }
+.setup-chip { font-size: 11px; color: var(--warning); white-space: nowrap; }
+.setup-check[data-state=ready] .setup-chip { color: var(--lime); }
+.setup-check[data-state=ready] .setup-chip::before { content: '✓ '; }
+.setup-detail { color: var(--muted); font-size: 12px; margin: 5px 0 10px; }
+.setup-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.setup-actions .secondary, .setup-details .secondary { font-size: 11px; padding: 7px 10px; border-radius: 7px; }
+.setup-details { margin-top: 10px; font-size: 11px; color: var(--muted); }
+.setup-details summary { cursor: pointer; }
+.setup-path { overflow-wrap: anywhere; font: 10px/1.6 Menlo, monospace; }
+.setup-command { display: block; overflow-wrap: anywhere; white-space: pre-wrap; background: #080e0b; color: var(--ink); border: 1px solid var(--line); padding: 10px; border-radius: 7px; margin: 8px 0; font-size: 11px; }
+.setup-help { border-left: 2px solid #c5ef8e66; padding: 0 16px; margin-top: 22px; font-size: 12px; }
+.setup-help p { color: var(--muted); }
+.setup-help .link + .link { margin-left: 18px; }
+.setup-footer { position: sticky; bottom: 0; background: #14201c; border-top: 1px solid var(--line); padding: 15px 30px 18px; }
+.setup-footer > p { margin: 0 0 12px; font-size: 12px; line-height: 1.5; }
+.setup-footer .setup-actions { justify-content: flex-end; }
+.setup-footer .link { margin-right: auto; }
+.setup-primary { background: var(--lime); color: #142012; padding: 9px 16px; font-weight: 700; border-radius: 8px; }

@@ -1,0 +1,7 @@
+
+> tvlens@0.1.0 package:mac
+> node scripts/package.mjs --out dist/real-validation
+
+Packaging app for platform darwin arm64 using electron v44.4.5
+WARNING: Could not find icon "/Users/Dabi/Documents/ISN/tvlens/assets/macos/tvlens.icns" with extension ".icon", skipping this app icon format
+Paquet Mac construit : /Users/Dabi/Documents/ISN/tvlens/dist/real-validation/TVLens-darwin-arm64

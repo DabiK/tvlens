@@ -1,0 +1,167 @@
+{
+  "phase": "paused",
+  "recordedAt": "2026-10-23T01:16:43.600Z",
+  "session": "5acbefdc-91fc-4bf7-8cef-854f8fb172dc",
+  "state": {
+    "accepting": false,
+    "elapsedMs": 44690.20579200005,
+    "manifest": "live",
+    "closedAt": null
+  },
+  "clips": {
+    "count": 7,
+    "names": [
+      "moment-1.webm",
+      "moment-2.webm",
+      "moment-3.webm",
+      "moment-4.webm",
+      "moment-5.webm",
+      "moment-6.webm",
+      "moment-7.webm"
+    ],
+    "first": {
+      "streams": [
+        {
+          "codec_name": "opus",
+          "codec_type": "audio",
+          "sample_rate": "48000",
+          "channels": 1
+        },
+        {
+          "codec_name": "vp8",
+          "codec_type": "video"
+        }
+      ],
+      "meanVolumeDb": "-24.9"
+    }
+  },
+  "passages": [
+    {
+      "id": "moment-1",
+      "startMs": 11.32824998209253,
+      "endMs": 2552.3282499820925,
+      "status": "ready",
+      "hasAudio": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "transcript": "To 50.000, że nie jest.",
+      "summary": "Un homme en costume prononce un discours depuis un pupitre portant un sceau présidentiel, devant une foule dans un stade. La transcription locale est trop fragmentaire pour établir le sens de ses paroles.",
+      "visual": "L’orateur se penche vers ses notes au pupitre ; des personnes assises l’entourent et un drapeau américain est visible à côté de lui."
+    },
+    {
+      "id": "moment-2",
+      "startMs": 2554.228249988053,
+      "endMs": 10572.228249988053,
+      "status": "ready",
+      "hasAudio": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "transcript": "of man's recorded history in a time span of about a half a century, stated in the",
+      "summary": "L’orateur poursuit son discours au pupitre dans le stade ; la transcription évoque l’histoire enregistrée de l’humanité sur environ un demi-siècle, mais la phrase est tronquée.",
+      "visual": "L’homme en costume parle au pupitre devant le public et les rangées de sièges ; il regarde ses notes puis lève la tête et fait un petit geste de la main."
+    },
+    {
+      "id": "moment-3",
+      "startMs": 10573.028249999974,
+      "endMs": 18593.128249994013,
+      "status": "ready",
+      "hasAudio": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "transcript": "these terms, we know very little about the first 40 years except at the end of them, advanced man had",
+      "summary": "L’orateur continue son discours ; la transcription mentionne qu’on sait peu de choses sur les quarante premières années, puis s’interrompt au début d’une phrase sur l’évolution de l’être humain.",
+      "visual": "Au pupitre, l’homme alterne entre consulter ses notes et regarder la foule ; il se penche brièvement vers le pupitre avant de reprendre la parole."
+    },
+    {
+      "id": "moment-4",
+      "startMs": 18594.828249982093,
+      "endMs": 26612.628249994013,
+      "status": "ready",
+      "hasAudio": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "transcript": "learn to use the skins of animals to cover them. Then about 10 years ago, under this standard. Man.",
+      "summary": "L’orateur poursuit son discours ; la transcription évoque l’usage de peaux animales pour se couvrir, puis une référence à « il y a environ dix ans », avant de s’interrompre. Le lien entre ces éléments reste incertain.",
+      "visual": "L’homme reste au pupitre devant la foule, parlant et se tournant parfois vers ses notes ; des personnes sont assises derrière lui."
+    },
+    {
+      "id": "moment-5",
+      "startMs": 26613.528249999974,
+      "endMs": 34629.72824998805,
+      "status": "ready",
+      "hasAudio": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "transcript": "emerge from his caves to construct other kinds of shelter. Only five years ago, man learned to write.",
+      "summary": "L’orateur poursuit son discours ; la transcription évoque le passage des grottes à d’autres formes d’abri, puis affirme que l’écriture aurait été apprise « il y a seulement cinq ans ».",
+      "visual": "L’homme au pupitre parle devant la foule, baisse plusieurs fois les yeux vers ses notes puis relève la tête."
+    },
+    {
+      "id": "moment-6",
+      "startMs": 34630.72824998805,
+      "endMs": 42650.82824998209,
+      "status": "ready",
+      "hasAudio": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "transcript": "and use a cart with wheels. Christianity began last year. Two years ago, the printing",
+      "summary": "L’orateur poursuit son discours ; la transcription mentionne un chariot à roues, puis affirme que le christianisme aurait commencé « l’année dernière » et amorce une phrase sur l’imprimerie avant d’être coupée.",
+      "visual": "L’homme parle au pupitre devant la foule, alternant entre regarder ses notes et s’adresser au public."
+    },
+    {
+      "id": "moment-7",
+      "startMs": 42652.82824998209,
+      "endMs": 44674.528249999974,
+      "status": "ready",
+      "hasAudio": true,
+      "audioStatus": "ready",
+      "visionStatus": "ready",
+      "transcript": "press cane this year.",
+      "summary": "L’orateur poursuit son discours au pupitre ; la transcription locale ne fournit que le fragment « press cane this year », trop incertain pour en établir le sens.",
+      "visual": "L’homme parle devant la foule, puis baisse les yeux vers le pupitre tandis que les personnes assises derrière lui restent en place."
+    }
+  ],
+  "questions": [
+    {
+      "id": "deep-1",
+      "question": "Quelle comparaison l’orateur fait-il pour raconter l’histoire humaine dans ce passage ? Explique les exemples entendus et cite les passages correspondants.",
+      "status": "done",
+      "createdAt": 1792718174554,
+      "startedAt": 1792718174555,
+      "finishedAt": 1792718190945,
+      "answer": "L’orateur comprime l’histoire humaine en un demi-siècle : les « années » évoquées sont une échelle imagée, pas des dates littérales (moment-2). Cette comparaison souligne l’accélération des progrès.\n\nIl décrit quarante premières années presque inconnues, se terminant par l’usage de peaux animales pour se couvrir (moments-3 et 4) ; puis la sortie des grottes pour construire d’autres abris « il y a dix ans », et l’apprentissage de l’écriture « il y a cinq ans » (moments-4 et 5). Il ajoute le chariot à roues, puis évoque le christianisme et l’imprimerie (moments-6 et 7), mais la transcription de leurs repères temporels est trop incertaine pour les restituer fidèlement.",
+      "citations": [
+        {
+          "id": "moment-2",
+          "startMs": 2554.228249988053,
+          "endMs": 10572.228249988053
+        },
+        {
+          "id": "moment-3",
+          "startMs": 10573.028249999974,
+          "endMs": 18593.128249994013
+        },
+        {
+          "id": "moment-4",
+          "startMs": 18594.828249982093,
+          "endMs": 26612.628249994013
+        },
+        {
+          "id": "moment-5",
+          "startMs": 26613.528249999974,
+          "endMs": 34629.72824998805
+        },
+        {
+          "id": "moment-6",
+          "startMs": 34630.72824998805,
+          "endMs": 42650.82824998209
+        },
+        {
+          "id": "moment-7",
+          "startMs": 42652.82824998209,
+          "endMs": 44674.528249999974
+        }
+      ]
+    }
+  ]
+}

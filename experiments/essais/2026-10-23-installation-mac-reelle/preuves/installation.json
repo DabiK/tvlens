@@ -1,0 +1,7 @@
+{
+  "installed": "/Applications/TVLens.app",
+  "iconFile": "electron.icns",
+  "iconSha256": "43209457ccedb588325b5ff7b8c07df973d8bab5607cab4c0ca18de921145414",
+  "iconMatchesSource": true,
+  "bundleIdentifier": "dev.tvlens.capture"
+}

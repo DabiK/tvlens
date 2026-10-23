@@ -1,0 +1,19 @@
+{
+  "app/index.html": "fe8c5b938f2c10f812fb1fc93a0bd0cace57fb4d6c84fee7d722635493aa7a1c",
+  "app/main.cjs": "fac8914fa63c0862c7db6369d464a1fae5f3cd1a94f215a20dde2917a15027cf",
+  "app/preload.cjs": "e13d333faca3a88c017e0b6e79116de3292003b3dcca0ffc14ac9918fabc3fcc",
+  "app/renderer.js": "4b46722f13f993af869d354a1257bd70e6cf6cad6ab51f8cc98b61c3d8f9e69c",
+  "scripts/package-filter.cjs": "741f63be6fc72397f618e02272b3ccf57635a38988f336e401f4d3a5a9fd9255",
+  "tests/mac-ipc-contract.test.cjs": "9f71114f4f51ef3856b91384013d84fc04b060ca17d3e9f3bdda9664fb0e51b3",
+  "adapters/desktop-setup.cjs": "c727941d248bf3c758055f9cfb5c88b0f18c819844b6f09d22e2ab474bea8b12",
+  "adapters/speech-model-download.cjs": "3991ceba254c9b8ec9bfa3be5a00a665870de2b7b2040fd438ee3a6275e022c5",
+  "app/mac-setup.cjs": "f7080dacf3552c707612e62a031842722bd77e9f625d4bcd1c4ecb5fd5cbf054",
+  "app/ui/setup-view.mjs": "de76bb01cc471eadd875a57af3ca9c3a7f1cf83ae2a39a5605dc2f6dc65222e0",
+  "app/ui/setup.css": "5115c50dbd7d41fd83734de7683490cd11c7d3977b4afd0f066e5b3f55e38ef7",
+  "app/ui/setup.mjs": "1913bb9d81880f0a0594f489d7c66f60a087491af87cf5d1f1caa0522b3c9609",
+  "scripts/smoke-setup.mjs": "4585421d0ee9a94282e19683092c11e9474ecffede62fe3ceaf7a95f66db4f97",
+  "tests/desktop-setup.test.cjs": "e13ddfc47fe05671f1e1dea89e7293741c7fa71a913d8d72d16c6054f9295038",
+  "tests/mac-setup.test.cjs": "b7e27d0d251ccf4bdecf738378284a9c3204b93ed67ab2964c3f42f6bc48c6fb",
+  "tests/speech-model-download.test.cjs": "c2eb9cf4de6ebff090d2f8c6715a0cdd87465de8320b69b3f814f9795d29cb14",
+  "tests/mac-ui.test.cjs": "a4e93a52f5c63ef40c731ecd7ad0ed5d66d4e9c31328ce473cf26e57407b9842"
+}

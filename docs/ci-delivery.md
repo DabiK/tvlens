@@ -10,7 +10,7 @@ Le workflow `.github/workflows/ci.yml` contrôle les pull requests, les pushes s
 | `npm run ci:check` | Contrôle complet existant : règles, format, lint, gel, cliquet, suites JavaScript séquentielles et Python |
 | Comparaison à la base | Refus d’un gel augmenté, d’un plancher relâché/supprimé et d’infractions par fichier ajoutées, même après commit |
 | Python télécommande | Suite `prototypes/lg-remote`, hors découverte du contrôle racine ; historique Git complet pour ses fixtures |
-| Smoke Electron Mac | Parcours de l’interface avec capture synthétique et fournisseurs simulés, puis identité vérifiée via IPC jusque dans les détails techniques |
+| Smoke Electron Mac | Parcours de l’interface avec capture synthétique et fournisseurs simulés, puis identité vérifiée via IPC jusque dans les détails techniques et assistant de premier lancement (succès, dépendances absentes, échec récupérable) |
 | Construction et inspection | Dépôt propre, inventaire ASAR, identité, sources identiques, dépendances de production, fichiers natifs décompressés et chargement de `sharp` |
 
 Les actions sont épinglées par SHA. Les permissions du workflow se limitent à la lecture du dépôt. Aucun fournisseur, identifiant privé, TV ou VPS n’est requis. Une étape qualité « non lancée » fait échouer le wrapper. Les cas conditionnels internes aux tests restent gouvernés par la suite ; installer FFmpeg évite les exclusions dues à son absence.
@@ -28,6 +28,7 @@ python3 -B -m unittest discover -s prototypes/lg-remote -p 'test_*.py'
 # Sur le Mac, après le contrôle, sans modèle local chargé :
 npm run test:electron
 npm run test:electron:identity
+npm run test:electron:setup
 npm run package:mac
 npm run verify:mac -- dist/TVLens-darwin-arm64/TVLens.app --report /tmp/tvlens-package.json
 ```
@@ -36,7 +37,7 @@ Sans `--base`, le wrapper exécute et exige toutes les étapes du contrôle comp
 
 ## Contenu du paquet
 
-`scripts/package-filter.cjs` admet le JavaScript de `app/`, `core/`, `adapters/` et `runtime/`, ainsi que les ressources statiques explicitement listées : HTML, feuille principale et feuille de la coque UI. Le worklet audio est du JavaScript et reste inclus. Les liens symboliques dans les sources sont refusés.
+`scripts/package-filter.cjs` admet le JavaScript de `app/`, `core/`, `adapters/` et `runtime/`, ainsi que les ressources statiques explicitement listées : HTML, feuille principale, feuille de la coque UI et feuille de l’assistant d’installation. Le worklet audio est du JavaScript et reste inclus. Les liens symboliques dans les sources sont refusés.
 
 S’y ajoutent `package.json`, l’identité générée et les dépendances de production installées depuis le lockfile. Le packager retire les dépendances et métadonnées de développement. La vérification refuse les paquets de développement ou absents du lockfile. Les modules `@img` de `sharp` restent décompressés pour le chargement natif.
 
@@ -62,6 +63,6 @@ Le packager génère l’identité dans sa copie de travail, sans écrire à la 
 
 Après succès des deux plateformes et du smoke Mac, GitHub conserve pendant 14 jours un artefact nommé `TVLens-mac-arm64-<SHA>`. Il contient `TVLens-mac-arm64.zip`, `SHA256SUMS` et `package-report.json`. Le ZIP créé avec `ditto` conserve la structure et les permissions de la `.app` ; télécharger des fichiers d’application bruts via l’upload d’artefacts pourrait les perdre.
 
-Il s’agit d’une construction de validation Apple Silicon, sans signature de distribution Developer ID ni notarisation. Aucun GitHub Release, DMG, mise à jour automatique ou déploiement n’est réalisé. FFmpeg, Whisper, son modèle et l’authentification Codex restent à installer/configurer séparément, conformément au [guide Mac](installation.md). Le ZIP constitue la base de la future distribution, pas encore une installation autonome grand public.
+Il s’agit d’une construction de validation Apple Silicon, sans signature de distribution Developer ID ni notarisation. Aucun GitHub Release, DMG, mise à jour automatique ou déploiement n’est réalisé. L’assistant de premier lancement vérifie les outils et guide leur installation ; le modèle Whisper peut être téléchargé depuis l’application. FFmpeg, Whisper et Codex restent des outils externes, conformément au [guide Mac](installation.md). Le ZIP n’est pas encore une distribution signée ou une installation entièrement automatique.
 
 Décision : [ADR 0066](adr/0066-la-livraison-controle-le-paquet-et-son-identite.md).

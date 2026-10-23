@@ -34,6 +34,8 @@ const { sweepStaleContexts } = require('../adapters/codex-confinement.cjs');
 const { cleanupCodexContexts } = require('../runtime/codex-cleanup.cjs');
 const { ModelSettings, modelChoices } = require('../adapters/model-settings.cjs');
 const { loadConfig } = require('../adapters/config.cjs');
+const { DesktopPreferences, desktopPaths } = require('../adapters/desktop-setup.cjs');
+const { createMacSetup } = require('./mac-setup.cjs');
 const { UsageLedger } = require('../adapters/trial-budget.cjs');
 const { VerificationService } = require('../core/verification.cjs');
 const { CodexVerifier } = require('../adapters/codex-verifier.cjs');
@@ -88,6 +90,12 @@ app.whenReady().then(async () => {
   // The simulated and the fallback configuration keep the production default: a question may run five
   // minutes and must not withhold the visual description of what is captured meanwhile.
   config = smoke && !liveInspection ? { apiKey: '', model: 'test/fake', visionDuringAsk: true } : await loadConfig({ configPath, userData: app.getPath('userData'), safeStorage }).catch(() => ({ apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' }));
+  const installation = new DesktopPreferences(app.getPath('userData'));
+  const initialSetup = await installation.load().catch(() => ({ paths: {}, completed: false,
+    problem: 'Les réglages d’installation sont illisibles. Choisis à nouveau les fichiers nécessaires.' }));
+  const resolvePaths = (value, preferences) => desktopPaths({ config: value, preferences,
+    userData: app.getPath('userData'), packaged: app.isPackaged, environment: process.env, home: os.homedir() });
+  Object.assign(config, resolvePaths(config, initialSetup.paths));
   // Reversible host settings, read from the environment of this start. Absent: the product default.
   // Mistyped: refused at start by the composition that uses it, never run under another value.
   const setting = name => process.env[name] ? Number(process.env[name]) : undefined;
@@ -148,7 +156,7 @@ app.whenReady().then(async () => {
   protocol.handle('tvlens-saved',request=>{try{const url=new URL(request.url);return savedArchive.response(url.hostname,url.pathname.slice(1),request.headers.get('range'));}catch{return new Response('Passage indisponible.',{status:404});}});
   const windowMode = createWindowMode({ window, screen });
   handle('window:mode', value => windowMode(value));
-  const codexBinary = await findCodex();
+  const codexBinary = await findCodex(config.codexBinary);
   const quota=new CodexQuota();
   videoAgent = smoke && !process.argv.includes('--live-video-agent') ? simulatedVideoAgent() : undefined;
   const questionPending = () => deep.jobs.some(j => ['queued', 'running'].includes(j.status));
@@ -298,8 +306,19 @@ app.whenReady().then(async () => {
   });
   handle('app:import-config', async () => {
     const result = await dialog.showOpenDialog(window, { title: 'Sélectionner .env.local', properties: ['openFile', 'showHiddenFiles'] });
-    if (!result.canceled) { const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance }; config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage }); Object.assign(config, host); config.model=selectedModels.observationModel;config.inspectionModel=selectedModels.inspectionModel;videoAgent.authHome=config.codexAuthHome;verifierAdapter.authHome=config.codexAuthHome;for(const client of surveillanceClients())client.authHome=config.codexAuthHome; }
-    if (!result.canceled) transcriber = makeTranscriber();
+    if (!result.canceled) {
+      const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance };
+      config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage });
+      Object.assign(config, host, resolvePaths(config, initialSetup.paths));
+      config.model = selectedModels.observationModel;
+      config.inspectionModel = selectedModels.inspectionModel;
+      videoAgent.authHome = config.codexAuthHome;
+      verifierAdapter.authHome = config.codexAuthHome;
+      for (const client of surveillanceClients()) client.authHome = config.codexAuthHome;
+    }
+    if (!result.canceled) {
+      transcriber = makeTranscriber();
+    }
     return configuration();
   });
   const captureSources = await createCaptureSources({
@@ -309,6 +328,16 @@ app.whenReady().then(async () => {
   handle('capture:sources', () => captureSources.sources());
   handle('capture:select', id => captureSources.select(id));
   handle('capture:settings', () => captureSources.settings());
+  const setup = createMacSetup({ store: installation, initial: initialSetup, resolvePaths, getConfig: () => config,
+    environment: process.env, userData: app.getPath('userData'), simulated: smoke,
+    showOnStart: !smoke || process.argv.includes('--smoke-setup'),
+    permission: () => systemPreferences.getMediaAccessStatus('screen'), requestScreen: () => captureSources.sources(),
+    choose: options => dialog.showOpenDialog(window, options), openExternal: url => shell.openExternal(url),
+    quit: () => app.quit(), isBusy: () => Boolean(loaded || switching || verification.busy || questionPending()),
+  });
+  handle('setup:status', () => setup.status());
+  handle('setup:choose', key => setup.select(key));
+  handle('setup:action', name => setup.action(name));
   // ---- Loaded session: one at a time, live or reopened read-only -------------------------------
   let storageShown = null;
   const ingestions = new Set();
@@ -622,7 +651,11 @@ app.whenReady().then(async () => {
   if (!smoke) dialog.showErrorBox('TVLens ne peut pas démarrer', String(error?.message || error));
   app.quit();
 });
-async function findCodex() {
+async function findCodex(override) {
+  if (override) {
+    try { await fs.access(override, require('node:fs').constants.X_OK); return override; }
+    catch { return null; }
+  }
   const candidates = [path.join(os.homedir(), '.local', 'bin', 'codex'), '/opt/homebrew/bin/codex', '/usr/local/bin/codex', ...(process.env.PATH || '').split(path.delimiter).filter(Boolean).map(dir => path.join(dir, 'codex'))];
   for (const candidate of candidates) {
     try {

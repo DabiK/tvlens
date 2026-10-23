@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "steps": [
+    {
+      "name": "règles par fichier",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "format",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "lint",
+      "status": "ok",
+      "detail": ""
+    }
+  ]
+}

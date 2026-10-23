@@ -1,0 +1,40 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "name": "règles par fichier",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "format",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "gel du lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "cliquet",
+      "status": "ok",
+      "detail": "Mesures améliorées : lignes_longues_prod : 388 → 387, cas_de_test_produit : 1633 → 1679, cas_de_test_harnais : 453 → 455"
+    },
+    {
+      "name": "tests JS (165 fichier(s))",
+      "status": "ko",
+      "detail": "✖ screen access is requested only after the explicit permission action (0.734958ms)\n✖ the renderer talks to the bridge of the contract only, and writes no ceiling or retention of its own (0.4985ms)\nℹ tests 3073\nℹ pass 3071\nℹ fail 2\n✖ failing tests:\n✖ screen access is requested only after the explicit permission action (0.734958ms)\n✖ the renderer talks to the bridge of the contract only, and writes no ceiling or retention of its own (0.4985ms)\n\n✖ failing tests:\n\ntest at tests/mac-setup.test.cjs:89:1\n✖ screen access is requested only after the explicit permission action (0.734958ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  \n  false !== true\n  \n      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/mac-setup.test.cjs:97:10)\n      at async Test.run (node:internal/test_runner/test:1113:7)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n\ntest at tests/mac-ui.test.cjs:1650:1\n✖ the renderer talks to the bridge of the contract only, and writes no ceiling or retention of its own (0.4985ms)\n  AssertionError [ERR_ASSERTION]: app/preload.cjs expose 57 méthodes sous tvlens\n  \n  60 !== 57\n  \n      at TestContext.<anonymous> (/Users/Dabi/Documents/ISN/tvlens/tests/mac-ui.test.cjs:1652:10)\n      at Test.runInAsyncScope (node:async_hooks:214:14)\n      at Test.run (node:internal/test_runner/test:1106:25)\n      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)\n      at Test.postRun (node:internal/test_runner/test:1235:19)\n      at Test.run (node:internal/test_runner/test:1163:12)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: 60,\n    expected: 57,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }"
+    },
+    {
+      "name": "tests Python",
+      "status": "ok",
+      "detail": "Ran 71 tests in 65.900s\n\nOK"
+    }
+  ]
+}
