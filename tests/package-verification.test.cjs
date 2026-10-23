@@ -60,3 +60,10 @@ test('the archive verifier refuses stray files next to unpacked native modules',
   await fs.writeFile(path.join(archive + '.unpacked', 'private.txt'), 'private');
   await assert.rejects(inspectArchive(archive, { root, expectedBuild: build }), { code: 'TVLENS_PACKAGE_INVALID' });
 });
+
+test('signature verification refuses a broken bundle before it can be installed', async () => {
+  const { verifySignature } = await import('../scripts/verify-package.mjs');
+  assert.throws(() => verifySignature('/tmp/TVLens.app', () => ({ status: 1, stderr: 'invalid resources' })),
+    { code: 'TVLENS_PACKAGE_SIGNATURE_INVALID' });
+  assert.deepEqual(verifySignature('/tmp/TVLens.app', () => ({ status: 0 })), { valid: true });
+});

@@ -86,3 +86,18 @@ test('source links cannot pull files from outside the packaging roots', t => {
   fs.symlinkSync('../outside.cjs', path.join(folder, 'app/linked.cjs'));
   assert.throws(() => copyFilter(folder), { code: 'TVLENS_PACKAGE_SOURCE_LINK' });
 });
+
+test('a distribution build uses the explicitly selected signing identity', async () => {
+  const { packagerOptions } = await import('../scripts/package.mjs');
+  const options = packagerOptions({ signIdentity: 'developer-certificate' });
+  assert.equal(options.osxSign.identity, 'developer-certificate');
+});
+
+
+test('local ad hoc builds avoid hardened library validation without a team identity', async () => {
+  const { packagerOptions } = await import('../scripts/package.mjs');
+  const { osxSign } = packagerOptions();
+  assert.equal(osxSign.identity, '-');
+  assert.equal(osxSign.optionsForFile().hardenedRuntime, false);
+  assert.equal(osxSign.continueOnError, false);
+});

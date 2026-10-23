@@ -11,13 +11,21 @@ async function createCaptureSources({ smoke, desktopCapturer, systemPreferences,
   let capturedSource = null;
   return {
     sources: async () => {
-      sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }]
+      let listingError;
+      try {
+        sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }]
         : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 0, height: 0 } });
+      } catch {
+        sources = [];
+        selectedId = undefined;
+        listingError = 'TVLENS_SOURCE_LIST_FAILED';
+      }
       const available = sources.filter(source => source.name !== OWN_WINDOW_NAME).map(source => ({ id: source.id, name: source.name }));
       // Window IDs can be recycled: only preselect when both ID and title still match.
       const preferred = available.find(source => source.id === lastSource?.id && source.name === lastSource?.name);
       return {
         permission: smoke ? 'granted' : systemPreferences.getMediaAccessStatus('screen'),
+        ...(listingError ? { error: listingError } : {}),
         sources: available,
         preferredSourceId: preferred?.id || null,
       };

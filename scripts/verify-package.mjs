@@ -177,6 +177,17 @@ export function probeNativeRuntime(appPath) {
   return JSON.parse(result.stdout);
 }
 
+export function verifySignature(appPath, run = spawnSync) {
+  const result = run("/usr/bin/codesign", ["--verify", "--deep", "--strict", appPath], {
+    encoding: "utf8", timeout: 30000,
+  });
+  if (result.status !== 0) throw Object.assign(
+    new Error(`Signature du paquet invalide : ${result.stderr || result.error?.message || "échec de codesign"}`),
+    { code: "TVLENS_PACKAGE_SIGNATURE_INVALID" },
+  );
+  return { valid: true };
+}
+
 async function main() {
   const { values, positionals } = parseArgs({
     allowPositionals: true,
@@ -201,6 +212,7 @@ async function main() {
     });
   const archive = path.join(appPath, "Contents/Resources/app.asar");
   const report = await inspectArchive(archive, { root, expectedBuild });
+  report.signature = verifySignature(appPath);
   const native = probeNativeRuntime(appPath);
   requireEqual(
     native.build,

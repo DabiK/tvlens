@@ -10,6 +10,7 @@ export function packagerOptions({
   root = ROOT,
   out = path.join(root, "dist"),
   build,
+  signIdentity,
 } = {}) {
   return {
     dir: root,
@@ -18,7 +19,12 @@ export function packagerOptions({
     platform: "darwin",
     arch: "arm64",
     appBundleId: "dev.tvlens.capture",
+    icon: path.join(root, "assets/macos/tvlens.icns"),
     overwrite: true,
+    osxSign: {
+      identity: signIdentity || "-", identityValidation: Boolean(signIdentity), continueOnError: false,
+      ...(!signIdentity ? { optionsForFile: () => ({ hardenedRuntime: false }) } : {}),
+    },
     prune: true,
     asar: { unpackDir: "node_modules/@img" },
     ignore: filter.copyFilter(root),
@@ -41,6 +47,7 @@ export async function buildMac({
   out,
   requireClean = false,
   packageApp,
+  signIdentity,
 } = {}) {
   const build = await describeBuild({ root });
   if (requireClean && build.dirty)
@@ -51,14 +58,15 @@ export async function buildMac({
       { code: "TVLENS_PACKAGE_DIRTY" },
     );
   const packager = packageApp || (await import("@electron/packager")).packager;
-  return packager(packagerOptions({ root, out, build }));
+  return packager(packagerOptions({ root, out, build, signIdentity }));
 }
 
 async function main() {
   const { values } = parseArgs({
-    options: { out: { type: "string" }, "require-clean": { type: "boolean" } },
+    options: { "sign-identity": { type: "string" }, out: { type: "string" }, "require-clean": { type: "boolean" } },
   });
   const paths = await buildMac({
+    signIdentity: values["sign-identity"],
     out: values.out && path.resolve(values.out),
     requireClean: values["require-clean"],
   });

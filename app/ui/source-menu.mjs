@@ -23,6 +23,10 @@ export function describeSourceListing({ result, error }) {
       notice: `TVLens n’a pas accès à l’écran : ${SCREEN_ACCESS}`,
     };
   }
+  if (result.error) return {
+    placeholder: 'Fenêtres inaccessibles', status: 'Écran autorisé · Capture indisponible',
+    notice: 'L’accès à l’écran est autorisé, mais la capture reste indisponible. Quitte TVLens, puis rouvre-la depuis Applications.',
+  };
   if (!result.sources.length) return { placeholder: 'Aucune fenêtre trouvée', status: 'Écran autorisé · Aucune source', notice: '' };
   return { placeholder: 'Choisir une fenêtre ou un écran…', status: 'Écran autorisé · Choisis une source', notice: '' };
 }

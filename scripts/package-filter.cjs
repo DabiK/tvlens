@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const SOURCE_ROOTS = ["app", "core", "adapters", "runtime"];
-const ASSETS = ["app/index.html", "app/style.css", "app/ui/shell.css"];
+const ASSETS = ["app/index.html", "app/style.css", "app/ui/shell.css", "app/ui/setup.css"];
 const CODE = /\.(?:js|cjs|mjs)$/;
 const PRIVATE_NAMES = new Set([
   "connection.js",

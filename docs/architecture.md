@@ -467,3 +467,5 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
 
 - [ADR 0065](adr/0065-la-capture-mac-passe-par-coreaudio-tap-et-s-ouvre-par-macos.md) :
   La capture Mac passe par CoreAudio Tap, et un lancement depuis un terminal se rouvre par macOS pour en avoir le son.
+
+L’assistant de premier lancement est composé dans `app/mac-setup.cjs` : sondes locales et préférences non secrètes dans `adapters/desktop-setup.cjs`, téléchargement explicite vérifié dans `adapters/speech-model-download.cjs`, présentation dans `app/ui/setup.mjs`. La configuration des agents reste fixée au lancement ; voir [ADR 0067](adr/0067-le-premier-lancement-mac-verifie-et-guide.md).

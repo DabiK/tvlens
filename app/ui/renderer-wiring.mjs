@@ -15,6 +15,7 @@ import { renderRecapView } from "./recap-view.js";
 import { createStateDelivery, bindPushedStates } from "./state-delivery.mjs";
 import { createChatView } from "./chat-view.mjs";
 import { createFreshness } from "./freshness.mjs";
+import { createSurveillanceChat } from "./surveillance-chat.mjs";
 
 const STACK_MIN_DELAY_MS = 50;
 const STACK_TIMER_MARGIN_MS = 20;
@@ -45,6 +46,10 @@ class RendererWiring {
     this.stackList = new KeyedList(get("watch-stack"));
     this.seen = { overlay: 0, signal: 0 };
     this.surveillanceState = null;
+    this.surveillanceChat = createSurveillanceChat({
+      readHistory: this.bridge.surveillanceHistory?.bind(this.bridge),
+      changed: () => { if (!this.released) this.scheduleChat(); },
+    });
     this.recapState = null;
     this.recapRevision = 0;
     this.recapKey = "";
@@ -159,6 +164,7 @@ class RendererWiring {
       context,
       deepState: this.deepState,
       verificationState: this.verificationState,
+      surveillanceCards: this.surveillanceChat.results(this.session?.id),
       limit: config?.questionQueueLimit,
     });
     this.archiveBottom = false;
@@ -288,6 +294,7 @@ class RendererWiring {
     this.passages = new Map();
     this.deepState = { jobs: [] };
     this.commands.search.clear();
+    this.surveillanceChat.clear();
     this.views.reset();
     this.renderRecap();
     this.drawState();
@@ -297,6 +304,8 @@ class RendererWiring {
     if (this.released || !state || typeof state !== "object" || !state.activity)
       return;
     this.surveillanceState = state;
+    this.surveillanceChat.receive(state);
+    this.scheduleChat();
     // La restauration ne livre pas encore les séquences finales : prendre la référence du badge au premier état prêt.
     ({ seen: this.seen, seenFor: this.seenFor } = nextSeen(
       { seen: this.seen, seenFor: this.seenFor },

@@ -1562,6 +1562,7 @@ const elementPatterns = new Map([
   ['ui/capture-actions.mjs', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
   ['ui/moment-actions.mjs', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
   ['ui/capture-controls.mjs', /\bget\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
+  ['ui/setup.mjs', /\bget\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
   ['ui/shell.js', /this\.get\(\s*(['"])([^'"]+)\1\s*,?\s*\)/g],
 ]);
 const namedImportPattern = /^\s*import\s*\{([^}]+)\}\s*from\s*(['"])([^'"]+)\2\s*;?/gm;
@@ -1649,9 +1650,10 @@ test('the renderer parses, imports only what its modules export, and finds every
 
 test('the renderer talks to the bridge of the contract only, and writes no ceiling or retention of its own', () => {
   const exposed = new Set(Object.keys(loadRendererBridge()));
-  assert.equal(exposed.size, 57, 'app/preload.cjs expose 57 méthodes sous tvlens');
+  assert.equal(exposed.size, 60, 'app/preload.cjs expose 60 méthodes sous tvlens');
   assert.ok(!exposed.has('capture'), 'capture est un pont distinct de tvlens');
   const used = bridgeMethods(rendererFiles.map(file => shaped(file)).join('\n'), 'rendererFiles');
+  for (const name of ['setupStatus', 'setupChoose', 'setupAction']) assert.ok(used.has(name), `the setup never calls ${name}`);
   for (const name of ['surveillanceState', 'surveillanceHistory', 'startSurveillance', 'stopSurveillance', 'retrySurveillanceClaim', 'openSurveillanceSource', 'onSurveillance',
     'sessions', 'openSession', 'resumeSession', 'deleteSession', 'storage', 'onSessionsChanged', 'onStorage']) assert.ok(used.has(name), `the renderer never calls ${name}`);
   for (const name of used) assert.ok(exposed.has(name), `the renderer calls ${name}, which app/preload.cjs does not expose`);

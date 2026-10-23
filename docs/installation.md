@@ -1,10 +1,54 @@
-# Installer TVLens — version Codex / Luna
+# Installer TVLens sur Mac
 
 ## Choisir son parcours
 
 Ce guide décrit l’app Mac autonome. Le **companion LG rooté** utilise la même logique avec capture sur TV : voir [la frise et les commandes](lg-timeline.md). Pour héberger le moteur sur Linux sans Electron, suivre [le guide serveur Linux/Tailscale](server-installation.md). Les scripts Homebrew ci-dessous ne sont pas l’installation Linux.
 
-## Prérequis
+## Depuis le paquet Mac (sans dépôt ni Node.js)
+
+**[Télécharger TVLens pour Mac — ZIP](https://github.com/DabiK/tvlens/releases/download/v0.1.0-mac-preview.1/TVLens-mac-arm64.zip)** · [Détails de la préversion](https://github.com/DabiK/tvlens/releases/tag/v0.1.0-mac-preview.1)
+
+Pour les Mac avec puce Apple (M1 et suivantes). Aucun compte GitHub, clone du dépôt ou Node.js n’est nécessaire. Le ZIP contient directement `TVLens.app` ; les archives « Source code » de GitHub sont réservées au développement.
+
+1. Télécharger `TVLens-mac-arm64.zip` avec le lien ci-dessus, puis double-cliquer pour le décompresser.
+2. Déplacer `TVLens.app` dans **Applications**, puis l’ouvrir depuis le Finder. Si macOS bloque le premier lancement, consulter l’aide ci-dessous.
+3. L’assistant **Préparons ce Mac** s’ouvre. Il vérifie les outils locaux et guide les étapes manquantes. **Explorer pour le moment** permet de consulter l’application sans déclarer l’installation terminée.
+4. Après une installation externe, cliquer sur **Vérifier à nouveau**. Si des chemins ou le modèle ont changé, quitter puis rouvrir TVLens depuis Applications. **Commencer** mémorise la fin de l’assistant lorsque tous les prérequis sont vérifiés.
+
+### Si macOS bloque le premier lancement
+
+Cette préversion n’a pas de signature de distribution Apple. Après avoir tenté de l’ouvrir, aller dans **Réglages Système → Confidentialité et sécurité → Ouvrir quand même**, uniquement si le fichier vient bien du téléchargement TVLens ci-dessus. [Instructions Apple](https://support.apple.com/fr-fr/102445). Les permissions écran et son demandées ensuite servent à observer la vidéo choisie.
+
+### Préparer les outils avec l’assistant
+
+Le parcours reste accessible dans **Réglages IA → Configurer ce Mac**, et par le bandeau d’installation incomplète. Une installation déjà terminée est revérifiée au lancement ; un outil supprimé est signalé sans masquer les sessions conservées.
+
+| Étape | Vérification et action |
+| --- | --- |
+| Codex | Binaire exécutable et commande de version ; guide officiel et commande `brew install --cask codex` |
+| Connexion Codex | Statut local de `codex login status` avec le même dossier de compte que l’application ; commande de connexion à copier dans Terminal |
+| Whisper | Binaire `whisper-cli` exécutable et commande d’aide ; installation par `brew install whisper.cpp` |
+| Modèle | Fichier lisible non vide ; sélection d’un fichier existant ou téléchargement explicite parmi 33 variantes Whisper, avec taille, compromis et langue |
+| FFmpeg | Binaire exécutable et commande de version ; installation par `brew install ffmpeg` |
+| Écran et son | Statut d’autorisation écran ; le bouton ouvre la demande macOS si elle n’a pas encore été faite, puis les réglages correspondants |
+
+Les sondes de commandes ont un délai de cinq secondes et n’effectuent aucune inférence. Un statut de connexion réussi ne garantit pas le quota, les droits sur un modèle ou la disponibilité du fournisseur. **Fichier présent** n’est pas une validation de transcription : un modèle choisi manuellement doit être compatible avec Whisper. Le téléchargement intégré vérifie son SHA-256 avant remplacement et écarte les fichiers incomplets. Il expire après une heure, sans téléchargement automatique au démarrage.
+
+L’autorisation du **son système** se confirme lors de la première capture : le statut écran seul ne la garantit pas. Suivre la demande macOS puis quitter et rouvrir TVLens si nécessaire. Le microphone n’est pas requis pour écouter le son de la vidéo. Les bannières audio existantes restent actives.
+
+Le choix reste accessible même quand un modèle est déjà installé. Voir [le guide des modèles de transcription](transcription-models.md) pour les variantes, la langue et les alternatives étudiées.
+
+### Configuration conservée dans l’application
+
+Les boutons **Choisir un autre emplacement…** ouvrent un sélecteur natif pour les outils, le modèle ou le dossier Codex. Aucun chemin n’est saisi comme une commande à exécuter. Les choix sont enregistrés dans `~/Library/Application Support/TVLens/installation.json`, sans clé API ni contenu d’authentification. Ils prennent priorité sur les chemins importés de `.env.local` et restent valables au lancement depuis le Finder. Une modification demande une réouverture pour que les agents et la transcription utilisent tous la même configuration ; fermer la session courante avant de modifier l’installation.
+
+Les modèles téléchargés sont conservés dans `~/Library/Application Support/TVLens/models/ggml-<identifiant>.bin`. Le défaut reste `ggml-base.bin`. Sans chemin explicite, une app empaquetée cherche désormais son modèle à cet emplacement, quel que soit son répertoire de lancement. Les lancements de développement conservent `.local/models` par défaut.
+
+La connexion se fait dans Codex lui-même. TVLens ne demande ni mot de passe ni clé obligatoire : OpenRouter reste facultatif et l’import chiffré de `.env.local` reste disponible pour les réglages avancés. Homebrew et les outils ne sont pas installés automatiquement ; l’assistant fournit les commandes et les liens officiels.
+
+Références d’installation : [Codex CLI](https://developers.openai.com/codex/cli/), [Homebrew](https://brew.sh/), [formule Whisper](https://formulae.brew.sh/formula/whisper.cpp). `whisper.cpp` est le nom actuel de la formule anciennement appelée `whisper-cpp`.
+
+## Depuis les sources — prérequis développeur
 
 Mac Apple Silicon, Node.js 24+, Homebrew, Codex CLI installé et connecté à ton compte,
 FFmpeg (`brew install ffmpeg`). `codex login status` doit confirmer la connexion.
@@ -32,7 +76,7 @@ l'app vont dans `~/Library/Logs/TVLens/main.log`. L'environnement du terminal lu
 
 `setup:speech` installe `whisper-cpp` si nécessaire et télécharge le modèle
 multilingue `ggml-base.bin` (environ 142 Mio) dans `.local/models`, avec vérification
-SHA-256. Cette installation n'est pas un appel d'inférence payant. Whisper peut
+SHA-256. Pour choisir une autre variante, utiliser `npm run setup:speech -- small` ; `npm run setup:speech -- --list` affiche le catalogue. Sélectionner ensuite le fichier dans l’assistant ou renseigner son chemin dans `TVLENS_WHISPER_MODEL`. Cette installation n'est pas un appel d'inférence payant. Whisper peut
 initialiser/compiler Metal au premier lancement : cette première transcription
 peut être sensiblement plus lente que les suivantes.
 
@@ -57,7 +101,7 @@ peuvent être sauvegardés chiffrés avec le stockage macOS. Aucun secret n'est 
 
 ## App macOS et permissions
 
-La [CI et construction Mac](ci-delivery.md) décrit les contrôles du paquet, le ZIP de validation téléchargeable et ses limites. La distribution avec signature Apple et installation guidée reste à réaliser.
+La [CI et construction Mac](ci-delivery.md) décrit les contrôles du paquet, le ZIP de validation téléchargeable et ses limites. La préversion téléchargeable inclut l’assistant ; l’intégration des outils externes dans le paquet reste à réaliser.
 
 ```sh
 npm run package:mac

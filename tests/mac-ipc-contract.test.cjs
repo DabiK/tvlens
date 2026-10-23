@@ -21,6 +21,9 @@ const SESSION = '0f8fad5b-d9cb-469f-a165-70867728950e';
 
 // Section 5.2 of the mission contract: bridge method, sample call, channel and payload sent to the host.
 const CONTRACT_CALLS = [
+  ['setupStatus', [], 'setup:status', []],
+  ['setupChoose', ['whisperModel'], 'setup:choose', ['whisperModel']],
+  ['setupAction', ['permissions'], 'setup:action', ['permissions']],
   ['surveillanceState', [], 'surveillance:state', []],
   ['surveillanceHistory', [], 'surveillance:history', []],
   ['startSurveillance', [{ instruction: 'Vérifie les chiffres annoncés.', frequencySeconds: 30 }], 'surveillance:start', [{ instruction: 'Vérifie les chiffres annoncés.' }]],
@@ -206,6 +209,7 @@ function wrapSimulatedProviders(loaded, wrap) {
 async function launch(userData, {
   env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false, flags = [], readClock,
   platform = process.platform, disabledFeatures = '',
+  dialogSelection,
 } = {}) {
   const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [], sent = [];
   const registeredShortcuts = new Map();
@@ -235,7 +239,8 @@ async function launch(userData, {
       unregister: key => registeredShortcuts.delete(key), unregisterAll: () => registeredShortcuts.clear(),
     }, desktopCapturer: { getSources: async () => [] },
     session: { defaultSession: { setDisplayMediaRequestHandler() {} } }, systemPreferences: { getMediaAccessStatus: () => 'granted' },
-    shell: { openExternal: async url => { opened.push(url); } }, dialog: { showErrorBox() {}, showOpenDialog: async () => ({ canceled: true }) },
+    shell: { openExternal: async url => { opened.push(url); } },
+    dialog: { showErrorBox() {}, showOpenDialog: async () => dialogSelection || { canceled: true } },
     safeStorage: { isEncryptionAvailable: () => false }, screen: { getDisplayMatching: () => ({ workArea: { x: 0, y: 0, width: 1920, height: 1080 } }) } };
   const sender = { sender: webContents, senderFrame: webContents.mainFrame };
   const invoke = async (channel, ...args) => {
@@ -1841,4 +1846,39 @@ test('Mac quitting saves a completed synthesis while session closing waits for t
   const archived = JSON.parse(await fsp.readFile(path.join(folder(session.id), 'living-recap.json'), 'utf8'));
   assert.deepEqual(archived.chapters, ready.chapters);
   assert.equal(archived.pendingCount, 0);
+});
+
+test('Mac configuration imports keep the same persisted account in diagnostics and provider clients', async t => {
+  const { launch, userData } = await stage(t);
+  const authHome = path.join(userData, 'chosen-account');
+  const configFile = path.join(userData, 'import.env');
+  await fsp.mkdir(authHome);
+  await fsp.writeFile(configFile, 'OPENROUTER_MODEL=example/model\n');
+  await fsp.writeFile(path.join(userData, 'installation.json'), JSON.stringify({ paths: { codexAuthHome: authHome }, completed: true }));
+  let client;
+  const host = await launch({ dialogSelection: { canceled: false, filePaths: [configFile] },
+    wrap: { conversation: built => { client = built.agent; return built; } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  await host.importConfig();
+  assert.equal((await host.setupStatus()).paths.codexAuthHome, authHome);
+  assert.equal(client.authHome, authHome);
+});
+
+test('Mac sessions use the persisted speech model and apply language changes after reopening', async t => {
+  const { launch, userData } = await stage(t);
+  const model = path.join(userData, 'models', 'ggml-small.bin');
+  await fsp.writeFile(path.join(userData, 'installation.json'), JSON.stringify({
+    paths: { whisperModel: model }, completed: true, transcriptionLanguage: 'fr',
+  }));
+  const first = await launch();
+  assert.equal((await first.setupStatus()).speech.language, 'fr');
+  assert.equal((await first.setupAction('speech-language', { language: 'en' })).restartRequired, true);
+  await first.quit();
+  let transcriber;
+  const reopened = await launch({ wrap: { session: built => { transcriber = built.transcriber; return built; } } });
+  assert.equal((await reopened.setupStatus()).restartRequired, false);
+  await reopened.start();
+  assert.equal(transcriber.model, model);
+  assert.equal(transcriber.getLanguage(), 'en');
+  await assert.rejects(reopened.setupAction('speech-language', { language: 'fr' }), /Ferme la session/);
 });

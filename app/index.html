@@ -7,6 +7,7 @@
   <title>TVLens</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="ui/shell.css">
+  <link rel="stylesheet" href="ui/setup.css">
 </head>
 <body>
   <header class="topbar">
@@ -43,6 +44,8 @@
     <button id="mark-attention" disabled>Je reprends ici</button>
   </div>
   <div id="banners" class="banners">
+    <div id="setup-banner" class="banner" hidden><span id="setup-banner-text">Installation à compléter</span>
+      <button id="setup-open-banner" class="link">Configurer ce Mac ↗</button></div>
     <div id="transcription-warning" class="banner" role="status" aria-live="polite" hidden></div>
     <div id="audio-warning" class="banner" role="status" aria-live="polite" hidden><span id="audio-warning-text"></span><button id="audio-warning-settings" class="link">Ouvrir les réglages ↗</button></div>
     <div id="storage-banner" class="banner" role="status" hidden><strong id="storage-banner-title"></strong><span id="storage-banner-text"></span><button id="storage-banner-open" class="link">Voir les sessions ↗</button></div>
@@ -134,7 +137,7 @@
     <label for="inspection-model">Codex · réexamen des passages</label><input list="codex-models" id="inspection-model" maxlength="160" required autocomplete="off">
     <p class="hint">Luna est utilisé par défaut pour la vision. Les paroles sont transcrites localement avec Whisper. Ces choix s’appliquent à une nouvelle session. OpenRouter sert uniquement aux embeddings.</p>
     <div class="verify-submit"><span id="models-status" role="status"></span><button type="submit">Enregistrer</button></div>
-  </form>  <section class="technical-settings"><button id="settings" class="link">Autorisations</button><button id="import" class="link">Charger .env.local</button><span id="provider">Configuration…</span><span id="usage">0 passage</span><details class="status-details"><summary>Détails techniques</summary><div><span id="build-info">Construction inconnue</span><span id="cloud-note">Images et transcription envoyées à Codex. Audio transcrit localement.</span><span id="research-usage"></span><span id="quota-status"></span></div></details></section></dialog>
+  </form>  <section class="technical-settings"><button id="setup-open" class="link">Configurer ce Mac</button><button id="settings" class="link">Autorisations</button><button id="import" class="link">Charger .env.local</button><span id="provider">Configuration…</span><span id="usage">0 passage</span><details class="status-details"><summary>Détails techniques</summary><div><span id="build-info">Construction inconnue</span><span id="cloud-note">Images et transcription envoyées à Codex. Audio transcrit localement.</span><span id="research-usage"></span><span id="quota-status"></span></div></details></section></dialog>
   <dialog id="library-dialog" aria-labelledby="library-title"><div class="section-heading"><h2 id="library-title">Retrouver un moment</h2><button id="close-library" class="secondary">Fermer</button></div>
     <form id="moment-search-form" class="source-row"><input id="moment-query" maxlength="2000" placeholder="Une phrase, un sujet, il y a deux minutes…" required><button type="submit">Chercher</button></form>
     <p id="search-status" class="hint">Recherche dans toute la session ouverte, y compris les passages dont la vidéo n’est plus disponible.</p><div id="search-results" class="moment-cards"></div>
@@ -144,6 +147,27 @@
   <dialog id="delete-saved-dialog" aria-labelledby="delete-saved-title"><h2 id="delete-saved-title">Supprimer ce moment ?</h2><p>La vidéo, sa transcription et ses aperçus conservés seront supprimés de ce Mac.</p><div class="dialog-actions"><button id="cancel-delete-saved" class="secondary" autofocus>Annuler</button><button id="confirm-delete-saved">Supprimer définitivement</button></div></dialog>
   <dialog id="delete-session-dialog" aria-labelledby="delete-session-title"><h2 id="delete-session-title">Supprimer cette session ?</h2><p id="delete-session-subject" class="hint"></p><p id="delete-session-removed"></p><p id="delete-session-kept"></p><p id="delete-session-warning" class="answer-limits"></p><p id="delete-session-error" role="status"></p><div class="dialog-actions"><button id="cancel-delete-session" class="secondary" autofocus>Annuler</button><button id="confirm-delete-session">Supprimer définitivement</button></div></dialog>
   <dialog id="resume-session-dialog" aria-labelledby="resume-session-title"><h2 id="resume-session-title">Reprendre la capture dans cette session ?</h2><p id="resume-session-text"></p><p class="hint">Pour garder cette archive telle quelle, ouvre plutôt une nouvelle session.</p><p id="resume-session-error" role="status"></p><div class="dialog-actions"><button id="cancel-resume-session" class="secondary" autofocus>Annuler</button><button id="confirm-resume-session">Reprendre la capture</button></div></dialog>
+  <dialog id="setup-dialog" aria-labelledby="setup-title">
+    <header class="setup-header"><p class="eyebrow">BIENVENUE DANS TVLENS</p><h2 id="setup-title">Préparons ce Mac.</h2>
+      <p>Quelques étapes, une seule fois. TVLens retrouve les outils déjà installés et t’aide à compléter le reste.</p>
+      <span id="setup-progress" class="setup-progress">Vérification…</span></header>
+    <div class="setup-body">
+      <p class="setup-privacy">Les paroles sont transcrites sur ce Mac. Les images et le texte utile sont envoyés à Codex quand tu lances l’observation.</p>
+      <ul id="setup-checks" class="setup-checks"></ul>
+      <aside class="setup-help"><strong>Première installation des outils ?</strong>
+        <p>Installe Homebrew, puis utilise les commandes proposées dans chaque étape. TVLens n’exécute aucune commande d’installation à ta place.</p>
+        <button id="setup-homebrew" class="link">Guide Homebrew ↗</button>
+        <button id="setup-codex-guide" class="link">Guide Codex ↗</button>
+        <p>OpenRouter est facultatif : la recherche sémantique peut être configurée plus tard dans Réglages IA.</p>
+      </aside>
+    </div>
+    <footer class="setup-footer"><p id="setup-state" role="status" aria-live="polite">Vérification des prérequis…</p>
+      <div class="setup-actions"><button id="setup-later" class="link">Explorer pour le moment</button>
+        <button id="setup-refresh" class="secondary">Vérifier à nouveau</button>
+        <button id="setup-quit" class="secondary" hidden>Quitter pour rouvrir</button>
+        <button id="setup-finish" class="setup-primary" disabled>Commencer</button></div>
+    </footer>
+  </dialog>
   <script type="module" src="renderer.js"></script>
 </body>
 </html>
