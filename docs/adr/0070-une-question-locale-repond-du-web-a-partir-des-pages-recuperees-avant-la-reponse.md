@@ -1,4 +1,4 @@
-# 0066 — Une question locale répond du web à partir des pages récupérées avant la réponse
+# 0070 — Une question locale répond du web à partir des pages récupérées avant la réponse
 
 - Date : 2026-10-22
 - Ticket : `docs/travail/tickets/309-answer-a-local-question-from-retrieved-pages-and-validate-its-sources.md`

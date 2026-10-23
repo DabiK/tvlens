@@ -73,7 +73,7 @@ son sujet (« Quand ce film a-t-il été publié ? ») part alors avec une requ�
     `core/video-tools.cjs:174-195`, transmis par `core/deep-ask.cjs:207` ;
   - configuration et rejeux du déclencheur : ce que T311 a ajouté (`TVLENS_LOCAL_WEB_TRIGGER`, validation dans la
     composition, `scripts/local-stream-input.cjs`, documentation dans `.env.example` et `docs/gx10-experiment.md`) ;
-  - ADR 0066 : récupération avant la réponse, pas un outil ; limite connue « la requête est la question brute ».
+  - ADR 0070 : récupération avant la réponse, pas un outil ; limite connue « la requête est la question brute ».
 - La branche d'essai F1 fusionne aussi `feat/journal-memoire-local` (T313 change le contexte des questions locales) :
   garder les changements de `buildLocalPrompt` petits et localisés.
 
@@ -100,7 +100,7 @@ son sujet (« Quand ce film a-t-il été publié ? ») part alors avec une requ�
   - Configuration et rejeux : `model` admis partout où T311 admet `auto` et `always` ; documentation des réglages.
   - ADR : décision du modèle avant la récupération (appel séparé et court plutôt qu'un outil, coût mesuré par H2,
     repli sur la règle, question brute gardée pour la réponse), et mise à jour de la limite « requête brute » de
-    l'ADR 0066.
+    l'ADR 0070.
   - Tests : `tests/ollama-question-agent.test.cjs`, par la composition partagée, DeepAsk et le faux serveur Ollama en
     boucle locale, avec un port factice ; test du client HTTP pour les réglages par appel ; test du prompt de décision
     (avec et sans titre, passages bornés).
@@ -149,7 +149,7 @@ Aucune décision n'est attendue.
   (texte H2 vérifié identique au script), réglages par appel du client HTTP, règle de datation avec pages, décision
   reportée par les rejeux, documentation. Rouges vus avant le code, ou par mutation (13 mutations, toutes détectées).
   `node scripts/check.mjs` : vert, 3132 tests JS et 71 Python.
-- 22/10, orchestrateur : ADR 0067 écrit, limite « requête brute » de l'ADR 0066 amendée, ligne ajoutée à
+- 22/10, orchestrateur : ADR 0067 écrit, limite « requête brute » de l'ADR 0070 amendée, ligne ajoutée à
   `docs/architecture.md`. `node scripts/check.mjs --changed` : vert, 132 tests.
 - 22/10, orchestrateur : relecture 1 (`relecteur` neuf, `revue-1`) : accepté, 0 bloquant, 0 mineur, 0 hors périmètre ;
   les quatre écarts déclarés sont acceptés.

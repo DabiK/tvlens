@@ -21,7 +21,7 @@ déclarer dans son scénario et relève, par question, ce qui a été récupér�
 - Décision du propriétaire, le 22/10 : récupération web pour la voie locale, désactivée par défaut ; corpus figé pour
   les essais hors ligne, SearXNG sur la GX10 (`127.0.0.1:8888`) pour le flux réel (essai F1 de la session expériences).
 - T308 (`FrozenCorpusRetrieval`, format `corpus.json`), T309 (options `retrieval` et `webTrigger` de
-  `OllamaQuestionAgent`, champ `retrieval` du résultat, ADR 0066), T310 (`SearxngRetrieval`).
+  `OllamaQuestionAgent`, champ `retrieval` du résultat, ADR 0070), T310 (`SearxngRetrieval`).
 - Code à `c9f3cc2` (relire après T309 et T310) :
   - `adapters/config.cjs` : `SWITCHES` (`:59-64`), lecture de l'environnement et du fichier importé (`:33`, `:41`),
     `switches()` (`:72-93`), `localQuestionsConfig` (`:99-104`). Ajouter un champ toujours présent casse les

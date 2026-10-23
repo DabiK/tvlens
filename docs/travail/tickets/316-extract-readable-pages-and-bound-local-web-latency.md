@@ -41,7 +41,7 @@ Code lu à `cfa0bf8` (branche d'essai `essai/f1-journal-web`) ; les fichiers de 
 - `tests/ollama-question-agent.test.cjs:1026-1044`, `:1203-1221` : replis sur délais ;
   `tests/web-retrieval.test.cjs:95-210` : sélection des extraits ;
   `tests/frozen-corpus-retrieval.test.cjs:118-176` : bornage du corpus et annulation.
-- `docs/adr/0066-une-question-locale-repond-du-web-a-partir-des-pages-recuperees-avant-la-reponse.md:25-35` :
+- `docs/adr/0070-une-question-locale-repond-du-web-a-partir-des-pages-recuperees-avant-la-reponse.md:25-35` :
   pages ouvertes, validation des sources et repli sans pages.
 - `docs/adr/0067-le-modele-local-decide-la-recherche-web-et-ecrit-sa-requete.md:23-35` :
   appel de décision court, repli sur la règle et diagnostics.
@@ -114,7 +114,7 @@ Retenir les budgets suivants, avec horloge et minuteries injectées :
   Aucune garantie temps réel stricte ni infrastructure de workers n’est introduite.
 
 Ajouter l'ADR 0068 (0063 à 0067 sont pris sur d'autres branches), selon `docs/adr/0000-gabarit.md`, pour le choix d’extraction et
-l’échéance locale, en amendement des ADR 0066 et 0067 ; ajouter son lien dans `docs/architecture.md`.
+l’échéance locale, en amendement des ADR 0070 et 0067 ; ajouter son lien dans `docs/architecture.md`.
 
 ## Hors périmètre
 
@@ -190,7 +190,7 @@ Aucune décision n'est attendue.
   (décision non abandonnée à 1 500 ms), critères 7-8 (huit cas sans issue à 14 s) ; critère 2 prouvé par mutations
   (repli retiré : 7 échecs), critère 5 vert dès le départ (non-régression). Écart déclaré : `maxElemsToParse` inopérant
   sous LinkeDOM, comptage préalable par `querySelectorAll('*')`. `node scripts/check.mjs` (implémenteur) : vert,
-  3 176 tests JS, 71 Python. ADR 0068 écrit, lien dans `docs/architecture.md`, délais mis à jour dans 0066 et 0067.
+  3 176 tests JS, 71 Python. ADR 0068 écrit, lien dans `docs/architecture.md`, délais mis à jour dans 0070 (alors numérotée 0066) et 0067.
 - 22/10, orchestrateur : relecture 1 (`relecteur`) « à corriger », 0 bloquant, 1 mineur (décision tardive après 1,5 s non
   testée), 1 hors périmètre (plafond de cinq minutes annoncé par DeepAsk) ; les deux écarts déclarés sont acceptés.
   Correction confiée à l'implémenteur.

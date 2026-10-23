@@ -2,7 +2,7 @@
 
 - Date : 2026-10-22
 - Ticket : `docs/travail/tickets/316-extract-readable-pages-and-bound-local-web-latency.md`
-- Statut : acceptée ; amende les ADR 0066 et 0067
+- Statut : acceptée ; amende les ADR 0070 et 0067
 
 ## Contexte
 
@@ -58,7 +58,7 @@ l'analyse.
   question éligible qui ne cherche pas, sans minuterie propre : à l'échéance, à l'annulation ou à la fermeture,
   l'attente s'arrête même si la promesse ignore son signal ; ses issues tardives sont absorbées sans résultat, usage
   ni appel de plus, et minuterie et écouteur sont retirés. Décision abandonnée : la règle `callsForWeb` décide sur la
-  question brute. Récupération abandonnée : réponse sans pages, comme l'ADR 0066.
+  question brute. Récupération abandonnée : réponse sans pages, comme l'ADR 0070.
 - Les délais internes de SearXNG (5 s pour la recherche, 4 s par page) restent des protections secondaires sous le
   budget de 5 s de la récupération entière. L'attente dans la file de DeepAsk reste hors de ce budget.
 

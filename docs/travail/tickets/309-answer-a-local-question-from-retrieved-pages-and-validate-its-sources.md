@@ -74,13 +74,13 @@ locale, la phrase de l'ADR 0057 qui réserve le web à Codex.
   - Le résultat porte un champ `retrieval` quand une récupération a été tentée : `residence` (celle du port), `status`
     (`used`, `empty`, `failed`), nombre de documents, durée. Jamais de texte de page dans le résultat, les traces ou les
     erreurs.
-  - Nouvel ADR `docs/adr/0066-…` (prochain numéro libre) : validité d'une source locale (page lue par la récupération de
+  - Nouvel ADR `docs/adr/0070-…` (prochain numéro libre) : validité d'une source locale (page lue par la récupération de
     ce tour, validée par clé d'URL contre les documents rendus) ; récupération avant la réponse dans le bloc non fiable,
     pas un outil ; seulement en chat sans intention, par règle pure ou réglage `always` ; capacité désactivée par défaut
     (sans port, refus actuel) ; aucun repli vers Codex ; une récupération par un port `hybrid` rend la question
     « hybride » (la requête est sortie de la machine), à relever comme tel dans les essais ; une relance ne réutilise pas
     les pages d'un tour précédent (pas d'historique implicite) ; limite connue : la requête est la question brute, sans
-    reformulation. Statut de l'ADR 0057 mis à jour (amendée par 0066) ; `docs/architecture.md` si elle décrit les
+    reformulation. Statut de l'ADR 0057 mis à jour (amendée par 0070) ; `docs/architecture.md` si elle décrit les
     questions locales.
   - Tests dans `tests/ollama-question-agent.test.cjs`, par la composition partagée, DeepAsk, les vrais outils et le faux
     serveur Ollama en boucle locale, avec un port de récupération factice injecté (agent construit avec `retrieval`
@@ -120,12 +120,12 @@ Aucune décision n'est attendue.
   vrai domaine). L'agent Ollama passe ses options au client HTTP et compte les requêtes dans son `fetchImpl` ; DeepAsk ne
   revalide pas les URL, l'agent est le seul garde. `buildLocalPrompt` est à ≈10 de complexité (le gel du fichier porte
   sur `buildPrompt`). Le marqueur aléatoire du bloc non fiable impose de comparer les prompts à marqueur normalisé
-  (écart déclaré dans `ecarts.md`). Prochain ADR : 0066 ; `docs/architecture.md` décrit les questions locales sans web.
+  (écart déclaré dans `ecarts.md`). Prochain ADR : 0066, renuméroté 0070 ; `docs/architecture.md` décrit les questions locales sans web.
 - 22/10, orchestrateur, implémentation (implementeur) : `buildLocalPrompt` reçoit `webPages` (lignes web extraites dans
   `localWebLines`), `readAnswer(content, pages)` valide les sources par clé d'URL, l'agent récupère avant le prompt avec
   un délai de 15 s et publie `retrieval`. 12 tests ajoutés ; rouge vu : le test d'acceptation échouait sur `actual: []`
   (port jamais appelé). Rapporté par l'implémenteur : `node scripts/check.mjs` complet vert (3090 tests JS, 71 Python).
-- 22/10, orchestrateur, ADR : `docs/adr/0066-…` écrit, statut de l'ADR 0057 « amendée par l'ADR 0066 »,
+- 22/10, orchestrateur, ADR : `docs/adr/0070-…` écrit, statut de l'ADR 0057 « amendée par l'ADR 0070 »,
   `docs/architecture.md` (questions locales et entrée Décisions) mis à jour.
 - 22/10, orchestrateur, relecture 1 (`relecture-1.md`) : à corriger, 0 bloquant, 1 mineur (aucun test ne protège la
   consigne web du prompt avec pages), 1 hors périmètre (titre et éditeur non bornés en longueur). Écart du critère 4
@@ -136,7 +136,7 @@ Aucune décision n'est attendue.
 - 22/10, orchestrateur, relecture 2 (`relecture-2.md`, relecture de correction) : accepté, 0 bloquant, 0 mineur,
   1 hors périmètre (titre, éditeur et date d'une page non bornés en longueur), NON CORRIGÉS : 0. Verdict TERMINÉ.
 - 22/10, orchestrateur, après intégration : le propriétaire confirme la règle de la page ouverte pour la voie locale
-  (un résultat de recherche seul ne compte pas) ; mention ajoutée à l'ADR 0066.
+  (un résultat de recherche seul ne compte pas) ; mention ajoutée à l'ADR 0070.
 
 ### Réserves à la clôture
 
