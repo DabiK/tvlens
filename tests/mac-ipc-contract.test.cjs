@@ -210,7 +210,7 @@ function wrapSimulatedProviders(loaded, wrap) {
 async function launch(userData, {
   env = {}, sweep = async () => [], disk = null, wrap = {}, shortcuts = false, flags = [], readClock,
   platform = process.platform, disabledFeatures = '',
-  dialogSelection,
+  dialogSelection, dialogChoice, storageAccess,
 } = {}) {
   const handlers = new Map(), schemes = new Map(), opened = [], failures = [], sweeps = [], sent = [];
   const registeredShortcuts = new Map();
@@ -241,8 +241,10 @@ async function launch(userData, {
     }, desktopCapturer: { getSources: async () => [] },
     session: { defaultSession: { setDisplayMediaRequestHandler() {} } }, systemPreferences: { getMediaAccessStatus: () => 'granted' },
     shell: { openExternal: async url => { opened.push(url); } },
-    dialog: { showErrorBox() {}, showOpenDialog: async () => dialogSelection || { canceled: true } },
-    safeStorage: { isEncryptionAvailable: () => false }, screen: { getDisplayMatching: () => ({ workArea: { x: 0, y: 0, width: 1920, height: 1080 } }) } };
+    dialog: { showErrorBox() {}, showOpenDialog: async () => dialogSelection || { canceled: true },
+      showMessageBox: async () => ({ response: dialogChoice ?? 1 }) },
+    safeStorage: { isEncryptionAvailable: () => { storageAccess?.(); return false; } },
+    screen: { getDisplayMatching: () => ({ workArea: { x: 0, y: 0, width: 1920, height: 1080 } }) } };
   const sender = { sender: webContents, senderFrame: webContents.mainFrame };
   const invoke = async (channel, ...args) => {
     try { const result = await handlers.get(channel)(sender, ...structuredClone(args)); return result === undefined ? undefined : structuredClone(result); }
@@ -1942,4 +1944,23 @@ test('Mac configuration imports keep the same persisted account in diagnostics a
   await host.importConfig();
   assert.equal((await host.setupStatus()).paths.codexAuthHome, authHome);
   assert.equal(client.authHome, authHome);
+});
+
+
+test('Mac startup and cancelled or temporary imports never probe the keychain', async t => {
+  const { launch, userData } = await stage(t);
+  const configFile = path.join(userData, 'optional.env');
+  await fsp.writeFile(configFile, 'OPENROUTER_API_KEY=temporary-secret\n');
+  for (const dialogChoice of [2, 1]) {
+    let accesses = 0;
+    const host = await launch({ dialogSelection: { canceled: false, filePaths: [configFile] },
+      dialogChoice, storageAccess: () => { accesses++; } });
+    assert.equal(host.started, true, host.failures.join(' '));
+    assert.equal(accesses, 0);
+    const config = await host.importConfig();
+    assert.equal(config.hasKey, dialogChoice === 1);
+    assert.equal(accesses, 0);
+    await assert.rejects(fsp.access(path.join(userData, 'provider.enc')), { code: 'ENOENT' });
+    await host.quit();
+  }
 });

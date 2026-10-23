@@ -91,13 +91,40 @@ Les sondes de commandes ont un délai de cinq secondes et n’effectuent aucune 
 
 L’autorisation du **son système** se confirme lors de la première capture : le statut écran seul ne la garantit pas. Suivre la demande macOS puis quitter et rouvrir TVLens si nécessaire. Le microphone n’est pas requis pour écouter le son de la vidéo. Les bannières audio existantes restent actives.
 
+### Accès au trousseau, seulement sur demande
+
+Au premier lancement, sans configuration protégée existante, TVLens ouvre son assistant sans
+solliciter le trousseau. Les chemins des outils, le modèle vocal et les sessions ne nécessitent pas cet accès.
+
+Si des réglages chiffrés existent déjà sur ce Mac, l’écran **Retrouver mes réglages** propose :
+
+- **Déverrouiller mes réglages** : seulement après ce clic, macOS peut demander l’accès à
+  **TVLens Safe Storage**. Saisir le mot de passe du trousseau « session » (habituellement celui
+  de la session Mac) uniquement dans la fenêtre macOS. TVLens ne reçoit pas ce mot de passe.
+- **Continuer sans les charger** : ouvrir l’application avec les réglages par défaut, sans
+  supprimer ni remplacer le fichier protégé. Quitter puis rouvrir TVLens pour retrouver ce choix.
+  Les sessions et les chemins choisis dans l’assistant restent conservés.
+
+Un refus d’accès laisse cet écran utilisable : réessayer ou continuer sans charger les réglages.
+Les agents sont préparés après ce choix, pour éviter de démarrer avec une configuration puis
+changer de fournisseur au milieu d’une session.
+
+L’import avancé **Charger .env.local** explique l’accès avant toute demande macOS et propose
+**Enregistrer de façon protégée**, **Pour cette ouverture seulement** ou **Annuler**.
+L’utilisation temporaire ne touche pas au trousseau et ne remplace pas les réglages enregistrés.
+Un fichier fourni au démarrage depuis les sources est également utilisé pour cette ouverture seulement ;
+l’enregistrement durable passe par l’import explicite.
+
+Cette autorisation concerne le stockage des réglages. Les confirmations Gatekeeper, Codex et écran/son
+restent distinctes. Aucune protection macOS ni chiffrement n’est désactivé.
+
 ### Configuration conservée dans l’application
 
 Les boutons **Choisir un autre emplacement…** ouvrent un sélecteur natif pour les outils, le modèle ou le dossier Codex. Aucun chemin n’est saisi comme une commande à exécuter. Les choix sont enregistrés dans `~/Library/Application Support/TVLens/installation.json`, sans clé API ni contenu d’authentification. Ils prennent priorité sur les chemins importés de `.env.local` et restent valables au lancement depuis le Finder. Une modification demande une réouverture pour que les agents et la transcription utilisent tous la même configuration ; fermer la session courante avant de modifier l’installation.
 
 Le modèle téléchargé est conservé dans `~/Library/Application Support/TVLens/models/ggml-base.bin`. Sans chemin explicite, une app empaquetée cherche désormais son modèle à cet emplacement, quel que soit son répertoire de lancement. Les lancements de développement conservent `.local/models` par défaut.
 
-La connexion se fait dans Codex lui-même. TVLens ne demande ni mot de passe ni clé obligatoire : OpenRouter reste facultatif et l’import chiffré de `.env.local` reste disponible pour les réglages avancés. L’installateur recommandé prépare Homebrew et les outils après confirmation.
+La connexion se fait dans Codex lui-même. TVLens ne recueille aucun mot de passe et n’exige aucune clé API : OpenRouter reste facultatif et l’import chiffré de `.env.local` reste disponible pour les réglages avancés. L’installateur recommandé prépare Homebrew et les outils après confirmation.
 L’assistant dans l’app fournit aussi les commandes et liens officiels pour le parcours manuel.
 
 Références d’installation : [Codex CLI](https://developers.openai.com/codex/cli/), [Homebrew](https://brew.sh/), [formule Whisper](https://formulae.brew.sh/formula/whisper.cpp). `whisper.cpp` est le nom actuel de la formule anciennement appelée `whisper-cpp`.

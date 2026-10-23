@@ -11,6 +11,10 @@ const on = channel => listener => {
   ipcRenderer.on(channel, callback);
   return () => ipcRenderer.removeListener(channel, callback);
 };
+// The startup window can only choose whether to restore its settings; it cannot drive the application.
+if (process.argv.includes('--config-welcome')) {
+  contextBridge.exposeInMainWorld('configuration', { choose: action => invoke('config:welcome', action) });
+} else {
 contextBridge.exposeInMainWorld('capture', {
   sources: () => invoke('capture:sources'),
   select: id => invoke('capture:select', id),
@@ -80,3 +84,4 @@ contextBridge.exposeInMainWorld('tvlens', {
   state: () => invoke('watch:state'),
   onState: on('watch:state')
 });
+}

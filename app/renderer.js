@@ -74,6 +74,7 @@ function sourcesNotice(text) {
 function setConfig(value) {
   configuration = value;
   $('build-info').textContent = buildLabel(value.build);
+  $('protected-settings-note').hidden = !value.protectedSettingsSkipped;
   wiring.receiveTranscription(value.transcription);
   $('provider').textContent = `Codex ${value.canObserve ? 'prêt' : 'indisponible'} · ${value.model.split('/').at(-1)}`;
   $('cloud-note').textContent = 'Images et transcription envoyées à Codex · audio transcrit sur ce Mac.';

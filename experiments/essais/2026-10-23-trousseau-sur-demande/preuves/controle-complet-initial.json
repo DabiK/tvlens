@@ -1,0 +1,40 @@
+{
+  "ok": false,
+  "steps": [
+    {
+      "name": "règles par fichier",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "format",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "gel du lint",
+      "status": "ok",
+      "detail": ""
+    },
+    {
+      "name": "cliquet",
+      "status": "ok",
+      "detail": "Mesures améliorées : lignes_longues_prod : 388 → 385, cas_de_test_produit : 1759 → 1881"
+    },
+    {
+      "name": "tests JS (176 fichier(s))",
+      "status": "ko",
+      "detail": "✖ layer dependency table permits only declared zones (1.569375ms)\nℹ tests 3313\nℹ pass 3312\nℹ fail 1\n✖ failing tests:\n✖ layer dependency table permits only declared zones (1.569375ms)\n\n✖ failing tests:\n\ntest at tests/architecture.test.cjs:376:1\n✖ layer dependency table permits only declared zones (1.569375ms)\n  AssertionError [ERR_ASSERTION]: app/config-preload.cjs depends on electron\n      at TestContext.<anonymous> (/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/tests/architecture.test.cjs:389:16)\n      at Test.runInAsyncScope (node:async_hooks:214:14)\n      at Test.run (node:internal/test_runner/test:1106:25)\n      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)\n      at Test.postRun (node:internal/test_runner/test:1235:19)\n      at Test.run (node:internal/test_runner/test:1163:12)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: '==',\n    diff: 'simple'\n  }"
+    },
+    {
+      "name": "tests Python",
+      "status": "ok",
+      "detail": "Ran 71 tests in 65.778s\n\nOK"
+    }
+  ]
+}

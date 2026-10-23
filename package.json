@@ -32,7 +32,8 @@
     "build:info": "node scripts/build-info.mjs",
     "verify:mac": "node scripts/verify-package.mjs",
     "test:electron:identity": "node scripts/smoke-build-info.mjs",
-    "test:electron:setup": "node scripts/smoke-setup.mjs"
+    "test:electron:setup": "node scripts/smoke-setup.mjs",
+    "test:electron:config": "node scripts/smoke-config-access.mjs"
   },
   "devDependencies": {
     "@electron/packager": "^20.3.0",

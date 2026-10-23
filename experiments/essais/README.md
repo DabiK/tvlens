@@ -55,3 +55,5 @@
 | [2026-10-21-audit-nuit-gx10](2026-10-21-audit-nuit-gx10/) | Audit indépendant de la nuit : 221 chiffres confirmés, 30/30 sceaux distants intacts ; gain de la pause surestimé (démarrage à froid), aveugle cassable, oracle hors Git. |
 | [2026-10-22-son-capture-mac](2026-10-22-son-capture-mac/) | Son absent sur Mac : la voie audio dépend du lancement (par macOS : CoreAudio Tap ; terminal : ScreenCaptureKit). Avec Tap et une relance par macOS (ADR 0065), son capté et transcrit dans cinq captures, app empaquetée comprise. |
 | [2026-10-23-ci-livraison](2026-10-23-ci-livraison/) | CI Linux/Mac, contenu du paquet Mac et identité de construction : preuves de validation locale, limites de distribution et incidents. |
+
+- [23 octobre 2026 — Trousseau Mac sur demande](2026-10-23-trousseau-sur-demande/README.md) : accueil sans accès protégé, choix explicite, continuation et refus récupérable ; Electron réel avec profils et refus contrôlés.

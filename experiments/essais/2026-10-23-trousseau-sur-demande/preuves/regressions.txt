@@ -1,0 +1,175 @@
+✔ topic summaries belong to memory and passage text belongs to the shared kernel without legacy modules (95.559417ms)
+✔ layer dependency table permits only declared zones (1.144417ms)
+ℹ core: 41 fichiers JavaScript
+ℹ adapters: 59 fichiers JavaScript
+ℹ runtime: 25 fichiers JavaScript
+ℹ server: 8 fichiers JavaScript
+ℹ mcp: 2 fichiers JavaScript
+ℹ app: 48 fichiers JavaScript
+ℹ tv/app: 11 fichiers JavaScript
+ℹ core/** -> core/shared/**: 13 imports
+ℹ core/** -> core/**: 12 imports
+ℹ core/memory/** -> core/shared/**: 5 imports
+ℹ core/memory/** -> core/memory/**: 4 imports
+ℹ core/memory/** -> core/**: 1 imports
+ℹ core/** -> core/memory/**: 3 imports
+ℹ adapters/** -> adapters/**: 57 imports
+ℹ adapters/** -> core/shared/**: 4 imports
+ℹ adapters/** -> core/**: 19 imports
+ℹ adapters/** -> core/memory/**: 2 imports
+ℹ runtime/** -> adapters/**: 36 imports
+ℹ runtime/** -> runtime/**: 34 imports
+ℹ runtime/** -> core/**: 17 imports
+ℹ runtime/** -> core/shared/**: 4 imports
+ℹ runtime/memory/** -> core/memory/**: 1 imports
+ℹ runtime/** -> core/memory/**: 2 imports
+ℹ runtime/** -> runtime/memory/**: 1 imports
+ℹ server/** -> core/**: 5 imports
+ℹ server/** -> adapters/**: 18 imports
+ℹ server/** -> server/**: 8 imports
+ℹ server/** -> runtime/**: 4 imports
+ℹ mcp/** -> mcp/**: 1 imports
+ℹ mcp/** -> core/**: 2 imports
+ℹ app/** -> adapters/**: 20 imports
+ℹ app/** -> app/**: 81 imports
+ℹ app/** -> runtime/**: 14 imports
+ℹ app/** -> core/**: 6 imports
+ℹ app/** -> runtime/memory/**: 1 imports
+✔ TV presentation uses classic scripts and guarded local CommonJS loads (6.656541ms)
+✔ portable core does not access host globals (0.589042ms)
+✔ core global time access stock cannot grow or retain unused exceptions (32.022542ms)
+✔ pure module table enforces each module dependency and timer policy (0.617041ms)
+✔ shared runtime and headless transport do not import Electron (0.119708ms)
+✔ compositions leave watch session lifecycle flags to the domain (0.467792ms)
+✔ memory perception lanes own their queues and use a generic hold policy (0.184583ms)
+✔ core services do not import the session use case (0.1135ms)
+✔ surveillance does not depend on DeepAsk or chat scheduling flags (0.146209ms)
+✔ active Codex roles do not depend on the legacy MCP transport (0.114ms)
+✔ published documentation indexes the local documents and decisions with existing targets (35.218083ms)
+✔ documentation inventory accepts a complete tree and ignores historical assertions (147.725084ms)
+✔ documentation inventory diagnoses a newly added top-level document (119.408375ms)
+✔ documentation inventory excludes ignored documents from every category (136.007041ms)
+✔ documentation inventory counts a new document under docs before its commit (131.780667ms)
+✔ documentation inventory diagnoses an archive index and accepts its link (144.970875ms)
+✔ documentation inventory requires a sentence and link for each added decision (166.362ms)
+✔ documentation inventory diagnoses an absent link target (204.010625ms)
+✔ reference links reject existing untracked and ignored files and directories (154.182ms)
+✔ reference links accept tracked targets outside docs and their parent directories (141.343584ms)
+✔ architecture map diagnoses every missing runtime owner (273.059334ms)
+✔ reference pages reject test counts and branch or deployment assertions (358.621208ms)
+(node:20437) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/app/ui/format.js is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ Mac sound-only citations and previews show the missing image with no replay or thumbnail (7.682084ms)
+✔ a running question shows elapsed over its own ceiling, and a queued one its place, from the injected clock (0.875125ms)
+✔ a deadline, a technical failure or a cancellation is never presented as insufficient evidence (0.259833ms)
+✔ the Mac and TV view models agree on the meaning of every question state (0.462042ms)
+✔ freshness of a question is shown from what the core measured, and nothing is invented without it (0.766084ms)
+✔ one card per sourced lot, a signal drawn apart, and everything undetermined kept in the history only (8.9375ms)
+✔ lateness shows on the tab with the number waiting, and counts and bounds come from totals (4.009875ms)
+✔ a saved history still being read is told as a restoration, and a history kept in memory only gets a discreet notice: both in the words of the state (4.587875ms)
+✔ the reference of the tab badge is the first ready state of a session, and a state still restoring does not give it (0.141542ms)
+✔ a restored history is not news: the header count waits for a ready registry, then counts what comes after (0.128875ms)
+✔ a reading that fails is told as a failed reading, with the passages left unread, never as claims waiting (8.282667ms)
+✔ sessions: a session being captured cannot be deleted, an old archive is text only, storage says low or blocked (23.762916ms)
+✔ result cards stay their time, are never shown stale and never shown twice (0.374875ms)
+✔ lists are redrawn by entry: an unchanged card keeps its node, and a long session draws only its recent passages (0.395792ms)
+✔ wording helpers: durations, sizes and errors read as a viewer would write them (0.499958ms)
+✔ search cards name the session they were searched in: a late answer is not drawn in another session, and an old card replays nothing there (8.135167ms)
+✔ a retained moment shares the passage card presentation and delegates playback while the open session offers the same passage (1.113292ms)
+✔ a state read overtaken by a push is stale, right after departure or just before its answer (0.238333ms)
+✔ of two state reads answered in reverse order, only the one started last is fresh (0.084ms)
+✔ a first state read with nothing overtaking it stays fresh until its answer (0.047625ms)
+✔ an archive push before a state read starts does not make its answer stale (0.050833ms)
+✔ a verification push does not overtake a deep state read from a separate source (0.047583ms)
+✔ a rejected state read propagates its failure and leaves the next read fresh (0.195292ms)
+✔ the window tracks pushes and guards all three deep and verification reads with their own freshness source (2.315292ms)
+✔ published questions reach the document through the shared renderer binding (0.40675ms)
+✔ fresh initial reads draw real cards and all retained reads become inert when the window unloads (0.656208ms)
+✔ a retained initial session read cannot undo a switch (0.437833ms)
+✔ a retained initial session read cannot undo a reset (0.351542ms)
+✔ an archive read held at session cannot restore A after reset and adoption of B (0.633625ms)
+✔ an archive read held at companions cannot restore A after reset and adoption of B (0.485083ms)
+✔ a push from the same archive preserves companion reads and bottom scrolling while its state read is pending (0.554916ms)
+✔ an archive question read checks freshness after another member of Promise.all answers (0.622458ms)
+✔ archive question read failures propagate while optional recap and surveillance failures leave a fresh question usable (0.634125ms)
+✔ a search says it left, then draws its answer through searchCards with the session loaded when it answers (0.283291ms)
+✔ of two searches, only the one asked last is drawn: the older one, answering last, draws and writes nothing (0.071ms)
+✔ an answer searched in another session than the loaded one empties the results and draws nothing (0.061917ms)
+✔ a clear while a search is on its way drops its answer, and clearing always tells the observer (0.038291ms)
+✔ a refusal is told once when the search is still the latest, and not when it was cleared or superseded (0.078125ms)
+✔ an observer that fails while drawing an answer has that failure told as the refusal of the search (0.061333ms)
+✔ surveillance publications feed the real sourced stack and keep a signal outside it (4.12425ms)
+✔ recap publications keep the earlier content through the reducer and redraw citations with the session (0.555083ms)
+✔ memory presents the open session retention and falls back only to that session in the library (0.211666ms)
+✔ the claim of a verification loses every recognised prefix, in any case, and keeps what is not one (0.671208ms)
+✔ a prefix followed by que or si gives the claim after it, and only a whole que or si is taken for the conjunction (0.052209ms)
+✔ a bare reference such as ça is not a claim, but is kept when other words follow it (0.071625ms)
+✔ a claim is cut at 2000 characters, after the prefix and the bare reference are dealt with (0.03975ms)
+✔ a question stripped of its prefix equals its claim, except a bare reference, which only the claim empties (0.045417ms)
+✔ asking to go deeper repeats the first 1200 characters of the answer after its fixed wording (0.035416ms)
+✔ the window takes its claim, its question and its deepening request from the chat rules (2.214125ms)
+✔ each state of the window gives its whole set of disabled commands, the recording class and the four wording modes (0.770666ms)
+✔ a session state without its passages makes the controls throw, as the window did, and never answers by guessing (0.281333ms)
+✔ every command the controls switch off is an element of the window (0.183208ms)
+✔ the window applies all controls from the public capture status and reads the source once (0.69025ms)
+✔ browser composition selects the source and shares its preview with one injected recorder (1.168458ms)
+✔ static scans survive quote and line changes and reject empty input with its file or group (0.904ms)
+✔ the renderer parses, imports only what its modules export, and finds every element it asks for (3.4495ms)
+✔ the renderer talks to the bridge of the contract only, and writes no ceiling or retention of its own (46.856459ms)
+✔ browser composition uses every injected factory and the real rolling recorder (1.837208ms)
+✔ transcription failures keep one coded banner through redraws and reset, and a successful silence clears it (0.355084ms)
+✔ a configuration refresh clears the retained transcription warning after leaving a session (0.200292ms)
+✔ the Mac package refuses research, tooling, other hosts and unknown root entries (0.411125ms)
+✔ private files and packager default exclusions remain excluded at any admitted depth (0.102208ms)
+✔ the actual copy filter covers the app import graph, HTML assets and the audio worklet (15.577291ms)
+✔ the copy hook writes the supplied identity only in the build directory (5.117084ms)
+✔ source links cannot pull files from outside the packaging roots (1.933458ms)
+✔ packaging seals ad hoc builds and only enables distribution signing with an explicit identity (2.208333ms)
+✔ cached Whisper paths accept temporary startup overrides (provider key: true) (11.671ms)
+✔ cached Whisper paths accept temporary startup overrides (provider key: false) (3.883875ms)
+✔ Whisper imports retain their path precedence and persistence (provider key: true) (2.935459ms)
+✔ Whisper imports retain their path precedence and persistence (provider key: false) (3.055708ms)
+✔ explicit Whisper paths reach packaged transcription without a cache or a provider key and write nothing (1.190917ms)
+✔ dedicated inspection settings persist independently while tokens and environment overrides remain temporary (1.511458ms)
+✔ local thinking settings persist independently while startup overrides remain temporary (1.30175ms)
+✔ invalid local thinking settings survive loading and refuse shared startup by name from every configuration source (10.681791ms)
+✔ malformed cached switches keep configuration import available (1.469917ms)
+✔ executable resolution handles PATH entries with spaces and explicit overrides (1.303334ms)
+✔ fresh installation works without an optional env file and keeps writable usage separate (1.504ms)
+✔ explicit Whisper environment overrides win with and without an imported configuration (1.065084ms)
+✔ question backend imports persist while startup overrides and tokens stay out of the cache (2.414083ms)
+✔ embedding backend imports persist independently and never persist local tokens or startup overrides (2.484375ms)
+✔ inspection backend persists file selection while environment wins without persisting local secrets (2.099417ms)
+✔ local embedding deadlines persist from imports while startup overrides remain temporary (1.712708ms)
+✔ local web retrieval is absent unless its backend is set, and imports persist while startup overrides win (2.411ms)
+✔ an App Server dying during the handshake leaves neither its directory nor its dead transport on the client (8.43325ms)
+TVLens : confinement Codex non vérifié (réponse de thread/start incomplète).
+✔ a client closed while its process is being recycled stays closed (2.265458ms)
+✔ two prepare calls around a dead connection end with a single live process (2.856041ms)
+✔ a chat answer that had to connect says so, and the next one does not (2.361875ms)
+✔ after the agent reconnected, a description is the first turn of its thread, not the nth (0.472792ms)
+✔ an abandoned Whisper run settling late does not unregister the run that replaced it (273.348ms)
+✔ during an embeddings outage searches do not multiply failing requests: one per shared backoff step (4.547458ms)
+✔ a search holding an older copy of a passage does not discard the newer text being indexed (0.974833ms)
+✔ a vector appended after a torn line survives the next load (1.53575ms)
+✔ the text of a spoken passage without description does not change when it is archived (0.075375ms)
+✔ an older read returned late never replaces the newer consulted version, even at the same revision (1.129541ms)
+✔ runtime switches reach the packaged app too: those of the imported file persist with it, the environment of a start wins and is not stored, and a mistyped one is refused at session start (3.0795ms)
+✔ the session runtime feeds published passages to the index, honours the opt-out, passes the lane options and closes the index (7.584375ms)
+{"code":"TVLENS_EMBEDDING_CACHE_LOAD","cause":"missing","rebuild":"total","providerCallsPossible":true,"message":"Cache d’embeddings absent : création normale nécessaire ; nouveaux appels au fournisseur possibles pour les vecteurs demandés."}
+✔ the headless state exposes index counters only when an index exists (3.551167ms)
+✔ a search during the pause that follows a provider failure answers at once instead of waiting its whole budget (2.424542ms)
+✔ a client closed while a turn is removing a dead connection stays closed (1.044ms)
+✔ a passage whose transcription failed says so wherever its empty transcript is read (0.377584ms)
+✔ with the session clock stopped by a pause, an older read returned late still does not replace the newer one (0.490458ms)
+✔ the switches of an imported file persist without any provider key, never with the local-model token, and leave a stored key in place (3.82975ms)
+ℹ tests 126
+ℹ suites 0
+ℹ pass 126
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2044.637583

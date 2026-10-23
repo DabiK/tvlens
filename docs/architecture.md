@@ -502,3 +502,6 @@ restent ceux de leur rédaction ; les amendements ci-dessous distinguent la cibl
   Un installateur externe prépare le paquet signé et les outils ; l’assistant conserve le diagnostic et les autorisations personnelles.
 
 L’assistant de premier lancement est composé dans `app/mac-setup.cjs` : sondes locales et préférences non secrètes dans `adapters/desktop-setup.cjs`, téléchargement explicite vérifié dans `adapters/speech-model-download.cjs`, présentation dans `app/ui/setup.mjs`. La configuration des agents reste fixée au lancement ; voir [ADR 0071](adr/0071-le-premier-lancement-mac-verifie-et-guide.md).
+
+Le déverrouillage des réglages protégés est explicite, avant la composition des agents :
+[ADR 0074](adr/0074-le-trousseau-est-sollicite-apres-un-choix-explicite.md).

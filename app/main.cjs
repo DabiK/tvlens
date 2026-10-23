@@ -23,7 +23,7 @@ const {SavedMoments}=require('../core/saved-moments.cjs');
 const {SavedMomentStore}=require('../adapters/saved-moment-store.cjs');
 const {ViewingSettings}=require('../adapters/viewing-settings.cjs');
 const {CodexQuota}=require('../adapters/codex-quota.cjs');
-const { app, BrowserWindow, globalShortcut, desktopCapturer, ipcMain, session, systemPreferences, shell, protocol, dialog, safeStorage, screen } = require('electron');
+const { app, BrowserWindow, globalShortcut, desktopCapturer, ipcMain, session, systemPreferences, shell, protocol, dialog, screen } = require('electron');
 const path = require('node:path');
 const { readBuildInfo } = require('../adapters/build-info.cjs');
 const { randomUUID } = require('node:crypto');
@@ -33,7 +33,8 @@ const { SimulatedSurveillanceAgent } = require('../adapters/simulated-surveillan
 const { sweepStaleContexts } = require('../adapters/codex-confinement.cjs');
 const { cleanupCodexContexts } = require('../runtime/codex-cleanup.cjs');
 const { ModelSettings, modelChoices } = require('../adapters/model-settings.cjs');
-const { loadConfig } = require('../adapters/config.cjs');
+const { createConfigAccess } = require('./config-access.cjs');
+const { showConfigWelcome, explainConfigImport } = require('./config-welcome.cjs');
 const { DesktopPreferences, desktopPaths } = require('../adapters/desktop-setup.cjs');
 const { createMacSetup } = require('./mac-setup.cjs');
 const { UsageLedger } = require('../adapters/trial-budget.cjs');
@@ -80,6 +81,15 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'tvlens-media', privileges: { st
 if (!app.requestSingleInstanceLock()) app.quit();
 else app.on('second-instance', () => { window?.show(); window?.focus(); });
 app.whenReady().then(async () => {
+  let welcome;
+  const configAccess = createConfigAccess({ userData: app.getPath('userData'), environment: process.env,
+    getStorage: () => require('electron').safeStorage,
+    chooseStored: restore => {
+      welcome = showConfigWelcome({ BrowserWindow, ipcMain, restore });
+      return welcome.choice;
+    },
+    explainImport: () => explainConfigImport(dialog, window),
+  });
   const build = await readBuildInfo(path.join(__dirname, '..'));
   sessionsRoot = path.join(app.getPath('userData'), 'sessions');
   // A crash leaves private Codex trees behind, each holding links to the credentials. Swept once, off the
@@ -89,7 +99,9 @@ app.whenReady().then(async () => {
   const configPath = arg || (!app.isPackaged && (!smoke || liveInspection) ? path.join(__dirname, '..', '.env.local') : undefined);
   // The simulated and the fallback configuration keep the production default: a question may run five
   // minutes and must not withhold the visual description of what is captured meanwhile.
-  config = smoke && !liveInspection ? { apiKey: '', model: 'test/fake', visionDuringAsk: true } : await loadConfig({ configPath, userData: app.getPath('userData'), safeStorage }).catch(() => ({ apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' }));
+  const startupConfig = await configAccess.startup(configPath).catch(() => ({
+    apiKey: '', model: 'google/gemini-2.5-flash-lite', audioInput: true, visionDuringAsk: process.env.TVLENS_VISION_DURING_ASK !== '0' }));
+  config = smoke && !liveInspection ? { ...startupConfig, apiKey: '', model: 'test/fake', visionDuringAsk: true } : startupConfig;
   const installation = new DesktopPreferences(app.getPath('userData'));
   const initialSetup = await installation.load().catch(() => ({ paths: {}, completed: false,
     problem: 'Les réglages d’installation sont illisibles. Choisis à nouveau les fichiers nécessaires.' }));
@@ -291,7 +303,7 @@ app.whenReady().then(async () => {
   const segmentMs = smoke && !process.argv.includes('--live-observation') ? 1800 : 8000;
   // The ceiling really enforced and the retention really applied: the renderer derives its texts from them.
   const configuration = () => ({ hasKey:Boolean(config.apiKey),canObserve:Boolean(codexBinary)||smoke, model: config.model, codexModel:selectedModels.codexModel, audioInput: Boolean(config.audioInput) || smoke, verificationAvailable: Boolean(codexBinary) || smoke, segmentMs,
-    build, transcription: (loaded?.runtime.transcriber || transcriber).availability(),
+    build, protectedSettingsSkipped: Boolean(config.protectedSettingsSkipped), transcription: (loaded?.runtime.transcriber || transcriber).availability(),
     questionTimeoutMs: deep.timeoutMs, questionQueueLimit: QUESTION_QUEUE_LIMIT, retention: 'until-deleted', retentionMs: null });
   handle('app:config', configuration);
   handle('models:get', () => selectedModels);
@@ -307,8 +319,10 @@ app.whenReady().then(async () => {
   handle('app:import-config', async () => {
     const result = await dialog.showOpenDialog(window, { title: 'Sélectionner .env.local', properties: ['openFile', 'showHiddenFiles'] });
     if (!result.canceled) {
+      const imported = await configAccess.importFile(result.filePaths[0]);
+      if (!imported) return configuration();
       const host = { questionTimeoutMs: config.questionTimeoutMs, surveillance: config.surveillance };
-      config = await loadConfig({ configPath: result.filePaths[0], userData: app.getPath('userData'), safeStorage });
+      config = imported;
       Object.assign(config, host, resolvePaths(config, initialSetup.paths));
       config.model = selectedModels.observationModel;
       config.inspectionModel = selectedModels.inspectionModel;
@@ -645,6 +659,7 @@ app.whenReady().then(async () => {
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   window.webContents.on('will-navigate', event => event.preventDefault());
   await window.loadFile(path.join(__dirname, 'index.html'));
+  welcome?.window.close();
 }).catch(error => {
   // A refused setting, like any failed start, is said in plain words instead of leaving a blank window.
   console.error(error);

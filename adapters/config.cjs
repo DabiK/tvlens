@@ -4,7 +4,7 @@ const { parseEnv } = require('node:util');
 const { executable } = require('./system-paths.cjs');
 const DEFAULT_MODEL = 'google/gemini-2.5-flash-lite';
 const FREE_MODEL_WITH_UNVALIDATED_AUDIO = 'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free';
-async function loadConfig({ configPath, userData, safeStorage, environment = process.env }) {
+async function loadConfig({ configPath, userData, safeStorage, environment = process.env, protectedAccess = true, strict = false }) {
   const cached = path.join(userData, 'provider.enc');
   if (configPath) {
     const contents = await fs.readFile(configPath, 'utf8').catch(error => { if (error.code === 'ENOENT') return ''; throw error; });
@@ -26,8 +26,8 @@ async function loadConfig({ configPath, userData, safeStorage, environment = pro
     // whether or not the file brings a provider key; without one, the provider settings already stored
     // stay as they are and only the switches are replaced.
     const switchEnv = set(file);
-    if (safeStorage.isEncryptionAvailable()) {
-      const prior = result.apiKey ? null : await stored(cached, safeStorage);
+    if (protectedAccess && encryptionAvailable(safeStorage, strict)) {
+      const prior = result.apiKey ? null : await stored(cached, safeStorage, strict);
       // Nothing to keep and nothing kept before: no file is created, as before.
       if (result.apiKey || prior || Object.keys(switchEnv).length) {
         await fs.mkdir(userData, { recursive: true, mode: 0o700 });
@@ -36,22 +36,46 @@ async function loadConfig({ configPath, userData, safeStorage, environment = pro
     }
     return { ...result, ...switches({ ...switchEnv, ...set(environment), ...set(env, LOCAL_TOKENS) }) };
   }
-  if (safeStorage.isEncryptionAvailable()) {
+  if (protectedAccess && encryptionAvailable(safeStorage, strict)) {
     try {
-      const { switchEnv = {}, ...provider } = JSON.parse(safeStorage.decryptString(await fs.readFile(cached)));
+      const bytes = await readCached(cached);
+      if (!bytes) return { apiKey: '', model: DEFAULT_MODEL, ...switches(environment) };
+      const { switchEnv = {}, ...provider } = JSON.parse(safeStorage.decryptString(bytes));
       // A cache written by an import without a key holds switches only.
       return { ...(provider.apiKey ? provider : { apiKey: '', model: DEFAULT_MODEL }),
         ...switches({ ...set(switchEnv), ...set(environment, [...SWITCHES, ...LOCAL_TOKENS, ...WHISPER_PATHS]) }) };
     }
-    catch { /* Import remains available when no encrypted credentials exist. */ }
+    catch (error) {
+      if (strict) throw error;
+      // Legacy callers keep import available when saved credentials cannot be read.
+    }
   }
   return { apiKey: '', model: DEFAULT_MODEL, ...switches(environment) };
 }
 // What the cache already holds apart from its switches: the provider settings of the last import that
 // brought a key, or nothing. null when there is no readable cache.
-async function stored(cached, safeStorage) {
-  try { const { switchEnv, ...provider } = JSON.parse(safeStorage.decryptString(await fs.readFile(cached))); return provider; }
-  catch { return null; }
+async function readCached(cached) {
+  try { return await fs.readFile(cached); }
+  catch (error) {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  }
+}
+function encryptionAvailable(safeStorage, strict) {
+  const available = safeStorage.isEncryptionAvailable();
+  if (!available && strict) throw Object.assign(new Error('Stockage protégé indisponible.'), { code: 'TVLENS_CONFIG_LOCKED' });
+  return available;
+}
+async function stored(cached, safeStorage, strict) {
+  try {
+    const bytes = await readCached(cached);
+    if (!bytes) return null;
+    const { switchEnv, ...provider } = JSON.parse(safeStorage.decryptString(bytes));
+    return provider;
+  } catch (error) {
+    if (strict) throw error;
+    return null;
+  }
 }
 // Runtime switches, resolved at every start on every path: those of the imported file, then the
 // environment of this start, which wins and is never stored. The local-model token is never stored

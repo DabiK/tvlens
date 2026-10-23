@@ -29,6 +29,7 @@ python3 -B -m unittest discover -s prototypes/lg-remote -p 'test_*.py'
 npm run test:electron
 npm run test:electron:identity
 npm run test:electron:setup
+npm run test:electron:config
 npm run package:mac
 npm run verify:mac -- dist/TVLens-darwin-arm64/TVLens.app --report /tmp/tvlens-package.json
 ```

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'">
+  <title>Bienvenue dans TVLens</title>
+  <link rel="stylesheet" href="config-welcome.css">
+</head>
+<body>
+  <main>
+    <p class="brand">TVLens</p>
+    <h1>Retrouver mes réglages</h1>
+    <p>Des réglages protégés sont déjà enregistrés sur ce Mac. Tu peux les déverrouiller pour retrouver ta configuration.</p>
+    <p>Après ton clic, macOS peut demander l’accès à <strong>« TVLens Safe Storage »</strong> et le mot de passe de ta session Mac.
+      Saisis-le uniquement dans la fenêtre macOS ; TVLens ne reçoit pas ce mot de passe.</p>
+    <p class="muted">Tu peux aussi continuer avec les réglages par défaut. Tes réglages enregistrés et tes sessions seront conservés.
+      Pour retrouver ces réglages plus tard, quitte puis rouvre TVLens.</p>
+    <div class="actions">
+      <button id="restore" type="button">Déverrouiller mes réglages</button>
+      <button id="skip" class="secondary" type="button">Continuer sans les charger</button>
+    </div>
+    <p id="feedback" role="status" aria-live="polite"></p>
+  </main>
+  <script type="module" src="config-welcome.mjs"></script>
+</body>
+</html>
