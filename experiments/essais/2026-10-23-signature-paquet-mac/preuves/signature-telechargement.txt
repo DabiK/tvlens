@@ -1,0 +1,20 @@
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper.app
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper (Plugin).app
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper.app
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper (GPU).app
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper (Plugin).app
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper (Renderer).app
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper (GPU).app
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Squirrel.framework/Versions/Current/.
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/TVLens Helper (Renderer).app
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Mantle.framework/Versions/Current/.
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Squirrel.framework/Versions/Current/.
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Mantle.framework/Versions/Current/.
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/ReactiveObjC.framework/Versions/Current/.
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/ReactiveObjC.framework/Versions/Current/.
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/.
+--prepared:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/Helpers/chrome_crashpad_handler
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/Helpers/chrome_crashpad_handler
+--validated:/Users/Dabi/.codex/worktrees/mac-first-launch/tvlens/dist/download-validation/TVLens.app/Contents/Frameworks/Electron Framework.framework/Versions/Current/.
+dist/download-validation/TVLens.app: valid on disk
+dist/download-validation/TVLens.app: satisfies its Designated Requirement
