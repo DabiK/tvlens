@@ -3,6 +3,7 @@ const path = require('node:path');
 
 // Doit égaler le titre de la BrowserWindow créée dans app/main.cjs pour exclure la fenêtre de l'application.
 const OWN_WINDOW_NAME = 'TVLens';
+const SOURCE_PREVIEW_SIZE = { width: 480, height: 270 };
 
 async function createCaptureSources({ smoke, desktopCapturer, systemPreferences, shell, preferenceFile }) {
   let sources = [];
@@ -10,10 +11,18 @@ async function createCaptureSources({ smoke, desktopCapturer, systemPreferences,
   let selectedId;
   let capturedSource = null;
   return {
-    sources: async () => {
+    sources: async (options = {}) => {
+      const permission = smoke ? 'granted' : systemPreferences.getMediaAccessStatus('screen');
+      const previews = options?.previews === true && permission === 'granted';
+      const thumbnailSize = previews ? SOURCE_PREVIEW_SIZE : { width: 0, height: 0 };
       sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }]
-        : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize: { width: 0, height: 0 } });
-      const available = sources.filter(source => source.name !== OWN_WINDOW_NAME).map(source => ({ id: source.id, name: source.name }));
+        : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize });
+      const available = sources.filter(source => source.name !== OWN_WINDOW_NAME).map(source => {
+        const item = { id: source.id, name: source.name };
+        const thumbnail = previews ? previewDataURL(source.thumbnail) : null;
+        if (thumbnail) item.thumbnail = thumbnail;
+        return item;
+      });
       // Window IDs can be recycled: only preselect when both ID and title still match.
       const preferred = available.find(source => source.id === lastSource?.id && source.name === lastSource?.name);
       return {
@@ -39,6 +48,15 @@ async function createCaptureSources({ smoke, desktopCapturer, systemPreferences,
     },
     capturedSourceName: () => capturedSource,
   };
+}
+
+function previewDataURL(image) {
+  try {
+    return image && !image.isEmpty() ? image.toDataURL() : null;
+  } catch {
+    // One window may close during conversion: keep the source list usable with its unavailable-preview fallback.
+    return null;
+  }
 }
 
 module.exports = { createCaptureSources };

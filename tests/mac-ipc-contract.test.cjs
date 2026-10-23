@@ -1964,3 +1964,22 @@ test('Mac startup and cancelled or temporary imports never probe the keychain', 
     await host.quit();
   }
 });
+
+test('capture preview requests cross preload and host as an explicit boolean without starting a session', async t => {
+  const { launch } = await stage(t);
+  const requests = [];
+  const host = await launch({ wrap: { captureSources: async built => {
+    const adapter = await built;
+    return { ...adapter, sources: options => {
+      requests.push(options);
+      return adapter.sources(options);
+    } };
+  } } });
+  assert.equal(host.started, true, host.failures.join(' '));
+  await host.capture.sources();
+  const preview = await host.capture.sources({ previews: true, width: 9000 });
+  await host.capture.sources({ previews: 'yes' });
+  assert.deepEqual(requests.slice(-3), [{ previews: false }, { previews: true }, { previews: false }]);
+  assert.equal(preview.sources[0].thumbnail, undefined, 'smoke mode does not manufacture a source screenshot');
+  assert.equal(await host.state(), null);
+});

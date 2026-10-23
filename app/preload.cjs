@@ -16,7 +16,7 @@ if (process.argv.includes('--config-welcome')) {
   contextBridge.exposeInMainWorld('configuration', { choose: action => invoke('config:welcome', action) });
 } else {
 contextBridge.exposeInMainWorld('capture', {
-  sources: () => invoke('capture:sources'),
+  sources: options => invoke('capture:sources', { previews: options?.previews === true }),
   select: id => invoke('capture:select', id),
   settings: () => invoke('capture:settings')
 });

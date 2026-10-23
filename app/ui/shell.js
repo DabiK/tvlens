@@ -6,7 +6,7 @@ export class ViewingShell {
     this.root = root;
     this.get = id => root.getElementById(id);
     this.view = 'direct';
-    this.homeView = 'chapters';
+    this.homeView = 'live';
     this.onShow = () => {};
     this.get('nav-live').onclick = () => this.show('direct');
     this.get('nav-memory').onclick = () => this.show('memory');
@@ -26,7 +26,7 @@ export class ViewingShell {
     setIcon(this.get('float-chat'), 'chat', 'Demander');
     this.bookmarkFeedback(false);
     this.show('direct');
-    this.showHome('chapters');
+    this.showHome('live');
   }
   bookmarkFeedback(saved) {
     setIcon(this.get('float-keep'), saved ? 'check' : 'bookmark');
@@ -35,7 +35,7 @@ export class ViewingShell {
   // Switching home panels never moves or rebuilds the conversation or its draft.
   showHome(view) {
     this.homeView = view;
-    for (const name of ['chapters', 'live']) {
+    for (const name of ['live', 'chapters']) {
       const selected = name === view;
       this.get(`home-${name}`).hidden = !selected;
       const tab = this.get(`home-${name}-tab`);
@@ -46,8 +46,8 @@ export class ViewingShell {
         if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();
         let next = name === 'chapters' ? 'live' : 'chapters';
-        if (event.key === 'Home') next = 'chapters';
-        if (event.key === 'End') next = 'live';
+        if (event.key === 'Home') next = 'live';
+        if (event.key === 'End') next = 'chapters';
         this.showHome(next);
         this.get(`home-${next}-tab`).focus();
       };

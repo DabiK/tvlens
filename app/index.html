@@ -25,6 +25,7 @@
     </div>
   </header>
   <nav id="float-bar" aria-label="Actions du mode flottant">
+    <button id="float-full" class="float-action square" title="Revenir à la fenêtre complète" aria-label="Revenir à la fenêtre complète">←</button>
     <button id="float-transcription-warning" class="float-action" aria-controls="transcription-warning" hidden>Paroles indisponibles</button>
     <button id="float-audio-warning" class="float-action" aria-controls="audio-warning" hidden>Son absent</button>
     <span class="float-grip" title="Déplacer la fenêtre"><i class="small-dot"></i> TV<span>Lens</span></span>
@@ -36,7 +37,6 @@
     <button id="float-menu-toggle" class="float-action square" aria-label="Plus d’actions" aria-expanded="false" aria-controls="float-menu">⋯</button>
   </nav>
   <div id="float-menu" class="floating-menu" popover>
-    <button id="float-full">Ouvrir la fenêtre complète ↗</button>
     <button id="float-explain">Explique ce moment</button>
     <button id="float-watch">Surveillance</button>
     <button id="float-memory">Retrouver un passage</button>
@@ -58,14 +58,14 @@
     <section class="workspace">
       <section class="hero" aria-label="Session en cours">
         <div class="home-heading"><p class="eyebrow">TA SESSION</p><h1>Le fil de ton visionnage</h1></div>
-        <div class="home-capture"><div class="source-row"><label class="sr-only" for="source">Fenêtre ou écran à regarder</label><select id="source"><option value="">Recherche des fenêtres…</option></select><button id="refresh" class="secondary" title="Actualiser les sources" aria-label="Actualiser les sources">↻</button><button id="start" hidden disabled>Aperçu</button></div>
+        <div class="home-capture"><div class="source-row"><label class="sr-only" for="source">Fenêtre ou écran à regarder</label><button id="choose-source" class="secondary" aria-haspopup="dialog">Choisir une fenêtre ou un écran…</button><select id="source" hidden><option value="">Recherche des fenêtres…</option></select><button id="refresh" class="secondary" title="Actualiser les sources" aria-label="Choisir une source avec aperçu">↻</button><button id="start" hidden disabled>Aperçu</button></div>
         <div class="monitor-footer"><details class="coverage-details"><summary id="coverage-summary">Prêt à observer</summary><div><span id="mode" class="badge">PRÊT À REGARDER</span> · <span id="elapsed" class="time">00:00</span><p id="live-state">Capture inactive</p><div class="sound"><label for="meter">Audio</label><meter id="meter" min="0" max="1" value="0">0</meter></div></div></details><div class="session-controls"><button id="observe" disabled>Lancer l’observation</button><button id="stop" class="secondary" disabled>Mettre en pause</button></div></div>
         </div>
         <div class="home-tabs" role="tablist" aria-label="Vue de la session">
-          <button id="home-chapters-tab" role="tab" aria-selected="true" aria-controls="home-chapters" class="active">Chapitres</button>
-          <button id="home-live-tab" role="tab" aria-selected="false" aria-controls="home-live">En ce moment</button>
+          <button id="home-live-tab" role="tab" aria-selected="true" aria-controls="home-live" class="active">En ce moment</button>
+          <button id="home-chapters-tab" role="tab" aria-selected="false" aria-controls="home-chapters">Chapitres</button>
         </div>
-        <section id="home-chapters" role="tabpanel" aria-labelledby="home-chapters-tab">
+        <section id="home-chapters" role="tabpanel" aria-labelledby="home-chapters-tab" hidden>
         <section id="recap-panel" class="recap-panel" aria-labelledby="recap-title">
           <div class="section-heading"><div><p class="eyebrow">LE FIL DE TA VIDÉO</p><h2 id="recap-title">Le fil de la vidéo</h2></div><button id="open-recap-all" class="link">Tous les chapitres ↗</button></div>
           <div id="recap-content"><p class="hint">Le résumé se construit au fil des passages analysés.</p></div>
@@ -73,7 +73,7 @@
         <details class="home-passages"><summary>Tous les passages de cette session</summary><div class="section-heading"><div><p class="eyebrow">PASSAGES OBSERVÉS</p><h2>Moments récents</h2></div><button id="open-library" class="link">Tout voir ↗</button></div><p id="memory-status" class="hint">Les passages apparaîtront après quelques secondes de capture.</p><div id="timeline" class="moment-rail"></div><p id="timeline-older" class="hint" hidden></p>
         </details>
         </section>
-        <section id="home-live" role="tabpanel" aria-labelledby="home-live-tab" hidden>
+        <section id="home-live" role="tabpanel" aria-labelledby="home-live-tab">
         <div class="monitor"><video id="preview" autoplay muted playsinline aria-label="Aperçu de la source choisie"></video><div class="preview-empty"><span class="preview-icon">▣</span><h1>Qu’est-ce qu’on regarde ?</h1><p>Choisis une fenêtre et lance l’observation.</p></div></div>
 
         <div class="context-row"><div><p class="eyebrow">EN CE MOMENT</p><p id="current-context">Le contexte apparaîtra avec les premières observations.</p></div><button id="keep-moment" class="secondary">☆ Garder ce moment</button></div>
@@ -132,6 +132,12 @@
   </dialog>
   <dialog id="replay-dialog" aria-labelledby="replay-title"><div class="section-heading"><h2 id="replay-title">Revoir le passage</h2><button id="close-replay" class="secondary">Fermer</button></div><video id="replay" controls muted playsinline></video><p id="replay-note" class="hint">Relecture muette pendant l’observation pour ne pas recapturer son audio.</p></dialog>
   <dialog id="verify-dialog" aria-labelledby="verify-title"><form id="verify-form"><div class="section-heading"><h2 id="verify-title">Vérifier une affirmation</h2><button id="close-verify" type="button" class="secondary">Fermer</button></div><label for="claim">AFFIRMATION À RECHERCHER</label><textarea id="claim" rows="4" maxlength="2000" required placeholder="Ex. : Le premier alunissage habité a eu lieu en 1972."></textarea><p class="hint">Précise le chiffre, le sujet et la période. Tu peux corriger le texte avant la recherche.</p><p class="hint">Recherche sur le web avec Codex. La capture et tes questions continuent pendant ce temps.</p><div class="verify-submit"><span id="verify-error" role="status"></span><button id="launch-verify" type="submit">Lancer la vérification ↗</button></div></form></dialog>
+  <dialog id="source-picker-dialog" aria-labelledby="source-picker-title">
+    <div class="section-heading"><h2 id="source-picker-title">Que veux-tu regarder ?</h2><button id="source-picker-close" class="secondary">Annuler</button></div>
+    <p class="hint">Choisis une fenêtre ou un écran. L’observation démarrera uniquement quand tu la lanceras.</p>
+    <div class="source-picker-heading"><p id="source-picker-status" class="hint" role="status"></p><button id="source-picker-refresh" class="link">Actualiser les aperçus ↻</button></div>
+    <div id="source-picker-grid" class="source-picker-grid"></div>
+  </dialog>
   <dialog id="float-source-dialog" aria-labelledby="float-source-title"><form id="float-source-form">
     <div class="section-heading"><h2 id="float-source-title">Que veux-tu regarder ?</h2><button id="close-float-source" type="button" class="secondary">Fermer</button></div>
     <label for="float-source">Fenêtre ou écran à analyser</label><select id="float-source" required></select>

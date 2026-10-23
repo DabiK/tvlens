@@ -15,7 +15,7 @@ async function stage(t) {
     smoke: false,
     preferenceFile,
     desktopCapturer: { getSources: async value => {
-      assert.deepEqual(value, { types: ['window', 'screen'], thumbnailSize: { width: 0, height: 0 } });
+      assert.deepEqual(value, { types: ['window', 'screen'], thumbnailSize: state.expectedSize || { width: 0, height: 0 } });
       return state.catalog;
     } },
     systemPreferences: { getMediaAccessStatus: kind => {
@@ -147,4 +147,45 @@ test('capture instances keep their catalogs, preferences, selections and capture
   assert.equal(restarted.capturedSourceName(), null);
   assert.equal(restarted.takeSelectedSource(), undefined);
   assert.equal((await restarted.sources()).preferredSourceId, 'window:1');
+});
+
+
+test('capture thumbnails are requested only explicitly with permission and stay out of preferences', async t => {
+  const { create, state, video, preferenceFile } = await stage(t);
+  let conversions = 0;
+  video.thumbnail = { isEmpty: () => false, toDataURL: () => { conversions++; return 'data:image/png;base64,aGVsbG8='; } };
+  const capture = await create();
+  await capture.sources({ previews: true });
+  assert.equal(conversions, 0);
+  state.permission = 'granted';
+  await capture.sources();
+  assert.equal(conversions, 0);
+  state.expectedSize = { width: 480, height: 270 };
+  const result = await capture.sources({ previews: true });
+  assert.equal(result.sources[0].thumbnail, 'data:image/png;base64,aGVsbG8=');
+  assert.equal(conversions, 1);
+  await capture.select(video.id);
+  assert.deepEqual(JSON.parse(await fs.readFile(preferenceFile, 'utf8')), { id: video.id, name: video.name });
+  video.thumbnail.isEmpty = () => true;
+  assert.equal((await capture.sources({ previews: true })).sources[0].thumbnail, undefined);
+});
+
+
+test('a broken native thumbnail does not hide its source or the previews of other sources', async t => {
+  const { create, state, video } = await stage(t);
+  state.permission = 'granted';
+  state.expectedSize = { width: 480, height: 270 };
+  video.thumbnail = { isEmpty: () => false, toDataURL: () => 'data:image/png;base64,aGVsbG8=' };
+  const broken = { id: 'window:2', name: 'Fenêtre fermée' };
+  state.catalog.push(broken);
+  const capture = await create();
+  for (const failure of ['isEmpty', 'toDataURL']) {
+    broken.thumbnail = { isEmpty: () => false, toDataURL: () => 'unused' };
+    broken.thumbnail[failure] = () => { throw Error('native image unavailable'); };
+    const result = await capture.sources({ previews: true });
+    assert.deepEqual(result.sources, [
+      { id: video.id, name: video.name, thumbnail: 'data:image/png;base64,aGVsbG8=' },
+      { id: broken.id, name: broken.name },
+    ]);
+  }
 });

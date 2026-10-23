@@ -7,7 +7,7 @@ import { createBrowserCaptureController } from './ui/browser-capture.mjs';
 import { bindCaptureActions } from './ui/capture-actions.mjs';
 import { bindMomentActions } from './ui/moment-actions.mjs';
 import { renderCaptureControls } from './ui/capture-controls.mjs';
-import { describeSourceListing } from './ui/source-menu.mjs';
+import { describeSourceListing, bindSourcePicker } from './ui/source-menu.mjs';
 import { cleanError, formatBytes, plural } from './ui/text.mjs';
 import { clockLabel } from './ui/job-view.mjs';
 import { isRestoring, INSTRUCTION_EXAMPLES } from './ui/surveillance-view.mjs';
@@ -86,6 +86,7 @@ function updateButtons() {
     captureBusy: captureActions.busy, quickBusy: momentActions.busy,
     configuration, verificationBusy: wiring.verificationState.busy, pendingQuestion,
   });
+  sourcePicker.update();
 }
 const capture = createBrowserCaptureController({
   bridge,
@@ -150,6 +151,16 @@ const momentActions = bindMomentActions({
   mode: () => ({ floating: floatingMode, expanded: floatingExpanded }),
   changeWindowMode, changed: updateButtons, notice,
   forceBottom: () => { forceBottom = true; },
+});
+const sourcePicker = bindSourcePicker({
+  get: $, load: options => window.capture.sources(options),
+  locked: () => capture.previewOpen || capture.recording || capture.stopping || captureActions.busy,
+  selected: () => ({ id: $('source').value, name: $('source').value ? $('source').selectedOptions[0]?.textContent : '' }),
+  choose: (id, result) => {
+    setSources(result);
+    $('source').value = id;
+    updateButtons();
+  },
 });
 const thumbnail = id => `tvlens-media://${wiring.session.id}/thumb/${id}`;
 const previewOf = id => momentPreviews.get(id) || (wiring.passages.get(id)?.thumbnailAvailable ? thumbnail(id) : undefined);
@@ -292,7 +303,7 @@ const actions = {
   'session-resume': () => captureActions.requestCapture(() => captureActions.captureFromArchive()),
 };
 $('source').onchange = updateButtons;
-$('refresh').onclick = refresh;
+$('refresh').onclick = () => sourcePicker.open();
 $('settings').onclick = () => window.capture.settings().catch(error => notice(reason(error)));
 $('import').onclick = () => bridge.importConfig().then(setConfig).catch(error => notice(reason(error)));
 $('close-replay').onclick = () => $('replay-dialog').close();

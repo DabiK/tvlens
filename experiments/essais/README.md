@@ -62,3 +62,7 @@
 - [2026-10-23 — Réexamen en images individuelles et installation Mac](2026-10-23-reexamen-images-lisibles/README.md) : contrôles verts, paquet signé installé ; lecture par modèle et coût non mesurés.
 
 - [2026-10-23 — Accueil avec cartes de chapitres](2026-10-23-accueil-chapitres/README.md) : aperçu Electron isolé, archive réelle copiée, bascule et brouillon vérifiés.
+
+- [2026-10-23 — Sélecteur visuel de source](2026-10-23-selecteur-source/README.md) : vue courante par défaut, modale et annulation vérifiées en smoke ; vignettes natives non testées.
+
+- [2026-10-23 — Retour visible du mode flottant](2026-10-23-retour-mode-flottant/README.md) : version signée installée, 84 tests verts ; clic réel du retour restant à valider.

@@ -341,7 +341,7 @@ test("changing the floating source waits for stop before returning to full mode 
   assert.deepEqual(f.events, [["stop"], ["direct"]]);
   assert.deepEqual(f.navigation, [
     ["mode", false, undefined],
-    ["focus", "source"],
+    ["focus", "choose-source"],
   ]);
 });
 

@@ -343,7 +343,7 @@ app.whenReady().then(async () => {
     smoke, desktopCapturer, systemPreferences, shell,
     preferenceFile: path.join(app.getPath('userData'), 'last-source.json'),
   });
-  handle('capture:sources', () => captureSources.sources());
+  handle('capture:sources', options => captureSources.sources({ previews: options?.previews === true }));
   handle('capture:select', id => captureSources.select(id));
   handle('capture:settings', () => captureSources.settings());
   const setup = createMacSetup({ store: installation, initial: initialSetup, resolvePaths, getConfig: () => config,

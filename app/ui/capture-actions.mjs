@@ -27,7 +27,7 @@ class CaptureActions {
       await this.capture.stop();
       this.showDirect();
       await this.changeWindowMode(false);
-      this.get("source").focus();
+      this.get("choose-source").focus();
     };
     this.get("float-refresh").onclick = () => this.refreshFloatingSources();
     this.get("audio-warning-settings").onclick = () =>
@@ -247,7 +247,7 @@ class CaptureActions {
       this.notice(
         "Choisis d’abord la fenêtre ou l’écran à regarder, puis reprends la capture.",
       );
-      this.get("source").focus();
+      this.get("choose-source").focus();
       return;
     }
     await this.watchWithSelectedSource();
