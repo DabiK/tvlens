@@ -1,0 +1,15 @@
+✔ règles par fichier
+✔ format
+✔ lint
+✔ gel du lint
+✔ cliquet
+    Mesures améliorées : lignes_longues_prod : 388 → 383, cas_de_test_produit : 1759 → 1913
+✔ tests JS (179 fichier(s))
+    ℹ tests 3345
+    ℹ pass 3345
+    ℹ fail 0
+✔ tests Python
+    Ran 71 tests in 66.076s
+
+    OK
+check : vert

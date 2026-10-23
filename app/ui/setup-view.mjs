@@ -2,7 +2,7 @@ const ITEMS = {
   codexBinary: ['Codex', 'Pour comprendre les images et répondre à tes questions.', 'brew install --cask codex'],
   codexAuthHome: ['Connexion Codex', 'Utilise ton compte Codex. Aucun mot de passe à saisir dans TVLens.'],
   whisperBinary: ['Transcription locale', 'Whisper transforme les paroles en texte sur ce Mac.', 'brew install whisper.cpp'],
-  whisperModel: ['Modèle de transcription', 'Modèle multilingue base · environ 142 Mio.'],
+  whisperModel: ['Modèle de transcription', 'Choisis la fidélité recherchée et les ressources à consacrer aux paroles.'],
   ffmpeg: ['Outils vidéo', 'FFmpeg permet de réexaminer les passages vidéo.', 'brew install ffmpeg'],
   screen: ['Écran et son du système', 'Autorise TVLens dans Confidentialité et sécurité → Enregistrement de l’écran et des sons du système.'],
 };
@@ -19,7 +19,10 @@ export function setupRows(report) {
     const good = ['ready', 'present'].includes(check.state);
     const connection = check.id === 'codexAuthHome';
     const command = connection ? `CODEX_HOME=${quote(report.paths.codexAuthHome)} ${quote(report.paths.codexBinary)} login` : install;
-    return { ...check, title, detail, good, path: report.paths[check.id], command,
+    const speech = check.id === 'whisperModel' ? report.speech : undefined;
+    const selected = speech?.models.find(model => model.id === speech.selectedId);
+    const modelDetail = selected ? `Modèle configuré : ${selected.label}.` : 'Modèle local personnalisé ou défini par la configuration.';
+    return { ...check, title, detail: speech ? modelDetail : detail, speech, good, path: report.paths[check.id], command,
       label: connection && !good ? 'Connexion à vérifier' : STATES[check.state] || 'À vérifier',
       required: ['codexBinary', 'codexAuthHome', 'screen'].includes(check.id),
     };

@@ -1983,3 +1983,22 @@ test('capture preview requests cross preload and host as an explicit boolean wit
   assert.equal(preview.sources[0].thumbnail, undefined, 'smoke mode does not manufacture a source screenshot');
   assert.equal(await host.state(), null);
 });
+
+test('Mac sessions use the persisted speech model and apply language changes after reopening', async t => {
+  const { launch, userData } = await stage(t);
+  const model = path.join(userData, 'models', 'ggml-small.bin');
+  await fsp.writeFile(path.join(userData, 'installation.json'), JSON.stringify({
+    paths: { whisperModel: model }, completed: true, transcriptionLanguage: 'fr',
+  }));
+  const first = await launch();
+  assert.equal((await first.setupStatus()).speech.language, 'fr');
+  assert.equal((await first.setupAction('speech-language', { language: 'en' })).restartRequired, true);
+  await first.quit();
+  let transcriber;
+  const reopened = await launch({ wrap: { session: built => { transcriber = built.transcriber; return built; } } });
+  assert.equal((await reopened.setupStatus()).restartRequired, false);
+  await reopened.start();
+  assert.equal(transcriber.model, model);
+  assert.equal(transcriber.getLanguage(), 'en');
+  await assert.rejects(reopened.setupAction('speech-language', { language: 'fr' }), /Ferme la session/);
+});

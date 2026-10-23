@@ -111,3 +111,24 @@ tag, puis mettre à jour URL/empreinte dans le script et relancer les tests ains
 Publier le script sous un nouveau tag d’installateur avec son `SHA256SUMS`, puis mettre à jour ensemble
 le bloc du README et le guide Mac. Ne jamais remplacer un installateur déjà publié par un contenu différent.
 Le script et le ZIP ont chacun leur version : les artefacts de CI restent des paquets de validation.
+
+## Signature et autorisations macOS
+
+Chaque construction reçoit une signature ad hoc valide par défaut. Pour mettre à jour une installation
+Developer ID en conservant son identité auprès de macOS, utiliser le même certificat (ou la même équipe
+et le même identifiant de paquet) :
+
+```sh
+npm run package:mac -- --sign-identity 'Developer ID Application: NOM (EQUIPE)'
+npm run verify:mac -- dist/TVLens-darwin-arm64/TVLens.app
+```
+
+La construction échoue si la signature échoue. `verify:mac` exige aussi une vérification
+`codesign --verify --deep --strict` réussie avant la sonde native. Ne pas remplacer une installation
+Developer ID par une construction ad hoc : son identité dépend du contenu et peut perdre les autorisations.
+Conserver une sauvegarde et remplacer le paquet entier, sans fusionner les dossiers. La signature
+ne constitue pas une notarisation ni une preuve de capture audio fonctionnelle.
+
+L’assistant relit les autorisations quand sa fenêtre reprend le focus. Une autorisation écran obtenue
+pendant cette exécution demande une fermeture puis une réouverture depuis Applications. Une erreur
+native de liste des fenêtres conserve le statut de permission et invalide les anciennes sources.

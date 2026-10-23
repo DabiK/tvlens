@@ -1,6 +1,7 @@
 import { jobEntry, verificationEntry, pendingEntry } from "./job-card.js";
 import { KeyedList, isNearBottom } from "./list-view.mjs";
 import { plural, agree } from "./text.mjs";
+import { cardEntry } from "./surveillance-dom.js";
 
 const STICK_PX = 80;
 const ECHO_TOLERANCE_MS = 1000;
@@ -12,6 +13,7 @@ export function createChatView({ list: container, box, intro, queueStatus }) {
     context,
     deepState,
     verificationState,
+    surveillanceCards = [],
     pendingQuestion = "",
     pendingQuestionAt = 0,
     forceBottom = false,
@@ -29,6 +31,10 @@ export function createChatView({ list: container, box, intro, queueStatus }) {
           job.createdAt >= pendingQuestionAt - ECHO_TOLERANCE_MS,
       );
     const entries = [
+      ...surveillanceCards.map((card) => ({
+        at: card.finishedAt ?? 0,
+        entry: cardEntry(card),
+      })),
       ...verificationState.jobs.map((job) => ({
         at: job.createdAt,
         entry: verificationEntry(job, context),

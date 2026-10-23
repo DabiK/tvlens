@@ -132,3 +132,12 @@ test('source picker closes on backdrop but keeps clicks inside its bounds', asyn
   assert.equal(f.dialog.open, false);
   assert.deepEqual(f.state.choices, []);
 });
+
+test('an authorized native failure does not ask to grant access again', async () => {
+  const { describeSourceListing } = await menu();
+  const result = { permission: 'granted', sources: [], error: 'TVLENS_SOURCE_LIST_FAILED' };
+  const view = describeSourceListing({ result });
+  assert.match(view.status, /Écran autorisé/);
+  assert.match(view.notice, /capture.*indisponible/);
+  assert.doesNotMatch(view.notice, /autorise l’app/);
+});

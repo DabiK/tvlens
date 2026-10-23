@@ -189,3 +189,17 @@ test('a broken native thumbnail does not hide its source or the previews of othe
     ]);
   }
 });
+
+test('failed enumeration preserves current permission and invalidates stale sources', async t => {
+  const { create, state, options } = await stage(t);
+  const capture = await create();
+  await capture.sources();
+  await capture.select('window:1');
+  state.permission = 'granted';
+  options.desktopCapturer.getSources = async () => { throw new Error('native failure'); };
+  assert.deepEqual(await capture.sources(), {
+    permission: 'granted', sources: [], preferredSourceId: null, error: 'TVLENS_SOURCE_LIST_FAILED',
+  });
+  assert.equal(capture.takeSelectedSource(), undefined);
+  await assert.rejects(capture.select('window:1'));
+});

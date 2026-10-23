@@ -70,3 +70,14 @@ test('saving preferences into an unusable directory returns a coded message with
   });
   assert.equal(await fs.readFile(blocked, 'utf8'), 'existing file');
 });
+
+test('speech language is preserved across preference reloads and invalid values are refused', async t => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'tvlens-speech-preferences-'));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const store = new DesktopPreferences(root);
+  const value = { paths: { whisperModel: '/models/small.bin' }, completed: false, transcriptionLanguage: 'fr' };
+  await store.save(value);
+  assert.deepEqual(await store.load(), value);
+  await assert.rejects(store.save({ ...value, transcriptionLanguage: 'unknown' }), { code: 'TVLENS_TRANSCRIPTION_LANGUAGE_INVALID' });
+  assert.deepEqual(await store.load(), value);
+});

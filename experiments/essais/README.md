@@ -66,3 +66,7 @@
 - [2026-10-23 — Sélecteur visuel de source](2026-10-23-selecteur-source/README.md) : vue courante par défaut, modale et annulation vérifiées en smoke ; vignettes natives non testées.
 
 - [2026-10-23 — Retour visible du mode flottant](2026-10-23-retour-mode-flottant/README.md) : version signée installée, 84 tests verts ; clic réel du retour restant à valider.
+
+- [2026-10-23 — Intégration Mac sur main](2026-10-23-integration-main-mac/README.md) : catalogue Whisper, permissions et chat de surveillance intégrés aux corrections récentes ; contrôles complets et recettes Electron simulées réussis.
+
+- [2026-10-23 — Intégration accueil sur main](2026-10-23-integration-accueil-main/README.md) : conflits combinés, 3 359 tests JS et 71 tests Python verts, paquet Mac construit et vérifié.

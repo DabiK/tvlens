@@ -15,8 +15,15 @@ async function createCaptureSources({ smoke, desktopCapturer, systemPreferences,
       const permission = smoke ? 'granted' : systemPreferences.getMediaAccessStatus('screen');
       const previews = options?.previews === true && permission === 'granted';
       const thumbnailSize = previews ? SOURCE_PREVIEW_SIZE : { width: 0, height: 0 };
-      sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }]
-        : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize });
+      let listingError;
+      try {
+        sources = smoke ? [{ id: 'test-source', name: 'Vidéo de démonstration' }]
+          : await desktopCapturer.getSources({ types: ['window', 'screen'], thumbnailSize });
+      } catch {
+        sources = [];
+        selectedId = undefined;
+        listingError = 'TVLENS_SOURCE_LIST_FAILED';
+      }
       const available = sources.filter(source => source.name !== OWN_WINDOW_NAME).map(source => {
         const item = { id: source.id, name: source.name };
         const thumbnail = previews ? previewDataURL(source.thumbnail) : null;
@@ -27,6 +34,7 @@ async function createCaptureSources({ smoke, desktopCapturer, systemPreferences,
       const preferred = available.find(source => source.id === lastSource?.id && source.name === lastSource?.name);
       return {
         permission: smoke ? 'granted' : systemPreferences.getMediaAccessStatus('screen'),
+        ...(listingError ? { error: listingError } : {}),
         sources: available,
         preferredSourceId: preferred?.id || null,
       };

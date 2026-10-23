@@ -1,6 +1,7 @@
 const path = require('node:path');
 const { inspectDesktop, accessible, PATH_KEYS } = require('../adapters/desktop-setup.cjs');
 const { installSpeechModel } = require('../adapters/speech-model-download.cjs');
+const { createSpeechSetup } = require('./mac-speech-setup.cjs');
 
 const GOOD = new Set(['ready', 'present']);
 const REQUIRED = ['codexBinary', 'codexAuthHome', 'screen'];
@@ -27,6 +28,10 @@ function createMacSetup({ store, initial, resolvePaths, getConfig, environment, 
   let changed = false;
   const startup = resolvePaths(getConfig(), initial.paths);
   let startupReady = null;
+  const startupPermission = simulated ? 'granted' : permission();
+
+  const speech = createSpeechSetup({ userData, access, install, settings: () => settings, config: getConfig,
+    save, resolvePaths, simulated });
 
   async function status() {
     const paths = resolvePaths(getConfig(), settings.paths);
@@ -36,10 +41,11 @@ function createMacSetup({ store, initial, resolvePaths, getConfig, environment, 
     const ready = checks.every(check => GOOD.has(check.state));
     const toolsReady = checks.filter(check => check.id !== 'screen').every(check => GOOD.has(check.state));
     startupReady ??= toolsReady;
-    const restartRequired = changed || PATH_KEYS.some(key => paths[key] !== startup[key]) || (!startupReady && toolsReady);
+    const screenGranted = startupPermission !== 'granted' && checks.some(check => check.id === 'screen' && check.state === 'ready');
+    const restartRequired = screenGranted || changed || PATH_KEYS.some(key => paths[key] !== startup[key]) || (!startupReady && toolsReady);
     return { firstLaunch: showOnStart && !settings.completed, checks, paths, ready, canFinish: toolsReady && !restartRequired,
       canObserve: checks.filter(check => REQUIRED.includes(check.id)).every(check => GOOD.has(check.state)),
-      restartRequired, busy: pending, problem: initial.problem || null };
+      restartRequired, busy: pending, problem: initial.problem || null, speech: await speech.status(paths) };
   }
 
   async function mutate(work) {
@@ -50,8 +56,8 @@ function createMacSetup({ store, initial, resolvePaths, getConfig, environment, 
     return status();
   }
 
-  async function save(paths, completed = false) {
-    const next = { paths, completed };
+  async function save(paths, completed = false, language = settings.transcriptionLanguage) {
+    const next = { paths, completed, ...(language === undefined ? {} : { transcriptionLanguage: language }) };
     await store.save(next);
     settings = next;
   }
@@ -74,7 +80,7 @@ function createMacSetup({ store, initial, resolvePaths, getConfig, environment, 
     });
   }
 
-  async function action(name) {
+  async function action(name, value) {
     if (Object.hasOwn(LINKS, name)) {
       await openSetupLink(name, { permission, requestScreen, simulated, openExternal });
       return status();
@@ -90,10 +96,8 @@ function createMacSetup({ store, initial, resolvePaths, getConfig, environment, 
       quit();
       return null;
     }
-    if (name === 'download-model') return mutate(async () => {
-      if (simulated) throw failure('TVLENS_SETUP_SIMULATED', 'Téléchargement désactivé dans une exécution simulée.');
-      const model = await install(path.join(userData, 'models', 'ggml-base.bin'));
-      await save({ ...settings.paths, whisperModel: model });
+    if (['download-model', 'speech-language'].includes(name)) return mutate(async () => {
+      await speech.configure(name, value);
       changed = true;
     });
     throw failure('TVLENS_SETUP_ACTION_INVALID', 'Action d’installation inconnue.');
